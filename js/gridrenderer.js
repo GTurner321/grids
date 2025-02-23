@@ -30,32 +30,38 @@ function createCell(entry, index) {
     if (entry) {
         if (entry.type === 'number') {
             const value = entry.value;
+            let symbolValue;
             
-            // Convert number or fraction to appropriate format for symbol creation
-            const symbolValue = typeof value === 'number' ? value : 
-                              value.numerator ? `${value.numerator}/${value.denominator}` :
-                              value.toString();
+            // Determine if it's a fraction or number
+            if (typeof value === 'object' && value.numerator && value.denominator) {
+                symbolValue = `${value.numerator}/${value.denominator}`;
+            } else {
+                symbolValue = value.toString();
+            }
             
-            // Try to create symbol (for numbers 1-6 and valid fractions)
+            // Try to create symbol
             const symbolSvg = PuzzleSymbols.createSymbol(symbolValue);
             
             if (symbolSvg) {
-                // Use SVG symbol for numbers 1-6 and valid fractions
+                // Handle SVG symbol (numbers 1-6 or fractions with denominators 2,3,4,5,6,8)
                 const symbolContainer = document.createElement('div');
                 symbolContainer.classList.add('symbol-container');
                 symbolContainer.style.pointerEvents = 'none';
                 symbolContainer.appendChild(symbolSvg);
                 cell.appendChild(symbolContainer);
-                cell.dataset.value = symbolValue;
             } else {
-                // Use MathJax for numbers > 6 and other values
-                const mathJaxValue = typeof value === 'string' && value.includes('/') ?
-                    `$\\frac{${value.split('/')[0]}{${value.split('/')[1]}}$` :
-                    `$${value}$`;
+                // Use MathJax for other numbers and fractions
+                let mathJaxValue;
+                if (symbolValue.includes('/')) {
+                    const [num, den] = symbolValue.split('/');
+                    mathJaxValue = `$\\frac{${num}}{${den}}$`;
+                } else {
+                    mathJaxValue = `$${symbolValue}$`;
+                }
                 cell.innerHTML = mathJaxValue;
-                cell.dataset.value = value.toString();
             }
             
+            cell.dataset.value = symbolValue;
             cell.classList.add('number');
         } else if (entry.type === 'operator') {
             cell.innerHTML = formatForMathJax(entry.value);
