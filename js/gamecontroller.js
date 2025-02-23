@@ -1,4 +1,3 @@
-
 // gamecontroller.js
 import { generatePath } from './pathgenerator.js';
 import { generateSequence, sequenceToEntries } from './sequencegenerator.js';
@@ -23,6 +22,7 @@ class GameController {
         };
 
         this.initializeEventListeners();
+        this.initializeGridInteractions();
     }
 
     initializeEventListeners() {
@@ -164,6 +164,99 @@ class GameController {
         document.getElementById('check-solution').disabled = false;
 
         // Check if end square reached
+        if (isEndCell(cell)) {
+            this.checkSolution();
+        }
+    }
+
+    initializeGridInteractions() {
+        const gridContainer = document.getElementById('grid-container');
+        let isMouseDown = false;
+        let lastSelectedCell = null;
+
+        gridContainer.addEventListener('mousedown', (e) => {
+            if (!this.state.gameActive) return;
+            isMouseDown = true;
+            const cell = e.target.closest('.grid-cell');
+            if (cell) {
+                this.handleCellInteraction(cell);
+            }
+        });
+
+        gridContainer.addEventListener('mousemove', (e) => {
+            if (!isMouseDown || !this.state.gameActive) return;
+            const cell = e.target.closest('.grid-cell');
+            if (cell && cell !== lastSelectedCell) {
+                this.handleCellInteraction(cell);
+                lastSelectedCell = cell;
+            }
+        });
+
+        gridContainer.addEventListener('mouseup', () => {
+            isMouseDown = false;
+            lastSelectedCell = null;
+        });
+
+        gridContainer.addEventListener('mouseleave', () => {
+            isMouseDown = false;
+            lastSelectedCell = null;
+        });
+
+        // Touch events for mobile
+        gridContainer.addEventListener('touchstart', (e) => {
+            if (!this.state.gameActive) return;
+            const touch = e.touches[0];
+            const cell = document.elementFromPoint(touch.clientX, touch.clientY).closest('.grid-cell');
+            if (cell) {
+                this.handleCellInteraction(cell);
+            }
+        });
+
+        gridContainer.addEventListener('touchmove', (e) => {
+            if (!this.state.gameActive) return;
+            e.preventDefault(); // Prevent scrolling
+            const touch = e.touches[0];
+            const cell = document.elementFromPoint(touch.clientX, touch.clientY).closest('.grid-cell');
+            if (cell && cell !== lastSelectedCell) {
+                this.handleCellInteraction(cell);
+                lastSelectedCell = cell;
+            }
+        });
+    }
+
+    handleCellInteraction(cell) {
+        const cellIndex = parseInt(cell.dataset.index);
+
+        // First click must be start cell
+        if (this.state.userPath.length === 0) {
+            if (isStartCell(cell)) {
+                this.state.userPath.push(cellIndex);
+                highlightPath(this.state.userPath);
+                this.showMessage('Path started! Continue by selecting connected cells.');
+            } else {
+                this.showMessage('You must start at the green square!', 'error');
+            }
+            return;
+        }
+
+        // Allow deselection by clicking a cell in the path
+        const pathIndex = this.state.userPath.indexOf(cellIndex);
+        if (pathIndex !== -1) {
+            this.state.userPath = this.state.userPath.slice(0, pathIndex + 1);
+            highlightPath(this.state.userPath);
+            return;
+        }
+
+        // Check if cell is adjacent to last selected cell
+        if (!this.isValidMove(cellIndex)) {
+            return; // Silent fail for drag operations
+        }
+
+        this.state.userPath.push(cellIndex);
+        highlightPath(this.state.userPath);
+        
+        document.getElementById('check-solution').disabled = false;
+
         if (isEndCell(cell)) {
             this.checkSolution();
         }
