@@ -172,41 +172,56 @@ class GameController {
         const gridContainer = document.getElementById('grid-container');
         let isMouseDown = false;
         let lastSelectedCell = null;
+        let isDragging = false;
 
+        // Mouse events
         gridContainer.addEventListener('mousedown', (e) => {
             if (!this.state.gameActive) return;
             isMouseDown = true;
+            isDragging = false;
             const cell = e.target.closest('.grid-cell');
             if (cell) {
+                lastSelectedCell = cell;
                 this.handleCellInteraction(cell);
             }
         });
 
         gridContainer.addEventListener('mousemove', (e) => {
             if (!isMouseDown || !this.state.gameActive) return;
+            isDragging = true;
             const cell = e.target.closest('.grid-cell');
             if (cell && cell !== lastSelectedCell) {
-                this.handleCellInteraction(cell);
                 lastSelectedCell = cell;
+                this.handleCellInteraction(cell);
             }
         });
 
-        gridContainer.addEventListener('mouseup', () => {
+        gridContainer.addEventListener('mouseup', (e) => {
+            if (!isDragging) {
+                // Handle click without drag
+                const cell = e.target.closest('.grid-cell');
+                if (cell) {
+                    this.handleCellInteraction(cell);
+                }
+            }
             isMouseDown = false;
+            isDragging = false;
             lastSelectedCell = null;
         });
 
         gridContainer.addEventListener('mouseleave', () => {
             isMouseDown = false;
+            isDragging = false;
             lastSelectedCell = null;
         });
 
-        // Touch events for mobile
+        // Touch events
         gridContainer.addEventListener('touchstart', (e) => {
             if (!this.state.gameActive) return;
             const touch = e.touches[0];
             const cell = document.elementFromPoint(touch.clientX, touch.clientY).closest('.grid-cell');
             if (cell) {
+                lastSelectedCell = cell;
                 this.handleCellInteraction(cell);
             }
         });
@@ -214,53 +229,63 @@ class GameController {
         gridContainer.addEventListener('touchmove', (e) => {
             if (!this.state.gameActive) return;
             e.preventDefault(); // Prevent scrolling
+            
             const touch = e.touches[0];
             const cell = document.elementFromPoint(touch.clientX, touch.clientY).closest('.grid-cell');
             if (cell && cell !== lastSelectedCell) {
-                this.handleCellInteraction(cell);
                 lastSelectedCell = cell;
+                this.handleCellInteraction(cell);
             }
         });
-    }
 
+        gridContainer.addEventListener('touchend', () => {
+            lastSelectedCell = null;
+        });
+
+        gridContainer.addEventListener('touchcancel', () => {
+            lastSelectedCell = null;
+        });
+    }
+    
     handleCellInteraction(cell) {
-        const cellIndex = parseInt(cell.dataset.index);
+    const cellIndex = parseInt(cell.dataset.index);
 
-        // First click must be start cell
-        if (this.state.userPath.length === 0) {
-            if (isStartCell(cell)) {
-                this.state.userPath.push(cellIndex);
-                highlightPath(this.state.userPath);
-                this.showMessage('Path started! Continue by selecting connected cells.');
-            } else {
-                this.showMessage('You must start at the green square!', 'error');
-            }
-            return;
-        }
-
-        // Allow deselection by clicking a cell in the path
-        const pathIndex = this.state.userPath.indexOf(cellIndex);
-        if (pathIndex !== -1) {
-            this.state.userPath = this.state.userPath.slice(0, pathIndex + 1);
+    // First click must be start cell
+    if (this.state.userPath.length === 0) {
+        if (isStartCell(cell)) {
+            this.state.userPath = [cellIndex];
             highlightPath(this.state.userPath);
-            return;
+            this.showMessage('Path started! Continue by selecting connected cells.');
+        } else {
+            this.showMessage('You must start at the green square!', 'error');
         }
-
-        // Check if cell is adjacent to last selected cell
-        if (!this.isValidMove(cellIndex)) {
-            return; // Silent fail for drag operations
-        }
-
-        this.state.userPath.push(cellIndex);
-        highlightPath(this.state.userPath);
-        
-        document.getElementById('check-solution').disabled = false;
-
-        if (isEndCell(cell)) {
-            this.checkSolution();
-        }
+        return;
     }
 
+    // Handle deselection immediately when clicking a cell in the path
+    const pathIndex = this.state.userPath.indexOf(cellIndex);
+    if (pathIndex !== -1) {
+        // Keep cells up to and including clicked cell
+        this.state.userPath = this.state.userPath.slice(0, pathIndex + 1);
+        highlightPath(this.state.userPath);
+        return;
+    }
+
+    // For new cell selection, ensure it's adjacent
+    if (!this.isValidMove(cellIndex)) {
+        return;
+    }
+
+    this.state.userPath.push(cellIndex);
+    highlightPath(this.state.userPath);
+    
+    document.getElementById('check-solution').disabled = false;
+
+    if (isEndCell(cell)) {
+        this.checkSolution();
+    }
+}
+    
     isValidMove(newCellIndex) {
         const lastCellIndex = this.state.userPath[this.state.userPath.length - 1];
         const [x1, y1] = [newCellIndex % 10, Math.floor(newCellIndex / 10)];
