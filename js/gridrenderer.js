@@ -1,6 +1,27 @@
 // gridrenderer.js
 import PuzzleSymbols from './puzzlesymbols.js';
 
+function formatForMathJax(value) {
+    if (typeof value === 'string') {
+        // Handle operators
+        if (value === '/') return '$\\div$';
+        if (value === 'x') return '$\\times$';
+        
+        // Handle raw fractions that didn't get converted to symbols
+        if (value.includes('/')) {
+            const [num, den] = value.split('/');
+            return `$\\frac{${num}}{${den}}$`;
+        }
+    }
+    
+    // Handle regular numbers (7-99)
+    if (typeof value === 'number' && value > 6) {
+        return `$${value}$`;
+    }
+    
+    return value;
+}
+
 function createCell(entry, index) {
     const cell = document.createElement('div');
     cell.classList.add('grid-cell');
@@ -8,29 +29,32 @@ function createCell(entry, index) {
     
     if (entry) {
         if (entry.type === 'number') {
-            const symbolContainer = document.createElement('div');
-            symbolContainer.classList.add('symbol-container');
-            symbolContainer.style.pointerEvents = 'none';
-            
             const symbolValue = entry.value instanceof Object 
                 ? (entry.value.numerator && entry.value.denominator 
                     ? `${entry.value.numerator}/${entry.value.denominator}` 
                     : entry.value.toString())
                 : entry.value.toString();
             
-            const symbolSvg = PuzzleSymbols.createSymbol(symbolValue);
+            // Try to create symbol first
+            const symbolSvg = PuzzleSymbols.createSymbol(entry.value);
             
             if (symbolSvg) {
+                // Use SVG symbol for numbers 1-6 and valid fractions
+                const symbolContainer = document.createElement('div');
+                symbolContainer.classList.add('symbol-container');
+                symbolContainer.style.pointerEvents = 'none';
                 symbolContainer.appendChild(symbolSvg);
                 cell.appendChild(symbolContainer);
-                cell.dataset.value = symbolValue;
             } else {
-                cell.textContent = symbolValue;
+                // Use MathJax for numbers 7+ and non-symbol fractions
+                cell.innerHTML = formatForMathJax(entry.value);
             }
             
+            cell.dataset.value = symbolValue;
             cell.classList.add('number');
         } else if (entry.type === 'operator') {
-            cell.textContent = entry.value;
+            // Use MathJax for operators
+            cell.innerHTML = formatForMathJax(entry.value);
             cell.classList.add('operator');
         }
     }
@@ -60,6 +84,13 @@ export function renderGrid(gridEntries, options = {}) {
         
         gridContainer.appendChild(cell);
     });
+
+    // Trigger MathJax to process any new content
+    if (window.MathJax) {
+        window.MathJax.typesetPromise([gridContainer]).catch((err) => {
+            console.error('MathJax typesetting failed:', err);
+        });
+    }
 }
 
 export function updateCell(index, value) {
@@ -76,25 +107,30 @@ export function updateCell(index, value) {
     }
 
     if (typeof value === 'object' && value.type === 'number') {
-        const symbolContainer = document.createElement('div');
-        symbolContainer.classList.add('symbol-container');
-        symbolContainer.style.pointerEvents = 'none';
-        
-        const symbolValue = value.value.toString();
-        const symbolSvg = PuzzleSymbols.createSymbol(symbolValue);
+        const symbolSvg = PuzzleSymbols.createSymbol(value.value);
         
         if (symbolSvg) {
+            const symbolContainer = document.createElement('div');
+            symbolContainer.classList.add('symbol-container');
+            symbolContainer.style.pointerEvents = 'none';
             symbolContainer.appendChild(symbolSvg);
             cell.appendChild(symbolContainer);
-            cell.dataset.value = symbolValue;
         } else {
-            cell.textContent = symbolValue;
+            cell.innerHTML = formatForMathJax(value.value);
         }
         
+        cell.dataset.value = value.value.toString();
         cell.classList.add('number');
     } else if (typeof value === 'object' && value.type === 'operator') {
-        cell.textContent = value.value;
+        cell.innerHTML = formatForMathJax(value.value);
         cell.classList.add('operator');
+    }
+
+    // Trigger MathJax for the updated cell
+    if (window.MathJax && cell.innerHTML.includes('$')) {
+        window.MathJax.typesetPromise([cell]).catch((err) => {
+            console.error('MathJax typesetting failed:', err);
+        });
     }
 }
 
