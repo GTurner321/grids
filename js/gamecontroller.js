@@ -272,35 +272,35 @@ class GameController {
     }
 
     removeAllSpareCells() {
-    const spareCells = this.state.gridEntries
-        .map((entry, index) => (!entry?.isPartOfPath && !this.state.removedCells.has(index)) ? index : null)
-        .filter(index => index !== null);
+        const spareCells = this.state.gridEntries
+            .map((entry, index) => (!entry?.isPartOfPath && !this.state.removedCells.has(index)) ? index : null)
+            .filter(index => index !== null);
 
-    if (spareCells.length === 0) {
-        this.showMessage('No spare cells to remove!', 'info');
-        return;
+        if (spareCells.length === 0) {
+            this.showMessage('No spare cells to remove!', 'info');
+            return;
+        }
+
+        // Remove 50% of spare cells
+        const numToRemove = Math.ceil(spareCells.length / 2);
+        const cellsToRemove = spareCells
+            .sort(() => Math.random() - 0.5)
+            .slice(0, numToRemove);
+
+        cellsToRemove.forEach(index => {
+            this.state.removedCells.add(index);
+            updateCell(index, null);
+        });
+
+        // Disable button after use
+        document.getElementById('remove-spare').disabled = true;
+    
+        // Update score
+        this.state.score.possible = Math.ceil(this.state.score.possible / 2);
+        this.updateUI();
+        
+        this.showMessage(`Removed ${numToRemove} spare cells.`, 'info');
     }
-
-    // Remove 50% of spare cells
-    const numToRemove = Math.ceil(spareCells.length / 2);
-    const cellsToRemove = spareCells
-        .sort(() => Math.random() - 0.5)
-        .slice(0, numToRemove);
-
-    cellsToRemove.forEach(index => {
-        this.state.removedCells.add(index);
-        updateCell(index, null);
-    });
-
-    // Disable button after use
-    document.getElementById('remove-spare').disabled = true;
-    
-    // Update score
-    this.state.score.possible = Math.ceil(this.state.score.possible / 2);
-    this.updateUI();
-    
-    this.showMessage(`Removed ${numToRemove} spare cells.`, 'info');
-}
 
     checkSolution() {
         // Validate current path
