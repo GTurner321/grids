@@ -29,13 +29,14 @@ function createCell(entry, index) {
     
     if (entry) {
         if (entry.type === 'number') {
+            // Convert value to proper format for symbol creation
             const value = entry.value;
-            const fractionStr = typeof value === 'string' ? value :
-                              value.numerator ? `${value.numerator}/${value.denominator}` :
-                              value.toString();
-            
+            const symbolValue = value.numerator && value.denominator 
+                ? `${value.numerator}/${value.denominator}`
+                : value.toString();
+
             // Try to create symbol first
-            const symbolSvg = PuzzleSymbols.createSymbol(value);
+            const symbolSvg = PuzzleSymbols.createSymbol(symbolValue);
             
             if (symbolSvg) {
                 // Use SVG symbol for numbers 1-6 and valid fractions
@@ -45,19 +46,20 @@ function createCell(entry, index) {
                 symbolContainer.appendChild(symbolSvg);
                 cell.appendChild(symbolContainer);
             } else {
-                // Use MathJax for numbers 7+ and non-symbol fractions
-                const isNormalFraction = typeof fractionStr === 'string' && fractionStr.includes('/');
-                if (isNormalFraction) {
-                    const [num, den] = fractionStr.split('/');
+                // Use MathJax for other numbers and fractions
+                if (symbolValue.includes('/')) {
+                    const [num, den] = symbolValue.split('/');
                     cell.innerHTML = `$\\frac{${num}}{${den}}$`;
                 } else {
-                    cell.innerHTML = `$${fractionStr}$`;
+                    cell.innerHTML = `$${symbolValue}$`;
                 }
             }
             
-            cell.dataset.value = fractionStr;
+            cell.dataset.value = symbolValue;
             cell.classList.add('number');
+
         } else if (entry.type === 'operator') {
+            // Use MathJax for operators
             cell.innerHTML = formatForMathJax(entry.value);
             cell.classList.add('operator');
         }
