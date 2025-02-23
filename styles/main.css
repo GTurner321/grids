@@ -52,7 +52,7 @@ body {
 
 #grid-container {
     display: grid;
-    grid-template-columns: repeat(10, minmax(50px, 65px));
+    grid-template-columns: repeat(10, minmax(65px, 75px));  /* Increase from 50px, 65px */
     gap: 2px;
     background-color: #cbd5e1;
     padding: 2px;
@@ -62,7 +62,8 @@ body {
 }
 
 .grid-cell {
-    aspect-ratio: 1;
+    aspect-ratio: 1;  /* Keep cells square */
+    min-height: 75px;  /* Ensure minimum height */
     background-color: white;
     display: flex;
     align-items: center;
@@ -72,6 +73,8 @@ body {
     transition: all 0.2s ease;
     user-select: none;
     border: 1px solid #e5e7eb;
+    overflow: hidden;  /* Prevent content from spilling */
+    position: relative;  /* For proper symbol positioning */
 }
 
 .grid-cell.selected,
@@ -107,6 +110,15 @@ body {
 .grid-cell.operator {
     color: #dc2626;
     font-weight: bold;
+    font-size: 1.8rem;  /* Increase from 1.2rem */
+}
+
+/* Ensure operator is vertically centered */
+.grid-cell.operator .MathJax {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
 }
 
 .grid-cell.removed {
@@ -121,13 +133,12 @@ body {
 }
 
 .symbol-container {
-    width: 100%;
-    height: 100%;
+    width: 90%;  /* Slightly reduce from 100% */
+    height: 90%;  /* Slightly reduce from 100% */
     display: flex;
     align-items: center;
     justify-content: center;
     pointer-events: none;
-    padding: 10%;  /* Add padding to make symbols not touch edges */
 }
 
 .symbol-container svg {
