@@ -29,14 +29,13 @@ function createCell(entry, index) {
     
     if (entry) {
         if (entry.type === 'number') {
-            const symbolValue = entry.value instanceof Object 
-                ? (entry.value.numerator && entry.value.denominator 
-                    ? `${entry.value.numerator}/${entry.value.denominator}` 
-                    : entry.value.toString())
-                : entry.value.toString();
+            const value = entry.value;
+            const fractionStr = typeof value === 'string' ? value :
+                              value.numerator ? `${value.numerator}/${value.denominator}` :
+                              value.toString();
             
             // Try to create symbol first
-            const symbolSvg = PuzzleSymbols.createSymbol(entry.value);
+            const symbolSvg = PuzzleSymbols.createSymbol(value);
             
             if (symbolSvg) {
                 // Use SVG symbol for numbers 1-6 and valid fractions
@@ -47,13 +46,18 @@ function createCell(entry, index) {
                 cell.appendChild(symbolContainer);
             } else {
                 // Use MathJax for numbers 7+ and non-symbol fractions
-                cell.innerHTML = formatForMathJax(entry.value);
+                const isNormalFraction = typeof fractionStr === 'string' && fractionStr.includes('/');
+                if (isNormalFraction) {
+                    const [num, den] = fractionStr.split('/');
+                    cell.innerHTML = `$\\frac{${num}}{${den}}$`;
+                } else {
+                    cell.innerHTML = `$${fractionStr}$`;
+                }
             }
             
-            cell.dataset.value = symbolValue;
+            cell.dataset.value = fractionStr;
             cell.classList.add('number');
         } else if (entry.type === 'operator') {
-            // Use MathJax for operators
             cell.innerHTML = formatForMathJax(entry.value);
             cell.classList.add('operator');
         }
