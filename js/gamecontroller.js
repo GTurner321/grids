@@ -146,8 +146,7 @@ class GameController {
 
         // Check if cell is adjacent to last selected cell
         if (!this.isValidMove(cellIndex)) {
-            this.showMessage('You can only move to adjacent squares!', 'error');
-            return;
+            return;  // Silent fail, no message needed
         }
 
         // Handle backtracking
