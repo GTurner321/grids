@@ -29,13 +29,14 @@ function createCell(entry, index) {
     
     if (entry) {
         if (entry.type === 'number') {
-            // Convert value to proper format for symbol creation
             const value = entry.value;
-            const symbolValue = value.numerator && value.denominator 
-                ? `${value.numerator}/${value.denominator}`
-                : value.toString();
-
-            // Try to create symbol first
+            
+            // Convert number or fraction to appropriate format for symbol creation
+            const symbolValue = typeof value === 'number' ? value : 
+                              value.numerator ? `${value.numerator}/${value.denominator}` :
+                              value.toString();
+            
+            // Try to create symbol (for numbers 1-6 and valid fractions)
             const symbolSvg = PuzzleSymbols.createSymbol(symbolValue);
             
             if (symbolSvg) {
@@ -45,21 +46,18 @@ function createCell(entry, index) {
                 symbolContainer.style.pointerEvents = 'none';
                 symbolContainer.appendChild(symbolSvg);
                 cell.appendChild(symbolContainer);
+                cell.dataset.value = symbolValue;
             } else {
-                // Use MathJax for other numbers and fractions
-                if (symbolValue.includes('/')) {
-                    const [num, den] = symbolValue.split('/');
-                    cell.innerHTML = `$\\frac{${num}}{${den}}$`;
-                } else {
-                    cell.innerHTML = `$${symbolValue}$`;
-                }
+                // Use MathJax for numbers > 6 and other values
+                const mathJaxValue = typeof value === 'string' && value.includes('/') ?
+                    `$\\frac{${value.split('/')[0]}{${value.split('/')[1]}}$` :
+                    `$${value}$`;
+                cell.innerHTML = mathJaxValue;
+                cell.dataset.value = value.toString();
             }
             
-            cell.dataset.value = symbolValue;
             cell.classList.add('number');
-
         } else if (entry.type === 'operator') {
-            // Use MathJax for operators
             cell.innerHTML = formatForMathJax(entry.value);
             cell.classList.add('operator');
         }
