@@ -1,6 +1,54 @@
 // gridrenderer.js
 import PuzzleSymbols from './puzzlesymbols.js';
 
+function renderSymbol(value) {
+    // Convert number to LaTeX string
+    if (typeof value === 'number') {
+        if (value >= 1 && value <= 6) {
+            // For numbers 1-6, use dots
+            return createDotSymbol(value);
+        }
+        return `$${value}$`;
+    }
+    
+    // Handle operators
+    if (value === '/') {
+        return '$\\div$';
+    }
+    if (value === 'x') {
+        return '$\\times$';
+    }
+    
+    // Handle fractions
+    if (typeof value === 'string' && value.includes('/')) {
+        const [num, den] = value.split('/');
+        return `$\\frac{${num}}{${den}}$`;
+    }
+    
+    return value;
+}
+
+function createDotSymbol(number) {
+    const dotSize = '0.2em';
+    const dots = [];
+    
+    // Dot patterns for numbers 1-6
+    const patterns = {
+        1: [[1, 1]],
+        2: [[0, 0], [2, 2]],
+        3: [[0, 0], [1, 1], [2, 2]],
+        4: [[0, 0], [0, 2], [2, 0], [2, 2]],
+        5: [[0, 0], [0, 2], [1, 1], [2, 0], [2, 2]],
+        6: [[0, 0], [0, 1], [0, 2], [2, 0], [2, 1], [2, 2]]
+    };
+    
+    patterns[number].forEach(([x, y]) => {
+        dots.push(`\\bullet`);
+    });
+    
+    return `$\\begin{matrix}${dots.join(' & ')}\\end{matrix}$`;
+}
+
 function createCell(entry, index) {
     const cell = document.createElement('div');
     cell.classList.add('grid-cell');
@@ -8,30 +56,28 @@ function createCell(entry, index) {
     
     if (entry) {
         if (entry.type === 'number') {
-            const symbolContainer = document.createElement('div');
-            symbolContainer.classList.add('symbol-container');
-            symbolContainer.style.pointerEvents = 'none';
-            
             const symbolValue = entry.value instanceof Object 
                 ? (entry.value.numerator && entry.value.denominator 
                     ? `${entry.value.numerator}/${entry.value.denominator}` 
                     : entry.value.toString())
                 : entry.value.toString();
             
-            const symbolSvg = PuzzleSymbols.createSymbol(symbolValue);
-            
-            if (symbolSvg) {
-                symbolContainer.appendChild(symbolSvg);
-                cell.appendChild(symbolContainer);
-                cell.dataset.value = symbolValue;
-            } else {
-                cell.textContent = symbolValue;
-            }
-            
+            cell.innerHTML = renderSymbol(entry.value);
+            cell.dataset.value = symbolValue;
             cell.classList.add('number');
+            
+            // Trigger MathJax to process the new content
+            if (window.MathJax) {
+                window.MathJax.typesetPromise([cell]);
+            }
         } else if (entry.type === 'operator') {
-            cell.textContent = entry.value;
+            cell.innerHTML = renderSymbol(entry.value);
             cell.classList.add('operator');
+            
+            // Trigger MathJax to process the new content
+            if (window.MathJax) {
+                window.MathJax.typesetPromise([cell]);
+            }
         }
     }
 
@@ -45,15 +91,6 @@ export function renderGrid(gridEntries, options = {}) {
 
     // Clear existing grid
     gridContainer.innerHTML = '';
-    
-    // Set up grid container
-    gridContainer.style.display = 'grid';
-    gridContainer.style.gridTemplateColumns = 'repeat(10, 1fr)';
-    gridContainer.style.gap = '2px';
-    gridContainer.style.backgroundColor = '#cbd5e1';
-    gridContainer.style.padding = '2px';
-    gridContainer.style.borderRadius = '8px';
-    gridContainer.style.margin = '20px 0';
     
     // Create and append cells
     gridEntries.forEach((entry, index) => {
@@ -84,29 +121,20 @@ export function updateCell(index, value) {
         return;
     }
 
-    // Create new content
     if (typeof value === 'object' && value.type === 'number') {
-        const symbolContainer = document.createElement('div');
-        symbolContainer.classList.add('symbol-container');
-        symbolContainer.style.pointerEvents = 'none';
-        
-        const symbolValue = value.value.toString();
-        const symbolSvg = PuzzleSymbols.createSymbol(symbolValue);
-        
-        if (symbolSvg) {
-            symbolContainer.appendChild(symbolSvg);
-            cell.appendChild(symbolContainer);
-            cell.dataset.value = symbolValue;
-        } else {
-            cell.textContent = symbolValue;
-        }
-        
+        cell.innerHTML = renderSymbol(value.value);
+        cell.dataset.value = value.value.toString();
         cell.classList.add('number');
     } else if (typeof value === 'object' && value.type === 'operator') {
-        cell.textContent = value.value;
+        cell.innerHTML = renderSymbol(value.value);
         cell.classList.add('operator');
     } else {
-        cell.textContent = value.toString();
+        cell.innerHTML = renderSymbol(value);
+    }
+
+    // Trigger MathJax to process the updated content
+    if (window.MathJax) {
+        window.MathJax.typesetPromise([cell]);
     }
 }
 
