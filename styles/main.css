@@ -19,6 +19,9 @@ body {
     margin: 0 auto;
     padding: 20px;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 /* Game Header */
@@ -48,28 +51,27 @@ body {
 }
 
 #grid-container {
-    --grid-size: 650px; /* Larger fixed size to accommodate fractions */
-    width: var(--grid-size);
-    height: var(--grid-size);
     display: grid;
-    grid-template-columns: repeat(10, 1fr);
+    grid-template-columns: repeat(10, minmax(50px, 65px));
     gap: 2px;
     background-color: #cbd5e1;
     padding: 2px;
     border-radius: 8px;
-    margin: 20px auto; /* Centers the grid */
+    margin: 20px auto;
+    width: fit-content;
 }
 
 .grid-cell {
     aspect-ratio: 1;
+    background-color: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.4rem; /* Larger font size */
-    background-color: white;
+    font-size: 1.2rem;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: all 0.2s ease;
     user-select: none;
+    border: 1px solid #e5e7eb;
 }
 
 .grid-cell:hover {
@@ -129,12 +131,17 @@ body {
 
 /* Symbol Container */
 .symbol-container {
-    width: 100%;
-    height: 100%;
+    width: 80%;
+    height: 80%;
     display: flex;
     align-items: center;
     justify-content: center;
     pointer-events: none;
+}
+
+.symbol-container svg {
+    width: 100%;
+    height: 100%;
 }
 
 /* Level Selector */
@@ -176,10 +183,11 @@ body {
 
 /* Game Controls */
 .game-controls {
+    margin-top: 20px;
     display: flex;
     justify-content: center;
     gap: 15px;
-    margin: 20px 0;
+    width: 100%;
 }
 
 .game-controls button {
@@ -190,12 +198,7 @@ body {
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    transition: opacity 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 8px;
 }
-
 .game-controls button:hover {
     opacity: 0.9;
 }
