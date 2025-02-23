@@ -126,21 +126,21 @@ function createFractionSymbolSVG(numerator, denominator, size = 40) {
 }
 
 function createSymbol(symbol, size = 40) {
-    // Handle integer values 1-6 only
-    if (typeof symbol === 'number' && symbol >= 1 && symbol <= 6) {
-        return createDotNumberSVG(symbol, size);
+    // Handle integer values 1-6 first
+    const num = parseInt(symbol);
+    if (!isNaN(num) && num >= 1 && num <= 6) {
+        return createDotNumberSVG(num, size);
     }
     
-    // Handle fractions more robustly
+    // Handle fractions
     if (typeof symbol === 'string' && symbol.includes('/')) {
         const [num, den] = symbol.split('/').map(Number);
-        // Check if we have valid numbers and a supported denominator
-        if (!isNaN(num) && !isNaN(den) && [2, 3, 4, 5, 6, 8].includes(den)) {
+        if ([2, 3, 4, 5, 6, 8].includes(den) && isSimplifiedFraction(num, den)) {
             return createFractionSymbolSVG(num, den, size);
         }
     }
     
-    return null;
+    return null;  // Let MathJax handle other cases
 }
 
 // Available symbols for reference
