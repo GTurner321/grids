@@ -141,13 +141,15 @@ export function updateCell(index, value) {
 }
 
 export function highlightPath(path) {
-    // Clear all highlights and restore original states
+    // Clear existing highlights
     document.querySelectorAll('.grid-cell').forEach(cell => {
         cell.classList.remove('highlight', 'selected', 'start-cell-selected', 'end-cell-selected');
         
-        // Restore original states
+        // Restore original colors
         if (cell.classList.contains('start-cell')) {
             cell.style.backgroundColor = '#22c55e';  // Original green
+        } else if (cell.classList.contains('end-cell')) {
+            cell.style.backgroundColor = '#ef4444';  // Original red
         } else {
             cell.style.backgroundColor = 'white';
         }
@@ -159,10 +161,13 @@ export function highlightPath(path) {
         if (!cell) return;
 
         cell.classList.add('selected');
-        cell.style.backgroundColor = '#e5e7eb';  // Grey selection color
         
-        if (position === 0 && cell.classList.contains('start-cell')) {
-            cell.style.backgroundColor = '#15803d';  // Darker green when selected
+        if (cell.classList.contains('start-cell')) {
+            cell.style.backgroundColor = '#15803d';  // Darker green for selected start
+        } else if (cell.classList.contains('end-cell')) {
+            cell.style.backgroundColor = '#b91c1c';  // Darker red for selected end
+        } else {
+            cell.style.backgroundColor = '#e5e7eb';  // Grey for normal selected cells
         }
     });
 }
