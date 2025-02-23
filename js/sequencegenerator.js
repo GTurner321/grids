@@ -37,15 +37,15 @@ class Fraction {
 
 function generateFraction(maxDenominator = 12) {
     const denominator = Math.floor(Math.random() * (maxDenominator - 1)) + 2;
-    const numerator = Math.floor(Math.random() * 11) + 1;
+    const numerator = Math.floor(Math.random() * (denominator - 1)) + 1;
     
-    if (numerator >= denominator) {
-        return generateFraction(maxDenominator);
-    }
+    // Simplify fraction
+    const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
+    const divisor = gcd(numerator, denominator);
     
     return {
-        numerator,
-        denominator,
+        numerator: numerator / divisor,
+        denominator: denominator / divisor,
         toString() {
             return `${this.numerator}/${this.denominator}`;
         },
