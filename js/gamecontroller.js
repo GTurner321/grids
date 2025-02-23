@@ -262,17 +262,21 @@ class GameController {
         return;
     }
 
-    // Handle deselection immediately when clicking a cell in the path
-    const pathIndex = this.state.userPath.indexOf(cellIndex);
-    if (pathIndex !== -1) {
-        // Keep cells up to and including clicked cell
-        this.state.userPath = this.state.userPath.slice(0, pathIndex + 1);
+    // Only allow deselection of last cell in path
+    const lastCellIndex = this.state.userPath[this.state.userPath.length - 1];
+    if (cellIndex === lastCellIndex) {
+        this.state.userPath.pop();
         highlightPath(this.state.userPath);
         return;
     }
 
     // For new cell selection, ensure it's adjacent
     if (!this.isValidMove(cellIndex)) {
+        return;
+    }
+
+    // Don't allow selection of cells already in path
+    if (this.state.userPath.includes(cellIndex)) {
         return;
     }
 
