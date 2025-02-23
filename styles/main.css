@@ -182,6 +182,9 @@ body {
 }
 
 .game-controls button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     padding: 10px 20px;
     font-size: 1rem;
     background-color: var(--primary-color);
@@ -190,8 +193,14 @@ body {
     border-radius: 6px;
     cursor: pointer;
 }
+
 .game-controls button:hover {
     opacity: 0.9;
+}
+
+.game-controls button svg {
+    width: 20px;
+    height: 20px;
 }
 
 .game-controls button:disabled {
