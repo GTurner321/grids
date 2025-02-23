@@ -127,15 +127,15 @@ function createFractionSymbolSVG(numerator, denominator, size = 40) {
 
 function createSymbol(symbol, size = 40) {
     // Handle integer values 1-6 only
-    if (Number.isInteger(symbol) && symbol >= 1 && symbol <= 6) {
+    if (typeof symbol === 'number' && symbol >= 1 && symbol <= 6) {
         return createDotNumberSVG(symbol, size);
     }
     
-    // Handle fractions (passed as "n/d" string)
+    // Handle fractions more robustly
     if (typeof symbol === 'string' && symbol.includes('/')) {
         const [num, den] = symbol.split('/').map(Number);
-        
-        if ([2, 3, 4, 5, 6, 8].includes(den) && isSimplifiedFraction(num, den)) {
+        // Check if we have valid numbers and a supported denominator
+        if (!isNaN(num) && !isNaN(den) && [2, 3, 4, 5, 6, 8].includes(den)) {
             return createFractionSymbolSVG(num, den, size);
         }
     }
