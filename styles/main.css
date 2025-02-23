@@ -133,18 +133,18 @@ body {
 }
 
 .symbol-container {
-    width: 90%;  /* Slightly reduce from 100% */
-    height: 90%;  /* Slightly reduce from 100% */
+    width: 90%;
+    height: 90%;
     display: flex;
     align-items: center;
     justify-content: center;
-    pointer-events: none;
+    padding: 15%;  /* Adjust padding for centering */
 }
 
 .symbol-container svg {
     width: 100%;
     height: 100%;
-    display: block;  /* Ensure block display */
+    display: block;
 }
 
 /* Level Selector */
