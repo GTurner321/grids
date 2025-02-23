@@ -338,7 +338,7 @@ class GameController {
     updateUI() {
         // Update button states
         document.getElementById('check-solution').disabled = !this.state.gameActive || this.state.userPath.length === 0;
-        document.getElementById('remove-spare').disabled = !this.state.gameActive || this.state.removedCells.size >= 2;
+        document.getElementById('remove-spare').disabled = !this.state.gameActive || this.state.removedCells.size > 0;
 
         // Update level buttons
         document.querySelectorAll('.level-btn').forEach(btn => {
