@@ -17,6 +17,8 @@ class GameController {
             removedCells: new Set(),
             gameActive: false
         };
+        
+        this.messageTimeout = null;
 
         this.initializeEventListeners();
         this.initializeGridInteractions();
@@ -324,7 +326,9 @@ class GameController {
 
     checkSolution() {
         // Validate current path
-        if (this.validatePath()) {
+        const validation = this.validatePath();
+        
+        if (validation.isValid) {
             if (isEndCell(document.querySelector(`[data-index="${this.state.userPath[this.state.userPath.length - 1]}"]`))) {
                 scoreManager.handleCheck(true);
                 this.handlePuzzleSolved();
@@ -334,29 +338,30 @@ class GameController {
             }
         } else {
             scoreManager.handleCheck(false);
-            this.showMessage('Mathematical error in the path. Try again.', 'error');
-            this.state.userPath = [];
-            highlightPath(this.state.userPath);
+            // Show error message with specific details about the first invalid calculation
+            if (validation.error) {
+                this.showMessage(validation.error, 'error', 10000); // 10 seconds display time
+            } else {
+                this.showMessage('Mathematical error in the path. Try again.', 'error', 10000);
+            }
+            
+            // Do NOT clear the path - path remains selected
         }
+        
         this.updateUI();
     }
 
     validatePath() {
         // First check if the path is continuous
         if (!isPathContinuous(this.state.userPath)) {
-            this.showMessage('Path must be continuous - cells must be adjacent!', 'error');
-            return false;
+            return {
+                isValid: false,
+                error: 'Path must be continuous - cells must be adjacent!'
+            };
         }
 
         // Then validate the mathematical sequence
-        const validation = validatePathMath(this.state.userPath, this.state.gridEntries);
-    
-        if (!validation.isValid) {
-            this.showMessage(validation.error, 'error');
-            return false;
-        }
-
-        return true;
+        return validatePathMath(this.state.userPath, this.state.gridEntries);
     }
 
     handlePuzzleSolved() {
@@ -380,13 +385,20 @@ class GameController {
     showMessage(text, type = 'info', duration = null) {
         const messageElement = document.getElementById('game-messages');
         if (messageElement) {
+            // Clear any existing timeout
+            if (this.messageTimeout) {
+                clearTimeout(this.messageTimeout);
+                this.messageTimeout = null;
+            }
+            
             messageElement.textContent = text;
-            messageElement.className = `message-box ${type}`;
+            messageElement.className = type ? `message-box ${type}` : 'message-box';
             
             if (duration) {
-                setTimeout(() => {
+                this.messageTimeout = setTimeout(() => {
                     messageElement.textContent = '';
                     messageElement.className = 'message-box';
+                    this.messageTimeout = null;
                 }, duration);
             }
         }
