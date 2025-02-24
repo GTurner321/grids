@@ -126,18 +126,19 @@ function createFractionSymbolSVG(numerator, denominator, size = 40) {
 }
 
 function createSymbol(symbol, size = 40) {
-    // Handle integer values 1-6 first
-    const num = parseInt(symbol);
-    if (!isNaN(num) && num >= 1 && num <= 6) {
-        return createDotNumberSVG(num, size);
-    }
-    
-    // Handle fractions
+    // Handle fractions first
     if (typeof symbol === 'string' && symbol.includes('/')) {
         const [num, den] = symbol.split('/').map(Number);
         if ([2, 3, 4, 5, 6, 8].includes(den) && isSimplifiedFraction(num, den)) {
             return createFractionSymbolSVG(num, den, size);
         }
+        return null; // Let MathJax handle other fractions
+    }
+    
+    // Then handle integer values 1-6
+    const num = parseInt(symbol);
+    if (!isNaN(num) && num >= 1 && num <= 6) {
+        return createDotNumberSVG(num, size);
     }
     
     return null;  // Let MathJax handle other cases
