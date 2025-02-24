@@ -29,32 +29,32 @@
 </head>
 <body>
     <noscript>You need to enable JavaScript to run this game.</noscript>
-
     <!-- Rules Container -->
     <div id="rules-container"></div>
-
     <div class="game-container">
         <!-- Header Section -->
         <header class="game-header">
             <h1>PATH PUZZLE</h1>
-            
-            <!-- Score Display -->
-            <div id="score-component"></div>
         </header>
-
         <!-- Level Selection -->
         <section class="level-selector">
             <div class="level-buttons">
-                <button type="button" class="level-btn" data-level="1">Level 1</button>
-                <button type="button" class="level-btn" data-level="2">Level 2</button>
-                <button type="button" class="level-btn" data-level="3">Level 3</button>
-                <button type="button" class="level-btn" data-level="4">Level 4</button>
-                <button type="button" class="level-btn" data-level="5">Level 5</button>
+                <button type="button" class="level-btn" data-level="1">L1</button>
+                <button type="button" class="level-btn" data-level="2">L2</button>
+                <button type="button" class="level-btn" data-level="3">L3</button>
+                <button type="button" class="level-btn" data-level="4">L4</button>
+                <button type="button" class="level-btn" data-level="5">L5</button>
             </div>
         </section>
         
         <!-- Main Game Area -->
         <main class="game-board">
+            <!-- Score Row (Will appear above the grid) -->
+            <div class="score-row">
+                <div class="score-left" id="score-bonus"></div>
+                <div class="score-right" id="score-total">TOTAL: 0</div>
+            </div>
+            
             <!-- Grid Container -->
             <div id="grid-container"></div>
             
@@ -64,17 +64,17 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
-                    Check Solution
+                    Check
                 </button>
                 <button id="remove-spare">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="18" y1="6" x2="6" y2="18"></line>
                         <line x1="6" y1="6" x2="18" y2="18"></line>
                     </svg>
-                    Remove Spare Cells -50%
+                    Remove 50%
                 </button>
             </div>
-
+            
             <!-- Game Messages -->
             <div id="game-messages"></div>
         </main>
@@ -83,5 +83,5 @@
     <!-- Game Scripts -->
     <script type="module" src="js/rules.js"></script>
     <script type="module" src="js/gamecontroller.js"></script>
-    </body>
+</body>
 </html>
