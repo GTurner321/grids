@@ -4,20 +4,20 @@
     --primary-color: #3b82f6;
     --secondary-color: #60a5fa;
     --background-color: #f0f2f5;
-    --grid-cell-size: 60px;
+    --grid-cell-size: 48px; /* Reduced from 60px */
 }
 
 body {
     margin: 0;
-    padding: 20px;
+    padding: 15px;
     font-family: system-ui, -apple-system, sans-serif;
     background-color: var(--background-color);
 }
 
 .game-container {
-    max-width: 800px;
+    max-width: 640px; /* Reduced from 800px */
     margin: 0 auto;
-    padding: 20px;
+    padding: 10px; /* Reduced from 20px */
     position: relative;
     display: flex;
     flex-direction: column;
@@ -27,87 +27,107 @@ body {
 /* Game Header */
 .game-header {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 0.8rem; /* Reduced from 2rem */
 }
 
 .game-header h1 {
     font-family: monospace;
-    font-size: 2.5rem;
+    font-size: 2rem; /* Reduced from 2.5rem */
     letter-spacing: 0.1em;
-    margin: 0 0 1rem 0;
+    margin: 0 0 0.5rem 0; /* Reduced from 1rem */
 }
 
-/* Score Display */
-.score-display {
-    position: fixed;
-    top: 15px;
-    right: 15px;
-    background-color: #fef3c7;
-    padding: 12px 16px;
-    border: 2px solid #92400e;
-    border-radius: 6px;
-    font-family: monospace;
-    font-size: 0.9rem;
-    z-index: 100;
-    min-width: 200px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    height: 110px;  /* Fixed height */
-    display: flex;
-    flex-direction: column;
+/* Score Row */
+.score-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    height: 24px; /* Half height of normal cells */
+    background-color: #f3f4f6;
+    border-radius: 6px 6px 0 0;
+    margin-bottom: 1px;
 }
 
-.score-display div {
-    margin: 4px 0;
-    white-space: nowrap;
-    height: 1.2em;  /* Fixed height for each line */
-    line-height: 1.2em;
+.score-left {
+    text-align: left;
+    padding-left: 10px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    color: #22c55e; /* Green */
+    align-self: center;
 }
 
-/* Max points in gray */
-.score-display div.max-points {
-    color: #666666;
-}
-
-/* Bonus line in green */
-.score-display div.bonus {
-    color: #22c55e;  /* Light green */
-    visibility: hidden;  /* Hidden until needed */
-}
-
-/* Round score in darker green */
-.score-display div.round-score {
-    color: #15803d;  /* Darker green */
-    visibility: hidden;  /* Hidden until needed */
-}
-
-/* Total score in bold */
-.score-display div.total-score {
-    margin-top: 8px;
-    padding-top: 8px;
-    border-top: 1px solid #92400e;
+.score-right {
+    text-align: right;
+    padding-right: 10px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
     font-weight: bold;
+    color: #333333; /* Dark gray */
+    align-self: center;
+}
+
+/* Remove old score display */
+.score-display {
+    display: none;
+}
+
+/* Level Selector */
+.level-selector {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px; /* Reduced from 20px */
+}
+
+.level-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 5px; /* Reduced from 10px */
+    margin: 10px 0; /* Reduced from 20px 0 */
+}
+
+.level-btn {
+    padding: 6px 10px; /* Reduced from 8px 20px */
+    font-size: 0.85rem; /* Reduced from 1rem */
+    background-color: #22c55e;
+    color: white;
+    border: none;
+    border-radius: 4px; /* Reduced from 6px */
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: bold;
+    min-width: 40px; /* Reduced from 100px */
+}
+
+.level-btn:hover {
+    background-color: #15803d;
+}
+
+.level-btn.active {
+    background-color: #166534;
+    transform: translateY(1px);
 }
 
 /* Update grid container */
 #grid-container {
     display: grid;
-    grid-template-columns: repeat(10, minmax(40px, 45px));  /* Reduced from 65px, 75px */
-    gap: 1px;  /* Reduced from 2px */
+    grid-template-columns: repeat(10, minmax(32px, 36px)); /* 80% of previous size */
+    gap: 1px;
     background-color: #cbd5e1;
-    padding: 2px;
-    border-radius: 6px;  /* Slightly reduced from 8px */
-    margin: 12px auto;  /* Reduced from 20px */
+    padding: 1px; /* Reduced from 2px */
+    border-radius: 4px; /* Reduced from 6px */
+    margin: 8px auto; /* Reduced from 12px */
     width: fit-content;
 }
 
 .grid-cell {
     aspect-ratio: 1;
-    min-height: 45px;  /* Reduced from 75px */
+    min-height: 36px; /* 80% of previous size (45px) */
     background-color: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.9rem;  /* Reduced from 1.2rem */
+    font-size: 0.75rem; /* Reduced from 0.9rem */
     cursor: pointer;
     transition: all 0.2s ease;
     user-select: none;
@@ -149,7 +169,7 @@ body {
 .grid-cell.operator {
     color: #dc2626;
     font-weight: bold;
-    font-size: 1.2rem;
+    font-size: 1rem; /* Reduced from 1.2rem */
 }
 
 /* Ensure operator is vertically centered */
@@ -172,12 +192,12 @@ body {
 }
 
 .symbol-container {
-    width: 85%;  /* Slightly reduced from 90% */
-    height: 85%;  /* Slightly reduced from 90% */
+    width: 80%; /* Reduced from 85% */
+    height: 80%; /* Reduced from 85% */
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 12%;  /* Reduced from 15% */
+    padding: 10%; /* Reduced from 12% */
 }
 
 .symbol-container svg {
@@ -186,96 +206,36 @@ body {
     display: block;
 }
 
-/* Level Selector */
-.level-selector {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.level-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin: 20px 0;
-}
-
-.level-btn {
-    padding: 8px 20px;
-    font-size: 1rem;
-    background-color: #22c55e;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-weight: bold;
-    min-width: 100px;
-}
-
-.level-btn:hover {
-    background-color: #15803d;
-}
-
-.level-btn.active {
-    background-color: #166534;
-    transform: translateY(1px);
-}
-
 /* Game Controls */
 .game-controls {
-    margin-top: 12px;  /* Reduced from 20px */
+    margin-top: 8px; /* Reduced from 12px */
     display: flex;
     justify-content: center;
-    gap: 10px;  /* Reduced from 15px */
+    gap: 8px; /* Reduced from 10px */
     width: 100%;
 }
 
 .game-controls button {
     display: flex;
     align-items: center;
-    gap: 6px;  /* Reduced from 8px */
-    padding: 8px 16px;  /* Reduced from 10px 20px */
-    font-size: 0.9rem;  /* Reduced from 1rem */
-}
-
-.game-controls button:hover {
-    opacity: 0.9;
+    gap: 4px; /* Reduced from 6px */
+    padding: 6px 12px; /* Reduced from 8px 16px */
+    font-size: 0.8rem; /* Reduced from 0.9rem */
 }
 
 .game-controls button svg {
-    width: 16px;
-    height: 16px;
-}
-
-.game-controls button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+    width: 14px; /* Reduced from 16px */
+    height: 14px; /* Reduced from 16px */
 }
 
 /* Messages */
 #game-messages {
     text-align: center;
-    margin: 15px 0;
-    padding: 10px;
-    border-radius: 6px;
+    margin: 10px 0; /* Reduced from 15px */
+    padding: 8px; /* Reduced from 10px */
+    border-radius: 4px; /* Reduced from 6px */
     font-weight: bold;
-}
-
-#game-messages.success {
-    background-color: #dcfce7;
-    color: #166534;
-}
-
-#game-messages.error {
-    background-color: #fee2e2;
-    color: #991b1b;
-}
-
-#game-messages.info {
-    background-color: #dbeafe;
-    color: #1e40af;
+    font-size: 0.85rem; /* Added smaller font */
 }
 
 /* Rules Modal Styles */
@@ -294,57 +254,49 @@ body {
 
 .rules-content {
     background-color: #1e293b;  /* dark blue */
-    padding: 2rem;
+    padding: 1.5rem; /* Reduced from 2rem */
     border-radius: 0.5rem;
-    max-width: 32rem;
+    max-width: 28rem; /* Reduced from 32rem */
     width: 90%;
     color: white;
     font-family: monospace;
 }
 
-.rules-text {
-    text-align: center;
-}
-
 .rules-title {
     color: #ef4444;  /* red */
-    font-size: 1.5rem;
+    font-size: 1.3rem; /* Reduced from 1.5rem */
     font-weight: bold;
-    margin-bottom: 1rem;
+    margin-bottom: 0.8rem; /* Reduced from 1rem */
 }
 
 .rules-subtitle {
     color: #ef4444;  /* red */
-    font-size: 1.25rem;
+    font-size: 1.1rem; /* Reduced from 1.25rem */
     font-weight: bold;
-    margin-top: 1.5rem;
-    margin-bottom: 1rem;
+    margin-top: 1.2rem; /* Reduced from 1.5rem */
+    margin-bottom: 0.8rem; /* Reduced from 1rem */
 }
 
 .rules-section {
     color: #fde047;  /* yellow */
-    font-size: 0.875rem;
+    font-size: 0.8rem; /* Reduced from 0.875rem */
     font-weight: bold;
     line-height: 1.25;
-    margin-bottom: 1rem;
-}
-
-.rules-section p {
-    margin: 0.5rem 0;
+    margin-bottom: 0.8rem; /* Reduced from 1rem */
 }
 
 .rules-button-container {
-    margin-top: 2rem;
+    margin-top: 1.5rem; /* Reduced from 2rem */
     display: flex;
     justify-content: center;
 }
 
 .start-button {
-    padding: 0.75rem 2rem;
+    padding: 0.6rem 1.5rem; /* Reduced from 0.75rem 2rem */
     background-color: transparent;
     border: 2px solid #ef4444;
     color: #ef4444;
-    font-size: 1.25rem;
+    font-size: 1.1rem; /* Reduced from 1.25rem */
     font-weight: bold;
     border-radius: 0.5rem;
     cursor: pointer;
@@ -352,24 +304,17 @@ body {
     transition: all 0.2s;
 }
 
-.start-button:hover {
-    background-color: #1e293b;
-    color: white;
-}
-
-/* Sequence Container */
-.sequence-container {
-    text-align: center;
-    margin: 20px 0;
-    font-family: monospace;
-}
-
-.sequence-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
+@media (max-width: 480px) {
+    .game-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .game-controls button {
+        margin-bottom: 4px;
+    }
+    
+    .level-buttons {
+        flex-wrap: wrap;
+    }
 }
