@@ -238,7 +238,7 @@ body {
     font-size: 0.85rem; /* Added smaller font */
 }
 
-/* Rules Modal Styles */
+/* Rules Modal Styles with Centered Text */
 .rules-modal {
     position: fixed;
     top: 0;
@@ -260,6 +260,11 @@ body {
     width: 90%;
     color: white;
     font-family: monospace;
+    text-align: center; /* Center all text */
+}
+
+.rules-text {
+    text-align: center; /* Ensure text centering */
 }
 
 .rules-title {
@@ -267,6 +272,7 @@ body {
     font-size: 1.3rem; /* Reduced from 1.5rem */
     font-weight: bold;
     margin-bottom: 0.8rem; /* Reduced from 1rem */
+    text-align: center;
 }
 
 .rules-subtitle {
@@ -275,6 +281,7 @@ body {
     font-weight: bold;
     margin-top: 1.2rem; /* Reduced from 1.5rem */
     margin-bottom: 0.8rem; /* Reduced from 1rem */
+    text-align: center;
 }
 
 .rules-section {
@@ -283,25 +290,19 @@ body {
     font-weight: bold;
     line-height: 1.25;
     margin-bottom: 0.8rem; /* Reduced from 1rem */
+    text-align: center;
+}
+
+.rules-section p {
+    margin: 0.5rem 0;
+    text-align: center;
 }
 
 .rules-button-container {
     margin-top: 1.5rem; /* Reduced from 2rem */
     display: flex;
     justify-content: center;
-}
-
-.start-button {
-    padding: 0.6rem 1.5rem; /* Reduced from 0.75rem 2rem */
-    background-color: transparent;
-    border: 2px solid #ef4444;
-    color: #ef4444;
-    font-size: 1.1rem; /* Reduced from 1.25rem */
-    font-weight: bold;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    font-family: monospace;
-    transition: all 0.2s;
+    text-align: center;
 }
 
 @media (max-width: 480px) {
