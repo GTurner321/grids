@@ -33,12 +33,12 @@ function generateSectorPath(radius, startAngle, endAngle) {
 }
 
 // Dot Number SVG Generation - Only for numbers 1-6
-function createDotNumberSVG(number, size = 40) {
+function createDotNumberSVG(number, size = 24) {  // Reduced from 40
     if (number > 6) return null;
 
-    const dotSize = size / 5;
+    const dotSize = size / 6;  // Slightly adjusted ratio
     const spacing = size / 4;
-    const padding = size / 10;
+    const padding = size / 12;  // Adjusted for better proportion
 
     const dotPositions = {
         1: [[1, 1]],
@@ -69,7 +69,7 @@ function createDotNumberSVG(number, size = 40) {
 }
 
 // Fraction Symbol SVG Generation
-function createFractionSymbolSVG(numerator, denominator, size = 40) {
+function createFractionSymbolSVG(numerator, denominator, size = 24) {
     const radius = size / 2;
     const sectorAngle = (2 * Math.PI) / denominator;
 
@@ -125,20 +125,19 @@ function createFractionSymbolSVG(numerator, denominator, size = 40) {
     return svg;
 }
 
-function createSymbol(symbol, size = 40) {
-    // Handle fractions first
+function createSymbol(symbol, size = 24) {  // Reduced from 40
+    // Handle integer values 1-6 first
+    const num = parseInt(symbol);
+    if (!isNaN(num) && num >= 1 && num <= 6) {
+        return createDotNumberSVG(num, size);
+    }
+    
+    // Handle fractions
     if (typeof symbol === 'string' && symbol.includes('/')) {
         const [num, den] = symbol.split('/').map(Number);
         if ([2, 3, 4, 5, 6, 8].includes(den) && isSimplifiedFraction(num, den)) {
             return createFractionSymbolSVG(num, den, size);
         }
-        return null; // Let MathJax handle other fractions
-    }
-    
-    // Then handle integer values 1-6
-    const num = parseInt(symbol);
-    if (!isNaN(num) && num >= 1 && num <= 6) {
-        return createDotNumberSVG(num, size);
     }
     
     return null;  // Let MathJax handle other cases
