@@ -105,11 +105,16 @@ function validateSequence(sequence) {
     // Allow for small floating point differences
     const isCorrect = Math.abs(calculatedResult - expectedResult) < 0.0001;
     
+    const steps = [];
+    for (let i = 0; i < sequence.length - 1; i++) {
+        steps.push(formatValue(extractValue(sequence[i])));
+    }
+    
     return {
         isValid: isCorrect,
-        error: isCorrect ? null : 
-            `Not valid: ${formatValue(num1)} ${operator} ${formatValue(num2)} = ${formatValue(expectedResult)} is incorrect` +
-            ` (should be ${formatValue(calculatedResult)})`
+        error: isCorrect ? null : `Not valid: ${formatValue(num1)} ${operator} ${formatValue(num2)} = ${formatValue(expectedResult)} is incorrect`,
+        calculation: `${steps.join(' ')} = ${formatValue(expectedResult)}`,
+        calculatedResult: calculatedResult
     };
 }
 
