@@ -4,7 +4,9 @@ import { addPathArrows } from './patharrows.js';
 
 function formatForMathJax(value) {
     if (typeof value === 'string') {
-        // Handle operators
+        // Handle all operators with MathJax
+        if (value === '+') return '$+$';
+        if (value === '-') return '$-$';
         if (value === '/') return '$\\div$';
         if (value === 'x') return '$\\times$';
         
