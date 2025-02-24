@@ -399,11 +399,18 @@ class GameController {
         }
     }
 
-    showMessage(text, type = 'info') {
+    showMessage(text, type = 'info', duration = null) {
         const messageElement = document.getElementById('game-messages');
         if (messageElement) {
             messageElement.textContent = text;
             messageElement.className = `message-box ${type}`;
+            
+            if (duration) {
+                setTimeout(() => {
+                    messageElement.textContent = '';
+                    messageElement.className = 'message-box';
+                }, duration);
+            }
         }
     }
 }
