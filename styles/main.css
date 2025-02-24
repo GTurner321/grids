@@ -318,3 +318,45 @@ body {
         flex-wrap: wrap;
     }
 }
+
+/* Path Arrow Indicators */
+.path-arrow {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    z-index: 20;
+    opacity: 0.8;
+    pointer-events: none; /* Make sure arrows don't interfere with clicks */
+}
+
+/* Position arrows based on direction */
+.path-arrow.right {
+    top: 50%;
+    right: 2px;
+    transform: translateY(-50%);
+}
+
+.path-arrow.left {
+    top: 50%;
+    left: 2px;
+    transform: translateY(-50%);
+}
+
+.path-arrow.up {
+    top: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.path-arrow.down {
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.path-arrow svg {
+    width: 100%;
+    height: 100%;
+    fill: #3b82f6; /* Blue color */
+    filter: drop-shadow(0 0 1px white); /* Add a subtle white outline */
+}
