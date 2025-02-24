@@ -18,7 +18,7 @@ class RulesModal {
                     </h2>
                     
                     <div class="rules-section">
-                        <p>FIND THE PATH BY FOLLOWING THE MATHEMATICAL SEQUENCE - GREEN TO RED</p>
+                        <p>FIND THE PATH OF SUMS - GREEN TO RED</p>
                         <p>MOVE TO ADJACENT SQUARES ONLY - LEFT / RIGHT / UP / DOWN</p>
                         <p>THE ANSWER TO EACH SUM IS THE FIRST NUMBER OF THE NEXT SUM</p>
                         <p>A SQUARE CANNOT BE REUSED</p>
@@ -29,7 +29,7 @@ class RulesModal {
                     </h2>
                     
                     <div class="rules-section">
-                        <p>REMOVE 50% OF SQUARES NOT IN THE PATH (-1/3 POINTS)</p>
+                        <p>REMOVE 50% OF SPARE SQUARES (-1/3 POINTS)</p>
                         <p>CHECK FOR MISTAKES (-1/4 POINTS)</p>
                         <p>... THE RIGHT MATHS DOESN'T ALWAYS MEAN YOU'RE ON THE RIGHT PATH!</p>
                     </div>
