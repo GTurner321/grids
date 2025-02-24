@@ -58,7 +58,6 @@ class ScoreManager {
     handleCheck(isComplete) {
         if (!isComplete) {
             this.checkCount++;
-            this.updateDisplay();
         }
     }
 
@@ -78,29 +77,39 @@ class ScoreManager {
     }
 
     updateDisplay() {
-        const scoreComponent = document.getElementById('score-component');
-        if (!scoreComponent) return;
+    const scoreComponent = document.getElementById('score-component');
+    if (!scoreComponent) return;
 
-        let html = '<div class="score-display">';
-        
-        // Max points (in gray)
-        html += `<div style="color: gray">Max for round: ${this.maxPoints}</div>`;
-        
-        // Show bonus calculation if round complete
-        if (this.roundComplete) {
-            const basePoints = this.calculateBasePoints();
-            const timeBonus = this.calculateTimeBonus();
-            html += `<div>${basePoints}+${timeBonus} bonus</div>`;
-            html += `<div>Score for round: ${this.roundScore}</div>`;
-        }
-        
-        // Total score (in bold)
-        html += `<div style="font-weight: bold">Total: ${this.totalScore}</div>`;
-        
-        html += '</div>';
-        
-        scoreComponent.innerHTML = html;
+    let html = '<div class="score-display">';
+    
+    // Max points (in gray)
+    html += `<div class="max-points">Max for round: ${this.maxPoints}</div>`;
+    
+    // Placeholder for bonus (hidden until complete)
+    html += `<div class="bonus">${this.roundComplete ? 
+        `${this.calculateBasePoints()} + ${this.calculateTimeBonus()} bonus =` : 
+        '&nbsp;'}</div>`;
+    
+    // Placeholder for round score (hidden until complete)
+    html += `<div class="round-score">${this.roundComplete ? 
+        `Score for round: ${this.roundScore}` : 
+        '&nbsp;'}</div>`;
+    
+    // Total score (always visible, bold)
+    html += `<div class="total-score">Total: ${this.totalScore}</div>`;
+    
+    html += '</div>';
+    
+    scoreComponent.innerHTML = html;
+
+    // Show hidden elements if round is complete
+    if (this.roundComplete) {
+        const bonusEl = scoreComponent.querySelector('.bonus');
+        const roundScoreEl = scoreComponent.querySelector('.round-score');
+        bonusEl.style.visibility = 'visible';
+        roundScoreEl.style.visibility = 'visible';
     }
+}
 
     getCurrentState() {
         return {
