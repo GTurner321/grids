@@ -6,21 +6,21 @@ import { validatePath as validatePathMath, isPathContinuous } from './pathvalida
 import { scoreManager } from './scoremanager.js';
 
 class GameController {
-constructor() {
-    this.state = {
-        currentLevel: null,
-        path: [],
-        sequence: [],
-        sequenceEntries: [],
-        userPath: [],
-        gridEntries: new Array(100).fill(null),
-        removedCells: new Set(),
-        gameActive: false
-    };
+    constructor() {
+        this.state = {
+            currentLevel: null,
+            path: [],
+            sequence: [],
+            sequenceEntries: [],
+            userPath: [],
+            gridEntries: new Array(100).fill(null),
+            removedCells: new Set(),
+            gameActive: false
+        };
 
-    this.initializeEventListeners();
-    this.initializeGridInteractions();
-}
+        this.initializeEventListeners();
+        this.initializeGridInteractions();
+    }
 
     initializeEventListeners() {
         // Level selection
@@ -247,47 +247,47 @@ constructor() {
     }
     
     handleCellInteraction(cell) {
-    const cellIndex = parseInt(cell.dataset.index);
+        const cellIndex = parseInt(cell.dataset.index);
 
-    // First click must be start cell
-    if (this.state.userPath.length === 0) {
-        if (isStartCell(cell)) {
-            this.state.userPath = [cellIndex];
-            highlightPath(this.state.userPath);
-            this.showMessage('Path started! Continue by selecting connected cells.');
-        } else {
-            this.showMessage('You must start at the green square!', 'error');
+        // First click must be start cell
+        if (this.state.userPath.length === 0) {
+            if (isStartCell(cell)) {
+                this.state.userPath = [cellIndex];
+                highlightPath(this.state.userPath);
+                this.showMessage('Path started! Continue by selecting connected cells.');
+            } else {
+                this.showMessage('You must start at the green square!', 'error');
+            }
+            return;
         }
-        return;
-    }
 
-    // Only allow deselection of last cell in path
-    const lastCellIndex = this.state.userPath[this.state.userPath.length - 1];
-    if (cellIndex === lastCellIndex) {
-        this.state.userPath.pop();
+        // Only allow deselection of last cell in path
+        const lastCellIndex = this.state.userPath[this.state.userPath.length - 1];
+        if (cellIndex === lastCellIndex) {
+            this.state.userPath.pop();
+            highlightPath(this.state.userPath);
+            return;
+        }
+
+        // For new cell selection, ensure it's adjacent
+        if (!this.isValidMove(cellIndex)) {
+            return;
+        }
+
+        // Don't allow selection of cells already in path
+        if (this.state.userPath.includes(cellIndex)) {
+            return;
+        }
+
+        this.state.userPath.push(cellIndex);
         highlightPath(this.state.userPath);
-        return;
-    }
+        
+        document.getElementById('check-solution').disabled = false;
 
-    // For new cell selection, ensure it's adjacent
-    if (!this.isValidMove(cellIndex)) {
-        return;
+        if (isEndCell(cell)) {
+            this.checkSolution();
+        }
     }
-
-    // Don't allow selection of cells already in path
-    if (this.state.userPath.includes(cellIndex)) {
-        return;
-    }
-
-    this.state.userPath.push(cellIndex);
-    highlightPath(this.state.userPath);
-    
-    document.getElementById('check-solution').disabled = false;
-
-    if (isEndCell(cell)) {
-        this.checkSolution();
-    }
-}
     
     isValidMove(newCellIndex) {
         const lastCellIndex = this.state.userPath[this.state.userPath.length - 1];
@@ -323,30 +323,30 @@ constructor() {
 
         // Disable button after use
         document.getElementById('remove-spare').disabled = true;
-    
         this.showMessage(`Removed ${numToRemove} spare cells.`, 'info');
     }
 
     checkSolution() {
-    // Validate current path
-    if (this.validatePath()) {
-        if (isEndCell(document.querySelector(`[data-index="${this.state.userPath[this.state.userPath.length - 1]}"]`))) {
-            scoreManager.handleCheck(true);  // Add here for complete puzzle
-            this.handlePuzzleSolved();
+        // Validate current path
+        if (this.validatePath()) {
+            if (isEndCell(document.querySelector(`[data-index="${this.state.userPath[this.state.userPath.length - 1]}"]`))) {
+                scoreManager.handleCheck(true);
+                this.handlePuzzleSolved();
+            } else {
+                scoreManager.handleCheck(false);
+                this.showMessage('Path is mathematically correct! Continue to the end square.', 'info');
+            }
         } else {
-            scoreManager.handleCheck(false);  // Add here for incomplete check
-            this.showMessage('Path is mathematically correct! Continue to the end square.', 'info');
+            scoreManager.handleCheck(false);
+            this.showMessage('Mathematical error in the path. Try again.', 'error');
+            this.state.userPath = [];
+            highlightPath(this.state.userPath);
         }
-    } else {
-        scoreManager.handleCheck(false);  // Add here for failed check
-        this.showMessage('Mathematical error in the path. Try again.', 'error');
-        // Reset path to last valid point
-        this.state.userPath = [];
-        highlightPath(this.state.userPath);
+        this.updateUI();
     }
 
     validatePath() {
-         // First check if the path is continuous
+        // First check if the path is continuous
         if (!isPathContinuous(this.state.userPath)) {
             this.showMessage('Path must be continuous - cells must be adjacent!', 'error');
             return false;
@@ -364,11 +364,11 @@ constructor() {
     }
 
     handlePuzzleSolved() {
-    this.state.gameActive = false;
-    scoreManager.completePuzzle();  // Add here
-    this.updateUI();
-    this.showMessage('Congratulations! Puzzle solved!', 'success');
-}
+        this.state.gameActive = false;
+        scoreManager.completePuzzle();
+        this.updateUI();
+        this.showMessage('Congratulations! Puzzle solved!', 'success');
+    }
 
     updateUI() {
         // Update button states
@@ -379,8 +379,6 @@ constructor() {
         document.querySelectorAll('.level-btn').forEach(btn => {
             btn.classList.toggle('active', parseInt(btn.dataset.level) === this.state.currentLevel);
         });
-
-        }
     }
 
     showMessage(text, type = 'info', duration = null) {
