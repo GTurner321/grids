@@ -1,5 +1,6 @@
 // gridrenderer.js
 import PuzzleSymbols from './puzzlesymbols.js';
+import { addPathArrows } from './patharrows.js';
 
 function formatForMathJax(value) {
     if (typeof value === 'string') {
@@ -174,6 +175,9 @@ export function highlightPath(path) {
             cell.style.backgroundColor = '#e5e7eb';  // Grey for normal selected cells
         }
     });
+    
+    // Add path direction arrows using the separate module
+    addPathArrows(path, (index) => document.querySelector(`[data-index="${index}"]`));
 }
 
 export function getGridCell(index) {
