@@ -2,6 +2,7 @@
 import { generatePath } from './pathgenerator.js';
 import { generateSequence, sequenceToEntries } from './sequencegenerator.js';
 import { renderGrid, updateCell, highlightPath, isStartCell, isEndCell } from './gridrenderer.js';
+import { validatePath as validatePathMath, isPathContinuous } from './pathvalidator.js';
 
 class GameController {
     constructor() {
@@ -351,9 +352,21 @@ class GameController {
     }
 
     validatePath() {
-        // Implementation of path validation logic
-        // This should check if the mathematical sequence is correct
-        return true; // Placeholder
+         // First check if the path is continuous
+        if (!isPathContinuous(this.state.userPath)) {
+            this.showMessage('Path must be continuous - cells must be adjacent!', 'error');
+            return false;
+        }
+
+        // Then validate the mathematical sequence
+        const validation = validatePathMath(this.state.userPath, this.state.gridEntries);
+    
+        if (!validation.isValid) {
+            this.showMessage(validation.error, 'error');
+            return false;
+        }
+
+        return true;
     }
 
     handlePuzzleSolved() {
