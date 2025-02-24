@@ -161,10 +161,6 @@ class GameController {
         // Enable check solution button
         document.getElementById('check-solution').disabled = false;
 
-        // Check if end square reached
-        if (isEndCell(cell)) {
-            this.checkSolution();
-        }
     }
 
     initializeGridInteractions() {
