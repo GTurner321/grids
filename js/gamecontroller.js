@@ -3,6 +3,7 @@ import { generatePath } from './pathgenerator.js';
 import { generateSequence, sequenceToEntries } from './sequencegenerator.js';
 import { renderGrid, updateCell, highlightPath, isStartCell, isEndCell } from './gridrenderer.js';
 import { validatePath as validatePathMath, isPathContinuous } from './pathvalidator.js';
+import { scoreManager } from './scoremanager.js';
 
 class GameController {
     constructor() {
@@ -62,6 +63,8 @@ class GameController {
         this.state.gridEntries = new Array(100).fill(null);
         this.state.removedCells.clear();
         this.state.gameActive = true;
+
+        scoreManager.startLevel(level);
 
         try {
             // Generate path and sequence
@@ -310,6 +313,8 @@ class GameController {
             return;
         }
 
+        scoreManager.handleSpareRemoval();
+
         // Remove 50% of spare cells
         const numToRemove = Math.ceil(spareCells.length / 2);
         const cellsToRemove = spareCells
@@ -332,19 +337,22 @@ class GameController {
     }
 
     checkSolution() {
-        // Validate current path
-        if (this.validatePath()) {
-            if (isEndCell(document.querySelector(`[data-index="${this.state.userPath[this.state.userPath.length - 1]}"]`))) {
-                this.handlePuzzleSolved();
-            } else {
-                this.showMessage('Path is mathematically correct! Continue to the end square.', 'info');
-            }
+    // Validate current path
+    if (this.validatePath()) {
+        if (isEndCell(document.querySelector(`[data-index="${this.state.userPath[this.state.userPath.length - 1]}"]`))) {
+            scoreManager.handleCheck(true);  // Add here for complete puzzle
+            this.handlePuzzleSolved();
         } else {
-            this.showMessage('Mathematical error in the path. Try again.', 'error');
-            // Reset path to last valid point
-            this.state.userPath = [];
-            highlightPath(this.state.userPath);
+            scoreManager.handleCheck(false);  // Add here for incomplete check
+            this.showMessage('Path is mathematically correct! Continue to the end square.', 'info');
         }
+    } else {
+        scoreManager.handleCheck(false);  // Add here for failed check
+        this.showMessage('Mathematical error in the path. Try again.', 'error');
+        // Reset path to last valid point
+        this.state.userPath = [];
+        highlightPath(this.state.userPath);
+    }
 
         // Update score
         this.state.score.possible = Math.ceil(this.state.score.possible * 0.75);
@@ -370,11 +378,11 @@ class GameController {
     }
 
     handlePuzzleSolved() {
-        this.state.gameActive = false;
-        this.state.score.total += this.state.score.possible + this.state.score.bonus;
-        this.updateUI();
-        this.showMessage('Congratulations! Puzzle solved!', 'success');
-    }
+    this.state.gameActive = false;
+    scoreManager.completePuzzle();  // Add here
+    this.updateUI();
+    this.showMessage('Congratulations! Puzzle solved!', 'success');
+}
 
     updateUI() {
         // Update button states
