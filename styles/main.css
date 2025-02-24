@@ -40,15 +40,35 @@ body {
 /* Score Display */
 .score-display {
     position: fixed;
-    top: 15px;  /* Reduced from 20px */
-    right: 15px;  /* Reduced from 20px */
+    top: 15px;
+    right: 15px;
     background-color: #fef3c7;
-    padding: 8px;  /* Reduced from 10px */
+    padding: 12px 16px;  /* Increased padding */
     border: 2px solid #92400e;
-    border-radius: 4px;  /* Reduced from 6px */
+    border-radius: 6px;
     font-family: monospace;
-    font-size: 0.9rem;  /* Added for proportion */
+    font-size: 0.9rem;
     z-index: 100;
+    min-width: 200px;  /* Ensure minimum width */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.score-display div {
+    margin: 4px 0;
+    white-space: nowrap;  /* Prevent wrapping */
+}
+
+/* Max points in gray */
+.score-display div:first-child {
+    color: #666666;
+}
+
+/* Total score in bold */
+.score-display div:last-child {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #92400e;
+    font-weight: bold;
 }
 
 /* Update grid container */
