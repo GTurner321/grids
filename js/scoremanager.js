@@ -74,7 +74,7 @@ class ScoreManager {
         
         this.updateDisplay();
     }
-    
+
     updateDisplay() {
         // Update total score (always visible)
         const scoreTotalElement = document.getElementById('score-total');
@@ -86,7 +86,7 @@ class ScoreManager {
         const scoreBonusElement = document.getElementById('score-bonus');
         if (scoreBonusElement) {
             if (this.roundComplete) {
-                scoreBonusElement.textContent = `${this.calculateBasePoints()} + ${this.calculateTimeBonus()} = ${this.roundScore}`;
+                scoreBonusElement.textContent = `${this.calculateBasePoints()} + ${this.calculateTimeBonus()} bonus = ${this.roundScore}`;
                 scoreBonusElement.style.visibility = 'visible';
             } else {
                 scoreBonusElement.textContent = '';
