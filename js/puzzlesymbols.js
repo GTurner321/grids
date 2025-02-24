@@ -36,7 +36,27 @@ function createDotNumberSVG(number, size = 24) {
 
     const dotSize = size / 6;
     const spacing = size / 4;
-    const padding = size / 12;
+    
+    // Center the dots pattern by calculating offsets
+    // This ensures the dots are centered in the SVG viewport
+    const centerX = size / 2;
+    const centerY = size / 2;
+    
+    // Calculate offsets based on the dot pattern
+    let offsetX = 0;
+    let offsetY = 0;
+    
+    // For patterns that need centering
+    if (number === 1) {
+        offsetX = centerX - spacing;
+        offsetY = centerY - spacing;
+    } else if (number === 2 || number === 3) {
+        offsetX = centerX - spacing;
+        offsetY = centerY - spacing;
+    } else if (number === 4 || number === 5 || number === 6) {
+        offsetX = centerX - spacing;
+        offsetY = centerY - spacing;
+    }
 
     const dotPositions = {
         1: [[1, 1]],
@@ -56,8 +76,8 @@ function createDotNumberSVG(number, size = 24) {
 
     dots.forEach(([x, y]) => {
         const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('cx', padding + x * spacing);
-        circle.setAttribute('cy', padding + y * spacing);
+        circle.setAttribute('cx', offsetX + x * spacing);
+        circle.setAttribute('cy', offsetY + y * spacing);
         circle.setAttribute('r', dotSize / 2);
         circle.setAttribute('fill', 'currentColor');
         svg.appendChild(circle);
