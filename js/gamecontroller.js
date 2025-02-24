@@ -6,26 +6,21 @@ import { validatePath as validatePathMath, isPathContinuous } from './pathvalida
 import { scoreManager } from './scoremanager.js';
 
 class GameController {
-    constructor() {
-        this.state = {
-            currentLevel: null,
-            path: [],
-            sequence: [],
-            sequenceEntries: [],
-            userPath: [],
-            gridEntries: new Array(100).fill(null),
-            removedCells: new Set(),
-            gameActive: false,
-            score: {
-                possible: 0,
-                bonus: 0,
-                total: 0
-            }
-        };
+constructor() {
+    this.state = {
+        currentLevel: null,
+        path: [],
+        sequence: [],
+        sequenceEntries: [],
+        userPath: [],
+        gridEntries: new Array(100).fill(null),
+        removedCells: new Set(),
+        gameActive: false
+    };
 
-        this.initializeEventListeners();
-        this.initializeGridInteractions();
-    }
+    this.initializeEventListeners();
+    this.initializeGridInteractions();
+}
 
     initializeEventListeners() {
         // Level selection
@@ -329,10 +324,6 @@ class GameController {
         // Disable button after use
         document.getElementById('remove-spare').disabled = true;
     
-        // Update score
-        this.state.score.possible = Math.ceil(this.state.score.possible / 2);
-        this.updateUI();
-        
         this.showMessage(`Removed ${numToRemove} spare cells.`, 'info');
     }
 
@@ -352,11 +343,6 @@ class GameController {
         // Reset path to last valid point
         this.state.userPath = [];
         highlightPath(this.state.userPath);
-    }
-
-        // Update score
-        this.state.score.possible = Math.ceil(this.state.score.possible * 0.75);
-        this.updateUI();
     }
 
     validatePath() {
@@ -394,16 +380,6 @@ class GameController {
             btn.classList.toggle('active', parseInt(btn.dataset.level) === this.state.currentLevel);
         });
 
-        // Update score display
-        const scoreComponent = document.getElementById('score-component');
-        if (scoreComponent) {
-            scoreComponent.innerHTML = `
-                <div class="score-display">
-                    <div>Points: ${this.state.score.possible}</div>
-                    <div>Bonus: ${this.state.score.bonus}</div>
-                    <div>Total: ${this.state.score.total}</div>
-                </div>
-            `;
         }
     }
 
