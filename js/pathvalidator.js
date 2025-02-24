@@ -118,6 +118,8 @@ function validateSequence(sequence) {
     };
 }
 
+// Update in pathvalidator.js
+
 /**
  * Validates the entire path
  * @param {Array} path - Array of cell indices
@@ -125,11 +127,11 @@ function validateSequence(sequence) {
  * @returns {Object} Validation result with details
  */
 export function validatePath(path, gridEntries) {
-    // Path must be at least 4 cells long
-    if (path.length < 4) {
+    // First check if the path is continuous
+    if (!isPathContinuous(path)) {
         return {
             isValid: false,
-            error: 'Path too short'
+            error: 'Path must be continuous - cells must be adjacent!'
         };
     }
 
@@ -137,7 +139,7 @@ export function validatePath(path, gridEntries) {
     if ((path.length - 1) % 3 !== 0) {
         return {
             isValid: false,
-            error: 'Invalid path length'
+            error: 'Invalid path length - each calculation requires 4 cells (number, operator, number, result)'
         };
     }
 
@@ -150,10 +152,23 @@ export function validatePath(path, gridEntries) {
         const validation = validateSequence(sequence);
         
         if (!validation.isValid) {
+            // Build a more descriptive error message
+            const cellIndices = path.slice(i, i + 4);
+            let errorMsg = validation.error;
+            
+            if (validation.calculation) {
+                errorMsg = `Error at step ${Math.floor(i/3) + 1}: ${validation.calculation}`;
+                if (validation.calculatedResult !== undefined) {
+                    const expected = extractValue(sequence[3]);
+                    errorMsg += ` (calculated ${formatValue(validation.calculatedResult)}, expected ${formatValue(expected)})`;
+                }
+            }
+            
             return {
                 isValid: false,
-                error: validation.error,
-                failedAt: i
+                error: errorMsg,
+                failedAt: i,
+                cellIndices: cellIndices
             };
         }
     }
@@ -170,6 +185,7 @@ export function validatePath(path, gridEntries) {
  * @param {number} index2 - Second cell index
  * @returns {boolean} Whether cells are adjacent
  */
+
 export function areAdjacent(index1, index2) {
     const x1 = index1 % 10;
     const y1 = Math.floor(index1 / 10);
