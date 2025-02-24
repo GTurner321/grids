@@ -305,6 +305,24 @@ body {
     text-align: center;
 }
 
+.start-button {
+    padding: 0.75rem 2rem;
+    background-color: transparent;
+    border: 2px solid #ef4444;
+    color: #ef4444;
+    font-size: 1.25rem;
+    font-weight: bold;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-family: monospace;
+    transition: all 0.2s;
+}
+
+.start-button:hover {
+    background-color: #1e293b;
+    color: white;
+}
+
 @media (max-width: 480px) {
     .game-controls {
         flex-direction: column;
