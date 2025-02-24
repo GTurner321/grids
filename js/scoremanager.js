@@ -1,5 +1,4 @@
 // scoremanager.js
-
 class ScoreManager {
     constructor() {
         // Persistent total score
@@ -17,7 +16,7 @@ class ScoreManager {
         // Initialize display
         this.updateDisplay();
     }
-
+    
     startLevel(level) {
         this.currentLevel = level;
         this.maxPoints = 1000 * level;
@@ -29,7 +28,7 @@ class ScoreManager {
         
         this.updateDisplay();
     }
-
+    
     calculateTimeBonus() {
         if (!this.startTime) return 0;
         
@@ -38,7 +37,7 @@ class ScoreManager {
         
         return Math.ceil(1000 * this.currentLevel * (20 / roundedSeconds));
     }
-
+    
     calculateBasePoints() {
         let points = this.maxPoints;
         
@@ -54,18 +53,18 @@ class ScoreManager {
         
         return Math.ceil(points);
     }
-
+    
     handleCheck(isComplete) {
         if (!isComplete) {
             this.checkCount++;
         }
     }
-
+    
     handleSpareRemoval() {
         this.removedSpares = true;
         this.updateDisplay();
     }
-
+    
     completePuzzle() {
         this.roundComplete = true;
         const basePoints = this.calculateBasePoints();
@@ -75,42 +74,27 @@ class ScoreManager {
         
         this.updateDisplay();
     }
-
+    
     updateDisplay() {
-    const scoreComponent = document.getElementById('score-component');
-    if (!scoreComponent) return;
-
-    let html = '<div class="score-display">';
-    
-    // Max points (in gray)
-    html += `<div class="max-points">Max for round: ${this.maxPoints}</div>`;
-    
-    // Placeholder for bonus (hidden until complete)
-    html += `<div class="bonus">${this.roundComplete ? 
-        `${this.calculateBasePoints()} + ${this.calculateTimeBonus()} bonus =` : 
-        '&nbsp;'}</div>`;
-    
-    // Placeholder for round score (hidden until complete)
-    html += `<div class="round-score">${this.roundComplete ? 
-        `Score for round: ${this.roundScore}` : 
-        '&nbsp;'}</div>`;
-    
-    // Total score (always visible, bold)
-    html += `<div class="total-score">Total: ${this.totalScore}</div>`;
-    
-    html += '</div>';
-    
-    scoreComponent.innerHTML = html;
-
-    // Show hidden elements if round is complete
-    if (this.roundComplete) {
-        const bonusEl = scoreComponent.querySelector('.bonus');
-        const roundScoreEl = scoreComponent.querySelector('.round-score');
-        bonusEl.style.visibility = 'visible';
-        roundScoreEl.style.visibility = 'visible';
+        // Update total score (always visible)
+        const scoreTotalElement = document.getElementById('score-total');
+        if (scoreTotalElement) {
+            scoreTotalElement.textContent = `TOTAL: ${this.totalScore}`;
+        }
+        
+        // Update bonus info (only when round is complete)
+        const scoreBonusElement = document.getElementById('score-bonus');
+        if (scoreBonusElement) {
+            if (this.roundComplete) {
+                scoreBonusElement.textContent = `${this.calculateBasePoints()} + ${this.calculateTimeBonus()} = ${this.roundScore}`;
+                scoreBonusElement.style.visibility = 'visible';
+            } else {
+                scoreBonusElement.textContent = '';
+                scoreBonusElement.style.visibility = 'hidden';
+            }
+        }
     }
-}
-
+    
     getCurrentState() {
         return {
             level: this.currentLevel,
