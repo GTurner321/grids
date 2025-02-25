@@ -16,7 +16,7 @@ class ScoreManager {
         this.roundScore = 0;
         
         // Google Auth
-        this.googleAuth = new GoogleAuth(https://script.google.com/macros/s/AKfycbw1Va9YfX2Pehg6MQbNK6dJCIRnCHkmnS1G1YHFPwDVSM7lki_bpD0hV87I-v0vTz0oYw/exec); // Replace with your deployed Apps Script URL
+        this.googleAuth = new GoogleAuth('https://script.google.com/macros/s/AKfycbw1Va9YfX2Pehg6MQbNK6dJCIRnCHkmnS1G1YHFPwDVSM7lki_bpD0hV87I-v0vTz0oYw/exec'); // Replace with your deployed Apps Script URL
         this.googleAuth.init();
         
         // Add listener for user changes
