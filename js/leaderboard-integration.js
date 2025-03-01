@@ -66,17 +66,23 @@ function patchScoreManager() {
         };
         
         // Patch completePuzzle to ensure leaderboard is updated
+        // Patch completePuzzle to ensure leaderboard is updated
         const originalCompletePuzzle = window.scoreManager.completePuzzle;
-        
+
         window.scoreManager.completePuzzle = function() {
-            // Call the original function first
-            originalCompletePuzzle.call(this);
-            
-            // Ensure score is updated in leaderboard if username is set
-            if (window.leaderboardManager && window.leaderboardManager.isUsernameSet) {
-                window.leaderboardManager.updateScore(this.totalScore);
-            }
-        };
+        // Call the original function first
+        originalCompletePuzzle.call(this);
+    
+        console.log('Completed puzzle, total score:', this.totalScore);
+        console.log('LeaderboardManager exists:', !!window.leaderboardManager);
+        console.log('Username set:', window.leaderboardManager?.isUsernameSet);
+    
+        // Ensure score is updated in leaderboard if username is set
+        if (window.leaderboardManager && window.leaderboardManager.isUsernameSet) {
+            console.log('Updating score via completePuzzle');
+            window.leaderboardManager.updateScore(this.totalScore);
+        }
+    };
         
         console.log('ScoreManager patched successfully for leaderboard integration');
         return true;
@@ -191,8 +197,12 @@ class LeaderboardManager {
         // Listen for score updates
         window.addEventListener('scoreUpdated', (event) => {
             const score = event.detail.score;
+            console.log('Score updated event fired:', score);
             if (this.isUsernameSet) {
+                console.log('Username is set, updating score:', this.username, score);
                 this.updateScore(score);
+            } else {
+                console.log('Username not set, not updating score');
             }
         });
     }
@@ -286,34 +296,48 @@ class LeaderboardManager {
     }
     
     updateScore(score) {
-        if (!this.isUsernameSet || score <= 0) return;
-        
-        const now = new Date();
-        const entry = {
-            name: this.username,
-            score: score,
-            date: now.toISOString()
-        };
-        
-        // Check if user already has an entry
-        const existingIndex = this.leaderboardData.findIndex(item => item.name === this.username);
-        
-        if (existingIndex !== -1) {
-            // Update if new score is higher
-            if (score > this.leaderboardData[existingIndex].score) {
-                this.leaderboardData[existingIndex] = entry;
-            }
+    console.log('updateScore called with:', score);
+    console.log('Username:', this.username, 'isUsernameSet:', this.isUsernameSet);
+    
+    if (!this.isUsernameSet || score <= 0) {
+        console.log('Score not updated: username not set or score <= 0');
+        return;
+    }
+    
+    const now = new Date();
+    const entry = {
+        name: this.username,
+        score: score,
+        date: now.toISOString()
+    };
+    console.log('Creating entry:', entry);
+    
+    // Check if user already has an entry
+    const existingIndex = this.leaderboardData.findIndex(item => item.name === this.username);
+    console.log('Existing entry index:', existingIndex);
+    
+    if (existingIndex !== -1) {
+        // Update if new score is higher
+        if (score > this.leaderboardData[existingIndex].score) {
+            console.log('Updating existing entry with higher score');
+            this.leaderboardData[existingIndex] = entry;
         } else {
-            // Add new entry
-            this.leaderboardData.push(entry);
+            console.log('Not updating: existing score is higher');
         }
-        
-        // Sort and limit entries
-        this.filterAndSortLeaderboard();
-        
-        // Save and render
-        this.saveLeaderboard();
-        this.renderLeaderboard();
+    } else {
+        // Add new entry
+        console.log('Adding new entry to leaderboard');
+        this.leaderboardData.push(entry);
+    }
+    
+    // Sort and limit entries
+    this.filterAndSortLeaderboard();
+    
+    // Save and render
+    this.saveLeaderboard();
+    this.renderLeaderboard();
+    
+    console.log('Current leaderboard data:', this.leaderboardData);
     }
     
     filterAndSortLeaderboard() {
