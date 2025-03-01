@@ -1,4 +1,4 @@
-// leaderboard-integration.js - Updated to use Supabase backend
+// leaderboard-integration.js - Modified to work with Supabase without disrupting existing functionality
 
 // Load CSS
 function loadStylesheet(url) {
@@ -7,50 +7,6 @@ function loadStylesheet(url) {
     link.type = 'text/css';
     link.href = url;
     document.head.appendChild(link);
-}
-
-// Dynamic import of Supabase Client
-async function loadSupabaseClient() {
-    try {
-        const { createClient } = await import('https://esm.sh/@supabase/supabase-js');
-        return createClient(
-            'https://zqintrlsxpdxbjspkskd.supabase.co',
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpxaW50cmxzeHBkeGJqc3Brc2tkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA4MjU0MTYsImV4cCI6MjA1NjQwMTQxNn0.5G1mEsD3skWtOcQ5ugmhYMfQ2obBm6kNKwnA-YH-yIw'
-        );
-    } catch (error) {
-        console.error('Error loading Supabase client:', error);
-        return null;
-    }
-}
-
-// Reset user state for new session
-function resetUserState() {
-    // If there's an existing leaderboard manager, reset its state
-    if (window.leaderboardManager) {
-        window.leaderboardManager.username = '';
-        window.leaderboardManager.isUsernameSet = false;
-    }
-    
-    // Reset any UI elements if they exist
-    setTimeout(() => {
-        const usernameForm = document.querySelector('.username-form');
-        const welcomeMessage = document.getElementById('welcome-message');
-        
-        if (usernameForm) {
-            usernameForm.classList.remove('hidden');
-        }
-        
-        if (welcomeMessage) {
-            welcomeMessage.classList.add('hidden');
-            welcomeMessage.textContent = '';
-        }
-        
-        // Clear any input field value
-        const usernameInput = document.getElementById('username-input');
-        if (usernameInput) {
-            usernameInput.value = '';
-        }
-    }, 100);
 }
 
 // Patch the ScoreManager
@@ -110,68 +66,46 @@ class LeaderboardManager {
         this.username = '';
         this.isUsernameSet = false;
         this.maxEntries = 20;
+        this.maxDays = 7; // Maximum days to keep scores
         this.supabase = null;
-        this.tableName = 'leaderboard_entries';
-        this.initialized = false;
         
-        this.init();
+        this.initSupabase();
+        this.loadLeaderboard();
         this.createLeaderboardUI();
         this.addEventListeners();
     }
     
-    async init() {
+    async initSupabase() {
         try {
-            // Try to load Supabase client
-            this.supabase = await loadSupabaseClient();
+            // Try to dynamically import Supabase client
+            const { createClient } = await import('https://esm.sh/@supabase/supabase-js');
+            this.supabase = createClient(
+                'https://zqintrlsxpdxbjspkskd.supabase.co',
+                'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpxaW50cmxzeHBkeGJqc3Brc2tkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA4MjU0MTYsImV4cCI6MjA1NjQwMTQxNn0.5G1mEsD3skWtOcQ5ugmhYMfQ2obBm6kNKwnA-YH-yIw'
+            );
+            console.log('Supabase client initialized successfully');
             
-            if (this.supabase) {
-                console.log('Supabase client loaded successfully');
-                await this.initializeTable();
-            } else {
-                console.warn('Supabase client not available, falling back to local storage');
-            }
-            
-            // Load leaderboard data
-            await this.loadLeaderboard();
-            
-            // Check for stored username
-            const storedUsername = localStorage.getItem('pathPuzzleUsername');
-            if (storedUsername) {
-                this.setUsername(storedUsername);
-                
-                // Update UI to reflect logged-in state
-                setTimeout(() => {
-                    const usernameForm = document.querySelector('.username-form');
-                    const welcomeMessage = document.getElementById('welcome-message');
-                    
-                    if (usernameForm && welcomeMessage) {
-                        usernameForm.classList.add('hidden');
-                        welcomeMessage.classList.remove('hidden');
-                        welcomeMessage.textContent = `Hello ${storedUsername} - your top score appears in the leaderboard below.`;
-                    }
-                }, 300);
-            }
-            
-            this.initialized = true;
+            // Ensure the leaderboard table exists
+            await this.initializeLeaderboardTable();
         } catch (error) {
-            console.error('Error initializing LeaderboardManager:', error);
+            console.warn('Supabase client initialization failed, will use local storage:', error);
+            this.supabase = null;
         }
     }
     
-    async initializeTable() {
+    async initializeLeaderboardTable() {
         if (!this.supabase) return false;
         
         try {
             // Check if table exists by attempting to query it
             const { error } = await this.supabase
-                .from(this.tableName)
+                .from('leaderboard_entries')
                 .select('id')
                 .limit(1);
-            
-            if (error && error.code === '42P01') {
-                console.log('Table does not exist, creating...');
                 
-                // Try to create table using RPC
+            if (error && error.code === '42P01') {
+                // Table doesn't exist, try to create it via RPC
+                console.log('Leaderboard table does not exist, creating...');
                 const { error: rpcError } = await this.supabase.rpc('create_leaderboard_table');
                 
                 if (rpcError) {
@@ -179,17 +113,17 @@ class LeaderboardManager {
                     return false;
                 }
                 
-                console.log('Table created successfully');
-                return true;
+                console.log('Leaderboard table created successfully via RPC');
             } else if (error) {
-                console.error('Error checking table:', error);
+                console.error('Error checking leaderboard table:', error);
                 return false;
+            } else {
+                console.log('Leaderboard table exists');
             }
             
-            console.log('Leaderboard table exists');
             return true;
         } catch (error) {
-            console.error('Error initializing table:', error);
+            console.error('Error initializing leaderboard table:', error);
             return false;
         }
     }
@@ -303,17 +237,10 @@ class LeaderboardManager {
         
         // Set up periodic refresh every 60 seconds
         setInterval(() => {
-            if (document.visibilityState === 'visible' && this.initialized) {
+            if (document.visibilityState === 'visible' && this.isUsernameSet) {
                 this.refreshLeaderboard();
             }
         }, 60000);
-        
-        // Refresh when tab becomes visible
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible' && this.initialized) {
-                this.refreshLeaderboard();
-            }
-        });
     }
     
     async handleUsernameSubmission() {
@@ -332,16 +259,16 @@ class LeaderboardManager {
         statusMessage.className = 'status-message checking';
         
         try {
-            // Import username checker
             let isApproved = false;
             
             try {
+                // Try to use the username checker module
                 const usernameCheckerModule = await import('./username-checker.js');
                 const usernameChecker = usernameCheckerModule.default;
                 isApproved = await usernameChecker.checkUsername(username);
             } catch (e) {
                 console.warn('Could not load username checker, using fallback check');
-                isApproved = this.fallbackUsernameCheck(username);
+                isApproved = this.checkUsername(username);
             }
             
             if (isApproved) {
@@ -360,7 +287,7 @@ class LeaderboardManager {
                 // Get current score and update leaderboard
                 const currentScore = this.getCurrentScore();
                 if (currentScore > 0) {
-                    await this.updateScore(currentScore);
+                    this.updateScore(currentScore);
                 }
                 
                 statusMessage.textContent = '';
@@ -376,7 +303,7 @@ class LeaderboardManager {
         }
     }
     
-    fallbackUsernameCheck(username) {
+    checkUsername(username) {
         if (!username || username.length < 2 || username.length > 12) {
             return false;
         }
@@ -424,88 +351,19 @@ class LeaderboardManager {
             this.showUpdateStatus('Updating score...');
             
             if (this.supabase) {
-                // Try to submit score to Supabase
-                const now = new Date().toISOString();
-                
-                // First check if user already has a score
-                const { data: existingEntries, error: fetchError } = await this.supabase
-                    .from(this.tableName)
-                    .select('*')
-                    .eq('name', this.username)
-                    .order('score', { ascending: false })
-                    .limit(1);
-                
-                if (fetchError) {
-                    console.error('Error checking existing score:', fetchError);
-                    throw fetchError;
-                }
-                
-                let result = { success: false };
-                
-                // If user has a higher score already, don't update
-                if (existingEntries && existingEntries.length > 0 && existingEntries[0].score >= score) {
-                    result = { 
-                        success: true, 
-                        updated: false, 
-                        message: 'Existing score is higher' 
-                    };
-                } else if (existingEntries && existingEntries.length > 0) {
-                    // Update existing entry
-                    const { error: updateError } = await this.supabase
-                        .from(this.tableName)
-                        .update({ 
-                            score: score,
-                            created_at: now
-                        })
-                        .eq('id', existingEntries[0].id);
-                    
-                    if (updateError) {
-                        console.error('Error updating score:', updateError);
-                        throw updateError;
-                    }
-                    
-                    result = { 
-                        success: true, 
-                        updated: true, 
-                        message: 'Score updated successfully' 
-                    };
-                } else {
-                    // Insert new entry
-                    const { error: insertError } = await this.supabase
-                        .from(this.tableName)
-                        .insert([
-                            { 
-                                name: this.username, 
-                                score: score, 
-                                created_at: now
-                            }
-                        ]);
-                    
-                    if (insertError) {
-                        console.error('Error inserting score:', insertError);
-                        throw insertError;
-                    }
-                    
-                    result = { 
-                        success: true, 
-                        updated: true, 
-                        message: 'Score added successfully' 
-                    };
-                }
-                
-                if (result.success) {
-                    console.log('Supabase score update result:', result);
-                    await this.refreshLeaderboard();
-                    this.showUpdateStatus(result.message, 'success');
-                } else {
-                    this.showUpdateStatus('Error updating score', 'error');
-                }
+                // Try to update score in Supabase
+                await this.updateSupabaseScore(score);
             } else {
                 // Fallback to local storage
-                console.log('Supabase not available, using local storage fallback');
+                console.log('Using local storage for score update');
                 this.updateLocalScore(score);
-                this.showUpdateStatus('Score updated locally', 'success');
             }
+            
+            // Refresh the leaderboard display
+            await this.refreshLeaderboard();
+            
+            // Show success message
+            this.showUpdateStatus('Score updated successfully', 'success');
             
             // Hide status after 2 seconds
             setTimeout(() => {
@@ -514,7 +372,90 @@ class LeaderboardManager {
             
         } catch (error) {
             console.error('Error updating score:', error);
-            this.showUpdateStatus('Error updating score: ' + error.message, 'error');
+            this.showUpdateStatus('Error updating score', 'error');
+        }
+    }
+    
+    async updateSupabaseScore(score) {
+        if (!this.supabase) return false;
+        
+        try {
+            // Get current date/time
+            const now = new Date().toISOString();
+            
+            // First check if user already has a score
+            const { data: existingEntries, error: fetchError } = await this.supabase
+                .from('leaderboard_entries')
+                .select('*')
+                .eq('name', this.username)
+                .order('score', { ascending: false })
+                .limit(1);
+            
+            if (fetchError) {
+                console.error('Error checking existing score:', fetchError);
+                throw fetchError;
+            }
+            
+            let result = { success: false };
+            
+            // If user has a higher score already, don't update
+            if (existingEntries && existingEntries.length > 0 && existingEntries[0].score >= score) {
+                result = { 
+                    success: true, 
+                    updated: false, 
+                    message: 'Existing score is higher' 
+                };
+            } else if (existingEntries && existingEntries.length > 0) {
+                // Update existing entry
+                const { error: updateError } = await this.supabase
+                    .from('leaderboard_entries')
+                    .update({ 
+                        score: score,
+                        created_at: now
+                    })
+                    .eq('id', existingEntries[0].id);
+                
+                if (updateError) {
+                    console.error('Error updating score:', updateError);
+                    throw updateError;
+                }
+                
+                result = { 
+                    success: true, 
+                    updated: true, 
+                    message: 'Score updated successfully' 
+                };
+            } else {
+                // Insert new entry
+                const { error: insertError } = await this.supabase
+                    .from('leaderboard_entries')
+                    .insert([
+                        { 
+                            name: this.username, 
+                            score: score, 
+                            created_at: now
+                        }
+                    ]);
+                
+                if (insertError) {
+                    console.error('Error inserting score:', insertError);
+                    throw insertError;
+                }
+                
+                result = { 
+                    success: true, 
+                    updated: true, 
+                    message: 'Score added successfully' 
+                };
+            }
+            
+            console.log('Supabase score update result:', result);
+            return result.success;
+            
+        } catch (error) {
+            console.error('Error updating Supabase score:', error);
+            // Throw to trigger fallback to local storage
+            throw error;
         }
     }
     
@@ -592,46 +533,11 @@ class LeaderboardManager {
             }
             
             if (this.supabase) {
-                // Get current date minus 7 days for filtering
-                const sevenDaysAgo = new Date();
-                sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-                const cutoffDate = sevenDaysAgo.toISOString();
-                
-                // Fetch leaderboard entries from Supabase
-                const { data, error } = await this.supabase
-                    .from(this.tableName)
-                    .select('*')
-                    .gte('created_at', cutoffDate)
-                    .order('score', { ascending: false })
-                    .limit(20);
-                
-                if (error) {
-                    console.error('Error fetching from Supabase:', error);
-                    throw error;
-                }
-                
-                this.leaderboardData = data.map(entry => ({
-                    name: entry.name,
-                    score: entry.score,
-                    date: entry.created_at
-                }));
-                
-                console.log('Loaded leaderboard data from Supabase:', this.leaderboardData);
+                // Try to load from Supabase
+                await this.loadFromSupabase();
             } else {
                 // Fallback to local storage
-                const storedData = localStorage.getItem('pathPuzzleLeaderboard');
-                this.leaderboardData = storedData ? JSON.parse(storedData) : [];
-                
-                // Filter out entries older than 7 days
-                const cutoffDate = new Date();
-                cutoffDate.setDate(cutoffDate.getDate() - 7);
-                
-                this.leaderboardData = this.leaderboardData.filter(entry => {
-                    const entryDate = new Date(entry.date);
-                    return entryDate >= cutoffDate;
-                });
-                
-                console.log('Loaded leaderboard data from localStorage:', this.leaderboardData);
+                this.loadFromLocalStorage();
             }
             
             // Hide loading indicator
@@ -645,33 +551,71 @@ class LeaderboardManager {
         } catch (error) {
             console.error('Error loading leaderboard data:', error);
             
-            // Fallback to local storage if Supabase fails
-            try {
-                const storedData = localStorage.getItem('pathPuzzleLeaderboard');
-                this.leaderboardData = storedData ? JSON.parse(storedData) : [];
-                
-                console.log('Falling back to localStorage leaderboard');
-            } catch (fallbackError) {
-                console.error('Even fallback failed:', fallbackError);
-                this.leaderboardData = [];
-            }
+            // Fallback to local storage
+            this.loadFromLocalStorage();
             
-            // Show error in leaderboard area
+            // Hide loading indicator
             const loadingIndicator = document.getElementById('leaderboard-loading');
             if (loadingIndicator) {
-                loadingIndicator.textContent = 'Error loading leaderboard. Using local data if available.';
-                loadingIndicator.className += ' error';
-                
-                // Hide error after 3 seconds
-                setTimeout(() => {
-                    if (loadingIndicator) {
-                        loadingIndicator.style.display = 'none';
-                    }
-                }, 3000);
+                loadingIndicator.style.display = 'none';
             }
             
-            // Still try to render whatever data we have
+            // Render whatever data we have
             this.renderLeaderboard();
+        }
+    }
+    
+    async loadFromSupabase() {
+        if (!this.supabase) throw new Error('Supabase client not initialized');
+        
+        // Get current date minus 7 days for filtering
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+        const cutoffDate = sevenDaysAgo.toISOString();
+        
+        // Fetch leaderboard entries from Supabase
+        const { data, error } = await this.supabase
+            .from('leaderboard_entries')
+            .select('*')
+            .gte('created_at', cutoffDate)
+            .order('score', { ascending: false })
+            .limit(20);
+        
+        if (error) {
+            console.error('Error fetching from Supabase:', error);
+            throw error;
+        }
+        
+        this.leaderboardData = data.map(entry => ({
+            name: entry.name,
+            score: entry.score,
+            date: entry.created_at
+        }));
+        
+        console.log('Loaded leaderboard data from Supabase:', this.leaderboardData);
+    }
+    
+    loadFromLocalStorage() {
+        try {
+            const storedData = localStorage.getItem('pathPuzzleLeaderboard');
+            this.leaderboardData = storedData ? JSON.parse(storedData) : [];
+            
+            // Filter out entries older than 7 days
+            const cutoffDate = new Date();
+            cutoffDate.setDate(cutoffDate.getDate() - 7);
+            
+            this.leaderboardData = this.leaderboardData.filter(entry => {
+                const entryDate = new Date(entry.date);
+                return entryDate >= cutoffDate;
+            });
+            
+            // Sort by score
+            this.leaderboardData.sort((a, b) => b.score - a.score);
+            
+            console.log('Loaded leaderboard data from localStorage:', this.leaderboardData);
+        } catch (error) {
+            console.error('Error loading from localStorage:', error);
+            this.leaderboardData = [];
         }
     }
     
@@ -757,14 +701,30 @@ class LeaderboardManager {
 // Initialize on DOM content loaded
 window.addEventListener('DOMContentLoaded', () => {
     try {
-        // Reset any user state
-        resetUserState();
-        
         // Load leaderboard stylesheet
         loadStylesheet('./styles/leaderboard.css');
         
         // Create and initialize the leaderboard
         window.leaderboardManager = new LeaderboardManager();
+        
+        // Check for stored username
+        const storedUsername = localStorage.getItem('pathPuzzleUsername');
+        if (storedUsername && window.leaderboardManager) {
+            setTimeout(() => {
+                // Set username in leaderboard manager
+                window.leaderboardManager.setUsername(storedUsername);
+                
+                // Update UI to reflect logged-in state
+                const usernameForm = document.querySelector('.username-form');
+                const welcomeMessage = document.getElementById('welcome-message');
+                
+                if (usernameForm && welcomeMessage) {
+                    usernameForm.classList.add('hidden');
+                    welcomeMessage.classList.remove('hidden');
+                    welcomeMessage.textContent = `Hello ${storedUsername} - your top score appears in the leaderboard below.`;
+                }
+            }, 500);
+        }
         
         // Patch score manager
         patchScoreManager();
