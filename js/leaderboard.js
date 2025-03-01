@@ -1,5 +1,5 @@
 // leaderboard.js - Updated to use Supabase
-import supabaseLeaderboard from './supabase-leaderboard.js';
+import supabaseLeaderboard from '/js/supabase-leaderboard.js';
 
 class LeaderboardManager {
     constructor() {
