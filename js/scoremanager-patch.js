@@ -1,11 +1,15 @@
-// scoremanager-patch.js
-// This file extends the original scoreManager with events for the leaderboard
-
+// scoremanager-patch.js - Modified to reset scores on page load
 (function() {
     // Wait for the original scoreManager to be available
     const checkForScoreManager = setInterval(() => {
         if (window.scoreManager) {
             clearInterval(checkForScoreManager);
+            
+            // Reset the total score when the page loads
+            window.scoreManager.totalScore = 0;
+            window.scoreManager.updateDisplay();
+            
+            // Then patch the scoreManager
             patchScoreManager();
         }
     }, 100);
