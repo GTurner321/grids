@@ -146,7 +146,7 @@ class LeaderboardManager {
                 if (usernameForm && welcomeMessage) {
                     usernameForm.classList.add('hidden');
                     welcomeMessage.classList.remove('hidden');
-                    welcomeMessage.textContent = `Hello ${username} - your top 20 score records in the leaderboard below.`;
+                    welcomeMessage.textContent = `Hello ${username} - a top 20 score records in the leaderboard below.`;
                 }
                 
                 // Get current score and update leaderboard
