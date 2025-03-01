@@ -1,4 +1,4 @@
-// leaderboard-integration.js - Fixed to ensure no persistence and proper score submissions
+// leaderboard-integration.js - Fixed version with direct scoreManager access
 
 // Load CSS
 function loadStylesheet(url) {
@@ -22,68 +22,6 @@ function resetUserSession() {
     console.log('User session data reset');
 }
 
-// Patch the ScoreManager
-function patchScoreManager() {
-    if (!window.scoreManager) {
-        console.log('ScoreManager not found, will try again shortly');
-        // Try again in 500ms
-        setTimeout(patchScoreManager, 500);
-        return false;
-    }
-    
-    try {
-        // Store the original updateDisplay function
-        const originalUpdateDisplay = window.scoreManager.updateDisplay;
-        
-        // Override the updateDisplay function to dispatch events
-        window.scoreManager.updateDisplay = function() {
-            // Call the original function first
-            originalUpdateDisplay.call(this);
-            
-            // Dispatch score updated event
-            const scoreUpdatedEvent = new CustomEvent('scoreUpdated', {
-                detail: {
-                    score: this.totalScore,
-                    level: this.currentLevel,
-                    roundScore: this.roundScore,
-                    roundComplete: this.roundComplete
-                }
-            });
-            
-            window.dispatchEvent(scoreUpdatedEvent);
-        };
-        
-        // Patch completePuzzle to ensure leaderboard is updated
-        const originalCompletePuzzle = window.scoreManager.completePuzzle;
-
-        window.scoreManager.completePuzzle = function() {
-            // Call the original function first
-            originalCompletePuzzle.call(this);
-            
-            console.log('Completed puzzle, total score:', this.totalScore);
-            
-            // Ensure score is updated in leaderboard if username is set
-            if (window.leaderboardManager && window.leaderboardManager.isUsernameSet) {
-                console.log('Updating score via completePuzzle with score:', this.totalScore);
-                window.leaderboardManager.updateScore(this.totalScore);
-            } else {
-                console.log('Username not set or leaderboardManager not available');
-                if (!window.leaderboardManager) {
-                    console.log('leaderboardManager not found');
-                } else if (!window.leaderboardManager.isUsernameSet) {
-                    console.log('Username not set');
-                }
-            }
-        };
-        
-        console.log('ScoreManager patched successfully for leaderboard integration');
-        return true;
-    } catch (error) {
-        console.error('Error patching ScoreManager:', error);
-        return false;
-    }
-}
-
 // Create the leaderboard class
 class LeaderboardManager {
     constructor() {
@@ -96,11 +34,22 @@ class LeaderboardManager {
         this.maxEntries = 20;
         this.supabase = null;
         this.hasSubmittedScore = false;
+        this.patchApplied = false;
         
         this.initSupabase();
         this.loadLeaderboard();
         this.createLeaderboardUI();
         this.addEventListeners();
+        
+        // Try to patch scoreManager immediately, then set up a periodic retry
+        this.tryPatchScoreManager();
+        this.patchInterval = setInterval(() => {
+            if (!this.patchApplied) {
+                this.tryPatchScoreManager();
+            } else {
+                clearInterval(this.patchInterval);
+            }
+        }, 1000);
     }
     
     async initSupabase() {
@@ -152,6 +101,52 @@ class LeaderboardManager {
             return true;
         } catch (error) {
             console.error('Error initializing leaderboard table:', error);
+            return false;
+        }
+    }
+    
+    tryPatchScoreManager() {
+        // Access scoreManager directly from the window
+        if (window.scoreManager) {
+            this.patchScoreManager();
+            this.patchApplied = true;
+            console.log('ScoreManager found and patched successfully');
+        } else {
+            console.log('ScoreManager not found yet, will try again');
+        }
+    }
+    
+    patchScoreManager() {
+        try {
+            // Store reference to the original methods
+            const originalCompletePuzzle = window.scoreManager.completePuzzle;
+            
+            // Patch completePuzzle to ensure leaderboard is updated
+            window.scoreManager.completePuzzle = () => {
+                // Call the original function first
+                originalCompletePuzzle.call(window.scoreManager);
+                
+                const score = window.scoreManager.totalScore;
+                console.log('Completed puzzle, total score:', score);
+                
+                // If username is set, update the score in leaderboard
+                if (this.isUsernameSet && !this.hasSubmittedScore && score > 0) {
+                    console.log('LeaderboardManager submitting score:', score);
+                    this.updateScore(score);
+                } else {
+                    console.log('Score not submitted - username not set or already submitted');
+                    if (!this.isUsernameSet) {
+                        console.log('Username not set - please submit a username');
+                    }
+                    if (this.hasSubmittedScore) {
+                        console.log('Score already submitted for this session');
+                    }
+                }
+            };
+            
+            return true;
+        } catch (error) {
+            console.error('Error patching ScoreManager:', error);
             return false;
         }
     }
@@ -251,18 +246,6 @@ class LeaderboardManager {
             });
         }
         
-        // Listen for score updates
-        window.addEventListener('scoreUpdated', (event) => {
-            const score = event.detail.score;
-            console.log('Score updated event fired:', score);
-            if (this.isUsernameSet && !this.hasSubmittedScore && score > 0) {
-                console.log('Username is set, updating score:', this.username, score);
-                this.updateScore(score);
-            } else {
-                console.log('Score update skipped - username not set or already submitted');
-            }
-        });
-        
         // Set up periodic refresh of leaderboard
         setInterval(() => {
             if (document.visibilityState === 'visible') {
@@ -359,6 +342,7 @@ class LeaderboardManager {
     
     getCurrentScore() {
         try {
+            // Access scoreManager directly from window
             if (window.scoreManager) {
                 return window.scoreManager.totalScore || 0;
             }
@@ -384,11 +368,13 @@ class LeaderboardManager {
                 const result = await this.updateSupabaseScore(score);
                 if (result) {
                     this.hasSubmittedScore = true;
+                    console.log('Score submitted successfully to Supabase');
                 }
             } else {
                 // Fallback to session-only leaderboard
                 this.updateTemporaryScore(score);
                 this.hasSubmittedScore = true;
+                console.log('Score added to temporary leaderboard');
             }
             
             // Refresh the leaderboard display
@@ -649,9 +635,6 @@ window.addEventListener('DOMContentLoaded', () => {
         
         // Create and initialize the leaderboard
         window.leaderboardManager = new LeaderboardManager();
-        
-        // Patch score manager
-        patchScoreManager();
         
         console.log('Leaderboard initialized successfully');
     } catch (error) {
