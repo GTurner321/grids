@@ -306,6 +306,13 @@ class LeaderboardManager {
         const leaderboardTable = document.getElementById('leaderboard-table');
         if (!leaderboardTable) return;
         
+        // Store previous score for the current user
+        let previousUserScore = null;
+        const existingEntry = this.leaderboardData.find(item => item.name === this.username);
+        if (existingEntry) {
+            previousUserScore = existingEntry.score;
+        }
+        
         // Clear existing content
         leaderboardTable.innerHTML = '';
         
@@ -344,6 +351,16 @@ class LeaderboardManager {
             // Highlight current user
             if (entry.name === this.username) {
                 row.classList.add('current-user');
+                
+                // Add animation if score changed
+                if (previousUserScore !== null && previousUserScore !== entry.score) {
+                    row.classList.add('new-entry');
+                    
+                    // Remove the animation class after it's done
+                    setTimeout(() => {
+                        row.classList.remove('new-entry');
+                    }, 2000);
+                }
             }
             
             const rankCell = document.createElement('div');
