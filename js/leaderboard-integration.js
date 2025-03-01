@@ -1,6 +1,4 @@
-// leaderboard-integration.js
-// This file loads all leaderboard components
-
+// leaderboard-integration.js - Modified to reset user state on each visit
 // Load CSS
 function loadStylesheet(url) {
     const link = document.createElement('link');
@@ -32,6 +30,39 @@ function loadScript(url) {
         script.onerror = reject;
         document.body.appendChild(script);
     });
+}
+
+// Reset user state - clear username but keep leaderboard data
+function resetUserState() {
+    // Remove username from localStorage
+    localStorage.removeItem('pathPuzzleUsername');
+    
+    // If there's an existing leaderboard manager, reset its state
+    if (window.leaderboardManager) {
+        window.leaderboardManager.username = '';
+        window.leaderboardManager.isUsernameSet = false;
+    }
+    
+    // Reset any UI elements if they exist
+    setTimeout(() => {
+        const usernameForm = document.querySelector('.username-form');
+        const welcomeMessage = document.getElementById('welcome-message');
+        
+        if (usernameForm) {
+            usernameForm.classList.remove('hidden');
+        }
+        
+        if (welcomeMessage) {
+            welcomeMessage.classList.add('hidden');
+            welcomeMessage.textContent = '';
+        }
+        
+        // Clear any input field value
+        const usernameInput = document.getElementById('username-input');
+        if (usernameInput) {
+            usernameInput.value = '';
+        }
+    }, 100);
 }
 
 // Copy module to the js directory
@@ -87,7 +118,7 @@ async function setupModules() {
         export default usernameChecker;
         `;
 
-        // Create the leaderboard module
+        // Create the leaderboard module with reset functionality
         const leaderboardContent = `
         // leaderboard.js
         class LeaderboardManager {
@@ -267,7 +298,9 @@ async function setupModules() {
             setUsername(username) {
                 this.username = username;
                 this.isUsernameSet = true;
-                localStorage.setItem('pathPuzzleUsername', username);
+                
+                // Do NOT save username to localStorage anymore
+                // localStorage.setItem('pathPuzzleUsername', username);
             }
             
             getCurrentScore() {
@@ -327,22 +360,13 @@ async function setupModules() {
                         this.filterAndSortLeaderboard();
                     }
                     
-                    const storedUsername = localStorage.getItem('pathPuzzleUsername');
-                    if (storedUsername) {
-                        this.username = storedUsername;
-                        this.isUsernameSet = true;
-                        
-                        setTimeout(() => {
-                            const usernameForm = document.querySelector('.username-form');
-                            const welcomeMessage = document.getElementById('welcome-message');
-                            
-                            if (usernameForm && welcomeMessage) {
-                                usernameForm.classList.add('hidden');
-                                welcomeMessage.classList.remove('hidden');
-                                welcomeMessage.textContent = \`Hello \${this.username} - your top 20 score records in the leaderboard below.\`;
-                            }
-                        }, 500);
-                    }
+                    // NO LONGER load stored username
+                    // const storedUsername = localStorage.getItem('pathPuzzleUsername');
+                    // if (storedUsername) {
+                    //    this.username = storedUsername;
+                    //    this.isUsernameSet = true;
+                    //    ...
+                    // }
                     
                     this.renderLeaderboard();
                     
@@ -392,12 +416,29 @@ async function setupModules() {
                 
                 leaderboardTable.appendChild(headerRow);
                 
+                // Store previous score for the current user
+                let previousUserScore = null;
+                const existingEntry = this.leaderboardData.find(item => item.name === this.username);
+                if (existingEntry) {
+                    previousUserScore = existingEntry.score;
+                }
+                
                 this.leaderboardData.forEach((entry, index) => {
                     const row = document.createElement('div');
                     row.className = 'leaderboard-row';
                     
                     if (entry.name === this.username) {
                         row.classList.add('current-user');
+                        
+                        // Add animation if score changed
+                        if (previousUserScore !== null && previousUserScore !== entry.score) {
+                            row.classList.add('new-entry');
+                            
+                            // Remove the animation class after it's done
+                            setTimeout(() => {
+                                row.classList.remove('new-entry');
+                            }, 2000);
+                        }
                     }
                     
                     const rankCell = document.createElement('div');
@@ -443,13 +484,18 @@ async function setupModules() {
         export default LeaderboardManager;
         `;
 
-        // Create the score manager patch
+        // Create the score manager patch that resets the score
         const scoreManagerPatchContent = `
         // scoremanager-patch.js
         (function() {
             const checkForScoreManager = setInterval(() => {
                 if (window.scoreManager) {
                     clearInterval(checkForScoreManager);
+                    
+                    // Reset score on page load
+                    window.scoreManager.totalScore = 0;
+                    window.scoreManager.updateDisplay();
+                    
                     patchScoreManager();
                 }
             }, 100);
@@ -482,7 +528,7 @@ async function setupModules() {
                     }
                 };
                 
-                console.log('ScoreManager patched successfully for leaderboard integration');
+                console.log('ScoreManager patched successfully for leaderboard integration with reset functionality');
             }
         })();
         `;
@@ -504,8 +550,11 @@ async function setupModules() {
 // Initialize on DOM content loaded
 window.addEventListener('DOMContentLoaded', async () => {
     try {
+        // Clear any persisted username on page load
+        localStorage.removeItem('pathPuzzleUsername');
+        
         // Load leaderboard stylesheet
-        loadStylesheet('styles/leaderboard.css');
+        loadStylesheet('./styles/leaderboard.css');
         
         // Setup modules
         await setupModules();
@@ -577,7 +626,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         `;
         document.body.appendChild(moduleScript);
         
-        console.log('Leaderboard system loaded successfully');
+        console.log('Leaderboard system loaded successfully with reset functionality');
     } catch (error) {
         console.error('Error loading leaderboard system:', error);
     }
