@@ -1,4 +1,4 @@
-// leaderboard-integration.js - Updated for Supabase integration
+// leaderboard-integration.js - Simplified approach with direct Supabase integration
 
 // Load CSS
 function loadStylesheet(url) {
@@ -7,18 +7,6 @@ function loadStylesheet(url) {
     link.type = 'text/css';
     link.href = url;
     document.head.appendChild(link);
-}
-
-// Load JS as module
-function loadModule(url) {
-    return new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-        script.type = 'module';
-        script.src = url;
-        script.onload = resolve;
-        script.onerror = reject;
-        document.body.appendChild(script);
-    });
 }
 
 // Load JS as regular script
@@ -63,78 +51,62 @@ function resetUserState() {
     }, 100);
 }
 
-// Connection status monitoring
-function setupConnectionMonitoring() {
-    // Create connection status indicator
-    const connectionStatus = document.createElement('div');
-    connectionStatus.id = 'connection-status';
-    connectionStatus.className = 'connection-status';
-    document.body.appendChild(connectionStatus);
+// Patch the ScoreManager for leaderboard integration
+function patchScoreManager() {
+    if (!window.scoreManager) return false;
     
-    // Update connection status
-    function updateConnectionStatus() {
-        if (navigator.onLine) {
-            connectionStatus.textContent = 'Online';
-            connectionStatus.className = 'connection-status online';
+    try {
+        // Store the original updateDisplay function
+        const originalUpdateDisplay = window.scoreManager.updateDisplay;
+        
+        // Override the updateDisplay function to dispatch events
+        window.scoreManager.updateDisplay = function() {
+            // Call the original function first
+            originalUpdateDisplay.call(this);
             
-            // Try to refresh leaderboard when we come back online
-            if (window.leaderboardManager && typeof window.leaderboardManager.refreshLeaderboard === 'function') {
-                window.leaderboardManager.refreshLeaderboard();
+            // Dispatch score updated event
+            const scoreUpdatedEvent = new CustomEvent('scoreUpdated', {
+                detail: {
+                    score: this.totalScore,
+                    level: this.currentLevel,
+                    roundScore: this.roundScore,
+                    roundComplete: this.roundComplete
+                }
+            });
+            
+            window.dispatchEvent(scoreUpdatedEvent);
+        };
+        
+        // Patch completePuzzle to ensure leaderboard is updated
+        const originalCompletePuzzle = window.scoreManager.completePuzzle;
+        
+        window.scoreManager.completePuzzle = function() {
+            // Call the original function first
+            originalCompletePuzzle.call(this);
+            
+            // Ensure score is updated in leaderboard if username is set
+            if (window.leaderboardManager && window.leaderboardManager.isUsernameSet) {
+                window.leaderboardManager.updateScore(this.totalScore);
             }
-        } else {
-            connectionStatus.textContent = 'Offline';
-            connectionStatus.className = 'connection-status offline';
-        }
+        };
+        
+        console.log('ScoreManager patched successfully for leaderboard integration');
+        return true;
+    } catch (error) {
+        console.error('Error patching ScoreManager:', error);
+        return false;
     }
-    
-    // Monitor connection changes
-    window.addEventListener('online', updateConnectionStatus);
-    window.addEventListener('offline', updateConnectionStatus);
-    
-    // Initial status
-    updateConnectionStatus();
 }
 
-// Setup Supabase integration
-async function setupSupabaseIntegration() {
-    try {
-        // Load Supabase JS from CDN
-        await loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2');
-        
-        // Create the supabase-leaderboard.js module
-        const supabaseLeaderboardContent = `
-// supabase-leaderboard.js - Handles interaction with Supabase for the leaderboard
-
+// Create a wrapper for Supabase functionality
 class SupabaseLeaderboard {
-    constructor() {
-        this.supabase = supabase.createClient(
-            'https://zqintrlsxpdxbjspkskd.supabase.co',
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpxaW50cmxzeHBkeGJqc3Brc2tkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA4MjU0MTYsImV4cCI6MjA1NjQwMTQxNn0.5G1mEsD3skWtOcQ5ugmhYMfQ2obBm6kNKwnA-YH-yIw'
-        );
-        
+    constructor(supabase) {
+        this.supabase = supabase;
         this.tableName = 'leaderboard_entries';
-        this.initialized = false;
-    }
-    
-    async initialize() {
-        try {
-            if (this.initialized) {
-                return;
-            }
-            
-            // Check if table exists, if not, we can't do much on the client side
-            // A table should be created in Supabase dashboard using SQL Editor
-            this.initialized = true;
-        } catch (error) {
-            console.error('Error initializing Supabase leaderboard:', error);
-            throw error;
-        }
     }
     
     async getLeaderboard() {
         try {
-            await this.initialize();
-            
             // Get current date minus 7 days
             const sevenDaysAgo = new Date();
             sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
@@ -153,12 +125,9 @@ class SupabaseLeaderboard {
                 throw error;
             }
             
-            // Transform data to match the expected format
-            return data.map(entry => ({
-                name: entry.name,
-                score: entry.score,
-                date: entry.created_at
-            }));
+            // Return the data
+            return data || [];
+            
         } catch (error) {
             console.error('Error getting leaderboard:', error);
             // Return empty array on error to prevent app from breaking
@@ -168,8 +137,6 @@ class SupabaseLeaderboard {
     
     async submitScore(name, score) {
         try {
-            await this.initialize();
-            
             if (!name || !score || score <= 0) {
                 console.error('Invalid score submission');
                 return { success: false, error: 'Invalid score submission' };
@@ -254,25 +221,18 @@ class SupabaseLeaderboard {
     }
 }
 
-// Export a singleton instance
-const supabaseLeaderboard = new SupabaseLeaderboard();
-export default supabaseLeaderboard;
-`;
-
-        // Create the updated leaderboard.js module
-        const leaderboardContent = `
-// leaderboard.js - Updated to use Supabase
-import supabaseLeaderboard from './supabase-leaderboard.js';
-
+// Leaderboard manager implementation
 class LeaderboardManager {
-    constructor() {
+    constructor(supabase) {
+        this.supabase = supabase;
+        this.supabaseLeaderboard = new SupabaseLeaderboard(supabase);
         this.leaderboardData = [];
         this.username = '';
         this.isUsernameSet = false;
         this.maxEntries = 20;
         
-        this.loadLeaderboard();
         this.createLeaderboardUI();
+        this.loadLeaderboard();
         this.addEventListeners();
     }
     
@@ -384,13 +344,6 @@ class LeaderboardManager {
                 this.refreshLeaderboard();
             }
         }, 60000); // Refresh every minute
-        
-        // Add visibility change listener to refresh when tab becomes visible
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') {
-                this.refreshLeaderboard();
-            }
-        });
     }
     
     async handleUsernameSubmission() {
@@ -409,16 +362,7 @@ class LeaderboardManager {
         statusMessage.className = 'status-message checking';
         
         try {
-            let isApproved = false;
-            
-            try {
-                const usernameCheckerModule = await import('./username-checker.js');
-                const usernameChecker = usernameCheckerModule.default;
-                isApproved = await usernameChecker.checkUsername(username);
-            } catch (e) {
-                console.warn('Could not load username checker module, using fallback check');
-                isApproved = this.fallbackUsernameCheck(username);
-            }
+            const isApproved = this.checkUsername(username);
             
             if (isApproved) {
                 this.setUsername(username);
@@ -430,7 +374,7 @@ class LeaderboardManager {
                 if (usernameForm && welcomeMessage) {
                     usernameForm.classList.add('hidden');
                     welcomeMessage.classList.remove('hidden');
-                    welcomeMessage.textContent = \`Hello \${username} - your top 20 score records in the leaderboard below.\`;
+                    welcomeMessage.textContent = `Hello ${username} - your top 20 score records in the leaderboard below.`;
                 }
                 
                 // Get current score and update leaderboard
@@ -452,14 +396,15 @@ class LeaderboardManager {
         }
     }
     
-    fallbackUsernameCheck(username) {
+    checkUsername(username) {
         if (!username || username.length < 2 || username.length > 12) {
             return false;
         }
         
         const inappropriatePatterns = [
             /fuck/i, /shit/i, /ass(?!et|ign|ess|ist)/i, /damn/i, /cunt/i,
-            /\\bn[i1l]gg[ae3]r/i, /\\bf[a@]g/i
+            /\bn[i1l]gg[ae3]r/i, /\bf[a@]g/i, /\bh[o0]e/i, /\bwh[o0]re/i,
+            /69/i, /420/i, /\ba55/i, /\bp[o0]rn/i, /\bcum/i
         ];
         
         for (const pattern of inappropriatePatterns) {
@@ -474,7 +419,6 @@ class LeaderboardManager {
     setUsername(username) {
         this.username = username;
         this.isUsernameSet = true;
-        // We don't save to localStorage anymore - username is session-only
     }
     
     getCurrentScore() {
@@ -496,8 +440,8 @@ class LeaderboardManager {
             // Show updating message
             this.showUpdateStatus('Updating score...');
             
-            // Submit score to Supabase
-            const result = await supabaseLeaderboard.submitScore(this.username, score);
+            // Submit score to Supabase through our wrapper
+            const result = await this.supabaseLeaderboard.submitScore(this.username, score);
             
             if (result.success) {
                 // Refresh leaderboard data
@@ -523,7 +467,7 @@ class LeaderboardManager {
         if (!statusEl) {
             const newStatusEl = document.createElement('div');
             newStatusEl.id = 'leaderboard-status';
-            newStatusEl.className = \`leaderboard-status \${type}\`;
+            newStatusEl.className = `leaderboard-status ${type}`;
             newStatusEl.textContent = message;
             
             const leaderboardTable = document.getElementById('leaderboard-table');
@@ -531,7 +475,7 @@ class LeaderboardManager {
                 leaderboardTable.parentNode.insertBefore(newStatusEl, leaderboardTable);
             }
         } else {
-            statusEl.className = \`leaderboard-status \${type}\`;
+            statusEl.className = `leaderboard-status ${type}`;
             statusEl.textContent = message;
             statusEl.style.display = 'block';
         }
@@ -547,7 +491,12 @@ class LeaderboardManager {
     async refreshLeaderboard() {
         try {
             // Get fresh data from Supabase
-            this.leaderboardData = await supabaseLeaderboard.getLeaderboard();
+            const data = await this.supabaseLeaderboard.getLeaderboard();
+            this.leaderboardData = data.map(entry => ({
+                name: entry.name,
+                score: entry.score,
+                date: entry.created_at
+            }));
             this.renderLeaderboard();
             return true;
         } catch (error) {
@@ -565,7 +514,12 @@ class LeaderboardManager {
             }
             
             // Get leaderboard data from Supabase
-            this.leaderboardData = await supabaseLeaderboard.getLeaderboard();
+            const data = await this.supabaseLeaderboard.getLeaderboard();
+            this.leaderboardData = data.map(entry => ({
+                name: entry.name,
+                score: entry.score,
+                date: entry.created_at
+            }));
             
             // Hide loading indicator
             if (loadingIndicator) {
@@ -658,7 +612,7 @@ class LeaderboardManager {
             
             const rankCell = document.createElement('div');
             rankCell.className = 'leaderboard-cell rank';
-            rankCell.textContent = \`\${index + 1}\`;
+            rankCell.textContent = `${index + 1}`;
             
             const nameCell = document.createElement('div');
             nameCell.className = 'leaderboard-cell name';
@@ -671,7 +625,7 @@ class LeaderboardManager {
             const date = new Date(entry.date);
             const dateCell = document.createElement('div');
             dateCell.className = 'leaderboard-cell date';
-            dateCell.textContent = \`\${date.toLocaleDateString()}\`;
+            dateCell.textContent = `${date.toLocaleDateString()}`;
             
             row.appendChild(rankCell);
             row.appendChild(nameCell);
@@ -691,141 +645,66 @@ class LeaderboardManager {
     }
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-    // Wait a short time for the main game to initialize
-    setTimeout(() => {
-        window.leaderboardManager = new LeaderboardManager();
-    }, 500);
-});
-
-export default LeaderboardManager;
-`;
-
-        // Create blobs for each module
-        const supabaseLeaderboardBlob = new Blob([supabaseLeaderboardContent], { type: 'application/javascript' });
-        const leaderboardBlob = new Blob([leaderboardContent], { type: 'application/javascript' });
-
-        // Create URLs for the blobs
-        window.supabaseLeaderboardUrl = URL.createObjectURL(supabaseLeaderboardBlob);
-        window.leaderboardUrl = URL.createObjectURL(leaderboardBlob);
-
-        // Create the score manager patch
-        const scoreManagerPatchContent = `
-// scoremanager-patch.js - Reset scores on page load and integrate with Supabase leaderboard
-(function() {
-    // Wait for the original scoreManager to be available
-    const checkForScoreManager = setInterval(() => {
-        if (window.scoreManager) {
-            clearInterval(checkForScoreManager);
-            
-            // Reset the total score when the page loads
-            window.scoreManager.totalScore = 0;
-            window.scoreManager.updateDisplay();
-            
-            // Then patch the scoreManager
-            patchScoreManager();
-        }
-    }, 100);
-    
-    function patchScoreManager() {
-        // Store the original updateDisplay function
-        const originalUpdateDisplay = window.scoreManager.updateDisplay;
-        
-        // Override the updateDisplay function to dispatch events
-        window.scoreManager.updateDisplay = function() {
-            // Call the original function first
-            originalUpdateDisplay.call(this);
-            
-            // Dispatch score updated event
-            const scoreUpdatedEvent = new CustomEvent('scoreUpdated', {
-                detail: {
-                    score: this.totalScore,
-                    level: this.currentLevel,
-                    roundScore: this.roundScore,
-                    roundComplete: this.roundComplete
-                }
-            });
-            
-            window.dispatchEvent(scoreUpdatedEvent);
-        };
-        
-        // Patch completePuzzle to ensure leaderboard is updated
-        const originalCompletePuzzle = window.scoreManager.completePuzzle;
-        
-        window.scoreManager.completePuzzle = function() {
-            // Call the original function first
-            originalCompletePuzzle.call(this);
-            
-            // Ensure score is updated in leaderboard if username is set
-            if (window.leaderboardManager && window.leaderboardManager.isUsernameSet) {
-                window.leaderboardManager.updateScore(this.totalScore);
-            }
-        };
-        
-        console.log('ScoreManager patched successfully for Supabase leaderboard integration');
-    }
-})();
-`;
-
-        const scoreManagerPatchBlob = new Blob([scoreManagerPatchContent], { type: 'application/javascript' });
-        window.scoreManagerPatchUrl = URL.createObjectURL(scoreManagerPatchBlob);
-
-        // Create and initialize the modules
-        const moduleScript = document.createElement('script');
-        moduleScript.type = 'module';
-        moduleScript.textContent = `
-            import supabaseLeaderboard from "${window.supabaseLeaderboardUrl}";
-            import LeaderboardManager from "${window.leaderboardUrl}";
-            
-            // Make them globally available
-            window.supabaseLeaderboard = supabaseLeaderboard;
-            window.LeaderboardManager = LeaderboardManager;
-            
-            // Initialize leaderboard manager
-            setTimeout(() => {
-                window.leaderboardManager = new LeaderboardManager();
-            }, 500);
-        `;
-        document.body.appendChild(moduleScript);
-
-        // Load score manager patch
-        await loadScript(window.scoreManagerPatchUrl);
-
-        // Set up connection monitoring
-        setupConnectionMonitoring();
-
-        console.log('Supabase leaderboard integration loaded successfully');
-        return true;
-    } catch (error) {
-        console.error('Error setting up Supabase integration:', error);
-        return false;
-    }
-}
-
 // Initialize on DOM content loaded
 window.addEventListener('DOMContentLoaded', async () => {
     try {
-        // Reset user state at the start of each session
+        // Reset any user state
         resetUserState();
         
         // Load leaderboard stylesheet
         loadStylesheet('./styles/leaderboard.css');
         
-        // Setup Supabase integration
-        await setupSupabaseIntegration();
+        // Load Supabase from CDN
+        await loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2');
         
-        console.log('Leaderboard system with Supabase integration initialized successfully');
+        // Wait a short time to ensure Supabase is loaded
+        setTimeout(() => {
+            try {
+                // Initialize Supabase
+                const supabase = supabase.createClient(
+                    'https://zqintrlsxpdxbjspkskd.supabase.co',
+                    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpxaW50cmxzeHBkeGJqc3Brc2tkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA4MjU0MTYsImV4cCI6MjA1NjQwMTQxNn0.5G1mEsD3skWtOcQ5ugmhYMfQ2obBm6kNKwnA-YH-yIw'
+                );
+                
+                // Create leaderboard manager with Supabase
+                window.leaderboardManager = new LeaderboardManager(supabase);
+                
+                // Patch the score manager
+                patchScoreManager();
+                
+                console.log('Leaderboard system with Supabase integration initialized successfully');
+            } catch (error) {
+                console.error('Error initializing Supabase:', error);
+                fallbackToLocalStorage();
+            }
+        }, 500);
+        
     } catch (error) {
         console.error('Error initializing leaderboard system:', error);
-        
-        // Fallback to local storage if Supabase fails
-        try {
-            // Load the original modules
-            await loadScript('./js/leaderboard.js');
-            
-            console.log('Fallback to local storage leaderboard successful');
-        } catch (fallbackError) {
-            console.error('Fatal error initializing leaderboard:', fallbackError);
-        }
+        fallbackToLocalStorage();
     }
 });
+
+// Fallback to local storage if Supabase fails
+async function fallbackToLocalStorage() {
+    try {
+        // Load the original modules
+        console.log('Falling back to local storage leaderboard...');
+        
+        // Clear any partial UI
+        const leaderboardSection = document.querySelector('.leaderboard-section');
+        if (leaderboardSection) {
+            leaderboardSection.remove();
+        }
+        
+        // Load original leaderboard JS
+        const originalScript = document.createElement('script');
+        originalScript.type = 'text/javascript';
+        originalScript.src = './js/leaderboard.js';
+        document.body.appendChild(originalScript);
+        
+        console.log('Fallback to local storage leaderboard successful');
+    } catch (fallbackError) {
+        console.error('Fatal error initializing leaderboard:', fallbackError);
+    }
+}
