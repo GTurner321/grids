@@ -1,11 +1,12 @@
-// leaderboard.js
+// leaderboard.js - Updated to use Supabase
+import supabaseLeaderboard from './supabase-leaderboard.js';
+
 class LeaderboardManager {
     constructor() {
         this.leaderboardData = [];
         this.username = '';
         this.isUsernameSet = false;
         this.maxEntries = 20;
-        this.maxDays = 7; // Maximum days to keep scores
         
         this.loadLeaderboard();
         this.createLeaderboardUI();
@@ -60,10 +61,15 @@ class LeaderboardManager {
         usernameArea.appendChild(usernameForm);
         usernameArea.appendChild(welcomeMessage);
         
-        // Create leaderboard table
+        // Create leaderboard title and loading indicator
         const leaderboardTitle = document.createElement('h2');
         leaderboardTitle.textContent = 'LEADERBOARD';
         leaderboardTitle.className = 'leaderboard-title';
+        
+        const loadingIndicator = document.createElement('div');
+        loadingIndicator.id = 'leaderboard-loading';
+        loadingIndicator.className = 'leaderboard-loading';
+        loadingIndicator.textContent = 'Loading leaderboard...';
         
         const leaderboardTable = document.createElement('div');
         leaderboardTable.className = 'leaderboard-table';
@@ -72,6 +78,7 @@ class LeaderboardManager {
         // Add all elements to the leaderboard section
         leaderboardSection.appendChild(usernameArea);
         leaderboardSection.appendChild(leaderboardTitle);
+        leaderboardSection.appendChild(loadingIndicator);
         leaderboardSection.appendChild(leaderboardTable);
         
         // Find the game-container and append the leaderboard section
@@ -103,8 +110,22 @@ class LeaderboardManager {
         // Listen for score updates
         window.addEventListener('scoreUpdated', (event) => {
             const score = event.detail.score;
-            if (this.isUsernameSet) {
+            if (this.isUsernameSet && score > 0) {
                 this.updateScore(score);
+            }
+        });
+        
+        // Set up periodic refresh every 60 seconds to keep leaderboard current
+        setInterval(() => {
+            if (document.visibilityState === 'visible') {
+                this.refreshLeaderboard();
+            }
+        }, 60000); // Refresh every minute
+        
+        // Add visibility change listener to refresh when tab becomes visible
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                this.refreshLeaderboard();
             }
         });
     }
@@ -146,7 +167,7 @@ class LeaderboardManager {
                 if (usernameForm && welcomeMessage) {
                     usernameForm.classList.add('hidden');
                     welcomeMessage.classList.remove('hidden');
-                    welcomeMessage.textContent = `Hello ${username} - a top 20 score records in the leaderboard below.`;
+                    welcomeMessage.textContent = `Hello ${username} - your top 20 score records in the leaderboard below.`;
                 }
                 
                 // Get current score and update leaderboard
@@ -155,6 +176,8 @@ class LeaderboardManager {
                     this.updateScore(currentScore);
                 }
                 
+                statusMessage.textContent = '';
+                statusMessage.className = 'status-message';
             } else {
                 statusMessage.textContent = 'Username not appropriate for family-friendly environment. Please try another.';
                 statusMessage.className = 'status-message error';
@@ -188,9 +211,7 @@ class LeaderboardManager {
     setUsername(username) {
         this.username = username;
         this.isUsernameSet = true;
-        
-        // No longer save username to localStorage
-        // localStorage.setItem('pathPuzzleUsername', username);
+        // We don't save to localStorage anymore - username is session-only
     }
     
     getCurrentScore() {
@@ -205,64 +226,88 @@ class LeaderboardManager {
         return 0;
     }
     
-    updateScore(score) {
+    async updateScore(score) {
         if (!this.isUsernameSet || score <= 0) return;
         
-        const now = new Date();
-        const entry = {
-            name: this.username,
-            score: score,
-            date: now.toISOString()
-        };
-        
-        // Check if user already has an entry
-        const existingIndex = this.leaderboardData.findIndex(item => item.name === this.username);
-        
-        if (existingIndex !== -1) {
-            // Update if new score is higher
-            if (score > this.leaderboardData[existingIndex].score) {
-                this.leaderboardData[existingIndex] = entry;
+        try {
+            // Show updating message
+            this.showUpdateStatus('Updating score...');
+            
+            // Submit score to Supabase
+            const result = await supabaseLeaderboard.submitScore(this.username, score);
+            
+            if (result.success) {
+                // Refresh leaderboard data
+                await this.refreshLeaderboard();
+                this.showUpdateStatus('Score updated!', 'success');
+                
+                // Hide update status after 2 seconds
+                setTimeout(() => {
+                    this.hideUpdateStatus();
+                }, 2000);
+            } else {
+                console.error('Error updating score:', result.error);
+                this.showUpdateStatus('Error updating score', 'error');
+            }
+        } catch (error) {
+            console.error('Error updating score:', error);
+            this.showUpdateStatus('Error updating score', 'error');
+        }
+    }
+    
+    showUpdateStatus(message, type = 'info') {
+        const statusEl = document.getElementById('leaderboard-status');
+        if (!statusEl) {
+            const newStatusEl = document.createElement('div');
+            newStatusEl.id = 'leaderboard-status';
+            newStatusEl.className = `leaderboard-status ${type}`;
+            newStatusEl.textContent = message;
+            
+            const leaderboardTable = document.getElementById('leaderboard-table');
+            if (leaderboardTable && leaderboardTable.parentNode) {
+                leaderboardTable.parentNode.insertBefore(newStatusEl, leaderboardTable);
             }
         } else {
-            // Add new entry
-            this.leaderboardData.push(entry);
+            statusEl.className = `leaderboard-status ${type}`;
+            statusEl.textContent = message;
+            statusEl.style.display = 'block';
         }
-        
-        // Sort and limit entries
-        this.filterAndSortLeaderboard();
-        
-        // Save and render
-        this.saveLeaderboard();
-        this.renderLeaderboard();
     }
     
-    filterAndSortLeaderboard() {
-        // Filter out entries older than maxDays
-        const cutoffDate = new Date();
-        cutoffDate.setDate(cutoffDate.getDate() - this.maxDays);
-        
-        this.leaderboardData = this.leaderboardData.filter(entry => {
-            const entryDate = new Date(entry.date);
-            return entryDate >= cutoffDate;
-        });
-        
-        // Sort by score (descending)
-        this.leaderboardData.sort((a, b) => b.score - a.score);
-        
-        // Limit to maxEntries
-        this.leaderboardData = this.leaderboardData.slice(0, this.maxEntries);
+    hideUpdateStatus() {
+        const statusEl = document.getElementById('leaderboard-status');
+        if (statusEl) {
+            statusEl.style.display = 'none';
+        }
     }
     
-    loadLeaderboard() {
+    async refreshLeaderboard() {
         try {
-            // Get leaderboard data from localStorage
-            const storedData = localStorage.getItem('pathPuzzleLeaderboard');
-            if (storedData) {
-                this.leaderboardData = JSON.parse(storedData);
-                this.filterAndSortLeaderboard(); // Clean up on load
+            // Get fresh data from Supabase
+            this.leaderboardData = await supabaseLeaderboard.getLeaderboard();
+            this.renderLeaderboard();
+            return true;
+        } catch (error) {
+            console.error('Error refreshing leaderboard:', error);
+            return false;
+        }
+    }
+    
+    async loadLeaderboard() {
+        try {
+            // Show loading state
+            const loadingIndicator = document.getElementById('leaderboard-loading');
+            if (loadingIndicator) {
+                loadingIndicator.style.display = 'block';
             }
             
-            // No longer load username from localStorage
+            // Get leaderboard data from Supabase
+            this.leaderboardData = await supabaseLeaderboard.getLeaderboard();
+            
+            // Hide loading indicator
+            if (loadingIndicator) {
+                loadingIndicator.style.display = 'none';
+            }
             
             // Render the leaderboard
             this.renderLeaderboard();
@@ -270,20 +315,26 @@ class LeaderboardManager {
         } catch (error) {
             console.error('Error loading leaderboard data:', error);
             this.leaderboardData = [];
-        }
-    }
-    
-    saveLeaderboard() {
-        try {
-            localStorage.setItem('pathPuzzleLeaderboard', JSON.stringify(this.leaderboardData));
-        } catch (error) {
-            console.error('Error saving leaderboard data:', error);
+            
+            // Show error in leaderboard area
+            const loadingIndicator = document.getElementById('leaderboard-loading');
+            if (loadingIndicator) {
+                loadingIndicator.textContent = 'Error loading leaderboard. Please refresh the page.';
+                loadingIndicator.className += ' error';
+            }
         }
     }
     
     renderLeaderboard() {
         const leaderboardTable = document.getElementById('leaderboard-table');
+        const loadingIndicator = document.getElementById('leaderboard-loading');
+        
         if (!leaderboardTable) return;
+        
+        // Hide loading indicator if it exists
+        if (loadingIndicator) {
+            loadingIndicator.style.display = 'none';
+        }
         
         // Store previous score for the current user
         let previousUserScore = null;
