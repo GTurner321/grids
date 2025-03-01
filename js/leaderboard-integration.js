@@ -1,4 +1,4 @@
-// leaderboard-integration.js - Modified to work with Supabase without disrupting existing functionality
+// leaderboard-integration.js - Modified to work with Supabase without user persistence
 
 // Load CSS
 function loadStylesheet(url) {
@@ -237,7 +237,7 @@ class LeaderboardManager {
         
         // Set up periodic refresh every 60 seconds
         setInterval(() => {
-            if (document.visibilityState === 'visible' && this.isUsernameSet) {
+            if (document.visibilityState === 'visible') {
                 this.refreshLeaderboard();
             }
         }, 60000);
@@ -281,7 +281,7 @@ class LeaderboardManager {
                 if (usernameForm && welcomeMessage) {
                     usernameForm.classList.add('hidden');
                     welcomeMessage.classList.remove('hidden');
-                    welcomeMessage.textContent = `Hello ${username} - your top score appears in the leaderboard below.`;
+                    welcomeMessage.textContent = `Hello ${username} - your score will appear in the leaderboard below.`;
                 }
                 
                 // Get current score and update leaderboard
@@ -325,7 +325,7 @@ class LeaderboardManager {
     setUsername(username) {
         this.username = username;
         this.isUsernameSet = true;
-        localStorage.setItem('pathPuzzleUsername', username);
+        // No longer storing in localStorage to reset on page refresh
     }
     
     getCurrentScore() {
@@ -354,9 +354,9 @@ class LeaderboardManager {
                 // Try to update score in Supabase
                 await this.updateSupabaseScore(score);
             } else {
-                // Fallback to local storage
-                console.log('Using local storage for score update');
-                this.updateLocalScore(score);
+                // Fallback to session storage (not localStorage)
+                console.log('Using session storage for score update');
+                this.updateSessionScore(score);
             }
             
             // Refresh the leaderboard display
@@ -383,83 +383,35 @@ class LeaderboardManager {
             // Get current date/time
             const now = new Date().toISOString();
             
-            // First check if user already has a score
-            const { data: existingEntries, error: fetchError } = await this.supabase
+            // Insert new entry (we don't need to check for existing entries
+            // since we don't store username between sessions)
+            const { error: insertError } = await this.supabase
                 .from('leaderboard_entries')
-                .select('*')
-                .eq('name', this.username)
-                .order('score', { ascending: false })
-                .limit(1);
-            
-            if (fetchError) {
-                console.error('Error checking existing score:', fetchError);
-                throw fetchError;
-            }
-            
-            let result = { success: false };
-            
-            // If user has a higher score already, don't update
-            if (existingEntries && existingEntries.length > 0 && existingEntries[0].score >= score) {
-                result = { 
-                    success: true, 
-                    updated: false, 
-                    message: 'Existing score is higher' 
-                };
-            } else if (existingEntries && existingEntries.length > 0) {
-                // Update existing entry
-                const { error: updateError } = await this.supabase
-                    .from('leaderboard_entries')
-                    .update({ 
-                        score: score,
+                .insert([
+                    { 
+                        name: this.username, 
+                        score: score, 
                         created_at: now
-                    })
-                    .eq('id', existingEntries[0].id);
-                
-                if (updateError) {
-                    console.error('Error updating score:', updateError);
-                    throw updateError;
-                }
-                
-                result = { 
-                    success: true, 
-                    updated: true, 
-                    message: 'Score updated successfully' 
-                };
-            } else {
-                // Insert new entry
-                const { error: insertError } = await this.supabase
-                    .from('leaderboard_entries')
-                    .insert([
-                        { 
-                            name: this.username, 
-                            score: score, 
-                            created_at: now
-                        }
-                    ]);
-                
-                if (insertError) {
-                    console.error('Error inserting score:', insertError);
-                    throw insertError;
-                }
-                
-                result = { 
-                    success: true, 
-                    updated: true, 
-                    message: 'Score added successfully' 
-                };
+                    }
+                ]);
+            
+            if (insertError) {
+                console.error('Error inserting score:', insertError);
+                throw insertError;
             }
             
-            console.log('Supabase score update result:', result);
-            return result.success;
+            console.log('Score added successfully to Supabase');
+            return true;
             
         } catch (error) {
             console.error('Error updating Supabase score:', error);
-            // Throw to trigger fallback to local storage
+            // Throw to trigger fallback to session storage
             throw error;
         }
     }
     
-    updateLocalScore(score) {
+    updateSessionScore(score) {
+        // Use session storage instead of localStorage
         const now = new Date();
         const entry = {
             name: this.username,
@@ -467,24 +419,30 @@ class LeaderboardManager {
             date: now.toISOString()
         };
         
-        // Check if user already has an entry
-        const existingIndex = this.leaderboardData.findIndex(item => item.name === this.username);
-        
-        if (existingIndex !== -1) {
-            // Update if new score is higher
-            if (score > this.leaderboardData[existingIndex].score) {
-                this.leaderboardData[existingIndex] = entry;
-            }
-        } else {
-            // Add new entry
-            this.leaderboardData.push(entry);
+        // Get existing session data
+        let sessionData = [];
+        try {
+            const storedData = sessionStorage.getItem('pathPuzzleLeaderboard');
+            sessionData = storedData ? JSON.parse(storedData) : [];
+        } catch (e) {
+            console.error('Error parsing session storage:', e);
         }
         
-        // Sort and save
+        // Always add the new entry
+        sessionData.push(entry);
+        
+        // Sort and limit entries
+        sessionData.sort((a, b) => b.score - a.score);
+        sessionData = sessionData.slice(0, this.maxEntries);
+        
+        // Save to session storage
+        sessionStorage.setItem('pathPuzzleLeaderboard', JSON.stringify(sessionData));
+        
+        // Add to leaderboard data for display
+        this.leaderboardData.push(entry);
         this.leaderboardData.sort((a, b) => b.score - a.score);
         this.leaderboardData = this.leaderboardData.slice(0, this.maxEntries);
         
-        localStorage.setItem('pathPuzzleLeaderboard', JSON.stringify(this.leaderboardData));
         this.renderLeaderboard();
     }
     
@@ -536,8 +494,8 @@ class LeaderboardManager {
                 // Try to load from Supabase
                 await this.loadFromSupabase();
             } else {
-                // Fallback to local storage
-                this.loadFromLocalStorage();
+                // Fallback to session storage
+                this.loadFromSessionStorage();
             }
             
             // Hide loading indicator
@@ -551,8 +509,8 @@ class LeaderboardManager {
         } catch (error) {
             console.error('Error loading leaderboard data:', error);
             
-            // Fallback to local storage
-            this.loadFromLocalStorage();
+            // Fallback to session storage
+            this.loadFromSessionStorage();
             
             // Hide loading indicator
             const loadingIndicator = document.getElementById('leaderboard-loading');
@@ -595,26 +553,18 @@ class LeaderboardManager {
         console.log('Loaded leaderboard data from Supabase:', this.leaderboardData);
     }
     
-    loadFromLocalStorage() {
+    loadFromSessionStorage() {
         try {
-            const storedData = localStorage.getItem('pathPuzzleLeaderboard');
+            // Use session storage instead of localStorage
+            const storedData = sessionStorage.getItem('pathPuzzleLeaderboard');
             this.leaderboardData = storedData ? JSON.parse(storedData) : [];
-            
-            // Filter out entries older than 7 days
-            const cutoffDate = new Date();
-            cutoffDate.setDate(cutoffDate.getDate() - 7);
-            
-            this.leaderboardData = this.leaderboardData.filter(entry => {
-                const entryDate = new Date(entry.date);
-                return entryDate >= cutoffDate;
-            });
             
             // Sort by score
             this.leaderboardData.sort((a, b) => b.score - a.score);
             
-            console.log('Loaded leaderboard data from localStorage:', this.leaderboardData);
+            console.log('Loaded leaderboard data from sessionStorage:', this.leaderboardData);
         } catch (error) {
-            console.error('Error loading from localStorage:', error);
+            console.error('Error loading from sessionStorage:', error);
             this.leaderboardData = [];
         }
     }
@@ -706,25 +656,6 @@ window.addEventListener('DOMContentLoaded', () => {
         
         // Create and initialize the leaderboard
         window.leaderboardManager = new LeaderboardManager();
-        
-        // Check for stored username
-        const storedUsername = localStorage.getItem('pathPuzzleUsername');
-        if (storedUsername && window.leaderboardManager) {
-            setTimeout(() => {
-                // Set username in leaderboard manager
-                window.leaderboardManager.setUsername(storedUsername);
-                
-                // Update UI to reflect logged-in state
-                const usernameForm = document.querySelector('.username-form');
-                const welcomeMessage = document.getElementById('welcome-message');
-                
-                if (usernameForm && welcomeMessage) {
-                    usernameForm.classList.add('hidden');
-                    welcomeMessage.classList.remove('hidden');
-                    welcomeMessage.textContent = `Hello ${storedUsername} - your top score appears in the leaderboard below.`;
-                }
-            }, 500);
-        }
         
         // Patch score manager
         patchScoreManager();
