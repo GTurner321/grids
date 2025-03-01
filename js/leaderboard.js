@@ -125,7 +125,16 @@ class LeaderboardManager {
         statusMessage.className = 'status-message checking';
         
         try {
-            const isApproved = await this.checkUsername(username);
+            let isApproved = false;
+            
+            try {
+                const usernameCheckerModule = await import('./username-checker.js');
+                const usernameChecker = usernameCheckerModule.default;
+                isApproved = await usernameChecker.checkUsername(username);
+            } catch (e) {
+                console.warn('Could not load username checker module, using fallback check');
+                isApproved = this.fallbackUsernameCheck(username);
+            }
             
             if (isApproved) {
                 this.setUsername(username);
@@ -157,44 +166,31 @@ class LeaderboardManager {
         }
     }
     
-    async checkUsername(username) {
-        try {
-            // Import the username checker module
-            const usernameCheckerModule = await import('./username-checker.js');
-            const usernameChecker = usernameCheckerModule.default;
-            
-            // Use the username checker to validate the username
-            return await usernameChecker.checkUsername(username);
-        } catch (error) {
-            console.error('Error using username checker:', error);
-            
-            // Fallback to basic checks if module fails to load
-            if (!username || username.length < 2 || username.length > 12) {
+    fallbackUsernameCheck(username) {
+        if (!username || username.length < 2 || username.length > 12) {
+            return false;
+        }
+        
+        const inappropriatePatterns = [
+            /fuck/i, /shit/i, /ass(?!et|ign|ess|ist)/i, /damn/i, /cunt/i,
+            /\bn[i1l]gg[ae3]r/i, /\bf[a@]g/i
+        ];
+        
+        for (const pattern of inappropriatePatterns) {
+            if (pattern.test(username)) {
                 return false;
             }
-            
-            // Basic pattern check
-            const inappropriatePatterns = [
-                /fuck/i, /shit/i, /ass(?!et|ign|ess|ist)/i, /damn/i, /cunt/i,
-                /\bn[i1l]gg[ae3]r/i, /\bf[a@]g/i
-            ];
-            
-            for (const pattern of inappropriatePatterns) {
-                if (pattern.test(username)) {
-                    return false;
-                }
-            }
-            
-            return true;
         }
+        
+        return true;
     }
     
     setUsername(username) {
         this.username = username;
         this.isUsernameSet = true;
         
-        // Save username to localStorage
-        localStorage.setItem('pathPuzzleUsername', username);
+        // No longer save username to localStorage
+        // localStorage.setItem('pathPuzzleUsername', username);
     }
     
     getCurrentScore() {
@@ -259,31 +255,14 @@ class LeaderboardManager {
     
     loadLeaderboard() {
         try {
-            // Get from localStorage
+            // Get leaderboard data from localStorage
             const storedData = localStorage.getItem('pathPuzzleLeaderboard');
             if (storedData) {
                 this.leaderboardData = JSON.parse(storedData);
                 this.filterAndSortLeaderboard(); // Clean up on load
             }
             
-            // Check for stored username
-            const storedUsername = localStorage.getItem('pathPuzzleUsername');
-            if (storedUsername) {
-                this.username = storedUsername;
-                this.isUsernameSet = true;
-                
-                // Update UI to reflect saved username
-                setTimeout(() => {
-                    const usernameForm = document.querySelector('.username-form');
-                    const welcomeMessage = document.getElementById('welcome-message');
-                    
-                    if (usernameForm && welcomeMessage) {
-                        usernameForm.classList.add('hidden');
-                        welcomeMessage.classList.remove('hidden');
-                        welcomeMessage.textContent = `Hello ${this.username} - your top 20 score records in the leaderboard below.`;
-                    }
-                }, 500); // Small delay to ensure DOM is ready
-            }
+            // No longer load username from localStorage
             
             // Render the leaderboard
             this.renderLeaderboard();
