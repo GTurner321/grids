@@ -231,13 +231,17 @@ class GameController {
         // Touch events
         gridContainer.addEventListener('touchstart', (e) => {
             if (!this.state.gameActive) return;
+            e.preventDefault(); // Prevent default behavior
+    
             const touch = e.touches[0];
-            const cell = document.elementFromPoint(touch.clientX, touch.clientY).closest('.grid-cell');
+            const element = document.elementFromPoint(touch.clientX, touch.clientY);
+            const cell = element.closest('.grid-cell');
+    
             if (cell) {
-                lastSelectedCell = cell;
-                this.handleCellInteraction(cell);
+                // Call handleCellClick directly for better touch response
+                this.handleCellClick(cell);
             }
-        });
+        }, false);
 
         gridContainer.addEventListener('touchmove', (e) => {
             if (!this.state.gameActive) return;
