@@ -131,50 +131,50 @@ class GameController {
     }
 
     handleCellClick(cell) {
-    const cellIndex = parseInt(cell.dataset.index);
+        const cellIndex = parseInt(cell.dataset.index);
 
-    // First click must be start cell
-    if (this.state.userPath.length === 0) {
-        if (isStartCell(cell)) {
-            this.state.userPath.push(cellIndex);
-            highlightPath(this.state.userPath);
-            this.showMessage('Path started! Continue by selecting connected cells.');
-        } else {
-            this.showMessage('You must start at the green square!', 'error');
+        // First click must be start cell
+        if (this.state.userPath.length === 0) {
+            if (isStartCell(cell)) {
+                this.state.userPath.push(cellIndex);
+                highlightPath(this.state.userPath);
+                this.showMessage('Path started! Continue by selecting connected cells.');
+            } else {
+                this.showMessage('You must start at the green square!', 'error');
+            }
+            return;
         }
-        return;
-    }
 
-    // Only allow deselection of last cell in path
-    const lastCellIndex = this.state.userPath[this.state.userPath.length - 1];
-    if (cellIndex === lastCellIndex) {
-        this.state.userPath.pop();
+        // Only allow deselection of last cell in path
+        const lastCellIndex = this.state.userPath[this.state.userPath.length - 1];
+        if (cellIndex === lastCellIndex) {
+            this.state.userPath.pop();
+            highlightPath(this.state.userPath);
+            return;
+        }
+        
+        // Check if cell is adjacent to last selected cell
+        if (!this.isValidMove(cellIndex)) {
+            return;  // Silent fail, no message needed
+        }
+
+        // Don't allow selection of cells already in path
+        if (this.state.userPath.includes(cellIndex)) {
+            return; // Prevent selecting cells that are already in the path
+        }
+
+        // Add the new cell to the path
+        this.state.userPath.push(cellIndex);
         highlightPath(this.state.userPath);
-        return;
-    }
-    
-    // Check if cell is adjacent to last selected cell
-    if (!this.isValidMove(cellIndex)) {
-        return;  // Silent fail, no message needed
-    }
+        
+        // Enable check solution button
+        document.getElementById('check-solution').disabled = false;
 
-    // Don't allow selection of cells already in path
-    if (this.state.userPath.includes(cellIndex)) {
-        return; // Prevent selecting cells that are already in the path
+        // If end cell is selected, automatically check the solution
+        if (isEndCell(cell)) {
+            this.checkSolution();
+        }
     }
-
-    // Add the new cell to the path
-    this.state.userPath.push(cellIndex);
-    highlightPath(this.state.userPath);
-    
-    // Enable check solution button
-    document.getElementById('check-solution').disabled = false;
-
-    // If end cell is selected, automatically check the solution
-    if (isEndCell(cell)) {
-        this.checkSolution();
-    }
-}
 
     initializeGridInteractions() {
         const gridContainer = document.getElementById('grid-container');
@@ -370,6 +370,7 @@ class GameController {
         }
         
         this.updateUI();
+    }
 
     validatePath() {
         // First check if the path is continuous
