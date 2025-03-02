@@ -154,11 +154,11 @@ export function highlightPath(path) {
         
         // Restore original colors
         if (cell.classList.contains('start-cell')) {
-            cell.style.backgroundColor = '#22c55e';  // Original green
+            cell.style.backgroundColor = '';  // Let CSS handle it
         } else if (cell.classList.contains('end-cell')) {
-            cell.style.backgroundColor = '#ef4444';  // Original red
+            cell.style.backgroundColor = '';  // Let CSS handle it
         } else {
-            cell.style.backgroundColor = 'white';
+            cell.style.backgroundColor = '';  // Clear inline style
         }
     });
 
@@ -167,14 +167,12 @@ export function highlightPath(path) {
         const cell = document.querySelector(`[data-index="${index}"]`);
         if (!cell) return;
 
-        cell.classList.add('selected');
-        
         if (cell.classList.contains('start-cell')) {
-            cell.style.backgroundColor = '#15803d';  // Darker green for selected start
+            cell.classList.add('start-cell-selected');
         } else if (cell.classList.contains('end-cell')) {
-            cell.style.backgroundColor = '#b91c1c';  // Darker red for selected end
+            cell.classList.add('end-cell-selected');
         } else {
-            cell.style.backgroundColor = '#e5e7eb';  // Grey for normal selected cells
+            cell.classList.add('selected');
         }
     });
     
