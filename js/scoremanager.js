@@ -15,6 +15,9 @@ class ScoreManager {
         
         // Initialize display
         this.updateDisplay();
+        
+        // Make it available globally
+        window.scoreManager = this;
     }
     
     startLevel(level) {
@@ -73,6 +76,16 @@ class ScoreManager {
         this.totalScore += this.roundScore;
         
         this.updateDisplay();
+        
+        // Dispatch an event when score is updated
+        const event = new CustomEvent('scoreUpdated', {
+            detail: {
+                score: this.totalScore,
+                level: this.currentLevel,
+                roundScore: this.roundScore
+            }
+        });
+        window.dispatchEvent(event);
     }
 
     updateDisplay() {
@@ -110,3 +123,6 @@ class ScoreManager {
 
 // Export a single instance
 export const scoreManager = new ScoreManager();
+
+// Also make it available globally
+window.scoreManager = scoreManager;
