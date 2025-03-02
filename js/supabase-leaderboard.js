@@ -1,182 +1,116 @@
-// supabase-leaderboard.js - Handles interaction with Supabase for the leaderboard
+// supabase-leaderboard.js - Simplified Supabase integration
 
-import { createClient } from 'https://esm.sh/@supabase/supabase-js';
+// Define Supabase connection details
+const SUPABASE_URL = 'https://zqintrlsxpdxbjspkskd.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpxaW50cmxzeHBkeGJqc3Brc2tkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA4MjU0MTYsImV4cCI6MjA1NjQwMTQxNn0.5G1mEsD3skWtOcQ5ugmhYMfQ2obBm6kNKwnA-YH-yIw';
+const TABLE_NAME = 'leaderboard_entries';
 
 class SupabaseLeaderboard {
     constructor() {
-        this.supabase = createClient(
-            'https://zqintrlsxpdxbjspkskd.supabase.co',
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpxaW50cmxzeHBkeGJqc3Brc2tkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA4MjU0MTYsImV4cCI6MjA1NjQwMTQxNn0.5G1mEsD3skWtOcQ5ugmhYMfQ2obBm6kNKwnA-YH-yIw'
-        );
-        
-        this.tableName = 'leaderboard_entries';
+        this.supabase = null;
         this.initialized = false;
+        
+        // Try to initialize immediately
+        this.init();
     }
     
-    async initialize() {
+    async init() {
         try {
-            if (this.initialized) {
-                return;
-            }
+            // Dynamically import Supabase client
+            const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2.31.0');
+            this.supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             
-            // Check if table exists, if not create it
-            const { error } = await this.supabase
-                .from(this.tableName)
-                .select('id')
-                .limit(1);
-            
-            if (error && error.code === '42P01') {
-                // Table doesn't exist, create it
-                console.log('Creating leaderboard table...');
-                await this.createLeaderboardTable();
-            } else if (error) {
-                console.error('Error checking table:', error);
-                throw error;
-            }
+            // Create the table if it doesn't exist
+            await this.ensureTableExists();
             
             this.initialized = true;
+            console.log('Supabase leaderboard initialized successfully');
         } catch (error) {
-            console.error('Error initializing Supabase leaderboard:', error);
-            throw error;
+            console.error('Failed to initialize Supabase:', error);
         }
     }
     
-    async createLeaderboardTable() {
+    async ensureTableExists() {
+        if (!this.supabase) return false;
+        
         try {
-            // Using RPC to create table through a PostgreSQL function
+            // Try to create the table via RPC
             const { error } = await this.supabase.rpc('create_leaderboard_table');
             
-            if (error) {
-                console.error('Error creating table:', error);
-                throw error;
+            if (error && error.code !== '42P01') {
+                console.error('Error ensuring table exists:', error);
             }
             
-            console.log('Leaderboard table created successfully');
+            return true;
         } catch (error) {
-            console.error('Error creating leaderboard table:', error);
-            throw error;
+            console.error('Error checking/creating table:', error);
+            return false;
         }
     }
     
     async getLeaderboard() {
+        if (!this.initialized) {
+            await this.init();
+        }
+        
+        if (!this.supabase) {
+            return [];
+        }
+        
         try {
-            await this.initialize();
-            
-            // Get current date minus 7 days
+            // Get entries from the last 7 days
             const sevenDaysAgo = new Date();
             sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-            const cutoffDate = sevenDaysAgo.toISOString();
             
-            // Fetch leaderboard entries
             const { data, error } = await this.supabase
-                .from(this.tableName)
+                .from(TABLE_NAME)
                 .select('*')
-                .gte('created_at', cutoffDate)
+                .gte('created_at', sevenDaysAgo.toISOString())
                 .order('score', { ascending: false })
                 .limit(20);
-            
+                
             if (error) {
-                console.error('Error fetching leaderboard:', error);
                 throw error;
             }
             
-            // Transform data to match the expected format
             return data.map(entry => ({
                 name: entry.name,
                 score: entry.score,
                 date: entry.created_at
             }));
         } catch (error) {
-            console.error('Error getting leaderboard:', error);
-            // Return empty array on error to prevent app from breaking
+            console.error('Error fetching leaderboard:', error);
             return [];
         }
     }
     
     async submitScore(name, score) {
+        if (!this.initialized) {
+            await this.init();
+        }
+        
+        if (!this.supabase || !name || score <= 0) {
+            return { success: false, error: 'Invalid submission or Supabase not initialized' };
+        }
+        
         try {
-            await this.initialize();
-            
-            if (!name || !score || score <= 0) {
-                console.error('Invalid score submission');
-                return { success: false, error: 'Invalid score submission' };
+            // Insert the new score
+            const { error } = await this.supabase
+                .from(TABLE_NAME)
+                .insert([{
+                    name,
+                    score,
+                    created_at: new Date().toISOString()
+                }]);
+                
+            if (error) {
+                throw error;
             }
             
-            // First check if user has a higher score already
-            const { data: existingEntries, error: fetchError } = await this.supabase
-                .from(this.tableName)
-                .select('*')
-                .eq('name', name)
-                .order('score', { ascending: false })
-                .limit(1);
-            
-            if (fetchError) {
-                console.error('Error checking existing score:', fetchError);
-                throw fetchError;
-            }
-            
-            // If user has a higher score already, don't update
-            if (existingEntries.length > 0 && existingEntries[0].score >= score) {
-                return { 
-                    success: true, 
-                    updated: false, 
-                    message: 'Existing score is higher' 
-                };
-            }
-            
-            // If user has a lower score or no score, insert new record
-            const now = new Date().toISOString();
-            
-            // Check if we need to update or insert
-            if (existingEntries.length > 0) {
-                // Update existing entry
-                const { error: updateError } = await this.supabase
-                    .from(this.tableName)
-                    .update({ 
-                        score: score,
-                        created_at: now
-                    })
-                    .eq('id', existingEntries[0].id);
-                
-                if (updateError) {
-                    console.error('Error updating score:', updateError);
-                    throw updateError;
-                }
-                
-                return { 
-                    success: true, 
-                    updated: true, 
-                    message: 'Score updated successfully' 
-                };
-            } else {
-                // Insert new entry
-                const { error: insertError } = await this.supabase
-                    .from(this.tableName)
-                    .insert([
-                        { 
-                            name, 
-                            score, 
-                            created_at: now
-                        }
-                    ]);
-                
-                if (insertError) {
-                    console.error('Error inserting score:', insertError);
-                    throw insertError;
-                }
-                
-                return { 
-                    success: true, 
-                    updated: true, 
-                    message: 'Score added successfully' 
-                };
-            }
+            return { success: true };
         } catch (error) {
             console.error('Error submitting score:', error);
-            return { 
-                success: false, 
-                error: error.message || 'Error submitting score' 
-            };
+            return { success: false, error: error.message };
         }
     }
 }
