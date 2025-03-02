@@ -45,6 +45,8 @@ class LeaderboardManager {
         this.supabase = null;
         this.hasSubmittedScore = false;
         this.submissionTimestamps = new Map(); // Track submission times by score
+        this.sessionHighScore = 0; // Track session high score
+        this.scoreThreshold = 5000; // Only submit scores of 5000+
         
         this.initSupabase();
         this.loadLeaderboard();
@@ -90,6 +92,93 @@ class LeaderboardManager {
         } catch (error) {
             console.error('Error initializing leaderboard table:', error);
             return false;
+        }
+    }
+    
+    createLeaderboardUI() {
+        // Create leaderboard container
+        const leaderboardSection = document.createElement('section');
+        leaderboardSection.className = 'leaderboard-section';
+        
+        // Create username submission area
+        const usernameArea = document.createElement('div');
+        usernameArea.className = 'username-area';
+        
+        const usernameForm = document.createElement('div');
+        usernameForm.className = 'username-form';
+        
+        const usernamePrompt = document.createElement('p');
+        usernamePrompt.textContent = 'Record your score - submit your name:';
+        usernamePrompt.className = 'username-prompt';
+        
+        const inputWrapper = document.createElement('div');
+        inputWrapper.className = 'input-wrapper';
+        
+        const usernameInput = document.createElement('input');
+        usernameInput.type = 'text';
+        usernameInput.id = 'username-input';
+        usernameInput.maxLength = 12;
+        usernameInput.placeholder = 'Enter your name (max 12 chars)';
+        
+        const submitButton = document.createElement('button');
+        submitButton.id = 'submit-username';
+        submitButton.textContent = 'Submit';
+        
+        inputWrapper.appendChild(usernameInput);
+        inputWrapper.appendChild(submitButton);
+        
+        const statusMessage = document.createElement('div');
+        statusMessage.id = 'username-status';
+        statusMessage.className = 'status-message';
+        
+        usernameForm.appendChild(usernamePrompt);
+        usernameForm.appendChild(inputWrapper);
+        usernameForm.appendChild(statusMessage);
+        
+        // Create welcome message area (initially hidden)
+        const welcomeMessage = document.createElement('div');
+        welcomeMessage.id = 'welcome-message';
+        welcomeMessage.className = 'welcome-message hidden';
+        
+        usernameArea.appendChild(usernameForm);
+        usernameArea.appendChild(welcomeMessage);
+        
+        // Create leaderboard title
+        const leaderboardTitle = document.createElement('h2');
+        leaderboardTitle.textContent = 'LEADERBOARD';
+        leaderboardTitle.className = 'leaderboard-title';
+        
+        // Add threshold subtitle
+        const thresholdSubtitle = document.createElement('div');
+        thresholdSubtitle.textContent = '(score 5000+)';
+        thresholdSubtitle.className = 'leaderboard-subtitle';
+        thresholdSubtitle.style.textAlign = 'center';
+        thresholdSubtitle.style.fontSize = '0.8rem';
+        thresholdSubtitle.style.marginTop = '-10px';
+        thresholdSubtitle.style.marginBottom = '10px';
+        thresholdSubtitle.style.color = '#6b7280';
+        
+        // Create loading indicator
+        const loadingIndicator = document.createElement('div');
+        loadingIndicator.id = 'leaderboard-loading';
+        loadingIndicator.className = 'leaderboard-loading';
+        loadingIndicator.textContent = 'Loading leaderboard...';
+        
+        const leaderboardTable = document.createElement('div');
+        leaderboardTable.className = 'leaderboard-table';
+        leaderboardTable.id = 'leaderboard-table';
+        
+        // Add all elements to the leaderboard section
+        leaderboardSection.appendChild(usernameArea);
+        leaderboardSection.appendChild(leaderboardTitle);
+        leaderboardSection.appendChild(thresholdSubtitle);
+        leaderboardSection.appendChild(loadingIndicator);
+        leaderboardSection.appendChild(leaderboardTable);
+        
+        // Find the game-container and append the leaderboard section
+        const gameContainer = document.querySelector('.game-container');
+        if (gameContainer) {
+            gameContainer.appendChild(leaderboardSection);
         }
     }
     
@@ -160,7 +249,7 @@ class LeaderboardManager {
                     // If username is set, update the score in leaderboard
                     if (this.isUsernameSet && score > 0) {
                         console.log('LeaderboardManager submitting score:', score);
-                        this.updateScore(score);
+                        this.processScore(score);
                     }
                 } else {
                     console.log('Puzzle already completed, not updating score again');
@@ -195,82 +284,6 @@ class LeaderboardManager {
         }
     }
     
-    createLeaderboardUI() {
-        // Create leaderboard container
-        const leaderboardSection = document.createElement('section');
-        leaderboardSection.className = 'leaderboard-section';
-        
-        // Create username submission area
-        const usernameArea = document.createElement('div');
-        usernameArea.className = 'username-area';
-        
-        const usernameForm = document.createElement('div');
-        usernameForm.className = 'username-form';
-        
-        const usernamePrompt = document.createElement('p');
-        usernamePrompt.textContent = 'Record your score - submit your name:';
-        usernamePrompt.className = 'username-prompt';
-        
-        const inputWrapper = document.createElement('div');
-        inputWrapper.className = 'input-wrapper';
-        
-        const usernameInput = document.createElement('input');
-        usernameInput.type = 'text';
-        usernameInput.id = 'username-input';
-        usernameInput.maxLength = 12;
-        usernameInput.placeholder = 'Enter your name (max 12 chars)';
-        
-        const submitButton = document.createElement('button');
-        submitButton.id = 'submit-username';
-        submitButton.textContent = 'Submit';
-        
-        inputWrapper.appendChild(usernameInput);
-        inputWrapper.appendChild(submitButton);
-        
-        const statusMessage = document.createElement('div');
-        statusMessage.id = 'username-status';
-        statusMessage.className = 'status-message';
-        
-        usernameForm.appendChild(usernamePrompt);
-        usernameForm.appendChild(inputWrapper);
-        usernameForm.appendChild(statusMessage);
-        
-        // Create welcome message area (initially hidden)
-        const welcomeMessage = document.createElement('div');
-        welcomeMessage.id = 'welcome-message';
-        welcomeMessage.className = 'welcome-message hidden';
-        
-        usernameArea.appendChild(usernameForm);
-        usernameArea.appendChild(welcomeMessage);
-        
-        // Create leaderboard title
-        const leaderboardTitle = document.createElement('h2');
-        leaderboardTitle.textContent = 'LEADERBOARD';
-        leaderboardTitle.className = 'leaderboard-title';
-        
-        // Create loading indicator
-        const loadingIndicator = document.createElement('div');
-        loadingIndicator.id = 'leaderboard-loading';
-        loadingIndicator.className = 'leaderboard-loading';
-        loadingIndicator.textContent = 'Loading leaderboard...';
-        
-        const leaderboardTable = document.createElement('div');
-        leaderboardTable.className = 'leaderboard-table';
-        leaderboardTable.id = 'leaderboard-table';
-        
-        // Add all elements to the leaderboard section
-        leaderboardSection.appendChild(usernameArea);
-        leaderboardSection.appendChild(leaderboardTitle);
-        leaderboardSection.appendChild(loadingIndicator);
-        leaderboardSection.appendChild(leaderboardTable);
-        
-        // Find the game-container and append the leaderboard section
-        const gameContainer = document.querySelector('.game-container');
-        if (gameContainer) {
-            gameContainer.appendChild(leaderboardSection);
-        }
-    }
-    
     addEventListeners() {
         // Add event listener for username submission
         const submitButton = document.getElementById('submit-username');
@@ -295,62 +308,62 @@ class LeaderboardManager {
             console.log('Score updated event received:', event.detail);
             const score = event.detail.score;
             if (this.isUsernameSet && score > 0) {
-                this.updateScore(score);
+                this.processScore(score);
             }
         });
         
-        // Set up periodic refresh of leaderboard
-        setInterval(() => {
-            if (document.visibilityState === 'visible') {
-                this.refreshLeaderboard();
-            }
-        }, 30000); // Refresh every 30 seconds
+        // We no longer need periodic refresh - only refresh when scores are updated
+        // Remove the setInterval that was here before
     }
     
-    // Debounced version of updateScore to prevent multiple calls
+    // New method to process scores - track session high score and determine if submission needed
+    processScore(score) {
+        console.log('Processing score:', score);
+        
+        // Check if score is a new session high score
+        if (score > this.sessionHighScore) {
+            this.sessionHighScore = score;
+            console.log('New session high score:', score);
+            
+            // Only update the leaderboard UI initially for scores below threshold
+            if (score < this.scoreThreshold) {
+                this.showUpdateStatus(`Score tracked (needs ${this.scoreThreshold - score} more to reach leaderboard)`, 'info');
+                setTimeout(() => this.hideUpdateStatus(), 3000);
+                return;
+            }
+            
+            // For scores over threshold, submit to leaderboard
+            this.updateScore(score);
+        } else {
+            console.log('Score not higher than session high score:', this.sessionHighScore);
+        }
+    }
+    
+    // Debounced version of updateScore that submits to leaderboard
     updateScore = debounce(async function(score) {
         console.log('Debounced updateScore called with:', score);
         
-        if (!this.isUsernameSet || score <= 0) {
-            console.log('Score not updated: username not set or score <= 0');
+        if (!this.isUsernameSet || score < this.scoreThreshold) {
+            console.log(`Score not submitted: ${!this.isUsernameSet ? 'username not set' : 'below threshold of ' + this.scoreThreshold}`);
             return;
         }
         
-        // Check if we've submitted this exact score recently
-        const lastSubmissionTime = this.submissionTimestamps.get(score);
+        // Check if we've submitted a score recently
+        const lastSubmissionTime = this.submissionTimestamps.get('lastSubmission');
         const now = Date.now();
         if (lastSubmissionTime && now - lastSubmissionTime < 10000) { // 10 seconds
-            console.log('Preventing duplicate submission of the same score within 10 seconds');
+            console.log('Preventing submission too soon after previous submission');
             return;
         }
         
         // Record this submission timestamp
-        this.submissionTimestamps.set(score, now);
+        this.submissionTimestamps.set('lastSubmission', now);
         
         try {
             this.showUpdateStatus('Updating score...');
             
             if (this.supabase) {
-                // Check for existing scores from this player
-                const { data, error } = await this.supabase
-                    .from('leaderboard_entries')
-                    .select('*')
-                    .eq('name', this.username)
-                    .order('created_at', { ascending: false })
-                    .limit(1);
-                    
-                if (error) {
-                    console.error('Error checking existing scores:', error);
-                } else if (data && data.length > 0) {
-                    // If this is the same score, don't submit again
-                    if (data[0].score === score) {
-                        console.log('Score already exists in database, not submitting duplicate');
-                        this.refreshLeaderboard();
-                        return;
-                    }
-                }
-                
-                // Submit the score if it's new or different
+                // Submit the score
                 const result = await this.updateSupabaseScore(score);
                 if (result) {
                     console.log('Score submitted successfully to Supabase');
@@ -416,17 +429,20 @@ class LeaderboardManager {
                 if (usernameForm && welcomeMessage) {
                     usernameForm.classList.add('hidden');
                     welcomeMessage.classList.remove('hidden');
-                    welcomeMessage.textContent = `Hello ${username} - your score will appear in the leaderboard below.`;
+                    welcomeMessage.textContent = `Hello ${username} - high scores will appear in the leaderboard below.`;
                 }
                 
-                // Get current score and update leaderboard
+                // Get current score and process it
                 const currentScore = this.getCurrentScore();
                 if (currentScore > 0) {
-                    this.updateScore(currentScore);
+                    this.processScore(currentScore);
                 }
                 
                 statusMessage.textContent = '';
                 statusMessage.className = 'status-message';
+                
+                // Load the leaderboard to show current standings
+                this.refreshLeaderboard();
             } else {
                 statusMessage.textContent = 'Username not appropriate for family-friendly environment. Please try another.';
                 statusMessage.className = 'status-message error';
@@ -482,17 +498,34 @@ class LeaderboardManager {
             // Get current date/time
             const now = new Date().toISOString();
             
-            // Always insert as a new entry
+            // First check if this user already has a score that's higher
+            const { data, error: checkError } = await this.supabase
+                .from('leaderboard_entries')
+                .select('score')
+                .eq('name', this.username)
+                .order('score', { ascending: false })
+                .limit(1);
+                
+            if (checkError) {
+                console.error('Error checking for existing entries:', checkError);
+                throw checkError;
+            }
+            
+            // If user already has a higher score, don't update
+            if (data && data.length > 0 && data[0].score >= score) {
+                console.log('User already has a higher score:', data[0].score);
+                return true; // Return true to avoid showing error, but don't update
+            }
+            
+            // Now insert the new entry - we allow multiple entries per username from different sessions
             const { error: insertError } = await this.supabase
                 .from('leaderboard_entries')
-                .insert([
-                    { 
-                        name: this.username, 
-                        score: score, 
-                        created_at: now
-                    }
-                ]);
-            
+                .insert([{
+                    name: this.username,
+                    score: score,
+                    created_at: now
+                }]);
+                
             if (insertError) {
                 console.error('Error inserting score to Supabase:', insertError);
                 throw insertError;
@@ -500,7 +533,6 @@ class LeaderboardManager {
             
             console.log('Score added successfully to Supabase');
             return true;
-            
         } catch (error) {
             console.error('Error updating Supabase score:', error);
             throw error;
@@ -508,7 +540,7 @@ class LeaderboardManager {
     }
     
     updateTemporaryScore(score) {
-        // Only store in memory, not in any storage
+        // Always add a new entry for this session (allows multiple entries per username)
         const now = new Date();
         const entry = {
             name: this.username,
@@ -516,8 +548,10 @@ class LeaderboardManager {
             date: now.toISOString()
         };
         
-        // Add to in-memory leaderboard data
+        // Add the new entry
         this.leaderboardData.push(entry);
+        
+        // Sort and trim to maintain top scores
         this.leaderboardData.sort((a, b) => b.score - a.score);
         this.leaderboardData = this.leaderboardData.slice(0, this.maxEntries);
         
@@ -609,6 +643,7 @@ class LeaderboardManager {
             .from('leaderboard_entries')
             .select('*')
             .gte('created_at', cutoffDate)
+            .gte('score', this.scoreThreshold) // Only fetch scores meeting the threshold
             .order('score', { ascending: false })
             .limit(20);
         
