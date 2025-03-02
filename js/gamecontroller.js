@@ -131,11 +131,16 @@ class GameController {
     }
 
     handleCellClick(cell) {
-        const cellIndex = parseInt(cell.dataset.index);
+        // Ensure we're working with a grid cell
+        const actualCell = cell.closest('.grid-cell');
+        if (!actualCell) return;
+    
+        const cellIndex = parseInt(actualCell.dataset.index);
+        if (isNaN(cellIndex)) return;
 
         // First click must be start cell
         if (this.state.userPath.length === 0) {
-            if (isStartCell(cell)) {
+            if (isStartCell(actualCell)) {
                 this.state.userPath.push(cellIndex);
                 highlightPath(this.state.userPath);
                 this.showMessage('Path started! Continue by selecting connected cells.');
