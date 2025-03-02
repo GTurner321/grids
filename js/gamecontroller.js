@@ -338,6 +338,7 @@ class GameController {
             }
         } else {
             scoreManager.handleCheck(false);
+            
             // Show error message with specific details about the first invalid calculation
             if (validation.error) {
                 this.showMessage(validation.error, 'error', 10000); // 10 seconds display time
@@ -345,11 +346,19 @@ class GameController {
                 this.showMessage('Mathematical error in the path. Try again.', 'error', 10000);
             }
             
-            // Do NOT clear the path - path remains selected
+            // If we know where the error occurred, truncate the path to keep only valid calculations
+            if (validation.failedAt !== undefined) {
+                // Keep the path up to the last correct calculation
+                // failedAt is the index of the first cell in the failing calculation
+                // For example: 5-3=2, 2*3=6, 6+5=11 (incorrect)
+                // failedAt would be 6 (index in the path array)
+                // We want to keep indices 0 through 5 (inclusive)
+                this.state.userPath = this.state.userPath.slice(0, validation.failedAt);
+                highlightPath(this.state.userPath);
+            }
         }
         
         this.updateUI();
-    }
 
     validatePath() {
         // First check if the path is continuous
