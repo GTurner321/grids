@@ -1,4 +1,4 @@
-// leaderboard-integration.js - Fixed version
+// leaderboard-integration.js - Fixed version with anti-duplication logic
 
 // Load CSS
 function loadStylesheet(url) {
@@ -22,6 +22,16 @@ function resetUserSession() {
     console.log('User session data reset');
 }
 
+// Debounce function to prevent multiple rapid calls
+function debounce(func, wait) {
+    let timeout;
+    return function(...args) {
+        const context = this;
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(context, args), wait);
+    };
+}
+
 // Create the leaderboard class
 class LeaderboardManager {
     constructor() {
@@ -34,6 +44,7 @@ class LeaderboardManager {
         this.maxEntries = 20;
         this.supabase = null;
         this.hasSubmittedScore = false;
+        this.submissionTimestamps = new Map(); // Track submission times by score
         
         this.initSupabase();
         this.loadLeaderboard();
@@ -138,17 +149,21 @@ class LeaderboardManager {
             
             // Patch completePuzzle to ensure leaderboard is updated
             scoreManager.completePuzzle = () => {
-                // Call the original function first
-                originalCompletePuzzle.call(scoreManager);
-                
-                const score = scoreManager.totalScore;
-                console.log('Completed puzzle, total score:', score);
-                
-                // If username is set, update the score in leaderboard
-                if (this.isUsernameSet && !this.hasSubmittedScore && score > 0) {
-                    console.log('LeaderboardManager submitting score:', score);
-                    this.updateScore(score);
-                    this.hasSubmittedScore = true;
+                // Only run if this is the first time for this puzzle
+                if (!scoreManager.roundComplete) {
+                    // Call the original function first
+                    originalCompletePuzzle.call(scoreManager);
+                    
+                    const score = scoreManager.totalScore;
+                    console.log('Completed puzzle, total score:', score);
+                    
+                    // If username is set, update the score in leaderboard
+                    if (this.isUsernameSet && score > 0) {
+                        console.log('LeaderboardManager submitting score:', score);
+                        this.updateScore(score);
+                    }
+                } else {
+                    console.log('Puzzle already completed, not updating score again');
                 }
             };
             
@@ -157,17 +172,20 @@ class LeaderboardManager {
                 // Call the original function first
                 originalUpdateDisplay.call(this);
                 
-                // Dispatch score updated event
-                const scoreUpdatedEvent = new CustomEvent('scoreUpdated', {
-                    detail: {
-                        score: this.totalScore,
-                        level: this.currentLevel,
-                        roundScore: this.roundScore,
-                        roundComplete: this.roundComplete
-                    }
-                });
-                
-                window.dispatchEvent(scoreUpdatedEvent);
+                // Only dispatch events for completed rounds to avoid duplicate submissions
+                if (this.roundComplete) {
+                    // Dispatch score updated event
+                    const scoreUpdatedEvent = new CustomEvent('scoreUpdated', {
+                        detail: {
+                            score: this.totalScore,
+                            level: this.currentLevel,
+                            roundScore: this.roundScore,
+                            roundComplete: this.roundComplete
+                        }
+                    });
+                    
+                    window.dispatchEvent(scoreUpdatedEvent);
+                }
             };
             
             return true;
@@ -289,6 +307,77 @@ class LeaderboardManager {
         }, 30000); // Refresh every 30 seconds
     }
     
+    // Debounced version of updateScore to prevent multiple calls
+    updateScore = debounce(async function(score) {
+        console.log('Debounced updateScore called with:', score);
+        
+        if (!this.isUsernameSet || score <= 0) {
+            console.log('Score not updated: username not set or score <= 0');
+            return;
+        }
+        
+        // Check if we've submitted this exact score recently
+        const lastSubmissionTime = this.submissionTimestamps.get(score);
+        const now = Date.now();
+        if (lastSubmissionTime && now - lastSubmissionTime < 10000) { // 10 seconds
+            console.log('Preventing duplicate submission of the same score within 10 seconds');
+            return;
+        }
+        
+        // Record this submission timestamp
+        this.submissionTimestamps.set(score, now);
+        
+        try {
+            this.showUpdateStatus('Updating score...');
+            
+            if (this.supabase) {
+                // Check for existing scores from this player
+                const { data, error } = await this.supabase
+                    .from('leaderboard_entries')
+                    .select('*')
+                    .eq('name', this.username)
+                    .order('created_at', { ascending: false })
+                    .limit(1);
+                    
+                if (error) {
+                    console.error('Error checking existing scores:', error);
+                } else if (data && data.length > 0) {
+                    // If this is the same score, don't submit again
+                    if (data[0].score === score) {
+                        console.log('Score already exists in database, not submitting duplicate');
+                        this.refreshLeaderboard();
+                        return;
+                    }
+                }
+                
+                // Submit the score if it's new or different
+                const result = await this.updateSupabaseScore(score);
+                if (result) {
+                    console.log('Score submitted successfully to Supabase');
+                }
+            } else {
+                // Fallback to session-only leaderboard
+                this.updateTemporaryScore(score);
+                console.log('Score added to temporary leaderboard');
+            }
+            
+            // Refresh the leaderboard display
+            await this.refreshLeaderboard();
+            
+            // Show success message
+            this.showUpdateStatus('Score added to leaderboard', 'success');
+            
+            // Hide status after 2 seconds
+            setTimeout(() => {
+                this.hideUpdateStatus();
+            }, 2000);
+            
+        } catch (error) {
+            console.error('Error updating score:', error);
+            this.showUpdateStatus('Error updating score: ' + error.message, 'error');
+        }
+    }, 500); // 500ms debounce
+    
     async handleUsernameSubmission() {
         const usernameInput = document.getElementById('username-input');
         const statusMessage = document.getElementById('username-status');
@@ -384,48 +473,6 @@ class LeaderboardManager {
             console.error('Error getting current score:', error);
         }
         return 0;
-    }
-    
-    async updateScore(score) {
-        console.log('updateScore called with:', score);
-        
-        if (!this.isUsernameSet || score <= 0) {
-            console.log('Score not updated: username not set or score <= 0');
-            return;
-        }
-        
-        try {
-            this.showUpdateStatus('Updating score...');
-            
-            if (this.supabase) {
-                // Try to update score in Supabase
-                const result = await this.updateSupabaseScore(score);
-                if (result) {
-                    this.hasSubmittedScore = true;
-                    console.log('Score submitted successfully to Supabase');
-                }
-            } else {
-                // Fallback to session-only leaderboard
-                this.updateTemporaryScore(score);
-                this.hasSubmittedScore = true;
-                console.log('Score added to temporary leaderboard');
-            }
-            
-            // Refresh the leaderboard display
-            await this.refreshLeaderboard();
-            
-            // Show success message
-            this.showUpdateStatus('Score added to leaderboard', 'success');
-            
-            // Hide status after 2 seconds
-            setTimeout(() => {
-                this.hideUpdateStatus();
-            }, 2000);
-            
-        } catch (error) {
-            console.error('Error updating score:', error);
-            this.showUpdateStatus('Error updating score: ' + error.message, 'error');
-        }
     }
     
     async updateSupabaseScore(score) {
@@ -675,3 +722,6 @@ window.addEventListener('DOMContentLoaded', () => {
         console.error('Error initializing leaderboard system:', error);
     }
 });
+
+// Export for module usage
+export default LeaderboardManager;
