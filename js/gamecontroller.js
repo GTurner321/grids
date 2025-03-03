@@ -20,10 +20,67 @@ class GameController {
         
         this.messageTimeout = null;
 
+        this.addMobileOptimizations();
         this.initializeEventListeners();
         this.initializeGridInteractions();
     }
 
+    addMobileOptimizations() {
+        // Prevent double-tap zoom on iOS
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', (e) => {
+            const now = Date.now();
+            const DOUBLE_TAP_THRESHOLD = 300; // milliseconds
+            
+            if (lastTouchEnd && (now - lastTouchEnd) < DOUBLE_TAP_THRESHOLD) {
+                e.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, { passive: false });
+        
+        // Disable context menu on long-press, which interferes with swiping on mobile
+        document.addEventListener('contextmenu', (e) => {
+            if (e.target.closest('.grid-cell')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+        
+        // Add viewport meta tag to prevent unwanted scaling
+        let viewport = document.querySelector('meta[name="viewport"]');
+        if (viewport) {
+            viewport.content = "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no";
+        } else {
+            const meta = document.createElement('meta');
+            meta.name = 'viewport';
+            meta.content = "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no";
+            document.head.appendChild(meta);
+        }
+        
+        // Add device detection for platform-specific optimizations
+        const isTouchDevice = 'ontouchstart' in window || 
+            navigator.maxTouchPoints > 0 || 
+            navigator.msMaxTouchPoints > 0;
+        
+        // Add a class to the body for touch-specific CSS targeting
+        if (isTouchDevice) {
+            document.body.classList.add('touch-device');
+        }
+        
+        // On iOS devices, add an additional class for iOS-specific fixes
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        if (isIOS) {
+            document.body.classList.add('ios-device');
+            
+            // Fix iOS 100vh issue
+            const setAppHeight = () => {
+                document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`);
+            };
+            window.addEventListener('resize', setAppHeight);
+            setAppHeight();
+        }
+    }
+    
     initializeEventListeners() {
         // Level selection
         document.querySelectorAll('.level-btn').forEach(btn => {
