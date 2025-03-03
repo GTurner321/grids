@@ -130,192 +130,252 @@ class GameController {
         });
     }
 
-    handleCellClick(cell) {
-        // Ensure we're working with a grid cell
-        const actualCell = cell.closest('.grid-cell');
-        if (!actualCell) return;
-    
-        const cellIndex = parseInt(actualCell.dataset.index);
-        if (isNaN(cellIndex)) return;
+    // Replacement for the handleCellClick method in gamecontroller.js
+handleCellClick(cell) {
+    // Early exit if we don't have a valid cell
+    if (!cell || !cell.classList.contains('grid-cell')) return;
 
-        // First click must be start cell
-        if (this.state.userPath.length === 0) {
-            if (isStartCell(actualCell)) {
-                this.state.userPath.push(cellIndex);
-                highlightPath(this.state.userPath);
-                this.showMessage('Path started! Continue by selecting connected cells.');
-            } else {
-                this.showMessage('You must start at the green square!', 'error');
-            }
-            return;
-        }
+    const cellIndex = parseInt(cell.dataset.index);
+    if (isNaN(cellIndex)) return;
 
-        // Only allow deselection of last cell in path
-        const lastCellIndex = this.state.userPath[this.state.userPath.length - 1];
-        if (cellIndex === lastCellIndex) {
-            this.state.userPath.pop();
+    // First cell selection must be start cell
+    if (this.state.userPath.length === 0) {
+        if (isStartCell(cell)) {
+            this.state.userPath = [cellIndex]; // Set directly as an array with one item
             highlightPath(this.state.userPath);
-            return;
+            this.showMessage('Path started! Continue by selecting connected cells.');
+        } else {
+            this.showMessage('You must start at the green square!', 'error');
         }
-        
-        // Check if cell is adjacent to last selected cell
-        if (!this.isValidMove(cellIndex)) {
-            return;  // Silent fail, no message needed
-        }
-
-        // Don't allow selection of cells already in path
-        if (this.state.userPath.includes(cellIndex)) {
-            return; // Prevent selecting cells that are already in the path
-        }
-
-        // Add the new cell to the path
-        this.state.userPath.push(cellIndex);
-        highlightPath(this.state.userPath);
-        
-        // Enable check solution button
-        document.getElementById('check-solution').disabled = false;
-
-        // If end cell is selected, automatically check the solution
-        if (isEndCell(cell)) {
-            this.checkSolution();
-        }
+        return;
     }
 
-    initializeGridInteractions() {
-        const gridContainer = document.getElementById('grid-container');
-        let isMouseDown = false;
-        let lastSelectedCell = null;
-        let isDragging = false;
+    // Handle deselection of last cell
+    const lastCellIndex = this.state.userPath[this.state.userPath.length - 1];
+    if (cellIndex === lastCellIndex) {
+        this.state.userPath.pop();
+        highlightPath(this.state.userPath);
+        return;
+    }
+    
+    // Don't allow selection of cells already in path (except last cell for deselection)
+    if (this.state.userPath.includes(cellIndex)) {
+        return;
+    }
 
-        // Mouse events
-        gridContainer.addEventListener('mousedown', (e) => {
-            if (!this.state.gameActive) return;
-            isMouseDown = true;
-            isDragging = false;
-            const cell = e.target.closest('.grid-cell');
-            if (cell) {
-                lastSelectedCell = cell;
-                this.handleCellInteraction(cell);
-            }
-        });
+    // Check if cell is adjacent to last selected cell
+    if (!this.isValidMove(cellIndex)) {
+        // Give feedback that this isn't a valid move
+        cell.classList.add('invalid-move');
+        setTimeout(() => cell.classList.remove('invalid-move'), 300);
+        return;
+    }
 
-        gridContainer.addEventListener('mousemove', (e) => {
-            if (!isMouseDown || !this.state.gameActive) return;
+    // Add the new cell to the path
+    this.state.userPath.push(cellIndex);
+    highlightPath(this.state.userPath);
+    
+    // Add a subtle animation/feedback that cell was selected
+    cell.classList.add('just-selected');
+    setTimeout(() => cell.classList.remove('just-selected'), 200);
+    
+    // Enable check solution button
+    document.getElementById('check-solution').disabled = false;
+
+    // If end cell is selected, automatically check the solution
+    if (isEndCell(cell)) {
+        this.checkSolution();
+    }
+}
+
+    // Replacement for the initializeGridInteractions method in gamecontroller.js
+initializeGridInteractions() {
+    const gridContainer = document.getElementById('grid-container');
+    let isDragging = false;
+    let lastSelectedCell = null;
+    
+    // Variables to track touch interaction
+    let touchStartX = 0;
+    let touchStartY = 0;
+    const touchThreshold = 5; // Minimum distance to consider it a swipe
+    
+    // Single click handler for all cell interactions
+    const handleCellClick = (e) => {
+        e.preventDefault(); // Prevent default to avoid any double-tap zooming
+        
+        if (!this.state.gameActive) return;
+        
+        const cell = e.target.closest('.grid-cell');
+        if (!cell) return;
+        
+        this.handleCellClick(cell);
+    };
+    
+    // Mouse events with improved handling
+    gridContainer.addEventListener('mousedown', (e) => {
+        if (!this.state.gameActive) return;
+        
+        isDragging = false;
+        const cell = e.target.closest('.grid-cell');
+        if (cell) {
+            lastSelectedCell = cell;
+            // Don't process the cell yet, wait to see if it's a click or drag
+        }
+    });
+    
+    gridContainer.addEventListener('mousemove', (e) => {
+        if (!lastSelectedCell || !this.state.gameActive) return;
+        
+        // Calculate distance moved to determine if it's a drag
+        const dx = e.clientX - lastSelectedCell.getBoundingClientRect().left - (lastSelectedCell.offsetWidth / 2);
+        const dy = e.clientY - lastSelectedCell.getBoundingClientRect().top - (lastSelectedCell.offsetHeight / 2);
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        if (distance > touchThreshold) {
             isDragging = true;
             const cell = e.target.closest('.grid-cell');
             if (cell && cell !== lastSelectedCell) {
                 lastSelectedCell = cell;
                 this.handleCellInteraction(cell);
             }
-        });
-
-        gridContainer.addEventListener('mouseup', (e) => {
-            if (!isDragging) {
-                // Handle click without drag
-                const cell = e.target.closest('.grid-cell');
-                if (cell) {
-                    this.handleCellInteraction(cell);
-                }
-            }
-            isMouseDown = false;
-            isDragging = false;
-            lastSelectedCell = null;
-        });
-
-        gridContainer.addEventListener('mouseleave', () => {
-            isMouseDown = false;
-            isDragging = false;
-            lastSelectedCell = null;
-        });
-
-        // Touch events
-        gridContainer.addEventListener('touchstart', (e) => {
-            if (!this.state.gameActive) return;
-            e.preventDefault(); // Prevent default behavior
+        }
+    });
     
-            const touch = e.touches[0];
-            const element = document.elementFromPoint(touch.clientX, touch.clientY);
-            const cell = element.closest('.grid-cell');
-    
+    gridContainer.addEventListener('mouseup', (e) => {
+        if (!this.state.gameActive) return;
+        
+        // Only treat it as a click if we didn't start dragging
+        if (!isDragging) {
+            const cell = e.target.closest('.grid-cell');
             if (cell) {
-                // Call handleCellClick directly for better touch response
                 this.handleCellClick(cell);
             }
-        }, false);
-
-        gridContainer.addEventListener('touchmove', (e) => {
-            if (!this.state.gameActive) return;
-            e.preventDefault(); // Prevent scrolling
-            
-            const touch = e.touches[0];
-            const cell = document.elementFromPoint(touch.clientX, touch.clientY).closest('.grid-cell');
-            if (cell && cell !== lastSelectedCell) {
-                lastSelectedCell = cell;
-                this.handleCellInteraction(cell);
-            }
-        });
-
-        gridContainer.addEventListener('touchend', () => {
-            lastSelectedCell = null;
-        });
-
-        gridContainer.addEventListener('touchcancel', () => {
-            lastSelectedCell = null;
-        });
-    }
-    
-    handleCellInteraction(cell) {
-        const cellIndex = parseInt(cell.dataset.index);
-
-        // First click must be start cell
-        if (this.state.userPath.length === 0) {
-            if (isStartCell(cell)) {
-                this.state.userPath = [cellIndex];
-                highlightPath(this.state.userPath);
-                this.showMessage('Path started! Continue by selecting connected cells.');
-            } else {
-                this.showMessage('You must start at the green square!', 'error');
-            }
-            return;
         }
-
-        // Only allow deselection of last cell in path
-        const lastCellIndex = this.state.userPath[this.state.userPath.length - 1];
-        if (cellIndex === lastCellIndex) {
-            this.state.userPath.pop();
-            highlightPath(this.state.userPath);
-            return;
-        }
-
-        // For new cell selection, ensure it's adjacent
-        if (!this.isValidMove(cellIndex)) {
-            return;
-        }
-
-        // Don't allow selection of cells already in path
-        if (this.state.userPath.includes(cellIndex)) {
-            return;
-        }
-
-        this.state.userPath.push(cellIndex);
-        highlightPath(this.state.userPath);
         
-        document.getElementById('check-solution').disabled = false;
-
-        if (isEndCell(cell)) {
-            this.checkSolution();
+        isDragging = false;
+        lastSelectedCell = null;
+    });
+    
+    // Clean up when mouse leaves container
+    gridContainer.addEventListener('mouseleave', () => {
+        isDragging = false;
+        lastSelectedCell = null;
+    });
+    
+    // Improved touch handling
+    gridContainer.addEventListener('touchstart', (e) => {
+        if (!this.state.gameActive) return;
+        // Don't preventDefault here to allow scrolling if not on a cell
+        
+        const touch = e.touches[0];
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+        
+        const element = document.elementFromPoint(touch.clientX, touch.clientY);
+        const cell = element.closest('.grid-cell');
+        
+        if (cell) {
+            e.preventDefault(); // Only prevent default if we're on a cell
+            lastSelectedCell = cell;
+            // First touch - store but don't select yet
         }
+    }, { passive: false });
+    
+    gridContainer.addEventListener('touchmove', (e) => {
+        if (!this.state.gameActive || !lastSelectedCell) return;
+        
+        e.preventDefault(); // Prevent scrolling during cell selection
+        
+        const touch = e.touches[0];
+        const dx = touch.clientX - touchStartX;
+        const dy = touch.clientY - touchStartY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        // Only count as a swipe/drag if moved past threshold
+        if (distance > touchThreshold) {
+            isDragging = true;
+            const newElement = document.elementFromPoint(touch.clientX, touch.clientY);
+            const newCell = newElement.closest('.grid-cell');
+            
+            if (newCell && newCell !== lastSelectedCell) {
+                // Immediately process the cell for better swipe responsiveness
+                this.handleCellInteraction(newCell);
+                lastSelectedCell = newCell;
+                
+                // Update touch start positions for smoother continuous swiping
+                touchStartX = touch.clientX;
+                touchStartY = touch.clientY;
+            }
+        }
+    }, { passive: false });
+    
+    gridContainer.addEventListener('touchend', (e) => {
+        if (!this.state.gameActive) return;
+        
+        // Only process as a tap if we didn't drag
+        if (!isDragging && lastSelectedCell) {
+            this.handleCellClick(lastSelectedCell);
+        }
+        
+        isDragging = false;
+        lastSelectedCell = null;
+    }, { passive: false });
+    
+    gridContainer.addEventListener('touchcancel', () => {
+        isDragging = false;
+        lastSelectedCell = null;
+    });
+}
+    
+    // Replacement for the handleCellInteraction method in gamecontroller.js
+handleCellInteraction(cell) {
+    // This method is primarily for drag/swipe operations
+    // Early exit if we don't have a valid cell
+    if (!cell || !cell.classList.contains('grid-cell')) return;
+
+    const cellIndex = parseInt(cell.dataset.index);
+    if (isNaN(cellIndex)) return;
+
+    // First click must be start cell
+    if (this.state.userPath.length === 0) {
+        if (isStartCell(cell)) {
+            this.state.userPath = [cellIndex]; // Set directly as an array with one item
+            highlightPath(this.state.userPath);
+            this.showMessage('Path started! Continue by selecting connected cells.');
+        } else {
+            // During dragging operations, silently ignore invalid start cells
+            return;
+        }
+        return;
+    }
+
+    // Check for valid move
+    if (!this.isValidMove(cellIndex)) {
+        return;
+    }
+
+    // Don't allow selection of cells already in path
+    if (this.state.userPath.includes(cellIndex)) {
+        return;
+    }
+
+    // For drag/swipe operations, we want immediate feedback
+    this.state.userPath.push(cellIndex);
+    highlightPath(this.state.userPath);
+    
+    // Add haptic feedback if available (will work on iOS, some Android)
+    if (window.navigator && window.navigator.vibrate) {
+        window.navigator.vibrate(30); // Short 30ms vibration for feedback
     }
     
-    isValidMove(newCellIndex) {
-        const lastCellIndex = this.state.userPath[this.state.userPath.length - 1];
-        const [x1, y1] = [newCellIndex % 10, Math.floor(newCellIndex / 10)];
-        const [x2, y2] = [lastCellIndex % 10, Math.floor(lastCellIndex / 10)];
+    document.getElementById('check-solution').disabled = false;
 
-        return (Math.abs(x1 - x2) === 1 && y1 === y2) || 
-               (Math.abs(y1 - y2) === 1 && x1 === x2);
+    // Auto-check on reaching end cell
+    if (isEndCell(cell)) {
+        this.checkSolution();
     }
-
+}
+    
     removeAllSpareCells() {
         const spareCells = this.state.gridEntries
             .map((entry, index) => (!entry?.isPartOfPath && !this.state.removedCells.has(index)) ? index : null)
