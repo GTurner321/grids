@@ -269,3 +269,79 @@
     background-color: #fee2e2;
     color: #b91c1c;
 }
+
+/* Convert leaderboard title to button */
+.leaderboard-title-button {
+    text-align: center;
+    font-size: 1.2rem;
+    margin: 8px 0;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    letter-spacing: 0.05em;
+    background: transparent;
+    border: none;
+    width: 100%;
+    padding: 8px 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #1e293b;
+    position: relative;
+}
+
+.leaderboard-title-button:hover {
+    color: #22c55e;
+}
+
+.leaderboard-title-button:active {
+    transform: translateY(1px);
+}
+
+/* Add a subtle indicator to show it's clickable */
+.leaderboard-title-button::after {
+    content: '▼';
+    font-size: 0.8rem;
+    margin-left: 8px;
+    vertical-align: middle;
+    transition: transform 0.3s ease;
+}
+
+/* When leaderboard is visible, flip the arrow */
+.leaderboard-title-button.active::after {
+    transform: rotate(180deg);
+}
+
+/* Update the subtitle style */
+.leaderboard-subtitle {
+    text-align: center;
+    font-size: 0.8rem;
+    margin-top: -10px;
+    margin-bottom: 10px;
+    color: #6b7280;
+}
+
+/* Touch device optimizations for leaderboard */
+.touch-device .leaderboard-title-button {
+    padding: 12px 0;
+    font-size: 1.3rem;
+}
+
+.touch-device #submit-username {
+    padding: 10px 16px;
+    min-height: 44px;
+}
+
+.touch-device #username-input {
+    padding: 10px;
+    min-height: 20px;
+    font-size: 16px; /* Prevent zoom on input focus in iOS */
+}
+
+.touch-device .leaderboard-row {
+    padding: 10px 12px;
+}
+
+/* Improve scrolling in leaderboard on touch devices */
+.touch-device .leaderboard-table {
+    -webkit-overflow-scrolling: touch;
+    overflow-y: scroll;
+}
