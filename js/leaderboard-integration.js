@@ -144,13 +144,14 @@ class LeaderboardManager {
         usernameArea.appendChild(welcomeMessage);
         
         // Create leaderboard title
-        const leaderboardTitle = document.createElement('h2');
+        const leaderboardTitle = document.createElement('button');
         leaderboardTitle.textContent = 'LEADERBOARD';
-        leaderboardTitle.className = 'leaderboard-title';
+        leaderboardTitle.className = 'leaderboard-title-button';
+        leaderboardTitle.id = 'leaderboard-toggle';
         
         // Add threshold subtitle
         const thresholdSubtitle = document.createElement('div');
-        thresholdSubtitle.textContent = '(score 5000+)';
+        thresholdSubtitle.textContent = '(score 5000+; click to reveal)';
         thresholdSubtitle.className = 'leaderboard-subtitle';
         thresholdSubtitle.style.textAlign = 'center';
         thresholdSubtitle.style.fontSize = '0.8rem';
@@ -165,7 +166,7 @@ class LeaderboardManager {
         loadingIndicator.textContent = 'Loading leaderboard...';
         
         const leaderboardTable = document.createElement('div');
-        leaderboardTable.className = 'leaderboard-table';
+        leaderboardTable.className = 'leaderboard-table hidden'; // Add 'hidden' class
         leaderboardTable.id = 'leaderboard-table';
         
         // Add all elements to the leaderboard section
@@ -311,6 +312,13 @@ class LeaderboardManager {
                 this.processScore(score);
             }
         });
+
+        const toggleButton = document.getElementById('leaderboard-toggle');
+        if (toggleButton) {
+            toggleButton.addEventListener('click', () => {
+                this.toggleLeaderboardVisibility();
+            });
+        }
         
         // We no longer need periodic refresh - only refresh when scores are updated
         // Remove the setInterval that was here before
@@ -582,6 +590,40 @@ class LeaderboardManager {
         const statusEl = document.getElementById('leaderboard-status');
         if (statusEl) {
             statusEl.style.display = 'none';
+        }
+    }
+
+    toggleLeaderboardVisibility() {
+    const leaderboardTable = document.getElementById('leaderboard-table');
+    const loadingIndicator = document.getElementById('leaderboard-loading');
+    
+    if (leaderboardTable) {
+        const isHidden = leaderboardTable.classList.contains('hidden');
+        
+        if (isHidden) {
+            // Show the leaderboard
+            leaderboardTable.classList.remove('hidden');
+            
+            // Also show loading indicator while refreshing data
+            if (loadingIndicator) {
+                loadingIndicator.style.display = 'block';
+            }
+            
+            // Refresh the leaderboard data
+            this.refreshLeaderboard().then(() => {
+                if (loadingIndicator) {
+                    loadingIndicator.style.display = 'none';
+                }
+            });
+        } else {
+            // Hide the leaderboard
+            leaderboardTable.classList.add('hidden');
+            
+            // Also hide loading indicator
+            if (loadingIndicator) {
+                loadingIndicator.style.display = 'none';
+                }
+            }
         }
     }
     
