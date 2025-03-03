@@ -29,14 +29,17 @@ body {
 /* Game Header */
 .game-header {
     text-align: center;
-    margin-bottom: 0.8rem; /* Reduced from 2rem */
+    margin-bottom: 0.8rem;
 }
 
 .game-header h1 {
-    font-family: monospace;
-    font-size: 2rem; /* Reduced from 2.5rem */
-    letter-spacing: 0.1em;
-    margin: 0 0 0.5rem 0; /* Reduced from 1rem */
+    font-family: 'Jolly Lodger', monospace;
+    font-size: 3.5rem;
+    letter-spacing: 0.05em;
+    margin: 0 0 0.5rem 0;
+    color: #000000;
+    text-transform: uppercase;
+    font-weight: normal; /* Jolly Lodger looks better without extra weight */
 }
 
 /* Score Row */
