@@ -5,6 +5,7 @@
     --secondary-color: #60a5fa;
     --background-color: #f0f2f5;
     --grid-cell-size: 48px; /* Reduced from 60px */
+    --app-height: 100%; /* Added for iOS height fix */
 }
 
 body {
@@ -123,7 +124,8 @@ body {
 
 .grid-cell {
     aspect-ratio: 1;
-    min-height: 36px; /* 80% of previous size (45px) */
+    min-height: 40px; /* Increased from 36px for better touch targets */
+    min-width: 40px;
     background-color: white;
     display: flex;
     align-items: center;
@@ -132,17 +134,23 @@ body {
     cursor: pointer;
     transition: all 0.2s ease;
     user-select: none;
+    -webkit-user-select: none;
     border: 1px solid #e5e7eb;
     overflow: hidden;
     position: relative;
+    touch-action: none; /* Disable browser handling of touch actions */
+    -webkit-tap-highlight-color: transparent; /* Remove tap highlight on iOS */
 }
 
 .grid-cell.selected,
 .grid-cell.selected:hover {
-    background-color: #e5e7eb !important;
-    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2) !important;
+    background-color: #dbeafe !important; /* Lighter blue */
+    border: 2px solid #3b82f6 !important; /* Blue border */
+    box-shadow: 0 0 6px rgba(59, 130, 246, 0.5) !important;
     color: inherit !important;
-    border-color: #e5e7eb !important;
+    transform: scale(1.03); /* Slightly larger */
+    transition: all 0.15s ease;
+    z-index: 10; /* Ensure selected cells appear above others */
 }
 
 .grid-cell.start-cell {
@@ -190,6 +198,28 @@ body {
     background-color: #fef08a;
     border: 2px solid #facc15;
     z-index: 15;
+}
+
+/* Visual feedback for invalid moves */
+.grid-cell.invalid-move {
+    animation: shake 0.3s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-3px); }
+    75% { transform: translateX(3px); }
+}
+
+/* Visual feedback for cell selection */
+.grid-cell.just-selected {
+    animation: pulse 0.2s ease-in-out;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
 }
 
 .symbol-container {
@@ -331,29 +361,21 @@ body {
     color: white;
 }
 
-@media (max-width: 480px) {
-    .game-controls {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .game-controls button {
-        margin-bottom: 4px;
-    }
-    
-    .level-buttons {
-        flex-wrap: wrap;
-    }
+/* Helpful indicator for current dragging direction on mobile */
+.grid-cell.drag-target {
+    background-color: rgba(59, 130, 246, 0.2); /* Light blue highlight */
+    transition: background-color 0.1s ease;
 }
 
 /* Path Arrow Indicators */
 .path-arrow {
     position: absolute;
-    width: 16px;
-    height: 16px;
+    width: 18px; /* Increased from 16px */
+    height: 18px; /* Increased from 16px */
     z-index: 20;
-    opacity: 0.8;
+    opacity: 0.95; /* Increased from 0.8 */
     pointer-events: none; /* Make sure arrows don't interfere with clicks */
+    filter: drop-shadow(0 0 2px white); /* Added drop shadow for visibility */
 }
 
 /* Position arrows based on direction */
@@ -386,6 +408,65 @@ body {
     height: 100%;
     fill: #3b82f6; /* Blue color */
     filter: drop-shadow(0 0 1px white); /* Add a subtle white outline */
+}
+
+/* --------- TOUCH DEVICE SPECIFIC STYLES --------- */
+/* These will be applied when the JS adds the .touch-device class to the body */
+
+/* Make buttons more tappable on touch devices */
+.touch-device button {
+    min-height: 44px;
+    padding: 10px 15px;
+}
+
+/* Enhance visibility of selection on touch devices */
+.touch-device .grid-cell.selected {
+    transform: scale(1.05);
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.7) !important;
+}
+
+/* Avoid text selection issues on touch devices */
+.touch-device {
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* Make arrows more visible on smaller touch screens */
+.touch-device .path-arrow {
+    width: 20px;
+    height: 20px;
+}
+
+/* --------- iOS SPECIFIC STYLES --------- */
+/* These will be applied when the JS adds the .ios-device class to the body */
+
+/* iOS-specific optimizations */
+.ios-device .grid-cell {
+    /* Increase touch target size even more on iOS */
+    min-height: 44px;
+    min-width: 44px;
+}
+
+.ios-device .game-container {
+    height: var(--app-height);
+    max-height: var(--app-height);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 480px) {
+    .game-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .game-controls button {
+        margin-bottom: 4px;
+    }
+    
+    .level-buttons {
+        flex-wrap: wrap;
+    }
 }
 
 /* Add these styles to leaderboard.css */
