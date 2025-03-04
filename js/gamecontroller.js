@@ -7,6 +7,9 @@ import { scoreManager } from './scoremanager.js';
 
 class GameController {
     constructor() {
+        // Store a global reference for easy access
+        window.gameController = this;
+        
         this.state = {
             currentLevel: null,
             path: [],
@@ -20,67 +23,10 @@ class GameController {
         
         this.messageTimeout = null;
 
-        this.addMobileOptimizations();
         this.initializeEventListeners();
         this.initializeGridInteractions();
     }
 
-    addMobileOptimizations() {
-        // Prevent double-tap zoom on iOS
-        let lastTouchEnd = 0;
-        document.addEventListener('touchend', (e) => {
-            const now = Date.now();
-            const DOUBLE_TAP_THRESHOLD = 300; // milliseconds
-            
-            if (lastTouchEnd && (now - lastTouchEnd) < DOUBLE_TAP_THRESHOLD) {
-                e.preventDefault();
-            }
-            lastTouchEnd = now;
-        }, { passive: false });
-        
-        // Disable context menu on long-press, which interferes with swiping on mobile
-        document.addEventListener('contextmenu', (e) => {
-            if (e.target.closest('.grid-cell')) {
-                e.preventDefault();
-                return false;
-            }
-        });
-        
-        // Add viewport meta tag to prevent unwanted scaling
-        let viewport = document.querySelector('meta[name="viewport"]');
-        if (viewport) {
-            viewport.content = "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no";
-        } else {
-            const meta = document.createElement('meta');
-            meta.name = 'viewport';
-            meta.content = "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no";
-            document.head.appendChild(meta);
-        }
-        
-        // Add device detection for platform-specific optimizations
-        const isTouchDevice = 'ontouchstart' in window || 
-            navigator.maxTouchPoints > 0 || 
-            navigator.msMaxTouchPoints > 0;
-        
-        // Add a class to the body for touch-specific CSS targeting
-        if (isTouchDevice) {
-            document.body.classList.add('touch-device');
-        }
-        
-        // On iOS devices, add an additional class for iOS-specific fixes
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-        if (isIOS) {
-            document.body.classList.add('ios-device');
-            
-            // Fix iOS 100vh issue
-            const setAppHeight = () => {
-                document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`);
-            };
-            window.addEventListener('resize', setAppHeight);
-            setAppHeight();
-        }
-    }
-    
     initializeEventListeners() {
         // Level selection
         document.querySelectorAll('.level-btn').forEach(btn => {
@@ -90,10 +36,11 @@ class GameController {
             });
         });
 
-        // Grid cell clicks - Direct handler for cell clicks
+        // Grid cell clicks - direct approach
         document.getElementById('grid-container').addEventListener('click', (e) => {
             const cell = e.target.closest('.grid-cell');
             if (cell && this.state.gameActive) {
+                console.log('Cell clicked:', cell.dataset.index);
                 this.handleCellClick(cell);
             }
         });
@@ -187,15 +134,14 @@ class GameController {
         });
     }
 
-    // Fixed handleCellClick method
     handleCellClick(cell) {
         // Early exit if we don't have a valid cell
         if (!cell || !cell.classList.contains('grid-cell')) return;
-
+        
         const cellIndex = parseInt(cell.dataset.index);
         if (isNaN(cellIndex)) return;
 
-        // First cell selection must be start cell
+        // First click must be start cell
         if (this.state.userPath.length === 0) {
             if (isStartCell(cell)) {
                 this.state.userPath = [cellIndex];
@@ -245,56 +191,47 @@ class GameController {
         }
     }
 
-    // Add this missing method to check if a move is valid
-    isValidMove(cellIndex) {
-        if (this.state.userPath.length === 0) return false;
-        
+    isValidMove(newCellIndex) {
         const lastCellIndex = this.state.userPath[this.state.userPath.length - 1];
         
         // Convert indices to coordinates
-        const lastX = lastCellIndex % 10;
-        const lastY = Math.floor(lastCellIndex / 10);
-        
-        const newX = cellIndex % 10;
-        const newY = Math.floor(cellIndex / 10);
-        
+        const x1 = newCellIndex % 10;
+        const y1 = Math.floor(newCellIndex / 10);
+        const x2 = lastCellIndex % 10;
+        const y2 = Math.floor(lastCellIndex / 10);
+
         // Check if cells are adjacent (horizontally or vertically)
-        return (Math.abs(lastX - newX) === 1 && lastY === newY) || 
-               (Math.abs(lastY - newY) === 1 && lastX === newX);
+        return (Math.abs(x1 - x2) === 1 && y1 === y2) || 
+               (Math.abs(y1 - y2) === 1 && x1 === x2);
     }
 
-    // Fixed initializeGridInteractions method
     initializeGridInteractions() {
         const gridContainer = document.getElementById('grid-container');
-        let isDragging = false;
+        let isMouseDown = false;
         let lastSelectedCell = null;
-        
-        // Variables to track touch interaction
-        let touchStartX = 0;
-        let touchStartY = 0;
-        const touchThreshold = 5; // Minimum distance to consider it a swipe
-        
-        // Mouse events with improved handling
+        let isDragging = false;
+
+        // Mouse events
         gridContainer.addEventListener('mousedown', (e) => {
             if (!this.state.gameActive) return;
-            
+            isMouseDown = true;
             isDragging = false;
             const cell = e.target.closest('.grid-cell');
             if (cell) {
                 lastSelectedCell = cell;
-                // Don't process the cell yet, wait to see if it's a click or drag
+                // Don't process cell yet, wait to see if it's a click or drag
             }
         });
-        
+
         gridContainer.addEventListener('mousemove', (e) => {
-            if (!lastSelectedCell || !this.state.gameActive) return;
+            if (!isMouseDown || !this.state.gameActive) return;
             
             // Calculate distance moved to determine if it's a drag
             const dx = e.clientX - lastSelectedCell.getBoundingClientRect().left - (lastSelectedCell.offsetWidth / 2);
             const dy = e.clientY - lastSelectedCell.getBoundingClientRect().top - (lastSelectedCell.offsetHeight / 2);
             const distance = Math.sqrt(dx * dx + dy * dy);
             
-            if (distance > touchThreshold) {
+            if (distance > 5) { // 5px threshold to count as a drag
                 isDragging = true;
                 const cell = e.target.closest('.grid-cell');
                 if (cell && cell !== lastSelectedCell) {
@@ -303,7 +240,7 @@ class GameController {
                 }
             }
         });
-        
+
         gridContainer.addEventListener('mouseup', (e) => {
             if (!this.state.gameActive) return;
             
@@ -315,85 +252,66 @@ class GameController {
                 }
             }
             
+            isMouseDown = false;
             isDragging = false;
             lastSelectedCell = null;
         });
-        
-        // Clean up when mouse leaves container
+
         gridContainer.addEventListener('mouseleave', () => {
+            isMouseDown = false;
             isDragging = false;
             lastSelectedCell = null;
         });
-        
-        // Improved touch handling
+
+        // Touch events
         gridContainer.addEventListener('touchstart', (e) => {
             if (!this.state.gameActive) return;
-            // Don't preventDefault here to allow scrolling if not on a cell
-            
             const touch = e.touches[0];
-            touchStartX = touch.clientX;
-            touchStartY = touch.clientY;
-            
             const element = document.elementFromPoint(touch.clientX, touch.clientY);
-            const cell = element.closest('.grid-cell');
+            if (!element) return;
             
+            const cell = element.closest('.grid-cell');
             if (cell) {
-                e.preventDefault(); // Only prevent default if we're on a cell
+                e.preventDefault(); // Prevent scrolling only when touching cells
                 lastSelectedCell = cell;
                 // First touch - store but don't select yet
             }
         }, { passive: false });
-        
+
         gridContainer.addEventListener('touchmove', (e) => {
             if (!this.state.gameActive || !lastSelectedCell) return;
             
-            e.preventDefault(); // Prevent scrolling during cell selection
+            e.preventDefault(); // Prevent scrolling
             
             const touch = e.touches[0];
-            const dx = touch.clientX - touchStartX;
-            const dy = touch.clientY - touchStartY;
-            const distance = Math.sqrt(dx * dx + dy * dy);
+            const element = document.elementFromPoint(touch.clientX, touch.clientY);
+            if (!element) return;
             
-            // Only count as a swipe/drag if moved past threshold
-            if (distance > touchThreshold) {
-                isDragging = true;
-                const newElement = document.elementFromPoint(touch.clientX, touch.clientY);
-                const newCell = newElement?.closest('.grid-cell');
-                
-                if (newCell && newCell !== lastSelectedCell) {
-                    // Immediately process the cell for better swipe responsiveness
-                    this.handleCellInteraction(newCell);
-                    lastSelectedCell = newCell;
-                    
-                    // Update touch start positions for smoother continuous swiping
-                    touchStartX = touch.clientX;
-                    touchStartY = touch.clientY;
-                }
+            const cell = element.closest('.grid-cell');
+            if (cell && cell !== lastSelectedCell) {
+                lastSelectedCell = cell;
+                this.handleCellInteraction(cell);
             }
         }, { passive: false });
-        
+
         gridContainer.addEventListener('touchend', (e) => {
             if (!this.state.gameActive) return;
             
-            // Only process as a tap if we didn't drag
-            if (!isDragging && lastSelectedCell) {
+            // Handle as tap if we didn't move to another cell
+            if (lastSelectedCell) {
                 this.handleCellClick(lastSelectedCell);
             }
             
-            isDragging = false;
             lastSelectedCell = null;
-        }, { passive: false });
-        
+        });
+
         gridContainer.addEventListener('touchcancel', () => {
-            isDragging = false;
             lastSelectedCell = null;
         });
     }
     
-    // Fixed handleCellInteraction method
     handleCellInteraction(cell) {
         // This method is primarily for drag/swipe operations
-        // Early exit if we don't have a valid cell
         if (!cell || !cell.classList.contains('grid-cell')) return;
 
         const cellIndex = parseInt(cell.dataset.index);
@@ -402,7 +320,7 @@ class GameController {
         // First click must be start cell
         if (this.state.userPath.length === 0) {
             if (isStartCell(cell)) {
-                this.state.userPath = [cellIndex]; // Set directly as an array with one item
+                this.state.userPath = [cellIndex]; 
                 highlightPath(this.state.userPath);
                 this.showMessage('Path started! Continue by selecting connected cells.');
             } else {
@@ -426,7 +344,7 @@ class GameController {
         this.state.userPath.push(cellIndex);
         highlightPath(this.state.userPath);
         
-        // Add haptic feedback if available (will work on iOS, some Android)
+        // Add haptic feedback if available
         if (window.navigator && window.navigator.vibrate) {
             window.navigator.vibrate(30); // Short 30ms vibration for feedback
         }
@@ -491,11 +409,6 @@ class GameController {
             
             // If we know where the error occurred, truncate the path to keep only valid calculations
             if (validation.failedAt !== undefined) {
-                // Keep the path up to the last correct calculation
-                // failedAt is the index of the first cell in the failing calculation
-                // For example: 5-3=2, 2*3=6, 6+5=11 (incorrect)
-                // failedAt would be 6 (index in the path array)
-                // We want to keep indices 0 through 5 (inclusive)
                 this.state.userPath = this.state.userPath.slice(0, validation.failedAt);
                 highlightPath(this.state.userPath);
             }
@@ -558,9 +471,9 @@ class GameController {
     }
 }
 
-// Initialize game
+// Initialize game and store reference
 window.addEventListener('DOMContentLoaded', () => {
-    new GameController();
+    window.gameController = new GameController();
 });
 
 export default GameController;
