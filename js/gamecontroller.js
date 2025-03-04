@@ -1,9 +1,10 @@
 // gamecontroller.js
 import { generatePath } from './pathgenerator.js';
 import { generateSequence, sequenceToEntries } from './sequencegenerator.js';
-import { renderGrid, updateCell, highlightPath, isStartCell, isEndCell } from './gridrenderer.js';
+import { renderGrid, updateCell } from './gridrenderer.js';
 import { validatePath as validatePathMath, isPathContinuous } from './pathvalidator.js';
 import { scoreManager } from './scoremanager.js';
+import { addPathArrows } from './patharrows.js';
 
 class GameController {
     constructor() {
@@ -134,18 +135,52 @@ class GameController {
         });
     }
 
+    updatePathHighlight() {
+        // Clear existing highlights
+        document.querySelectorAll('.grid-cell').forEach(cell => {
+            cell.classList.remove('selected', 'start-cell-selected', 'end-cell-selected');
+        });
+
+        // Highlight path cells
+        this.state.userPath.forEach((index, position) => {
+            const cell = document.querySelector(`[data-index="${index}"]`);
+            if (!cell) return;
+
+            if (cell.classList.contains('start-cell')) {
+                cell.classList.add('start-cell-selected');
+            } else if (cell.classList.contains('end-cell')) {
+                cell.classList.add('end-cell-selected');
+            } else {
+                cell.classList.add('selected');
+            }
+        });
+        
+        // Add path direction arrows
+        addPathArrows(this.state.userPath, (index) => document.querySelector(`[data-index="${index}"]`));
+    }
+
+    // Helper method to check if a cell is the end cell
+    isEndCell(cell) {
+        return cell && cell.classList.contains('end-cell');
+    }
+
+    // Helper method to check if a cell is the start cell
+    isStartCell(cell) {
+        return cell && cell.classList.contains('start-cell');
+    }
+
     handleCellClick(cell) {
-        // Early exit if we don't have a valid cell
-        if (!cell || !cell.classList.contains('grid-cell')) return;
+        // Early exit if we don't have a valid cell or game is not active
+        if (!cell || !this.state.gameActive) return;
         
         const cellIndex = parseInt(cell.dataset.index);
         if (isNaN(cellIndex)) return;
 
         // First click must be start cell
         if (this.state.userPath.length === 0) {
-            if (isStartCell(cell)) {
+            if (this.isStartCell(cell)) {
                 this.state.userPath = [cellIndex];
-                highlightPath(this.state.userPath);
+                this.updatePathHighlight();
                 this.showMessage('Path started! Continue by selecting connected cells.');
             } else {
                 this.showMessage('You must start at the green square!', 'error');
@@ -157,7 +192,7 @@ class GameController {
         const lastCellIndex = this.state.userPath[this.state.userPath.length - 1];
         if (cellIndex === lastCellIndex) {
             this.state.userPath.pop();
-            highlightPath(this.state.userPath);
+            this.updatePathHighlight();
             return;
         }
         
@@ -168,25 +203,56 @@ class GameController {
 
         // Check if cell is adjacent to last selected cell
         if (!this.isValidMove(cellIndex)) {
-            // Give feedback that this isn't a valid move
-            cell.classList.add('invalid-move');
-            setTimeout(() => cell.classList.remove('invalid-move'), 300);
             return;
         }
 
         // Add the new cell to the path
         this.state.userPath.push(cellIndex);
-        highlightPath(this.state.userPath);
-        
-        // Add a subtle animation/feedback that cell was selected
-        cell.classList.add('just-selected');
-        setTimeout(() => cell.classList.remove('just-selected'), 200);
+        this.updatePathHighlight();
         
         // Enable check solution button
         document.getElementById('check-solution').disabled = false;
 
         // If end cell is selected, automatically check the solution
-        if (isEndCell(cell)) {
+        if (this.isEndCell(cell)) {
+            this.checkSolution();
+        }
+    }
+
+    handleCellInteraction(cell) {
+        // Simplified drag/swipe handling
+        if (!cell || !this.state.gameActive) return;
+        
+        const cellIndex = parseInt(cell.dataset.index);
+        if (isNaN(cellIndex)) return;
+
+        // First interaction must be start cell
+        if (this.state.userPath.length === 0) {
+            if (this.isStartCell(cell)) {
+                this.state.userPath = [cellIndex]; 
+                this.updatePathHighlight();
+            }
+            return;
+        }
+
+        // Check for valid move
+        if (!this.isValidMove(cellIndex)) {
+            return;
+        }
+
+        // Don't allow selection of cells already in path
+        if (this.state.userPath.includes(cellIndex)) {
+            return;
+        }
+
+        // Add the new cell to the path
+        this.state.userPath.push(cellIndex);
+        this.updatePathHighlight();
+        
+        document.getElementById('check-solution').disabled = false;
+
+        // Auto-check on reaching end cell
+        if (this.isEndCell(cell)) {
             this.checkSolution();
         }
     }
@@ -309,54 +375,7 @@ class GameController {
             lastSelectedCell = null;
         });
     }
-    
-    handleCellInteraction(cell) {
-        // This method is primarily for drag/swipe operations
-        if (!cell || !cell.classList.contains('grid-cell')) return;
 
-        const cellIndex = parseInt(cell.dataset.index);
-        if (isNaN(cellIndex)) return;
-
-        // First click must be start cell
-        if (this.state.userPath.length === 0) {
-            if (isStartCell(cell)) {
-                this.state.userPath = [cellIndex]; 
-                highlightPath(this.state.userPath);
-                this.showMessage('Path started! Continue by selecting connected cells.');
-            } else {
-                // During dragging operations, silently ignore invalid start cells
-                return;
-            }
-            return;
-        }
-
-        // Check for valid move
-        if (!this.isValidMove(cellIndex)) {
-            return;
-        }
-
-        // Don't allow selection of cells already in path
-        if (this.state.userPath.includes(cellIndex)) {
-            return;
-        }
-
-        // For drag/swipe operations, we want immediate feedback
-        this.state.userPath.push(cellIndex);
-        highlightPath(this.state.userPath);
-        
-        // Add haptic feedback if available
-        if (window.navigator && window.navigator.vibrate) {
-            window.navigator.vibrate(30); // Short 30ms vibration for feedback
-        }
-        
-        document.getElementById('check-solution').disabled = false;
-
-        // Auto-check on reaching end cell
-        if (isEndCell(cell)) {
-            this.checkSolution();
-        }
-    }
-    
     removeAllSpareCells() {
         const spareCells = this.state.gridEntries
             .map((entry, index) => (!entry?.isPartOfPath && !this.state.removedCells.has(index)) ? index : null)
@@ -390,7 +409,7 @@ class GameController {
         const validation = this.validatePath();
         
         if (validation.isValid) {
-            if (isEndCell(document.querySelector(`[data-index="${this.state.userPath[this.state.userPath.length - 1]}"]`))) {
+            if (this.isEndCell(document.querySelector(`[data-index="${this.state.userPath[this.state.userPath.length - 1]}"]`))) {
                 scoreManager.handleCheck(true);
                 this.handlePuzzleSolved();
             } else {
@@ -410,8 +429,9 @@ class GameController {
             // If we know where the error occurred, truncate the path to keep only valid calculations
             if (validation.failedAt !== undefined) {
                 this.state.userPath = this.state.userPath.slice(0, validation.failedAt);
-                highlightPath(this.state.userPath);
-            }
+                this.
+
+                    updatePathHighlight();
         }
         
         this.updateUI();
