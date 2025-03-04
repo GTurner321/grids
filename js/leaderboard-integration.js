@@ -151,7 +151,7 @@ class LeaderboardManager {
         
         // Add threshold subtitle
         const thresholdSubtitle = document.createElement('div');
-        thresholdSubtitle.textContent = '(score 5000+; click to reveal)';
+        thresholdSubtitle.textContent = '(click to reveal; score 5000+)';
         thresholdSubtitle.className = 'leaderboard-subtitle';
         thresholdSubtitle.style.textAlign = 'center';
         thresholdSubtitle.style.fontSize = '0.8rem';
