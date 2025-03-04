@@ -118,7 +118,7 @@ class LeaderboardManager {
         usernameInput.type = 'text';
         usernameInput.id = 'username-input';
         usernameInput.maxLength = 12;
-        usernameInput.placeholder = 'Enter name (max 12)';
+        usernameInput.placeholder = 'Enter name (max 12 char)';
         
         const submitButton = document.createElement('button');
         submitButton.id = 'submit-username';
