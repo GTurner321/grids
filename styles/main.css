@@ -29,7 +29,7 @@ body {
 /* Game Header */
 .game-header {
     text-align: center;
-    margin-bottom: 0.8rem;
+    margin-bottom: 0.4rem;
 }
 
 .game-header h1 {
@@ -272,7 +272,7 @@ body {
 /* Messages */
 #game-messages {
     text-align: center;
-    margin: 10px 0; /* Reduced from 15px */
+    margin: 5px 0; /* Reduced from 15px */
     padding: 8px; /* Reduced from 10px */
     border-radius: 4px; /* Reduced from 6px */
     font-weight: bold;
