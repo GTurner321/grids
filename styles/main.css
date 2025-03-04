@@ -154,11 +154,9 @@ body {
 
 .grid-cell.selected,
 .grid-cell.selected:hover {
-    background-color: #dbeafe !important; /* Lighter blue */
-    border: 2px solid #3b82f6 !important; /* Blue border */
-    box-shadow: 0 0 6px rgba(59, 130, 246, 0.5) !important;
-    color: inherit !important;
-    transform: scale(1.03); /* Slightly larger */
+    background-color: #dbeafe; /* Lighter blue */
+    border: 1px solid #3b82f6; /* Blue border */
+    color: inherit;
     transition: all 0.15s ease;
     z-index: 10; /* Ensure selected cells appear above others */
 }
@@ -174,11 +172,15 @@ body {
 }
 
 .grid-cell.start-cell-selected {
-    background-color: #15803d;
+    background-color: #15803d; /* Dark green */
+    color: white;
+    border: 1px solid #166534;
 }
 
 .grid-cell.end-cell-selected {
-    background-color: #b91c1c;
+    background-color: #b91c1c; /* Dark red */
+    color: white;
+    border: 1px solid #991b1b;
 }
 
 .grid-cell.number {
@@ -230,6 +232,16 @@ body {
     0% { transform: scale(1); }
     50% { transform: scale(1.1); }
     100% { transform: scale(1); }
+}
+
+/* Touch device specific adjustments */
+.touch-device .grid-cell.selected,
+.touch-device .grid-cell.start-cell-selected,
+.touch-device .grid-cell.end-cell-selected {
+    min-height: 44px;
+    min-width: 44px;
+    transform: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .symbol-container {
