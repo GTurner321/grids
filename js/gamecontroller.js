@@ -429,9 +429,7 @@ class GameController {
             // If we know where the error occurred, truncate the path to keep only valid calculations
             if (validation.failedAt !== undefined) {
                 this.state.userPath = this.state.userPath.slice(0, validation.failedAt);
-                this.
-
-                    updatePathHighlight();
+                this.updatePathHighlight();
         }
         
         this.updateUI();
