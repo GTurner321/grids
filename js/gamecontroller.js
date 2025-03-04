@@ -405,35 +405,36 @@ class GameController {
     }
 
     checkSolution() {
-        // Validate current path
-        const validation = this.validatePath();
-        
-        if (validation.isValid) {
-            if (this.isEndCell(document.querySelector(`[data-index="${this.state.userPath[this.state.userPath.length - 1]}"]`))) {
-                scoreManager.handleCheck(true);
-                this.handlePuzzleSolved();
-            } else {
-                scoreManager.handleCheck(false);
-                this.showMessage('Path is mathematically correct! Continue to the end square.', 'info');
-            }
+    // Validate current path
+    const validation = this.validatePath();
+    
+    if (validation.isValid) {
+        if (this.isEndCell(document.querySelector(`[data-index="${this.state.userPath[this.state.userPath.length - 1]}"]`))) {
+            scoreManager.handleCheck(true);
+            this.handlePuzzleSolved();
         } else {
             scoreManager.handleCheck(false);
-            
-            // Show error message with specific details about the first invalid calculation
-            if (validation.error) {
-                this.showMessage(validation.error, 'error', 10000); // 10 seconds display time
-            } else {
-                this.showMessage('Mathematical error in the path. Try again.', 'error', 10000);
-            }
-            
-            // If we know where the error occurred, truncate the path to keep only valid calculations
-            if (validation.failedAt !== undefined) {
-                this.state.userPath = this.state.userPath.slice(0, validation.failedAt);
-                this.updatePathHighlight();
+            this.showMessage('Path is mathematically correct! Continue to the end square.', 'info');
+        }
+    } else {
+        scoreManager.handleCheck(false);
+        
+        // Show error message with specific details about the first invalid calculation
+        if (validation.error) {
+            this.showMessage(validation.error, 'error', 10000); // 10 seconds display time
+        } else {
+            this.showMessage('Mathematical error in the path. Try again.', 'error', 10000);
+        }
+        
+        // If we know where the error occurred, truncate the path to keep only valid calculations
+        if (validation.failedAt !== undefined) {
+            this.state.userPath = this.state.userPath.slice(0, validation.failedAt);
+            this.updatePathHighlight();
         }
         
         this.updateUI();
     }
+}
 
     validatePath() {
         // First check if the path is continuous
