@@ -142,6 +142,10 @@ body {
     width: fit-content;
 }
 
+#grid-container:empty {
+    display: none;
+}
+
 .grid-cell {
     width: 40px; /* Fixed width */
     height: 40px; /* Fixed height to match width */
@@ -517,8 +521,8 @@ I found the original `.game-controls button` styling in your main.css. Here's a 
     gap: 4px;
     padding: 6px 12px;
     font-size: 0.8rem;
-    background-color: #c4b5fd; /* Lilac color */
-    color: #4a5568; /* Dark gray text */
+    background-color: #ede9fe; /* Light lilac to match username area */
+    color: #4a5568;
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -530,7 +534,7 @@ I found the original `.game-controls button` styling in your main.css. Here's a 
 }
 
 .game-controls button:hover {
-    background-color: #a78bfa; /* Darker lilac on hover */
+    background-color: #ddd6fe; /* Slightly darker on hover */
 }
 
 .game-controls button svg {
