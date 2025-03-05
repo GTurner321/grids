@@ -1,4 +1,4 @@
-// rules.js
+// rules.js - Updated version
 
 class RulesModal {
     constructor() {
@@ -59,6 +59,15 @@ class RulesModal {
                 window.dispatchEvent(new CustomEvent('gameStart'));
             });
         }
+        
+        // Add keyboard event listener for Enter key
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === 'Return') {
+                if (startButton) {
+                    startButton.click();
+                }
+            }
+        });
     }
 
     hideModal() {
