@@ -64,7 +64,7 @@ body {
     display: grid;
     grid-template-columns: 1fr 1fr;
     width: 100%;
-    height: 32px; /* Increased from 24px */
+    height: 40px; /* Increased further from 32px */
     background-color: white;
     border-radius: 6px 6px 0 0;
     margin-bottom: 1px;
@@ -322,7 +322,8 @@ body {
     border-radius: 4px;
     font-weight: bold;
     font-size: 0.85rem;
-    color: #3b82f6; /* Blue color */
+    color: #1e40af; /* Darker blue */
+    font-family: 'Lucida Handwriting', 'Brush Script MT', cursive; /* Primary font with fallbacks */
 }
 
 /* Rules Modal Styles with Centered Text */
@@ -521,9 +522,9 @@ I found the original `.game-controls button` styling in your main.css. Here's a 
     gap: 4px;
     padding: 6px 12px;
     font-size: 0.8rem;
-    background-color: #ede9fe; /* Light lilac to match username area */
+    background-color: #ede9fe; /* Light lilac */
     color: #4a5568;
-    border: none;
+    border: 2px solid #16a34a; /* Dark green border */
     border-radius: 4px;
     cursor: pointer;
     transition: all 0.2s ease;
