@@ -108,24 +108,24 @@ body {
 }
 
 .level-btn {
-    padding: 6px 10px; /* Reduced from 8px 20px */
-    font-size: 0.85rem; /* Reduced from 1rem */
-    background-color: #22c55e;
+    padding: 8px 10px; /* Increased height */
+    font-size: 0.85rem;
+    background-color: #3b82f6; /* Blue color */
     color: white;
     border: none;
-    border-radius: 4px; /* Reduced from 6px */
+    border-radius: 4px;
     cursor: pointer;
     transition: all 0.2s ease;
     font-weight: bold;
-    min-width: 40px; /* Reduced from 100px */
+    min-width: 40px;
 }
 
 .level-btn:hover {
-    background-color: #15803d;
+    background-color: #2563eb; /* Darker blue on hover */
 }
 
 .level-btn.active {
-    background-color: #166534;
+    background-color: #1d4ed8; /* Even darker blue when active */
     transform: translateY(1px);
 }
 
@@ -163,8 +163,8 @@ body {
 
 .grid-cell.selected,
 .grid-cell.selected:hover {
-    background-color: #93c5fd; /* Slightly darker blue for better visibility */
-    border: 1px solid #e5e7eb; /* Keep standard border */
+    background-color: #bfdbfe; /* Lighter blue */
+    border: 1px solid #e5e7eb;
     color: inherit;
     transition: background-color 0.15s ease;
     z-index: 10;
@@ -238,9 +238,9 @@ body {
 }
 
 @keyframes pulse {
-    0% { background-color: #93c5fd; }
-    50% { background-color: #60a5fa; }
-    100% { background-color: #93c5fd; }
+    0% { background-color: #bfdbfe; }
+    50% { background-color: #93c5fd; }
+    100% { background-color: #bfdbfe; }
 }
 
 /* Drag target style for hover indication */
