@@ -65,7 +65,7 @@
 
 #submit-username {
     padding: 6px 12px;
-    background-color: #22c55e;
+    background-color: #3b82f6; /* Blue color to match level buttons */
     color: white;
     border: none;
     border-radius: 4px;
@@ -76,7 +76,7 @@
 }
 
 #submit-username:hover {
-    background-color: #15803d;
+    background-color: #2563eb; /* Darker blue on hover */
 }
 
 .status-message {
@@ -352,7 +352,7 @@
     font-size: 0.8rem;
     margin-top: -8px;
     margin-bottom: 6px;
-    color: #6b7280;
+    color: #4a5568; /* Dark gray to match CHOOSE YOUR LEVEL */
     max-width: 400px;
     margin-left: auto;
     margin-right: auto;
