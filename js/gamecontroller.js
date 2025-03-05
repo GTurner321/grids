@@ -1,4 +1,4 @@
-// gamecontroller.js
+// gamecontroller.js - Fixed version
 import { generatePath } from './pathgenerator.js';
 import { generateSequence, sequenceToEntries } from './sequencegenerator.js';
 import { renderGrid, updateCell } from './gridrenderer.js';
@@ -35,15 +35,6 @@ class GameController {
                 const level = parseInt(btn.dataset.level);
                 this.startLevel(level);
             });
-        });
-
-        // Grid cell clicks - direct approach
-        document.getElementById('grid-container').addEventListener('click', (e) => {
-            const cell = e.target.closest('.grid-cell');
-            if (cell && this.state.gameActive) {
-                console.log('Cell clicked:', cell.dataset.index);
-                this.handleCellClick(cell);
-            }
         });
 
         // Game controls
@@ -136,10 +127,12 @@ class GameController {
     }
 
     updatePathHighlight() {
-        // Clear existing highlights
+        // Clear existing highlights and arrows
         document.querySelectorAll('.grid-cell').forEach(cell => {
             cell.classList.remove('selected', 'start-cell-selected', 'end-cell-selected');
         });
+        
+        document.querySelectorAll('.path-arrow').forEach(arrow => arrow.remove());
 
         // Highlight path cells
         this.state.userPath.forEach((index, position) => {
@@ -203,55 +196,28 @@ class GameController {
 
         // Check if cell is adjacent to last selected cell
         if (!this.isValidMove(cellIndex)) {
+            cell.classList.add('invalid-move');
+            setTimeout(() => {
+                cell.classList.remove('invalid-move');
+            }, 300);
             return;
         }
 
         // Add the new cell to the path
         this.state.userPath.push(cellIndex);
+        
+        // Add a visual pulse effect
+        cell.classList.add('just-selected');
+        setTimeout(() => {
+            cell.classList.remove('just-selected');
+        }, 200);
+        
         this.updatePathHighlight();
         
         // Enable check solution button
         document.getElementById('check-solution').disabled = false;
 
         // If end cell is selected, automatically check the solution
-        if (this.isEndCell(cell)) {
-            this.checkSolution();
-        }
-    }
-
-    handleCellInteraction(cell) {
-        // Simplified drag/swipe handling
-        if (!cell || !this.state.gameActive) return;
-        
-        const cellIndex = parseInt(cell.dataset.index);
-        if (isNaN(cellIndex)) return;
-
-        // First interaction must be start cell
-        if (this.state.userPath.length === 0) {
-            if (this.isStartCell(cell)) {
-                this.state.userPath = [cellIndex]; 
-                this.updatePathHighlight();
-            }
-            return;
-        }
-
-        // Check for valid move
-        if (!this.isValidMove(cellIndex)) {
-            return;
-        }
-
-        // Don't allow selection of cells already in path
-        if (this.state.userPath.includes(cellIndex)) {
-            return;
-        }
-
-        // Add the new cell to the path
-        this.state.userPath.push(cellIndex);
-        this.updatePathHighlight();
-        
-        document.getElementById('check-solution').disabled = false;
-
-        // Auto-check on reaching end cell
         if (this.isEndCell(cell)) {
             this.checkSolution();
         }
@@ -277,15 +243,30 @@ class GameController {
         let lastSelectedCell = null;
         let isDragging = false;
 
-        // Mouse events
+        // Grid cell clicks - direct approach
+        gridContainer.addEventListener('click', (e) => {
+            if (!this.state.gameActive || isDragging) return;
+            
+            const cell = e.target.closest('.grid-cell');
+            if (cell) {
+                this.handleCellClick(cell);
+            }
+        });
+
+        // Mouse events for drag selection
         gridContainer.addEventListener('mousedown', (e) => {
             if (!this.state.gameActive) return;
             isMouseDown = true;
             isDragging = false;
+            
             const cell = e.target.closest('.grid-cell');
             if (cell) {
                 lastSelectedCell = cell;
-                // Don't process cell yet, wait to see if it's a click or drag
+                
+                // If this is the start cell and we have no path yet, select it immediately
+                if (this.isStartCell(cell) && this.state.userPath.length === 0) {
+                    this.handleCellClick(cell);
+                }
             }
         });
 
@@ -293,60 +274,89 @@ class GameController {
             if (!isMouseDown || !this.state.gameActive) return;
             
             // Calculate distance moved to determine if it's a drag
-            const dx = e.clientX - lastSelectedCell.getBoundingClientRect().left - (lastSelectedCell.offsetWidth / 2);
-            const dy = e.clientY - lastSelectedCell.getBoundingClientRect().top - (lastSelectedCell.offsetHeight / 2);
-            const distance = Math.sqrt(dx * dx + dy * dy);
-            
-            if (distance > 5) { // 5px threshold to count as a drag
-                isDragging = true;
-                const cell = e.target.closest('.grid-cell');
-                if (cell && cell !== lastSelectedCell) {
-                    lastSelectedCell = cell;
-                    this.handleCellInteraction(cell);
+            if (lastSelectedCell) {
+                const cellRect = lastSelectedCell.getBoundingClientRect();
+                const dx = e.clientX - (cellRect.left + cellRect.width / 2);
+                const dy = e.clientY - (cellRect.top + cellRect.height / 2);
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance > 5) { // 5px threshold to count as a drag
+                    isDragging = true;
+                    
+                    // Handle the hovering cell
+                    const cell = document.elementFromPoint(e.clientX, e.clientY)?.closest('.grid-cell');
+                    if (cell && cell !== lastSelectedCell) {
+                        // Start a path if we don't have one and we're dragging from the start cell
+                        if (this.state.userPath.length === 0 && this.isStartCell(lastSelectedCell)) {
+                            this.handleCellClick(lastSelectedCell);
+                        }
+                        
+                        // Check if this is a valid next cell in path
+                        const cellIndex = parseInt(cell.dataset.index);
+                        if (!isNaN(cellIndex) && this.state.userPath.length > 0) {
+                            // Add visual indicator for drag target
+                            const lastPathIndex = this.state.userPath[this.state.userPath.length - 1];
+                            if (this.isValidMove(cellIndex) && !this.state.userPath.includes(cellIndex)) {
+                                cell.classList.add('drag-target');
+                            }
+                            
+                            // If drag enters a valid cell, select it
+                            if (this.isValidMove(cellIndex) && cellIndex !== lastPathIndex 
+                                && !this.state.userPath.includes(cellIndex)) {
+                                this.handleCellClick(cell);
+                                lastSelectedCell = cell;
+                            }
+                        }
+                    }
                 }
             }
         });
 
-        gridContainer.addEventListener('mouseup', (e) => {
-            if (!this.state.gameActive) return;
-            
-            // Only treat it as a click if we didn't start dragging
-            if (!isDragging) {
-                const cell = e.target.closest('.grid-cell');
-                if (cell) {
-                    this.handleCellClick(cell);
-                }
-            }
-            
+        // Remove drag-target class from all cells when mouse is released or leaves
+        const clearDragTargets = () => {
+            document.querySelectorAll('.drag-target').forEach(cell => {
+                cell.classList.remove('drag-target');
+            });
+        };
+
+        gridContainer.addEventListener('mouseup', () => {
             isMouseDown = false;
             isDragging = false;
             lastSelectedCell = null;
+            clearDragTargets();
         });
 
         gridContainer.addEventListener('mouseleave', () => {
             isMouseDown = false;
             isDragging = false;
             lastSelectedCell = null;
+            clearDragTargets();
         });
 
         // Touch events
+        let touchStartCell = null;
+        
         gridContainer.addEventListener('touchstart', (e) => {
             if (!this.state.gameActive) return;
+            
             const touch = e.touches[0];
             const element = document.elementFromPoint(touch.clientX, touch.clientY);
             if (!element) return;
             
             const cell = element.closest('.grid-cell');
             if (cell) {
-                e.preventDefault(); // Prevent scrolling only when touching cells
-                lastSelectedCell = cell;
-                // First touch - store but don't select yet
+                e.preventDefault(); // Prevent scrolling
+                touchStartCell = cell;
+                
+                // If this is the start cell and we have no path yet, select it immediately
+                if (this.isStartCell(cell) && this.state.userPath.length === 0) {
+                    this.handleCellClick(cell);
+                }
             }
         }, { passive: false });
 
         gridContainer.addEventListener('touchmove', (e) => {
-            if (!this.state.gameActive || !lastSelectedCell) return;
-            
+            if (!this.state.gameActive) return;
             e.preventDefault(); // Prevent scrolling
             
             const touch = e.touches[0];
@@ -354,25 +364,35 @@ class GameController {
             if (!element) return;
             
             const cell = element.closest('.grid-cell');
-            if (cell && cell !== lastSelectedCell) {
-                lastSelectedCell = cell;
-                this.handleCellInteraction(cell);
+            if (cell) {
+                // Start a path if we don't have one and we're dragging from the start cell
+                if (this.state.userPath.length === 0 && this.isStartCell(touchStartCell)) {
+                    this.handleCellClick(touchStartCell);
+                }
+                
+                // Check if this is a valid next cell
+                const cellIndex = parseInt(cell.dataset.index);
+                if (!isNaN(cellIndex) && this.state.userPath.length > 0) {
+                    // If touch enters a valid cell that isn't already selected, select it
+                    const lastPathIndex = this.state.userPath[this.state.userPath.length - 1];
+                    if (this.isValidMove(cellIndex) && cellIndex !== lastPathIndex 
+                        && !this.state.userPath.includes(cellIndex)) {
+                        this.handleCellClick(cell);
+                        touchStartCell = cell;
+                    }
+                }
             }
         }, { passive: false });
 
         gridContainer.addEventListener('touchend', (e) => {
             if (!this.state.gameActive) return;
             
-            // Handle as tap if we didn't move to another cell
-            if (lastSelectedCell) {
-                this.handleCellClick(lastSelectedCell);
+            // Handle as tap if we haven't moved
+            if (touchStartCell && this.state.userPath.length === 0) {
+                this.handleCellClick(touchStartCell);
             }
             
-            lastSelectedCell = null;
-        });
-
-        gridContainer.addEventListener('touchcancel', () => {
-            lastSelectedCell = null;
+            touchStartCell = null;
         });
     }
 
@@ -405,36 +425,36 @@ class GameController {
     }
 
     checkSolution() {
-    // Validate current path
-    const validation = this.validatePath();
-    
-    if (validation.isValid) {
-        if (this.isEndCell(document.querySelector(`[data-index="${this.state.userPath[this.state.userPath.length - 1]}"]`))) {
-            scoreManager.handleCheck(true);
-            this.handlePuzzleSolved();
+        // Validate current path
+        const validation = this.validatePath();
+        
+        if (validation.isValid) {
+            if (this.isEndCell(document.querySelector(`[data-index="${this.state.userPath[this.state.userPath.length - 1]}"]`))) {
+                scoreManager.handleCheck(true);
+                this.handlePuzzleSolved();
+            } else {
+                scoreManager.handleCheck(false);
+                this.showMessage('Path is mathematically correct! Continue to the end square.', 'info');
+            }
         } else {
             scoreManager.handleCheck(false);
-            this.showMessage('Path is mathematically correct! Continue to the end square.', 'info');
+            
+            // Show error message with specific details about the first invalid calculation
+            if (validation.error) {
+                this.showMessage(validation.error, 'error', 10000); // 10 seconds display time
+            } else {
+                this.showMessage('Mathematical error in the path. Try again.', 'error', 10000);
+            }
+            
+            // If we know where the error occurred, truncate the path to keep only valid calculations
+            if (validation.failedAt !== undefined) {
+                this.state.userPath = this.state.userPath.slice(0, validation.failedAt);
+                this.updatePathHighlight();
+            }
+            
+            this.updateUI();
         }
-    } else {
-        scoreManager.handleCheck(false);
-        
-        // Show error message with specific details about the first invalid calculation
-        if (validation.error) {
-            this.showMessage(validation.error, 'error', 10000); // 10 seconds display time
-        } else {
-            this.showMessage('Mathematical error in the path. Try again.', 'error', 10000);
-        }
-        
-        // If we know where the error occurred, truncate the path to keep only valid calculations
-        if (validation.failedAt !== undefined) {
-            this.state.userPath = this.state.userPath.slice(0, validation.failedAt);
-            this.updatePathHighlight();
-        }
-        
-        this.updateUI();
     }
-}
 
     validatePath() {
         // First check if the path is continuous
