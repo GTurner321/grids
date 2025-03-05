@@ -139,26 +139,25 @@ body {
 /* Update grid container */
 #grid-container {
     display: grid;
-    grid-template-columns: repeat(10, minmax(32px, 36px)); /* 80% of previous size */
+    grid-template-columns: repeat(10, 40px); /* Fixed width cells */
     gap: 1px;
     background-color: #cbd5e1;
-    padding: 1px; /* Reduced from 2px */
-    border-radius: 4px; /* Reduced from 6px */
-    margin: 8px auto; /* Reduced from 12px */
+    padding: 1px;
+    border-radius: 4px;
+    margin: 8px auto;
     width: fit-content;
 }
 
 .grid-cell {
-    aspect-ratio: 1;
-    min-height: 40px; /* Increased from 36px for better touch targets */
-    min-width: 40px;
+    width: 40px; /* Fixed width */
+    height: 40px; /* Fixed height to match width */
     background-color: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.75rem; /* Reduced from 0.9rem */
+    font-size: 0.75rem;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
     user-select: none;
     -webkit-user-select: none;
     border: 1px solid #e5e7eb;
@@ -166,12 +165,13 @@ body {
     position: relative;
     touch-action: none; /* Disable browser handling of touch actions */
     -webkit-tap-highlight-color: transparent; /* Remove tap highlight on iOS */
+    box-sizing: border-box; /* Include border in size calculation */
 }
 
 .grid-cell.selected,
 .grid-cell.selected:hover {
     background-color: #dbeafe; /* Lighter blue */
-    border: 1px solid #3b82f6; /* Blue border */
+    border: 2px solid #3b82f6; /* Thicker blue border */
     color: inherit;
     transition: all 0.15s ease;
     z-index: 10; /* Ensure selected cells appear above others */
@@ -190,13 +190,13 @@ body {
 .grid-cell.start-cell-selected {
     background-color: #15803d; /* Dark green */
     color: white;
-    border: 1px solid #166534;
+    border: 2px solid #166534;
 }
 
 .grid-cell.end-cell-selected {
     background-color: #b91c1c; /* Dark red */
     color: white;
-    border: 1px solid #991b1b;
+    border: 2px solid #991b1b;
 }
 
 .grid-cell.number {
@@ -206,7 +206,7 @@ body {
 .grid-cell.operator {
     color: #dc2626;
     font-weight: bold;
-    font-size: 1rem; /* Reduced from 1.2rem */
+    font-size: 1rem;
 }
 
 /* Ensure operator is vertically centered */
@@ -245,19 +245,31 @@ body {
 }
 
 @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
+    0% { background-color: #dbeafe; }
+    50% { background-color: #93c5fd; }
+    100% { background-color: #dbeafe; }
+}
+
+/* Drag target style for hover indication */
+.grid-cell.drag-target {
+    background-color: rgba(59, 130, 246, 0.2);
+    transition: background-color 0.1s ease;
 }
 
 /* Touch device specific adjustments */
 .touch-device .grid-cell.selected,
 .touch-device .grid-cell.start-cell-selected,
 .touch-device .grid-cell.end-cell-selected {
-    min-height: 44px;
-    min-width: 44px;
+    width: 40px;
+    height: 40px;
     transform: none;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: none;
+}
+
+/* iOS specific optimizations */
+.ios-device .grid-cell {
+    width: 40px;
+    height: 40px;
 }
 
 .symbol-container {
