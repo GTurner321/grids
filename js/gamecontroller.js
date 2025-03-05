@@ -24,6 +24,8 @@ class GameController {
         };
         
         this.messageTimeout = null;
+        
+        document.querySelector('.game-container')?.classList.remove('game-active');
 
         this.initializeEventListeners();
         this.initializeGridInteractions();
@@ -57,7 +59,9 @@ class GameController {
         this.state.gridEntries = new Array(100).fill(null);
         this.state.removedCells.clear();
         this.state.gameActive = true;
-
+        
+        document.querySelector('.game-container').classList.add('game-active');
+        
         scoreManager.startLevel(level);
 
         try {
