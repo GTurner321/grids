@@ -512,6 +512,42 @@ body {
     }
 }
 
+/* Add these styles to hide controls until game starts */
+.score-row,
+.game-controls,
+#game-messages {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    height: 0;
+    margin: 0;
+    overflow: hidden;
+}
+
+/* Show controls when game is active */
+.game-active .score-row,
+.game-active .game-controls,
+.game-active #game-messages {
+    opacity: 1;
+    visibility: visible;
+    height: auto;
+    margin: initial; /* Restore original margins */
+    overflow: visible;
+}
+
+/* Specific margin restoration */
+.game-active .score-row {
+    margin-bottom: 1px;
+}
+
+.game-active .game-controls {
+    margin-top: 8px;
+}
+
+.game-active #game-messages {
+    margin: 5px 0;
+}
+
 /* Add these styles to leaderboard.css */
 
 /* Convert leaderboard title to button */
