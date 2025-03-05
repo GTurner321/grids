@@ -59,12 +59,6 @@ body {
     font-weight: bold;
 }
 
-.level-selector-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
 /* Score Row */
 .score-row {
     display: grid;
@@ -95,23 +89,22 @@ body {
     align-self: center;
 }
 
-/* Remove old score display */
 .score-display {
     display: none;
 }
 
-/* Level Selector */
-.level-selector {
+.level-selector-container {
     display: flex;
-    justify-content: center;
-    margin-bottom: 10px; /* Reduced from 20px */
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 10px;
 }
 
 .level-buttons {
     display: flex;
     justify-content: center;
-    gap: 5px; /* Reduced from 10px */
-    margin: 10px 0; /* Reduced from 20px 0 */
+    gap: 5px;
+    margin: 5px 0;
 }
 
 .level-btn {
