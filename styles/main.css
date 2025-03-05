@@ -150,7 +150,7 @@ body {
     justify-content: center;
     font-size: 0.75rem;
     cursor: pointer;
-    transition: background-color 0.2s ease, border-color 0.2s ease;
+    transition: background-color 0.2s ease;
     user-select: none;
     -webkit-user-select: none;
     border: 1px solid #e5e7eb;
@@ -163,11 +163,11 @@ body {
 
 .grid-cell.selected,
 .grid-cell.selected:hover {
-    background-color: #dbeafe; /* Lighter blue */
-    border: 2px solid #3b82f6; /* Thicker blue border */
+    background-color: #93c5fd; /* Slightly darker blue for better visibility */
+    border: 1px solid #e5e7eb; /* Keep standard border */
     color: inherit;
-    transition: all 0.15s ease;
-    z-index: 10; /* Ensure selected cells appear above others */
+    transition: background-color 0.15s ease;
+    z-index: 10;
 }
 
 .grid-cell.start-cell {
@@ -183,13 +183,13 @@ body {
 .grid-cell.start-cell-selected {
     background-color: #15803d; /* Dark green */
     color: white;
-    border: 2px solid #166534;
+    border: 1px solid #e5e7eb;
 }
 
 .grid-cell.end-cell-selected {
     background-color: #b91c1c; /* Dark red */
     color: white;
-    border: 2px solid #991b1b;
+    border: 1px solid #e5e7eb;
 }
 
 .grid-cell.number {
@@ -217,7 +217,7 @@ body {
 
 .grid-cell.user-solved-path {
     background-color: #fef08a;
-    border: 2px solid #facc15;
+    border: 1px solid #e5e7eb;
     z-index: 15;
 }
 
@@ -238,9 +238,9 @@ body {
 }
 
 @keyframes pulse {
-    0% { background-color: #dbeafe; }
-    50% { background-color: #93c5fd; }
-    100% { background-color: #dbeafe; }
+    0% { background-color: #93c5fd; }
+    50% { background-color: #60a5fa; }
+    100% { background-color: #93c5fd; }
 }
 
 /* Drag target style for hover indication */
