@@ -1,4 +1,4 @@
-// leaderboard-integration.js - Modified to remove loading indicator
+// leaderboard-integration.js - Optimized version with no loading indicator box
 
 // Load CSS
 function loadStylesheet(url) {
@@ -47,9 +47,9 @@ class LeaderboardManager {
         this.submissionTimestamps = new Map(); // Track submission times by score
         this.sessionHighScore = 0; // Track session high score
         this.scoreThreshold = 5000; // Only submit scores of 5000+
+        this.leaderboardLoaded = false; // Track if leaderboard has been loaded
         
         this.initSupabase();
-        this.loadLeaderboard();
         this.createLeaderboardUI();
         this.addEventListeners();
         
@@ -153,6 +153,12 @@ class LeaderboardManager {
         const thresholdSubtitle = document.createElement('div');
         thresholdSubtitle.textContent = 'CLICK TO REVEAL - SCORE 5000+';
         thresholdSubtitle.className = 'leaderboard-subtitle';
+        thresholdSubtitle.style.textAlign = 'center';
+        thresholdSubtitle.style.fontSize = '0.8rem';
+        thresholdSubtitle.style.marginTop = '-10px';
+        thresholdSubtitle.style.marginBottom = '10px';
+        thresholdSubtitle.style.color = '#4a5568';
+        thresholdSubtitle.style.fontWeight = 'bold';
         
         // Create leaderboard table (initially hidden)
         const leaderboardTable = document.createElement('div');
@@ -435,8 +441,12 @@ class LeaderboardManager {
                 statusMessage.textContent = '';
                 statusMessage.className = 'status-message';
                 
-                // Load the leaderboard to show current standings
-                this.refreshLeaderboard();
+                // Only load the leaderboard if the score is high enough or if it's already visible
+                const leaderboardTable = document.getElementById('leaderboard-table');
+                if (currentScore >= this.scoreThreshold || 
+                    (leaderboardTable && !leaderboardTable.classList.contains('hidden'))) {
+                    this.refreshLeaderboard();
+                }
             } else {
                 statusMessage.textContent = 'Username not appropriate for family-friendly environment. Please try another.';
                 statusMessage.className = 'status-message error';
@@ -589,14 +599,25 @@ class LeaderboardManager {
             if (isHidden) {
                 // Show the leaderboard
                 leaderboardTable.classList.remove('hidden');
-                if (toggleButton) toggleButton.classList.add('active');
+                
+                // Add active class to button to flip arrow
+                if (toggleButton) {
+                    toggleButton.classList.add('active');
+                }
+                
+                // Show a loading message within the leaderboard table itself
+                leaderboardTable.innerHTML = '<div class="leaderboard-row" style="justify-content: center; padding: 20px;">Loading leaderboard data...</div>';
                 
                 // Refresh the leaderboard data
                 this.refreshLeaderboard();
             } else {
                 // Hide the leaderboard
                 leaderboardTable.classList.add('hidden');
-                if (toggleButton) toggleButton.classList.remove('active');
+                
+                // Remove active class from button
+                if (toggleButton) {
+                    toggleButton.classList.remove('active');
+                }
             }
         }
     }
@@ -613,19 +634,26 @@ class LeaderboardManager {
     
     async loadLeaderboard() {
         try {
-            if (this.supabase) {
-                // Try to load from Supabase
+            // Only load from Supabase if data isn't loaded yet or if we're forcing a refresh
+            if (this.supabase && (!this.leaderboardLoaded || this.forceRefresh)) {
                 await this.loadFromSupabase();
+                this.leaderboardLoaded = true;
+                this.forceRefresh = false;
             }
             
-            // Render the leaderboard
+            // Render the leaderboard with whatever data we have
             this.renderLeaderboard();
-            
         } catch (error) {
             console.error('Error loading leaderboard data:', error);
             
-            // Render whatever data we have
+            // If there was an error, still try to render what we have
             this.renderLeaderboard();
+            
+            // Show error message in the leaderboard
+            const leaderboardTable = document.getElementById('leaderboard-table');
+            if (leaderboardTable && leaderboardTable.childElementCount === 0) {
+                leaderboardTable.innerHTML = '<div class="leaderboard-row" style="justify-content: center; padding: 20px; color: #e53e3e;">Error loading leaderboard data. Please try again later.</div>';
+            }
         }
     }
     
