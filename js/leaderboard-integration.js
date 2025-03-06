@@ -151,13 +151,13 @@ class LeaderboardManager {
         
         // Add threshold subtitle
         const thresholdSubtitle = document.createElement('div');
-        thresholdSubtitle.textContent = '(click to reveal; score 5000+)';
+        thresholdSubtitle.textContent = 'CLICK TO REVEAL - SCORE 5000+';
         thresholdSubtitle.className = 'leaderboard-subtitle';
         thresholdSubtitle.style.textAlign = 'center';
-        thresholdSubtitle.style.fontSize = '0.8rem';
+        thresholdSubtitle.style.fontSize = '0.6rem';
         thresholdSubtitle.style.marginTop = '-10px';
         thresholdSubtitle.style.marginBottom = '10px';
-        thresholdSubtitle.style.color = '#6b7280';
+        thresholdSubtitle.style.color = '#4a5568';
         
         // Create loading indicator
         const loadingIndicator = document.createElement('div');
