@@ -63,13 +63,12 @@ body {
 .score-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    width: 411px; /* Matched exactly to the 10x10 grid width */
-    height: 60px; /* Increased from 40px to make it higher */
+    width: 411px;
+    height: 70px;
     background-color: white;
     border-radius: 6px 6px 0 0;
-    margin-bottom: 1px;
+    margin: 0 auto 1px auto; /* Combined margins: top right bottom left */
     border: 1px solid #e5e7eb;
-    margin: 0 auto; /* Center the score bar */
 }
 
 .score-left {
