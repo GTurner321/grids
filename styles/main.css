@@ -76,8 +76,9 @@ body {
     padding-left: 10px;
     font-family: 'Courier New', monospace;
     font-size: 0.85rem;
-    color: #22c55e; /* Green */
-    align-self: center;
+    color: #ef4444; /* Changed from green to red */
+    display: flex; /* Added for vertical centering */
+    align-items: center; /* Added for vertical centering */
 }
 
 .score-right {
@@ -86,8 +87,10 @@ body {
     font-family: 'Courier New', monospace;
     font-size: 0.85rem;
     font-weight: bold;
-    color: #333333; /* Dark gray */
-    align-self: center;
+    color: #1e40af; /* Changed from dark gray to dark blue */
+    display: flex; /* Added for vertical centering */
+    align-items: center; /* Added for vertical centering */
+    justify-content: flex-end; /* Keep text right-aligned */
 }
 
 .score-display {
