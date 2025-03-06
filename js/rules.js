@@ -1,11 +1,10 @@
 // rules.js - Updated version
-
 class RulesModal {
     constructor() {
         this.createModal();
         this.addEventListeners();
     }
-
+    
     createModal() {
         const modal = document.createElement('div');
         modal.className = 'rules-modal';
@@ -42,13 +41,13 @@ class RulesModal {
                 </div>
             </div>
         `;
-
+        
         const container = document.getElementById('rules-container');
         if (container) {
             container.appendChild(modal);
         }
     }
-
+    
     addEventListeners() {
         const startButton = document.getElementById('start-game');
         if (startButton) {
@@ -69,7 +68,7 @@ class RulesModal {
             }
         });
     }
-
+    
     hideModal() {
         const container = document.getElementById('rules-container');
         if (container) {
@@ -80,6 +79,12 @@ class RulesModal {
 
 // Initialize rules modal when DOM is loaded
 window.addEventListener('DOMContentLoaded', () => {
+    // Ensure the Black Ops One font is loaded
+    const fontLink = document.createElement('link');
+    fontLink.href = 'https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap';
+    fontLink.rel = 'stylesheet';
+    document.head.appendChild(fontLink);
+    
     new RulesModal();
 });
 
