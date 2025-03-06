@@ -154,7 +154,7 @@ class LeaderboardManager {
         thresholdSubtitle.textContent = 'CLICK TO REVEAL - SCORE 5000+';
         thresholdSubtitle.className = 'leaderboard-subtitle';
         thresholdSubtitle.style.textAlign = 'center';
-        thresholdSubtitle.style.fontSize = '0.6rem';
+        thresholdSubtitle.style.fontSize = '0.8rem';
         thresholdSubtitle.style.marginTop = '-10px';
         thresholdSubtitle.style.marginBottom = '10px';
         thresholdSubtitle.style.color = '#4a5568';
