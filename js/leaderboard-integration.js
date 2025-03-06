@@ -153,11 +153,13 @@ class LeaderboardManager {
         const thresholdSubtitle = document.createElement('div');
         thresholdSubtitle.textContent = 'CLICK TO REVEAL - SCORE 5000+';
         thresholdSubtitle.className = 'leaderboard-subtitle';
-        thresholdSubtitle.style.textAlign = 'center';
-        thresholdSubtitle.style.fontSize = '0.8rem';
-        thresholdSubtitle.style.marginTop = '-10px';
-        thresholdSubtitle.style.marginBottom = '10px';
+        thresholdSubtitle.style.fontFamily = "'Courier New', monospace";
+        thresholdSubtitle.style.fontSize = '0.8rem'; // Changed from 0.8rem to match the source
         thresholdSubtitle.style.color = '#4a5568';
+        thresholdSubtitle.style.textAlign = 'center';
+        thresholdSubtitle.style.marginTop = '-10px';
+        thresholdSubtitle.style.marginBottom = '10px'; // You might want to change this to 5px to match
+        thresholdSubtitle.style.letterSpacing = '0.05em';
         thresholdSubtitle.style.fontWeight = 'bold';
         
         // Create leaderboard table (initially hidden)
