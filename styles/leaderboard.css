@@ -1,13 +1,13 @@
-/* leaderboard.css */
+/* leaderboard.css - Modified to remove loading indicator */
 
 .leaderboard-section {
     margin-top: 1.5rem;
     width: 100%;
     max-width: 640px;
     font-family: 'Courier New', monospace;
-    display: flex; /* Added */
-    flex-direction: column; /* Added */
-    align-items: center; /* Added to center children */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .leaderboard-section > button,
@@ -118,26 +118,6 @@
     font-family: 'Courier New', monospace;
     font-weight: bold;
     letter-spacing: 0.05em;
-}
-
-/* Loading indicator */
-.leaderboard-loading {
-    text-align: center;
-    padding: 20px;
-    color: #6b7280;
-    font-size: 0.9rem;
-    background-color: #f9fafb;
-    border-radius: 6px;
-    margin-bottom: 10px;
-    max-width: 400px;
-    margin-left: auto;
-    margin-right: auto;
-    width: 100%;
-}
-
-.leaderboard-loading.error {
-    color: #dc2626;
-    background-color: #fee2e2;
 }
 
 /* Status message for updates */
