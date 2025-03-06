@@ -1,4 +1,3 @@
-// scoremanager.js
 class ScoreManager {
     constructor() {
         // Persistent total score
@@ -87,7 +86,6 @@ class ScoreManager {
         });
         window.dispatchEvent(event);
     }
-
     updateDisplay() {
         // Update total score (always visible)
         const scoreTotalElement = document.getElementById('score-total');
@@ -120,9 +118,7 @@ class ScoreManager {
         };
     }
 }
-
 // Export a single instance
 export const scoreManager = new ScoreManager();
-
 // Also make it available globally
 window.scoreManager = scoreManager;
