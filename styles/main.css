@@ -69,8 +69,7 @@ body {
     border-radius: 6px 6px 0 0;
     margin-bottom: 1px;
     border: 1px solid #e5e7eb;
-    margin-left: auto;
-    margin-right: auto; /* Center the score bar */
+    margin: 0 auto; /* Center the score bar */
 }
 
 .score-left {
