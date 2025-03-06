@@ -158,6 +158,7 @@ class LeaderboardManager {
         thresholdSubtitle.style.marginTop = '-10px';
         thresholdSubtitle.style.marginBottom = '10px';
         thresholdSubtitle.style.color = '#4a5568';
+        thresholdSubtitle.style.fontWeight = 'bold';
         
         // Create loading indicator
         const loadingIndicator = document.createElement('div');
