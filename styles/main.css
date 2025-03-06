@@ -346,15 +346,15 @@ body {
 }
 
 .rules-content {
-    background-color: #4c1d95; /* Dark purple background */
+    background-color: #4f46e5; /* Indigo background */
     padding: 1.5rem;
     border-radius: 0.5rem;
     max-width: 28rem;
     width: 90%;
-    color: #a7f3d0; /* Pale green text color */
+    color: #fef08a; /* Yellow text color */
     font-family: 'Courier New', monospace;
     text-align: center;
-    border: 3px solid #a7f3d0; /* Pale green border */
+    border: 3px solid #166534; /* Dark green border */
 }
 
 .rules-text {
@@ -363,27 +363,27 @@ body {
 
 .rules-title {
     font-family: 'Black Ops One', cursive; /* Match the main page title font */
-    font-size: 1.5rem;
+    font-size: 1.7rem; /* Slightly larger */
     font-weight: normal; /* Black Ops One looks better without extra weight */
     margin-bottom: 0.8rem;
     text-align: center;
-    color: #a7f3d0; /* Pale green */
+    color: #fb923c; /* Orange */
     letter-spacing: 0.05em; /* Slight letter spacing for better readability */
 }
 
 .rules-subtitle {
     font-family: 'Black Ops One', cursive; /* Match the main page title font */
-    font-size: 1.2rem;
+    font-size: 1.4rem; /* Slightly larger */
     font-weight: normal;
     margin-top: 1.2rem;
     margin-bottom: 0.8rem;
     text-align: center;
-    color: #a7f3d0; /* Pale green */
+    color: #fb923c; /* Orange */
     letter-spacing: 0.05em;
 }
 
 .rules-section {
-    color: #a7f3d0; /* Pale green */
+    color: #fef08a; /* Yellow */
     font-size: 0.8rem;
     font-family: 'Courier New', monospace;
     line-height: 1.4;
@@ -406,8 +406,8 @@ body {
 .start-button {
     padding: 0.75rem 2rem;
     background-color: transparent;
-    border: 2px solid #ef4444; /* Keep the red border */
-    color: #ef4444; /* Keep the red text */
+    border: 2px solid #f97316; /* Orange border */
+    color: #f97316; /* Orange text */
     font-size: 1.25rem;
     font-weight: bold;
     border-radius: 0.5rem;
@@ -417,7 +417,7 @@ body {
 }
 
 .start-button:hover {
-    background-color: #ef4444;
+    background-color: #f97316; /* Orange background on hover */
     color: white;
 }
 
