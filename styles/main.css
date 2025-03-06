@@ -504,9 +504,6 @@ body {
     -webkit-overflow-scrolling: touch;
 }
 
-I found the original `.game-controls button` styling in your main.css. Here's a code block that combines all the related styling with your new updates while preserving the responsive design rules and hiding controls until game starts:
-
-```css
 /* Game Controls */
 .game-controls {
     margin-top: 8px;
