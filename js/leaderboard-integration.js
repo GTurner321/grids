@@ -108,7 +108,7 @@ class LeaderboardManager {
         usernameForm.className = 'username-form';
         
         const usernamePrompt = document.createElement('p');
-        usernamePrompt.textContent = 'Record your score - submit your name:';
+        usernamePrompt.textContent = 'RECORD YOUR SCORE - SUBMIT YOUR NAME:';
         usernamePrompt.className = 'username-prompt';
         
         const inputWrapper = document.createElement('div');
