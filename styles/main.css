@@ -344,53 +344,58 @@ body {
 }
 
 .rules-content {
-    background-color: #1e293b;  /* dark blue */
-    padding: 1.5rem; /* Reduced from 2rem */
+    background-color: #4c1d95; /* Dark purple background */
+    padding: 1.5rem;
     border-radius: 0.5rem;
-    max-width: 28rem; /* Reduced from 32rem */
+    max-width: 28rem;
     width: 90%;
-    color: white;
-    font-family: monospace;
-    text-align: center; /* Center all text */
+    color: #a7f3d0; /* Pale green text color */
+    font-family: 'Courier New', monospace;
+    text-align: center;
+    border: 3px solid #a7f3d0; /* Pale green border */
 }
 
 .rules-text {
-    text-align: center; /* Ensure text centering */
+    text-align: center;
 }
 
 .rules-title {
-    color: #ef4444;  /* red */
-    font-size: 1.3rem; /* Reduced from 1.5rem */
-    font-weight: bold;
-    margin-bottom: 0.8rem; /* Reduced from 1rem */
+    font-family: 'Black Ops One', cursive; /* Match the main page title font */
+    font-size: 1.5rem;
+    font-weight: normal; /* Black Ops One looks better without extra weight */
+    margin-bottom: 0.8rem;
     text-align: center;
+    color: #a7f3d0; /* Pale green */
+    letter-spacing: 0.05em; /* Slight letter spacing for better readability */
 }
 
 .rules-subtitle {
-    color: #ef4444;  /* red */
-    font-size: 1.1rem; /* Reduced from 1.25rem */
-    font-weight: bold;
-    margin-top: 1.2rem; /* Reduced from 1.5rem */
-    margin-bottom: 0.8rem; /* Reduced from 1rem */
+    font-family: 'Black Ops One', cursive; /* Match the main page title font */
+    font-size: 1.2rem;
+    font-weight: normal;
+    margin-top: 1.2rem;
+    margin-bottom: 0.8rem;
     text-align: center;
+    color: #a7f3d0; /* Pale green */
+    letter-spacing: 0.05em;
 }
 
 .rules-section {
-    color: #fde047;  /* yellow */
-    font-size: 0.8rem; /* Reduced from 0.875rem */
-    font-weight: bold;
-    line-height: 1.25;
-    margin-bottom: 0.8rem; /* Reduced from 1rem */
+    color: #a7f3d0; /* Pale green */
+    font-size: 0.8rem;
+    font-family: 'Courier New', monospace;
+    line-height: 1.4;
+    margin-bottom: 0.8rem;
     text-align: center;
 }
 
 .rules-section p {
-    margin: 0.5rem 0;
+    margin: 0.7rem 0;
     text-align: center;
 }
 
 .rules-button-container {
-    margin-top: 1.5rem; /* Reduced from 2rem */
+    margin-top: 1.5rem;
     display: flex;
     justify-content: center;
     text-align: center;
@@ -399,18 +404,18 @@ body {
 .start-button {
     padding: 0.75rem 2rem;
     background-color: transparent;
-    border: 2px solid #ef4444;
-    color: #ef4444;
+    border: 2px solid #ef4444; /* Keep the red border */
+    color: #ef4444; /* Keep the red text */
     font-size: 1.25rem;
     font-weight: bold;
     border-radius: 0.5rem;
     cursor: pointer;
-    font-family: monospace;
+    font-family: 'Courier New', monospace; /* As requested */
     transition: all 0.2s;
 }
 
 .start-button:hover {
-    background-color: #1e293b;
+    background-color: #ef4444;
     color: white;
 }
 
