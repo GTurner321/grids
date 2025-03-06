@@ -165,10 +165,10 @@
 }
 
 .leaderboard-table {
-    border: 1px solid #cbd5e1;
+    background-color: #ede9fe; /* Light lilac - same as username-area */
+    border: 2px solid #16a34a; /* Dark green border - same as username-area */
     border-radius: 6px;
     overflow: hidden;
-    background-color: white;
     max-height: 400px;
     overflow-y: auto;
     max-width: 400px;
