@@ -1,4 +1,4 @@
-// leaderboard-integration.js - Fixed version with anti-duplication logic
+// leaderboard-integration.js - Modified to remove loading indicator
 
 // Load CSS
 function loadStylesheet(url) {
@@ -153,28 +153,16 @@ class LeaderboardManager {
         const thresholdSubtitle = document.createElement('div');
         thresholdSubtitle.textContent = 'CLICK TO REVEAL - SCORE 5000+';
         thresholdSubtitle.className = 'leaderboard-subtitle';
-        thresholdSubtitle.style.textAlign = 'center';
-        thresholdSubtitle.style.fontSize = '0.8rem';
-        thresholdSubtitle.style.marginTop = '-10px';
-        thresholdSubtitle.style.marginBottom = '10px';
-        thresholdSubtitle.style.color = '#4a5568';
-        thresholdSubtitle.style.fontWeight = 'bold';
         
-        // Create loading indicator
-        const loadingIndicator = document.createElement('div');
-        loadingIndicator.id = 'leaderboard-loading';
-        loadingIndicator.className = 'leaderboard-loading';
-        loadingIndicator.textContent = 'Loading leaderboard...';
-        
+        // Create leaderboard table (initially hidden)
         const leaderboardTable = document.createElement('div');
-        leaderboardTable.className = 'leaderboard-table hidden'; // Add 'hidden' class
+        leaderboardTable.className = 'leaderboard-table hidden';
         leaderboardTable.id = 'leaderboard-table';
         
         // Add all elements to the leaderboard section
         leaderboardSection.appendChild(usernameArea);
         leaderboardSection.appendChild(leaderboardTitle);
         leaderboardSection.appendChild(thresholdSubtitle);
-        leaderboardSection.appendChild(loadingIndicator);
         leaderboardSection.appendChild(leaderboardTable);
         
         // Find the game-container and append the leaderboard section
@@ -320,9 +308,6 @@ class LeaderboardManager {
                 this.toggleLeaderboardVisibility();
             });
         }
-        
-        // We no longer need periodic refresh - only refresh when scores are updated
-        // Remove the setInterval that was here before
     }
     
     // New method to process scores - track session high score and determine if submission needed
@@ -595,35 +580,23 @@ class LeaderboardManager {
     }
 
     toggleLeaderboardVisibility() {
-    const leaderboardTable = document.getElementById('leaderboard-table');
-    const loadingIndicator = document.getElementById('leaderboard-loading');
-    
-    if (leaderboardTable) {
-        const isHidden = leaderboardTable.classList.contains('hidden');
+        const leaderboardTable = document.getElementById('leaderboard-table');
+        const toggleButton = document.getElementById('leaderboard-toggle');
         
-        if (isHidden) {
-            // Show the leaderboard
-            leaderboardTable.classList.remove('hidden');
+        if (leaderboardTable) {
+            const isHidden = leaderboardTable.classList.contains('hidden');
             
-            // Also show loading indicator while refreshing data
-            if (loadingIndicator) {
-                loadingIndicator.style.display = 'block';
-            }
-            
-            // Refresh the leaderboard data
-            this.refreshLeaderboard().then(() => {
-                if (loadingIndicator) {
-                    loadingIndicator.style.display = 'none';
-                }
-            });
-        } else {
-            // Hide the leaderboard
-            leaderboardTable.classList.add('hidden');
-            
-            // Also hide loading indicator
-            if (loadingIndicator) {
-                loadingIndicator.style.display = 'none';
-                }
+            if (isHidden) {
+                // Show the leaderboard
+                leaderboardTable.classList.remove('hidden');
+                if (toggleButton) toggleButton.classList.add('active');
+                
+                // Refresh the leaderboard data
+                this.refreshLeaderboard();
+            } else {
+                // Hide the leaderboard
+                leaderboardTable.classList.add('hidden');
+                if (toggleButton) toggleButton.classList.remove('active');
             }
         }
     }
@@ -640,20 +613,9 @@ class LeaderboardManager {
     
     async loadLeaderboard() {
         try {
-            // Show loading state
-            const loadingIndicator = document.getElementById('leaderboard-loading');
-            if (loadingIndicator) {
-                loadingIndicator.style.display = 'block';
-            }
-            
             if (this.supabase) {
                 // Try to load from Supabase
                 await this.loadFromSupabase();
-            }
-            
-            // Hide loading indicator
-            if (loadingIndicator) {
-                loadingIndicator.style.display = 'none';
             }
             
             // Render the leaderboard
@@ -661,12 +623,6 @@ class LeaderboardManager {
             
         } catch (error) {
             console.error('Error loading leaderboard data:', error);
-            
-            // Hide loading indicator
-            const loadingIndicator = document.getElementById('leaderboard-loading');
-            if (loadingIndicator) {
-                loadingIndicator.style.display = 'none';
-            }
             
             // Render whatever data we have
             this.renderLeaderboard();
