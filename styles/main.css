@@ -60,10 +60,11 @@ body {
 }
 
 /* Score Row */
+/* Score Row */
 .score-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    width: 411px;
+    width: 401px; /* Adjusted to match grid container (10 columns × 40px + 1px gaps) */
     height: 70px;
     background-color: white;
     border-radius: 6px 6px 0 0;
@@ -95,6 +96,21 @@ body {
 
 .score-display {
     display: none;
+}
+
+/* Add these media queries for responsive behavior */
+@media (min-width: 481px) {
+    #grid-container, .score-row {
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .score-row {
+        width: 100%; /* Full width on small screens */
+        max-width: 401px; /* But no larger than the grid */
+    }
 }
 
 .level-selector-container {
