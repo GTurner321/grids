@@ -32,26 +32,31 @@ class GameController {
     }
 
     initializeEventListeners() {
-        // Level selection
-        document.querySelectorAll('.level-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const level = parseInt(btn.dataset.level);
-                this.startLevel(level);
-            });
+    // Level selection
+    document.querySelectorAll('.level-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const level = parseInt(btn.dataset.level);
+            this.startLevel(level);
         });
+    });
 
-        // Game controls
-        document.getElementById('check-solution').addEventListener('click', () => {
-            if (this.state.userPath.length > 0) {
-                this.checkSolution();
-            }
-        });
+    // Game controls
+    document.getElementById('check-solution').addEventListener('click', () => {
+        if (this.state.userPath.length > 0) {
+            this.checkSolution();
+        }
+    });
 
-        document.getElementById('remove-spare').addEventListener('click', () => {
-            this.removeAllSpareCells();
-        });
-    }
-
+    document.getElementById('remove-spare').addEventListener('click', () => {
+        this.removeAllSpareCells();
+    });
+    
+    // Add reset path button handler
+    document.getElementById('reset-path').addEventListener('click', () => {
+        this.resetPath();
+    });
+}
+    
     async startLevel(level) {
         // Reset state
         this.state.currentLevel = level;
