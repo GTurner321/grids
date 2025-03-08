@@ -499,7 +499,33 @@ resetPath() {
     this.showMessage('Path reset. Start again from the green square.');
     console.log('Path reset complete');
 }
+
+// Add this method to the GameController class
+
+updateUI() {
+    // Update button states
+    const checkButton = document.getElementById('check-solution');
+    const removeButton = document.getElementById('remove-spare');
+    const resetButton = document.getElementById('reset-path');
     
+    if (checkButton) {
+        checkButton.disabled = !this.state.gameActive || this.state.userPath.length === 0;
+    }
+    
+    if (removeButton) {
+        removeButton.disabled = !this.state.gameActive || this.state.removedCells.size > 0;
+    }
+    
+    if (resetButton) {
+        resetButton.disabled = !this.state.gameActive || this.state.userPath.length === 0;
+    }
+
+    // Update level buttons
+    document.querySelectorAll('.level-btn').forEach(btn => {
+        btn.classList.toggle('active', parseInt(btn.dataset.level) === this.state.currentLevel);
+    });
+}
+   
     showMessage(text, type = 'info', duration = null) {
         const messageElement = document.getElementById('game-messages');
         if (messageElement) {
