@@ -155,7 +155,7 @@ class LeaderboardManager {
         thresholdSubtitle.className = 'leaderboard-subtitle';
         thresholdSubtitle.style.fontFamily = "'Courier New', monospace";
         thresholdSubtitle.style.fontSize = '0.8rem'; // Changed from 0.8rem to match the source
-        thresholdSubtitle.style.color = '#4a5568';
+        thresholdSubtitle.style.color = '#718096'; // Lighter gray color
         thresholdSubtitle.style.textAlign = 'center';
         thresholdSubtitle.style.marginTop = '-10px';
         thresholdSubtitle.style.marginBottom = '10px'; // You might want to change this to 5px to match
