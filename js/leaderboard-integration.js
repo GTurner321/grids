@@ -767,15 +767,16 @@ showLeaderboard() {
             leaderboardTable.appendChild(emptyRow);
         }
     }
-}
-
-hasUserScoreOnLeaderboard() {
-    if (!this.username || !this.leaderboardData || this.leaderboardData.length === 0) {
-        return false;
-    }
     
-    return this.leaderboardData.some(entry => entry.name === this.username);
-}
+    // Add hasUserScoreOnLeaderboard method inside the class
+    hasUserScoreOnLeaderboard() {
+        if (!this.username || !this.leaderboardData || this.leaderboardData.length === 0) {
+            return false;
+        }
+        
+        return this.leaderboardData.some(entry => entry.name === this.username);
+    }
+} // This is the closing brace for the LeaderboardManager class
 
 // Initialize on DOM content loaded
 window.addEventListener('DOMContentLoaded', () => {
