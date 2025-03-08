@@ -229,58 +229,43 @@ class LeaderboardManager {
     }
     
     patchScoreManager(scoreManager) {
-        try {
-            // Store reference to the original methods
-            const originalCompletePuzzle = scoreManager.completePuzzle;
-            const originalUpdateDisplay = scoreManager.updateDisplay;
-            
-            // Patch completePuzzle to ensure leaderboard is updated
-            scoreManager.completePuzzle = () => {
-                // Only run if this is the first time for this puzzle
-                if (!scoreManager.roundComplete) {
-                    // Call the original function first
-                    originalCompletePuzzle.call(scoreManager);
-                    
-                    const score = scoreManager.totalScore;
-                    console.log('Completed puzzle, total score:', score);
-                    
-                    // If username is set, update the score in leaderboard
-                    if (this.isUsernameSet && score > 0) {
-                        console.log('LeaderboardManager submitting score:', score);
-                        this.processScore(score);
-                    }
-                } else {
-                    console.log('Puzzle already completed, not updating score again');
-                }
-            };
-            
-            // Also patch updateDisplay to emit events
-            scoreManager.updateDisplay = function() {
+    try {
+        // Store reference to the original methods
+        const originalCompletePuzzle = scoreManager.completePuzzle;
+        const originalUpdateDisplay = scoreManager.updateDisplay;
+        
+        // Patch completePuzzle to ensure leaderboard is updated
+        scoreManager.completePuzzle = () => {
+            // Only run if this is the first time for this puzzle
+            if (!scoreManager.roundComplete) {
                 // Call the original function first
-                originalUpdateDisplay.call(this);
+                originalCompletePuzzle.call(scoreManager);
                 
-                // Only dispatch events for completed rounds to avoid duplicate submissions
-                if (this.roundComplete) {
-                    // Dispatch score updated event
-                    const scoreUpdatedEvent = new CustomEvent('scoreUpdated', {
-                        detail: {
-                            score: this.totalScore,
-                            level: this.currentLevel,
-                            roundScore: this.roundScore,
-                            roundComplete: this.roundComplete
-                        }
-                    });
+                const score = scoreManager.totalScore;
+                console.log('Completed puzzle, total score:', score);
+                
+                // If username is set, update the score in leaderboard
+                if (this.isUsernameSet && score > 0) {
+                    console.log('LeaderboardManager submitting score:', score);
+                    this.processScore(score);
                     
-                    window.dispatchEvent(scoreUpdatedEvent);
+                    // If user already has a score on the leaderboard, refresh it
+                    if (this.hasUserScoreOnLeaderboard()) {
+                        this.refreshLeaderboard();
+                    }
                 }
-            };
-            
-            return true;
-        } catch (error) {
-            console.error('Error patching ScoreManager:', error);
-            return false;
-        }
+            } else {
+                console.log('Puzzle already completed, not updating score again');
+            }
+        };
+        
+        // Rest of the method remains the same...
+        return true;
+    } catch (error) {
+        console.error('Error patching ScoreManager:', error);
+        return false;
     }
+}
     
     addEventListeners() {
         // Add event listener for username submission
@@ -320,26 +305,26 @@ class LeaderboardManager {
     
     // New method to process scores - track session high score and determine if submission needed
     processScore(score) {
-        console.log('Processing score:', score);
+    console.log('Processing score:', score);
+    
+    // Check if score is a new session high score
+    if (score > this.sessionHighScore) {
+        this.sessionHighScore = score;
+        console.log('New session high score:', score);
         
-        // Check if score is a new session high score
-        if (score > this.sessionHighScore) {
-            this.sessionHighScore = score;
-            console.log('New session high score:', score);
-            
-            // Only update the leaderboard UI initially for scores below threshold
-            if (score < this.scoreThreshold) {
-                this.showUpdateStatus(`Score tracked (needs ${this.scoreThreshold - score} more to reach leaderboard)`, 'info');
-                setTimeout(() => this.hideUpdateStatus(), 3000);
-                return;
-            }
-            
-            // For scores over threshold, submit to leaderboard
+        // Automatically show leaderboard if score meets the threshold
+        if (score >= this.scoreThreshold) {
             this.updateScore(score);
+            this.showLeaderboard();
         } else {
-            console.log('Score not higher than session high score:', this.sessionHighScore);
+            // For scores below threshold, just show a status message
+            this.showUpdateStatus(`Score tracked (needs ${this.scoreThreshold - score} more to reach leaderboard)`, 'info');
+            setTimeout(() => this.hideUpdateStatus(), 3000);
         }
+    } else {
+        console.log('Score not higher than session high score:', this.sessionHighScore);
     }
+}
     
     // Debounced version of updateScore that submits to leaderboard
     updateScore = debounce(async function(score) {
@@ -394,71 +379,68 @@ class LeaderboardManager {
     }, 500); // 500ms debounce
     
     async handleUsernameSubmission() {
-        const usernameInput = document.getElementById('username-input');
-        const statusMessage = document.getElementById('username-status');
-        const username = usernameInput.value.trim();
-        
-        if (!username) {
-            statusMessage.textContent = 'Please enter a name.';
-            statusMessage.className = 'status-message error';
-            return;
-        }
-        
-        // Show checking message
-        statusMessage.textContent = 'Checking name...';
-        statusMessage.className = 'status-message checking';
+    const usernameInput = document.getElementById('username-input');
+    const statusMessage = document.getElementById('username-status');
+    const username = usernameInput.value.trim();
+    
+    if (!username) {
+        statusMessage.textContent = 'Please enter a name.';
+        statusMessage.className = 'status-message error';
+        return;
+    }
+    
+    // Show checking message
+    statusMessage.textContent = 'Checking name...';
+    statusMessage.className = 'status-message checking';
+    
+    try {
+        let isApproved = false;
         
         try {
-            let isApproved = false;
+            const usernameCheckerModule = await import('./username-checker.js');
+            const usernameChecker = usernameCheckerModule.default;
+            isApproved = await usernameChecker.checkUsername(username);
+        } catch (e) {
+            console.warn('Could not load username checker, using fallback check');
+            isApproved = this.checkUsername(username);
+        }
+        
+        if (isApproved) {
+            this.setUsername(username);
             
-            try {
-                // Try to use the username checker module
-                const usernameCheckerModule = await import('./username-checker.js');
-                const usernameChecker = usernameCheckerModule.default;
-                isApproved = await usernameChecker.checkUsername(username);
-            } catch (e) {
-                console.warn('Could not load username checker, using fallback check');
-                isApproved = this.checkUsername(username);
+            // Hide the form and show welcome message
+            const usernameForm = document.querySelector('.username-form');
+            const welcomeMessage = document.getElementById('welcome-message');
+            
+            if (usernameForm && welcomeMessage) {
+                usernameForm.classList.add('hidden');
+                welcomeMessage.classList.remove('hidden');
+                welcomeMessage.textContent = `Hello ${username} - high scores will appear in the leaderboard below.`;
             }
             
-            if (isApproved) {
-                this.setUsername(username);
-                
-                // Hide the form and show welcome message
-                const usernameForm = document.querySelector('.username-form');
-                const welcomeMessage = document.getElementById('welcome-message');
-                
-                if (usernameForm && welcomeMessage) {
-                    usernameForm.classList.add('hidden');
-                    welcomeMessage.classList.remove('hidden');
-                    welcomeMessage.textContent = `Hello ${username} - high scores will appear in the leaderboard below.`;
-                }
-                
-                // Get current score and process it
-                const currentScore = this.getCurrentScore();
-                if (currentScore > 0) {
-                    this.processScore(currentScore);
-                }
-                
-                statusMessage.textContent = '';
-                statusMessage.className = 'status-message';
-                
-                // Only load the leaderboard if the score is high enough or if it's already visible
-                const leaderboardTable = document.getElementById('leaderboard-table');
-                if (currentScore >= this.scoreThreshold || 
-                    (leaderboardTable && !leaderboardTable.classList.contains('hidden'))) {
-                    this.refreshLeaderboard();
-                }
-            } else {
-                statusMessage.textContent = 'Username not appropriate for family-friendly environment. Please try another.';
-                statusMessage.className = 'status-message error';
+            // Get current score
+            const currentScore = this.getCurrentScore();
+            
+            // If current score is high enough, show leaderboard automatically
+            if (currentScore >= this.scoreThreshold) {
+                this.processScore(currentScore);
+                this.showLeaderboard(); // Automatically show leaderboard
+            } else if (currentScore > 0) {
+                this.processScore(currentScore);
             }
-        } catch (error) {
-            console.error('Error checking username:', error);
-            statusMessage.textContent = 'Error checking username. Please try again.';
+            
+            statusMessage.textContent = '';
+            statusMessage.className = 'status-message';
+        } else {
+            statusMessage.textContent = 'Username not appropriate for family-friendly environment. Please try another.';
             statusMessage.className = 'status-message error';
         }
+    } catch (error) {
+        console.error('Error checking username:', error);
+        statusMessage.textContent = 'Error checking username. Please try again.';
+        statusMessage.className = 'status-message error';
     }
+}
     
     checkUsername(username) {
         if (!username || username.length < 2 || username.length > 12) {
@@ -623,6 +605,24 @@ class LeaderboardManager {
             }
         }
     }
+
+showLeaderboard() {
+    const leaderboardTable = document.getElementById('leaderboard-table');
+    const toggleButton = document.getElementById('leaderboard-toggle');
+    
+    if (leaderboardTable && leaderboardTable.classList.contains('hidden')) {
+        // Show the leaderboard
+        leaderboardTable.classList.remove('hidden');
+        
+        // Add active class to button
+        if (toggleButton) {
+            toggleButton.classList.add('active');
+        }
+        
+        // Refresh the leaderboard data
+        this.refreshLeaderboard();
+    }
+}
     
     async refreshLeaderboard() {
         try {
@@ -767,6 +767,14 @@ class LeaderboardManager {
             leaderboardTable.appendChild(emptyRow);
         }
     }
+}
+
+hasUserScoreOnLeaderboard() {
+    if (!this.username || !this.leaderboardData || this.leaderboardData.length === 0) {
+        return false;
+    }
+    
+    return this.leaderboardData.some(entry => entry.name === this.username);
 }
 
 // Initialize on DOM content loaded
