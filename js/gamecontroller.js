@@ -468,43 +468,38 @@ class GameController {
     }
 
 resetPath() {
-    if (!this.state.gameActive) return;
+    console.log('resetPath method called');
+    if (!this.state.gameActive) {
+        console.log('Game not active, reset path aborted');
+        return;
+    }
     
-    // Reset user path
+    // Reset user path array
     this.state.userPath = [];
+    console.log('User path reset to empty array');
     
-    // Clear path highlighting
+    // Clear path highlighting from all cells
     document.querySelectorAll('.grid-cell').forEach(cell => {
-        cell.classList.remove('selected', 'start-cell-selected', 'end-cell-selected');
+        cell.classList.remove('selected', 'start-cell-selected', 'end-cell-selected', 'just-selected');
     });
+    console.log('Cell highlighting cleared');
     
     // Remove any path arrows
-    document.querySelectorAll('.path-arrow').forEach(arrow => arrow.remove());
+    const arrows = document.querySelectorAll('.path-arrow');
+    arrows.forEach(arrow => arrow.remove());
+    console.log(`${arrows.length} path arrows removed`);
     
-    // Update UI
+    // Call updatePathHighlight to ensure consistent state
+    this.updatePathHighlight();
+    
+    // Update UI elements (button states, etc.)
     this.updateUI();
+    
+    // Show feedback message
     this.showMessage('Path reset. Start again from the green square.');
+    console.log('Path reset complete');
 }
     
-    handlePuzzleSolved() {
-        this.state.gameActive = false;
-        scoreManager.completePuzzle();
-        this.updateUI();
-        this.showMessage('Congratulations! Puzzle solved!', 'success');
-    }
-
-    updateUI() {
-        // Update button states
-        document.getElementById('check-solution').disabled = !this.state.gameActive || this.state.userPath.length === 0;
-        document.getElementById('remove-spare').disabled = !this.state.gameActive || this.state.removedCells.size > 0;
-        document.getElementById('reset-path').disabled = !this.state.gameActive || this.state.userPath.length === 0;
-
-        // Update level buttons
-        document.querySelectorAll('.level-btn').forEach(btn => {
-        btn.classList.toggle('active', parseInt(btn.dataset.level) === this.state.currentLevel);
-    });
-}
-
     showMessage(text, type = 'info', duration = null) {
         const messageElement = document.getElementById('game-messages');
         if (messageElement) {
