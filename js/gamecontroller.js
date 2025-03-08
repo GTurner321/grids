@@ -454,6 +454,25 @@ class GameController {
         return validatePathMath(this.state.userPath, this.state.gridEntries);
     }
 
+resetPath() {
+    if (!this.state.gameActive) return;
+    
+    // Reset user path
+    this.state.userPath = [];
+    
+    // Clear path highlighting
+    document.querySelectorAll('.grid-cell').forEach(cell => {
+        cell.classList.remove('selected', 'start-cell-selected', 'end-cell-selected');
+    });
+    
+    // Remove any path arrows
+    document.querySelectorAll('.path-arrow').forEach(arrow => arrow.remove());
+    
+    // Update UI
+    this.updateUI();
+    this.showMessage('Path reset. Start again from the green square.');
+}
+    
     handlePuzzleSolved() {
         this.state.gameActive = false;
         scoreManager.completePuzzle();
