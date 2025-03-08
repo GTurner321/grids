@@ -271,74 +271,84 @@ class GameController {
         
         // Touch event handling - optimized for mobile
         gridContainer.addEventListener('touchstart', (e) => {
-            if (!this.state.gameActive) return;
-            
-            const touch = e.touches[0];
-            const element = document.elementFromPoint(touch.clientX, touch.clientY);
-            if (!element) return;
-            
-            const cell = element.closest('.grid-cell');
-            if (cell) {
-                e.preventDefault(); // Prevent scrolling
-                touchStartCell = cell;
-                lastTouchedCell = cell;
-                touchStartTime = Date.now();
-                isDragging = false;
-                
-                // For taps, handle immediately if it's the start cell
-                if (this.isStartCell(cell) && this.state.userPath.length === 0) {
-                    this.handleCellClick(cell);
-                }
-            }
-        }, { passive: false });
+    if (!this.state.gameActive) return;
+    
+    const touch = e.touches[0];
+    const element = document.elementFromPoint(touch.clientX, touch.clientY);
+    if (!element) return;
+    
+    const cell = element.closest('.grid-cell');
+    if (cell) {
+        e.preventDefault(); // Prevent scrolling
+        touchStartCell = cell;
+        lastTouchedCell = cell;
+        touchStartTime = Date.now();
+        isDragging = false;
+        
+        // If starting at the green cell and path is empty, add it to path immediately
+        // This makes the cell "selected" so drag can continue from it
+        if (this.isStartCell(cell) && this.state.userPath.length === 0) {
+            const startCellIndex = parseInt(cell.dataset.index);
+            this.state.userPath = [startCellIndex];
+            this.updatePathHighlight();
+            this.showMessage('Path started! Continue by selecting connected cells.');
+        }
+    }
+}, { passive: false });
         
         gridContainer.addEventListener('touchmove', (e) => {
-            if (!this.state.gameActive) return;
-            e.preventDefault(); // Prevent scrolling
-            
-            // Mark that we're dragging
-            if (Date.now() - touchStartTime > 100) {
-                isDragging = true;
+    if (!this.state.gameActive) return;
+    e.preventDefault(); // Prevent scrolling
+    
+    // Mark that we're dragging
+    if (Date.now() - touchStartTime > 100) {
+        isDragging = true;
+    }
+    
+    const touch = e.touches[0];
+    const element = document.elementFromPoint(touch.clientX, touch.clientY);
+    if (!element) return;
+    
+    const cell = element.closest('.grid-cell');
+    if (!cell || cell === lastTouchedCell) return;
+    
+    // In drag mode, process cells
+    if (isDragging) {
+        // Start path if needed
+        if (this.state.userPath.length === 0) {
+            // If we're dragging from start cell, automatically start the path
+            if (this.isStartCell(touchStartCell)) {
+                // Add start cell to path
+                const startCellIndex = parseInt(touchStartCell.dataset.index);
+                this.state.userPath = [startCellIndex];
+                this.updatePathHighlight();
+                lastTouchedCell = touchStartCell;
+                this.showMessage('Path started! Continue by selecting connected cells.');
+            } else {
+                return; // Can't start drag from non-start cell
             }
-            
-            const touch = e.touches[0];
-            const element = document.elementFromPoint(touch.clientX, touch.clientY);
-            if (!element) return;
-            
-            const cell = element.closest('.grid-cell');
-            if (!cell || cell === lastTouchedCell) return;
-            
-            // In drag mode, process cells
-            if (isDragging) {
-                // Start path if needed
-                if (this.state.userPath.length === 0) {
-                    if (this.isStartCell(touchStartCell)) {
-                        this.handleCellClick(touchStartCell);
-                    } else {
-                        return; // Can't start drag from non-start cell
-                    }
-                }
-                
-                // Validate the new cell
-                const cellIndex = parseInt(cell.dataset.index);
-                const lastPathIndex = this.state.userPath[this.state.userPath.length - 1];
-                
-                // For deselection - if we drag back to previous cell
-                if (this.state.userPath.length > 1 && 
-                    cellIndex === this.state.userPath[this.state.userPath.length - 2]) {
-                    this.state.userPath.pop(); // Remove last cell
-                    this.updatePathHighlight();
-                    lastTouchedCell = cell;
-                    return;
-                }
-                
-                // For new cell addition - must be valid move and not already in path
-                if (this.isValidMove(cellIndex) && !this.state.userPath.includes(cellIndex)) {
-                    this.handleCellClick(cell);
-                    lastTouchedCell = cell;
-                }
-            }
-        }, { passive: false });
+        }
+        
+        // Validate the new cell
+        const cellIndex = parseInt(cell.dataset.index);
+        const lastPathIndex = this.state.userPath[this.state.userPath.length - 1];
+        
+        // For deselection - if we drag back to previous cell
+        if (this.state.userPath.length > 1 && 
+            cellIndex === this.state.userPath[this.state.userPath.length - 2]) {
+            this.state.userPath.pop(); // Remove last cell
+            this.updatePathHighlight();
+            lastTouchedCell = cell;
+            return;
+        }
+        
+        // For new cell addition - must be valid move and not already in path
+        if (this.isValidMove(cellIndex) && !this.state.userPath.includes(cellIndex)) {
+            this.handleCellClick(cell);
+            lastTouchedCell = cell;
+        }
+    }
+}, { passive: false });
         
         gridContainer.addEventListener('touchend', (e) => {
             if (!this.state.gameActive) return;
