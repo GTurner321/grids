@@ -484,12 +484,13 @@ resetPath() {
         // Update button states
         document.getElementById('check-solution').disabled = !this.state.gameActive || this.state.userPath.length === 0;
         document.getElementById('remove-spare').disabled = !this.state.gameActive || this.state.removedCells.size > 0;
+        document.getElementById('reset-path').disabled = !this.state.gameActive || this.state.userPath.length === 0;
 
         // Update level buttons
         document.querySelectorAll('.level-btn').forEach(btn => {
-            btn.classList.toggle('active', parseInt(btn.dataset.level) === this.state.currentLevel);
-        });
-    }
+        btn.classList.toggle('active', parseInt(btn.dataset.level) === this.state.currentLevel);
+    });
+}
 
     showMessage(text, type = 'info', duration = null) {
         const messageElement = document.getElementById('game-messages');
