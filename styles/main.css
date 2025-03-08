@@ -426,7 +426,7 @@ body {
     border: 2px solid #ef4444; /* Red border */
     color: #ef4444; /* Red text */
     font-size: 1.25rem;
-    font-weight: normal; /* Changed to normal since Black Ops One is already bold */
+    font-weight: normal; /* Changed from bold since Black Ops One is already bold */
     border-radius: 0.5rem;
     cursor: pointer;
     font-family: 'Black Ops One', cursive; /* Changed from 'Courier New', monospace */
