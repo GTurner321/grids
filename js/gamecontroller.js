@@ -476,6 +476,38 @@ class GameController {
     
     this.updateUI();
 }
+
+    handlePuzzleSolved() {
+    // Display success message
+    this.showMessage('Congratulations! Puzzle solved!', 'success');
+    
+    // Update score
+    scoreManager.completePuzzle();
+    
+    // Mark all cells in the path as solved
+    this.state.userPath.forEach(index => {
+        const cell = document.querySelector(`[data-index="${index}"]`);
+        if (cell) {
+            cell.classList.add('user-solved-path');
+        }
+    });
+    
+    // Delay before enabling next level
+    setTimeout(() => {
+        // Disable game to prevent further interaction with this puzzle
+        this.state.gameActive = false;
+        
+        // Update UI to reflect completion
+        this.updateUI();
+        
+        // Suggestion for next level if not at max level
+        if (this.state.currentLevel < 5) {
+            this.showMessage(`Ready for level ${this.state.currentLevel + 1}?`, 'info');
+        } else {
+            this.showMessage('You completed the highest level! Try again for a better score.', 'info');
+        }
+    }, 1500);
+}
     
     validatePath() {
         // First check if the path is continuous
