@@ -486,10 +486,14 @@ class LeaderboardManager {
     }
     
     setUsername(username) {
-        this.username = username;
-        this.isUsernameSet = true;
-        this.hasSubmittedScore = false; // Reset submission status for new username
-    }
+    this.username = username;
+    this.isUsernameSet = true;
+    this.hasSubmittedScore = false; // Reset submission status for new username
+    
+    // Generate a new session ID for this username
+    this.sessionId = `${username}-${Date.now()}`;
+    console.log('New session created with ID:', this.sessionId);
+}
     
     getCurrentScore() {
         try {
