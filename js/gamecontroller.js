@@ -499,7 +499,7 @@ resetPath() {
     this.showMessage('Path reset. Start again from the green square.');
     console.log('Path reset complete');
 }
-
+    
 // Add this method to the GameController class
 
 updateUI() {
