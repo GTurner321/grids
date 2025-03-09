@@ -1,6 +1,6 @@
 // leaderboard-integration.js - Fixed for proper updating
 
-import supabaseLeaderboard from '/js/supabase-leaderboard.js';
+import supabaseLeaderboard from './supabase-leaderboard.js';  // Fixed import path
 
 // Function to load stylesheet
 function loadStylesheet(url) {
@@ -9,6 +9,25 @@ function loadStylesheet(url) {
     link.type = 'text/css';
     link.href = url;
     document.head.appendChild(link);
+
+
+// Initialize on DOM content loaded
+window.addEventListener('DOMContentLoaded', () => {
+    try {
+        // First reset any stored session data
+        resetUserSession();
+        
+        // Create and initialize the leaderboard
+        window.leaderboardManager = new LeaderboardManager();
+        
+        console.log('Leaderboard initialized successfully');
+    } catch (error) {
+        console.error('Error initializing leaderboard system:', error);
+    }
+});
+
+// Export for module usage
+export default LeaderboardManager;
 }
 
 // Reset any stored user data
@@ -61,9 +80,11 @@ class LeaderboardManager {
     
     loadStylesheet() {
         loadStylesheet('./styles/leaderboard.css');
+        console.log('Leaderboard stylesheet loaded');
     }
     
     createLeaderboardUI() {
+        console.log('Creating leaderboard UI');
         // Create leaderboard container
         const leaderboardSection = document.createElement('section');
         leaderboardSection.className = 'leaderboard-section';
@@ -145,11 +166,22 @@ class LeaderboardManager {
         const gameContainer = document.querySelector('.game-container');
         if (gameContainer) {
             gameContainer.appendChild(leaderboardSection);
+            console.log('Leaderboard UI added to game container');
+        } else {
+            console.error('Game container not found for leaderboard UI');
         }
     }
     
     findScoreManager() {
-        // First try to use the scoreManager directly imported via module
+        console.log('Looking for ScoreManager');
+        // First check if it's already available on window
+        if (window.scoreManager) {
+            console.log('ScoreManager found in global scope');
+            this.patchScoreManager(window.scoreManager);
+            return;
+        }
+        
+        // Try to use the scoreManager directly imported via module
         import('./scoremanager.js').then(module => {
             if (module && module.scoreManager) {
                 // Add it to window for easy access
@@ -157,29 +189,25 @@ class LeaderboardManager {
                 this.patchScoreManager(module.scoreManager);
                 console.log('ScoreManager found via module import and patched successfully');
             } else {
-                console.log('ScoreManager not found in module, checking window...');
-                // Otherwise check window object
-                if (window.scoreManager) {
-                    this.patchScoreManager(window.scoreManager);
-                    console.log('ScoreManager found in window and patched successfully');
-                } else {
-                    console.log('ScoreManager not found, setting up observer...');
-                    // Set up an observer to wait for scoreManager
-                    this.setupScoreManagerObserver();
-                }
+                console.log('ScoreManager not found in module, setting up observer...');
+                // Set up an observer to wait for scoreManager
+                this.setupScoreManagerObserver();
             }
         }).catch(err => {
             console.error('Error importing scoremanager module:', err);
-            // Try to find it on window
-            if (window.scoreManager) {
-                this.patchScoreManager(window.scoreManager);
-            } else {
-                this.setupScoreManagerObserver();
-            }
+            // Try to find it on window again after a delay
+            setTimeout(() => {
+                if (window.scoreManager) {
+                    this.patchScoreManager(window.scoreManager);
+                } else {
+                    this.setupScoreManagerObserver();
+                }
+            }, 500);
         });
     }
     
     setupScoreManagerObserver() {
+        console.log('Setting up ScoreManager observer');
         // Wait for scoreManager to be available on window
         const checkInterval = setInterval(() => {
             if (window.scoreManager) {
@@ -200,28 +228,33 @@ class LeaderboardManager {
         try {
             // Store reference to the original methods
             const originalCompletePuzzle = scoreManager.completePuzzle;
-            const originalUpdateDisplay = scoreManager.updateDisplay;
             
             // Patch completePuzzle to ensure leaderboard is updated
-            scoreManager.completePuzzle = () => {
+            scoreManager.completePuzzle = function() {
                 // Only run if this is the first time for this puzzle
-                if (!scoreManager.roundComplete) {
+                if (!this.roundComplete) {
                     // Call the original function first
-                    originalCompletePuzzle.call(scoreManager);
+                    originalCompletePuzzle.call(this);
                     
-                    const score = scoreManager.totalScore;
+                    const score = this.totalScore;
                     console.log('Completed puzzle, total score:', score);
                     
-                    // If username is set, update the score in leaderboard
-                    if (this.isUsernameSet && score > 0) {
-                        console.log('LeaderboardManager processing score:', score);
-                        this.processScore(score);
-                    }
+                    // Dispatch a score updated event
+                    const event = new CustomEvent('scoreUpdated', {
+                        detail: {
+                            score: score,
+                            level: this.currentLevel,
+                            roundScore: this.roundScore,
+                            roundComplete: true
+                        }
+                    });
+                    window.dispatchEvent(event);
                 } else {
                     console.log('Puzzle already completed, not updating score again');
                 }
             };
             
+            console.log('ScoreManager patched successfully');
             return true;
         } catch (error) {
             console.error('Error patching ScoreManager:', error);
@@ -230,12 +263,16 @@ class LeaderboardManager {
     }
     
     addEventListeners() {
+        console.log('Adding leaderboard event listeners');
         // Add event listener for username submission
         const submitButton = document.getElementById('submit-username');
         if (submitButton) {
             submitButton.addEventListener('click', () => {
                 this.handleUsernameSubmission();
             });
+            console.log('Username submit button listener added');
+        } else {
+            console.warn('Username submit button not found');
         }
         
         // Listen for Enter key in the input field
@@ -263,6 +300,9 @@ class LeaderboardManager {
             toggleButton.addEventListener('click', () => {
                 this.toggleLeaderboardVisibility();
             });
+            console.log('Leaderboard toggle button listener added');
+        } else {
+            console.warn('Leaderboard toggle button not found');
         }
         
         // Set up periodic refresh for when the leaderboard is visible
@@ -367,17 +407,21 @@ class LeaderboardManager {
     async handleUsernameSubmission() {
         const usernameInput = document.getElementById('username-input');
         const statusMessage = document.getElementById('username-status');
-        const username = usernameInput.value.trim();
+        const username = usernameInput?.value.trim() || '';
         
         if (!username) {
-            statusMessage.textContent = 'Please enter a name.';
-            statusMessage.className = 'status-message error';
+            if (statusMessage) {
+                statusMessage.textContent = 'Please enter a name.';
+                statusMessage.className = 'status-message error';
+            }
             return;
         }
         
         // Show checking message
-        statusMessage.textContent = 'Checking name...';
-        statusMessage.className = 'status-message checking';
+        if (statusMessage) {
+            statusMessage.textContent = 'Checking name...';
+            statusMessage.className = 'status-message checking';
+        }
         
         try {
             let isApproved = false;
@@ -412,16 +456,22 @@ class LeaderboardManager {
                     this.processScore(currentScore);
                 }
                 
-                statusMessage.textContent = '';
-                statusMessage.className = 'status-message';
+                if (statusMessage) {
+                    statusMessage.textContent = '';
+                    statusMessage.className = 'status-message';
+                }
             } else {
-                statusMessage.textContent = 'Username not appropriate for family-friendly environment. Please try another.';
-                statusMessage.className = 'status-message error';
+                if (statusMessage) {
+                    statusMessage.textContent = 'Username not appropriate for family-friendly environment. Please try another.';
+                    statusMessage.className = 'status-message error';
+                }
             }
         } catch (error) {
             console.error('Error checking username:', error);
-            statusMessage.textContent = 'Error checking username. Please try again.';
-            statusMessage.className = 'status-message error';
+            if (statusMessage) {
+                statusMessage.textContent = 'Error checking username. Please try again.';
+                statusMessage.className = 'status-message error';
+            }
         }
     }
     
@@ -447,6 +497,7 @@ class LeaderboardManager {
     setUsername(username) {
         this.username = username;
         this.isUsernameSet = true;
+        console.log('Username set:', username);
     }
     
     getCurrentScore() {
@@ -684,24 +735,3 @@ class LeaderboardManager {
         return userIndex !== -1 ? userIndex + 1 : null;
     }
 }
-
-// Initialize on DOM content loaded
-window.addEventListener('DOMContentLoaded', () => {
-    try {
-        // First reset any stored session data
-        resetUserSession();
-        
-        // Load leaderboard stylesheet
-        loadStylesheet('./styles/leaderboard.css');
-        
-        // Create and initialize the leaderboard
-        window.leaderboardManager = new LeaderboardManager();
-        
-        console.log('Leaderboard initialized successfully');
-    } catch (error) {
-        console.error('Error initializing leaderboard system:', error);
-    }
-});
-
-// Export for module usage
-export default LeaderboardManager;
