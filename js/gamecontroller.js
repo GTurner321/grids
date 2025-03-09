@@ -31,30 +31,53 @@ class GameController {
         this.initializeGridInteractions();
     }
 
-    initializeEventListeners() {
+   initializeEventListeners() {
+    console.log('Initializing game event listeners');
+    
     // Level selection
     document.querySelectorAll('.level-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const level = parseInt(btn.dataset.level);
+            console.log(`Level ${level} button clicked`);
             this.startLevel(level);
         });
     });
 
     // Game controls
-    document.getElementById('check-solution').addEventListener('click', () => {
-        if (this.state.userPath.length > 0) {
-            this.checkSolution();
-        }
-    });
+    const checkButton = document.getElementById('check-solution');
+    if (checkButton) {
+        checkButton.addEventListener('click', () => {
+            console.log('Check solution button clicked');
+            if (this.state.userPath.length > 0) {
+                this.checkSolution();
+            }
+        });
+    } else {
+        console.error('Check solution button not found');
+    }
 
-    document.getElementById('remove-spare').addEventListener('click', () => {
-        this.removeAllSpareCells();
-    });
+    const removeButton = document.getElementById('remove-spare');
+    if (removeButton) {
+        removeButton.addEventListener('click', () => {
+            console.log('Remove spare button clicked');
+            this.removeAllSpareCells();
+        });
+    } else {
+        console.error('Remove spare button not found');
+    }
     
     // Add reset path button handler
-    document.getElementById('reset-path').addEventListener('click', () => {
-        this.resetPath();
-    });
+    const resetButton = document.getElementById('reset-path');
+    if (resetButton) {
+        resetButton.addEventListener('click', () => {
+            console.log('Reset path button clicked');
+            this.resetPath();
+        });
+    } else {
+        console.error('Reset path button not found');
+    }
+    
+    console.log('Game event listeners initialized');
 }
     
     async startLevel(level) {
