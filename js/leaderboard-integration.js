@@ -37,28 +37,31 @@ class LeaderboardManager {
     constructor() {
         // Reset any existing data
         resetUserSession();
-        
-        this.leaderboardData = [];
-        this.username = '';
-        this.isUsernameSet = false;
-        this.maxEntries = 20;
-        this.supabase = null;
-        this.hasSubmittedScore = false;
-        this.submissionTimestamps = new Map(); // Track submission times by score
-        this.sessionHighScore = 0; // Track session high score
-        this.scoreThreshold = 5000; // Only submit scores of 5000+
-        this.leaderboardLoaded = false; // Track if leaderboard has been loaded
-        
-        // Pre-bind the updateScore method
-        this.updateScore = debounce(this.updateScore.bind(this), 500);
-        
-        this.initSupabase();
-        this.createLeaderboardUI();
-        this.addEventListeners();
-        
-        // Find the scoreManager directly imported from module
-        this.findScoreManager();
-    }
+    
+    this.leaderboardData = [];
+    this.username = '';
+    this.isUsernameSet = false;
+    this.maxEntries = 20;
+    this.supabase = null;
+    this.hasSubmittedScore = false;
+    this.submissionTimestamps = new Map(); // Track submission times by score
+    this.sessionHighScore = 0; // Track session high score
+    this.scoreThreshold = 5000; // Only submit scores of 5000+
+    this.leaderboardLoaded = false; // Track if leaderboard has been loaded
+    
+    // Add sessionId property for tracking the current session
+    this.sessionId = null;
+    
+    // Pre-bind the updateScore method
+    this.updateScore = debounce(this.updateScore.bind(this), 500);
+    
+    this.initSupabase();
+    this.createLeaderboardUI();
+    this.addEventListeners();
+    
+    // Find the scoreManager directly imported from module
+    this.findScoreManager();
+}
     
     async initSupabase() {
         try {
