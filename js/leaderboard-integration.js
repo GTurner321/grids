@@ -501,52 +501,79 @@ class LeaderboardManager {
     }
     
     async updateSupabaseScore(score) {
-        if (!this.supabase) return false;
+    if (!this.supabase) return false;
+    
+    try {
+        // Get current date/time
+        const now = new Date().toISOString();
         
-        try {
-            // Get current date/time
-            const now = new Date().toISOString();
-            
-            // First check if this user already has a score that's higher
-            const { data, error: checkError } = await this.supabase
-                .from('leaderboard_entries')
-                .select('score')
-                .eq('name', this.username)
-                .order('score', { ascending: false })
-                .limit(1);
-                
-            if (checkError) {
-                console.error('Error checking for existing entries:', checkError);
-                throw checkError;
-            }
-            
-            // If user already has a higher score, don't update
-            if (data && data.length > 0 && data[0].score >= score) {
-                console.log('User already has a higher score:', data[0].score);
-                return true; // Return true to avoid showing error, but don't update
-            }
-            
-            // Now insert the new entry - we allow multiple entries per username from different sessions
-            const { error: insertError } = await this.supabase
-                .from('leaderboard_entries')
-                .insert([{
-                    name: this.username,
-                    score: score,
-                    created_at: now
-                }]);
-                
-            if (insertError) {
-                console.error('Error inserting score to Supabase:', insertError);
-                throw insertError;
-            }
-            
-            console.log('Score added successfully to Supabase');
-            return true;
-        } catch (error) {
-            console.error('Error updating Supabase score:', error);
-            throw error;
+        // Create a session ID if we don't have one yet
+        if (!this.sessionId) {
+            // Generate a session ID based on username and timestamp
+            this.sessionId = `${this.username}-${Date.now()}`;
+            console.log('Created new session ID:', this.sessionId);
         }
+        
+        // First check if this user already has a score in this session
+        const { data: sessionScores, error: sessionCheckError } = await this.supabase
+            .from('leaderboard_entries')
+            .select('id, score')
+            .eq('name', this.username)
+            .eq('session_id', this.sessionId)
+            .order('score', { ascending: false });
+            
+        if (sessionCheckError) {
+            console.error('Error checking for session entries:', sessionCheckError);
+            throw sessionCheckError;
+        }
+        
+        // If user already has entries from this session
+        if (sessionScores && sessionScores.length > 0) {
+            const highestSessionScore = sessionScores[0].score;
+            
+            // If they already have a higher score in this session, don't update
+            if (highestSessionScore >= score) {
+                console.log('User already has a higher score in this session:', highestSessionScore);
+                return true; // Return true to avoid showing error
+            }
+            
+            // New high score for this session - delete previous session entries
+            console.log('Removing previous session scores for this user');
+            
+            // Delete all previous entries from this session
+            const { error: deleteError } = await this.supabase
+                .from('leaderboard_entries')
+                .delete()
+                .eq('session_id', this.sessionId);
+                
+            if (deleteError) {
+                console.error('Error deleting session entries:', deleteError);
+                // Continue anyway to insert the new score
+            }
+        }
+        
+        // Insert the new entry with the session ID
+        const { error: insertError } = await this.supabase
+            .from('leaderboard_entries')
+            .insert([{
+                name: this.username,
+                score: score,
+                created_at: now,
+                session_id: this.sessionId
+            }]);
+                
+        if (insertError) {
+            console.error('Error inserting score to Supabase:', insertError);
+            throw insertError;
+        }
+        
+        console.log('Score added successfully to Supabase');
+        return true;
+    } catch (error) {
+        console.error('Error updating Supabase score:', error);
+        throw error;
     }
+}
     
     updateTemporaryScore(score) {
         // Always add a new entry for this session (allows multiple entries per username)
