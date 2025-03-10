@@ -66,12 +66,13 @@ class GameController {
         console.error('Remove spare button not found');
     }
     
-    // Add reset path button handler
+    // Add reset path button handler - FIXED
     const resetButton = document.getElementById('reset-path');
     if (resetButton) {
-        resetButton.addEventListener('click', () => {
+        resetButton.addEventListener('click', (e) => {
             console.log('Reset path button clicked');
-            this.resetPath();
+            e.preventDefault(); // Prevent any default behavior
+            this.resetPath(); // Call the resetPath method
         });
     } else {
         console.error('Reset path button not found');
@@ -524,35 +525,41 @@ class GameController {
 
 resetPath() {
     console.log('resetPath method called');
-    if (!this.state.gameActive) {
-        console.log('Game not active, reset path aborted');
-        return;
+    
+    try {
+        if (!this.state.gameActive) {
+            console.log('Game not active, reset path aborted');
+            return;
+        }
+        
+        // Reset user path array
+        this.state.userPath = [];
+        console.log('User path reset to empty array');
+        
+        // Clear path highlighting from all cells
+        document.querySelectorAll('.grid-cell').forEach(cell => {
+            cell.classList.remove('selected', 'start-cell-selected', 'end-cell-selected', 'just-selected');
+        });
+        console.log('Cell highlighting cleared');
+        
+        // Remove any path arrows
+        const arrows = document.querySelectorAll('.path-arrow');
+        arrows.forEach(arrow => arrow.remove());
+        console.log(`${arrows.length} path arrows removed`);
+        
+        // Call updatePathHighlight to ensure consistent state
+        this.updatePathHighlight();
+        
+        // Update UI elements (button states, etc.)
+        this.updateUI();
+        
+        // Show feedback message
+        this.showMessage('Path reset. Start again from the green square.');
+        console.log('Path reset complete');
+    } catch (error) {
+        console.error('Error during path reset:', error);
+        this.showMessage('Error resetting path. Please try again.', 'error');
     }
-    
-    // Reset user path array
-    this.state.userPath = [];
-    console.log('User path reset to empty array');
-    
-    // Clear path highlighting from all cells
-    document.querySelectorAll('.grid-cell').forEach(cell => {
-        cell.classList.remove('selected', 'start-cell-selected', 'end-cell-selected', 'just-selected');
-    });
-    console.log('Cell highlighting cleared');
-    
-    // Remove any path arrows
-    const arrows = document.querySelectorAll('.path-arrow');
-    arrows.forEach(arrow => arrow.remove());
-    console.log(`${arrows.length} path arrows removed`);
-    
-    // Call updatePathHighlight to ensure consistent state
-    this.updatePathHighlight();
-    
-    // Update UI elements (button states, etc.)
-    this.updateUI();
-    
-    // Show feedback message
-    this.showMessage('Path reset. Start again from the green square.');
-    console.log('Path reset complete');
 }
     
 // Add this method to the GameController class
