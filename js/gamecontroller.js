@@ -244,17 +244,23 @@ class GameController {
             return;
         }
 
-        // Add the new cell to the path
+        // Add the new cell to the path// Add the new cell to the path
         this.state.userPath.push(cellIndex);
-        
+
         // Add a visual pulse effect
         cell.classList.add('just-selected');
         setTimeout(() => {
             cell.classList.remove('just-selected');
         }, 200);
-        
+
         this.updatePathHighlight();
-        
+
+        // Explicitly update reset button state
+        const resetButton = document.getElementById('reset-path');
+        if (resetButton && this.state.userPath.length > 0) {
+            resetButton.disabled = false;
+        }
+
         // Enable check solution button
         document.getElementById('check-solution').disabled = false;
 
