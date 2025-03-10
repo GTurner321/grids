@@ -60,9 +60,12 @@ body {
 }
 
 /* Score Row */
+/* CSS update for score display */
+
+/* Update the score row layout */
 .score-row {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 60% 40%; /* 60/40 split as requested */
     width: calc(10 * 40px + 9 * 1px + 2px); /* 10 columns × 40px + 9 gaps × 1px + 2px border */
     height: 70px;
     background-color: white;
@@ -77,9 +80,10 @@ body {
     padding-left: 10px;
     font-family: 'Courier New', monospace;
     font-size: 0.85rem;
-    color: #ef4444; /* Changed from green to red */
-    display: flex; /* Added for vertical centering */
-    align-items: center; /* Added for vertical centering */
+    color: #ef4444; /* Red color */
+    display: flex;
+    align-items: center;
+    font-weight: bold; /* Make it bold as requested */
 }
 
 .score-right {
@@ -88,28 +92,21 @@ body {
     font-family: 'Courier New', monospace;
     font-size: 0.85rem;
     font-weight: bold;
-    color: #1e40af; /* Changed from dark gray to dark blue */
-    display: flex; /* Added for vertical centering */
-    align-items: center; /* Added for vertical centering */
+    color: #1e40af; /* Dark blue */
+    display: flex;
+    align-items: center;
     justify-content: flex-end; /* Keep text right-aligned */
 }
 
-.score-display {
-    display: none;
-}
-
-/* Add these media queries for responsive behavior */
-@media (min-width: 481px) {
-    #grid-container, .score-row {
-        margin-left: auto;
-        margin-right: auto;
-    }
-}
-
+/* Media query adjustments */
 @media (max-width: 480px) {
     .score-row {
-        width: 100%; /* Full width on small screens */
-        max-width: 401px; /* But no larger than the grid */
+        width: 100%;
+        max-width: 401px;
+    }
+    
+    .score-left, .score-right {
+        font-size: 0.75rem; /* Slightly smaller font on mobile */
     }
 }
 
