@@ -68,6 +68,11 @@ class ScoreManager {
     }
     
     completePuzzle() {
+        // Skip if already completed this round
+        if (this.roundComplete) {
+            return;
+        }
+        
         this.roundComplete = true;
         const basePoints = this.calculateBasePoints();
         const timeBonus = this.calculateTimeBonus();
@@ -77,15 +82,21 @@ class ScoreManager {
         this.updateDisplay();
         
         // Dispatch an event when score is updated
+        this.dispatchScoreUpdate();
+    }
+    
+    dispatchScoreUpdate() {
         const event = new CustomEvent('scoreUpdated', {
             detail: {
                 score: this.totalScore,
                 level: this.currentLevel,
-                roundScore: this.roundScore
+                roundScore: this.roundScore,
+                roundComplete: this.roundComplete
             }
         });
         window.dispatchEvent(event);
     }
+    
     updateDisplay() {
         // Update total score (always visible)
         const scoreTotalElement = document.getElementById('score-total');
@@ -104,6 +115,10 @@ class ScoreManager {
                 scoreBonusElement.style.visibility = 'hidden';
             }
         }
+        
+        // Each time we update the display, dispatch the score update event
+        // This ensures the leaderboard always has the latest score
+        this.dispatchScoreUpdate();
     }
     
     getCurrentState() {
@@ -117,7 +132,16 @@ class ScoreManager {
             totalScore: this.totalScore
         };
     }
+    
+    // Reset scores (useful for testing)
+    resetScores() {
+        this.totalScore = 0;
+        this.roundScore = 0;
+        this.roundComplete = false;
+        this.updateDisplay();
+    }
 }
+
 // Export a single instance
 export const scoreManager = new ScoreManager();
 // Also make it available globally
