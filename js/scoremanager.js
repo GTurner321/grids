@@ -97,29 +97,35 @@ class ScoreManager {
         window.dispatchEvent(event);
     }
     
-    updateDisplay() {
-        // Update total score (always visible)
-        const scoreTotalElement = document.getElementById('score-total');
-        if (scoreTotalElement) {
-            scoreTotalElement.textContent = `TOTAL: ${this.totalScore}`;
-        }
-        
-        // Update bonus info (only when round is complete)
-        const scoreBonusElement = document.getElementById('score-bonus');
-        if (scoreBonusElement) {
-            if (this.roundComplete) {
-                scoreBonusElement.textContent = `${this.calculateBasePoints()} + ${this.calculateTimeBonus()} bonus = ${this.roundScore}`;
-                scoreBonusElement.style.visibility = 'visible';
-            } else {
-                scoreBonusElement.textContent = '';
-                scoreBonusElement.style.visibility = 'hidden';
-            }
-        }
-        
-        // Each time we update the display, dispatch the score update event
-        // This ensures the leaderboard always has the latest score
-        this.dispatchScoreUpdate();
+    // Update to the updateDisplay method in scoremanager.js
+
+updateDisplay() {
+    // Update total score (always visible)
+    const scoreTotalElement = document.getElementById('score-total');
+    if (scoreTotalElement) {
+        scoreTotalElement.textContent = `TOTAL: ${this.totalScore}`;
     }
+    
+    // Update bonus info (only when round is complete)
+    const scoreBonusElement = document.getElementById('score-bonus');
+    if (scoreBonusElement) {
+        if (this.roundComplete) {
+            // Format the display to show base points + bonus = round score
+            const basePoints = this.calculateBasePoints();
+            const timeBonus = this.calculateTimeBonus();
+            
+            scoreBonusElement.textContent = `${basePoints} + ${timeBonus} = ${this.roundScore}`;
+            scoreBonusElement.style.visibility = 'visible';
+        } else {
+            scoreBonusElement.textContent = '';
+            scoreBonusElement.style.visibility = 'hidden';
+        }
+    }
+    
+    // Each time we update the display, dispatch the score update event
+    // This ensures the leaderboard always has the latest score
+    this.dispatchScoreUpdate();
+}
     
     getCurrentState() {
         return {
