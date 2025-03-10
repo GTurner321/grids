@@ -551,7 +551,7 @@ resetPath() {
         this.updatePathHighlight();
         
         // Update UI elements (button states, etc.)
-        this.updateUI();
+        this.updateUI(); // This will disable the button again since the path is now empty
         
         // Show feedback message
         this.showMessage('Path reset. Start again from the green square.');
@@ -579,6 +579,7 @@ updateUI() {
     }
     
     if (resetButton) {
+    // Only disable when game is not active OR path is empty
         resetButton.disabled = !this.state.gameActive || this.state.userPath.length === 0;
     }
 
