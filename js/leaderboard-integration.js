@@ -1,4 +1,4 @@
-// leaderboard-integration.js - Optimized version with no loading indicator box
+// leaderboard-integration.js - Optimized version with automatic updates
 
 // Load CSS
 function loadStylesheet(url) {
@@ -38,30 +38,27 @@ class LeaderboardManager {
         // Reset any existing data
         resetUserSession();
     
-    this.leaderboardData = [];
-    this.username = '';
-    this.isUsernameSet = false;
-    this.maxEntries = 20;
-    this.supabase = null;
-    this.hasSubmittedScore = false;
-    this.submissionTimestamps = new Map(); // Track submission times by score
-    this.sessionHighScore = 0; // Track session high score
-    this.scoreThreshold = 5000; // Only submit scores of 5000+
-    this.leaderboardLoaded = false; // Track if leaderboard has been loaded
-    
-    // Add sessionId property for tracking the current session
-    this.sessionId = null;
-    
-    // Pre-bind the updateScore method
-    this.updateScore = debounce(this.updateScore.bind(this), 500);
-    
-    this.initSupabase();
-    this.createLeaderboardUI();
-    this.addEventListeners();
-    
-    // Find the scoreManager directly imported from module
-    this.findScoreManager();
-}
+        this.leaderboardData = [];
+        this.username = '';
+        this.isUsernameSet = false;
+        this.maxEntries = 20;
+        this.supabase = null;
+        this.sessionId = null;
+        this.sessionHighScore = 0; // Track session high score
+        this.scoreThreshold = 5000; // Only submit scores of 5000+
+        this.leaderboardLoaded = false; // Track if leaderboard has been loaded
+        this.leaderboardVisible = false; // Track if leaderboard is visible
+        this.lastSubmissionTime = 0; // Track last submission time
+        
+        // Pre-bind methods
+        this.updateScore = debounce(this.updateScore.bind(this), 300);
+        this.processScore = this.processScore.bind(this);
+        
+        this.initSupabase();
+        this.createLeaderboardUI();
+        this.addEventListeners();
+        this.findScoreManager();
+    }
     
     async initSupabase() {
         try {
@@ -159,14 +156,6 @@ class LeaderboardManager {
         const thresholdSubtitle = document.createElement('div');
         thresholdSubtitle.textContent = 'CLICK TO REVEAL - SCORE 5000+';
         thresholdSubtitle.className = 'leaderboard-subtitle';
-        thresholdSubtitle.style.fontFamily = "'Courier New', monospace";
-        thresholdSubtitle.style.fontSize = '0.8rem'; // Changed from 0.8rem to match the source
-        thresholdSubtitle.style.color = '#4a5568';
-        thresholdSubtitle.style.textAlign = 'center';
-        thresholdSubtitle.style.marginTop = '-10px';
-        thresholdSubtitle.style.marginBottom = '10px'; // You might want to change this to 5px to match
-        thresholdSubtitle.style.letterSpacing = '0.05em';
-        thresholdSubtitle.style.fontWeight = 'bold';
         
         // Create leaderboard table (initially hidden)
         const leaderboardTable = document.createElement('div');
@@ -252,7 +241,7 @@ class LeaderboardManager {
                     
                     // If username is set, update the score in leaderboard
                     if (this.isUsernameSet && score > 0) {
-                        console.log('LeaderboardManager submitting score:', score);
+                        console.log('LeaderboardManager processing score:', score);
                         this.processScore(score);
                     }
                 } else {
@@ -265,20 +254,18 @@ class LeaderboardManager {
                 // Call the original function first
                 originalUpdateDisplay.call(this);
                 
-                // Only dispatch events for completed rounds to avoid duplicate submissions
-                if (this.roundComplete) {
-                    // Dispatch score updated event
-                    const scoreUpdatedEvent = new CustomEvent('scoreUpdated', {
-                        detail: {
-                            score: this.totalScore,
-                            level: this.currentLevel,
-                            roundScore: this.roundScore,
-                            roundComplete: this.roundComplete
-                        }
-                    });
-                    
-                    window.dispatchEvent(scoreUpdatedEvent);
-                }
+                // Dispatch score updated event regardless of round completion
+                // This helps with consistent score tracking
+                const scoreUpdatedEvent = new CustomEvent('scoreUpdated', {
+                    detail: {
+                        score: this.totalScore,
+                        level: this.currentLevel,
+                        roundScore: this.roundScore,
+                        roundComplete: this.roundComplete
+                    }
+                });
+                
+                window.dispatchEvent(scoreUpdatedEvent);
             };
             
             return true;
@@ -311,11 +298,14 @@ class LeaderboardManager {
         window.addEventListener('scoreUpdated', (event) => {
             console.log('Score updated event received:', event.detail);
             const score = event.detail.score;
+            
+            // Process score updates whenever username is set
             if (this.isUsernameSet && score > 0) {
                 this.processScore(score);
             }
         });
 
+        // Toggle leaderboard visibility
         const toggleButton = document.getElementById('leaderboard-toggle');
         if (toggleButton) {
             toggleButton.addEventListener('click', () => {
@@ -324,16 +314,16 @@ class LeaderboardManager {
         }
     }
     
-    // New method to process scores - track session high score and determine if submission needed
+    // Process scores - track session high score and determine if submission needed
     processScore(score) {
         console.log('Processing score:', score);
         
-        // Check if score is a new session high score
+        // Always update session high score if it's higher
         if (score > this.sessionHighScore) {
             this.sessionHighScore = score;
             console.log('New session high score:', score);
             
-            // Only update the leaderboard UI initially for scores below threshold
+            // For scores below threshold, just show a message
             if (score < this.scoreThreshold) {
                 this.showUpdateStatus(`Score tracked (needs ${this.scoreThreshold - score} more to reach leaderboard)`, 'info');
                 setTimeout(() => this.hideUpdateStatus(), 3000);
@@ -342,30 +332,30 @@ class LeaderboardManager {
             
             // For scores over threshold, submit to leaderboard
             this.updateScore(score);
-        } else {
-            console.log('Score not higher than session high score:', this.sessionHighScore);
+        } else if (score >= this.scoreThreshold && this.leaderboardVisible) {
+            // If leaderboard is visible and score is above threshold, refresh leaderboard
+            // even if it's not a new high score
+            this.refreshLeaderboard();
         }
     }
     
-    // Fixed updateScore function - now a regular method
     async updateScore(score) {
-        console.log('Debounced updateScore called with:', score);
+        console.log('updateScore called with:', score);
         
         if (!this.isUsernameSet || score < this.scoreThreshold) {
             console.log(`Score not submitted: ${!this.isUsernameSet ? 'username not set' : 'below threshold of ' + this.scoreThreshold}`);
             return;
         }
         
-        // Check if we've submitted a score recently
-        const lastSubmissionTime = this.submissionTimestamps.get('lastSubmission');
+        // Throttle submissions to avoid API rate limits
         const now = Date.now();
-        if (lastSubmissionTime && now - lastSubmissionTime < 10000) { // 10 seconds
-            console.log('Preventing submission too soon after previous submission');
+        const timeSinceLastSubmission = now - this.lastSubmissionTime;
+        if (timeSinceLastSubmission < 2000) { // 2 seconds minimum between submissions
+            console.log('Throttling submission, too soon since last one');
             return;
         }
         
-        // Record this submission timestamp
-        this.submissionTimestamps.set('lastSubmission', now);
+        this.lastSubmissionTime = now;
         
         try {
             this.showUpdateStatus('Updating score...');
@@ -375,24 +365,31 @@ class LeaderboardManager {
                 const result = await this.updateSupabaseScore(score);
                 if (result) {
                     console.log('Score submitted successfully to Supabase');
+                    
+                    // If the leaderboard is visible, refresh it
+                    if (this.leaderboardVisible) {
+                        await this.refreshLeaderboard();
+                    } else {
+                        // If the leaderboard isn't visible yet but should be shown,
+                        // because the score is now high enough
+                        this.showLeaderboard();
+                    }
+                    
+                    // Show success message
+                    this.showUpdateStatus('Score added to leaderboard!', 'success');
+                    
+                    // Hide status after 2 seconds
+                    setTimeout(() => {
+                        this.hideUpdateStatus();
+                    }, 2000);
                 }
             } else {
                 // Fallback to session-only leaderboard
                 this.updateTemporaryScore(score);
                 console.log('Score added to temporary leaderboard');
+                this.showUpdateStatus('Score tracking enabled (offline mode)', 'info');
+                setTimeout(() => this.hideUpdateStatus(), 2000);
             }
-            
-            // Refresh the leaderboard display
-            await this.refreshLeaderboard();
-            
-            // Show success message
-            this.showUpdateStatus('Score added to leaderboard', 'success');
-            
-            // Hide status after 2 seconds
-            setTimeout(() => {
-                this.hideUpdateStatus();
-            }, 2000);
-            
         } catch (error) {
             console.error('Error updating score:', error);
             this.showUpdateStatus('Error updating score: ' + error.message, 'error');
@@ -449,11 +446,9 @@ class LeaderboardManager {
                 statusMessage.textContent = '';
                 statusMessage.className = 'status-message';
                 
-                // Only load the leaderboard if the score is high enough or if it's already visible
-                const leaderboardTable = document.getElementById('leaderboard-table');
-                if (currentScore >= this.scoreThreshold || 
-                    (leaderboardTable && !leaderboardTable.classList.contains('hidden'))) {
-                    this.refreshLeaderboard();
+                // Only show the leaderboard if the score is high enough
+                if (currentScore >= this.scoreThreshold) {
+                    this.showLeaderboard();
                 }
             } else {
                 statusMessage.textContent = 'Username not appropriate for family-friendly environment. Please try another.';
@@ -486,14 +481,13 @@ class LeaderboardManager {
     }
     
     setUsername(username) {
-    this.username = username;
-    this.isUsernameSet = true;
-    this.hasSubmittedScore = false; // Reset submission status for new username
-    
-    // Generate a new session ID for this username
-    this.sessionId = `${username}-${Date.now()}`;
-    console.log('New session created with ID:', this.sessionId);
-}
+        this.username = username;
+        this.isUsernameSet = true;
+        
+        // Generate a new session ID for this username
+        this.sessionId = `${username}-${Date.now()}`;
+        console.log('New session created with ID:', this.sessionId);
+    }
     
     getCurrentScore() {
         try {
@@ -508,82 +502,82 @@ class LeaderboardManager {
     }
     
     async updateSupabaseScore(score) {
-    if (!this.supabase) return false;
-    
-    try {
-        // Get current date/time
-        const now = new Date().toISOString();
+        if (!this.supabase) return false;
         
-        // Create a session ID if we don't have one yet
-        if (!this.sessionId) {
-            // Generate a session ID based on username and timestamp
-            this.sessionId = `${this.username}-${Date.now()}`;
-            console.log('Created new session ID:', this.sessionId);
-        }
-        
-        // First check if this user already has a score in this session
-        const { data: sessionScores, error: sessionCheckError } = await this.supabase
-            .from('leaderboard_entries')
-            .select('id, score')
-            .eq('name', this.username)
-            .eq('session_id', this.sessionId)
-            .order('score', { ascending: false });
+        try {
+            // Get current date/time
+            const now = new Date().toISOString();
             
-        if (sessionCheckError) {
-            console.error('Error checking for session entries:', sessionCheckError);
-            throw sessionCheckError;
-        }
-        
-        // If user already has entries from this session
-        if (sessionScores && sessionScores.length > 0) {
-            const highestSessionScore = sessionScores[0].score;
-            
-            // If they already have a higher score in this session, don't update
-            if (highestSessionScore >= score) {
-                console.log('User already has a higher score in this session:', highestSessionScore);
-                return true; // Return true to avoid showing error
+            // Create a session ID if we don't have one yet
+            if (!this.sessionId) {
+                // Generate a session ID based on username and timestamp
+                this.sessionId = `${this.username}-${Date.now()}`;
+                console.log('Created new session ID:', this.sessionId);
             }
             
-            // New high score for this session - delete previous session entries
-            console.log('Removing previous session scores for this user');
-            
-            // Delete all previous entries from this session
-            const { error: deleteError } = await this.supabase
+            // First check if this user already has a score in this session
+            const { data: sessionScores, error: sessionCheckError } = await this.supabase
                 .from('leaderboard_entries')
-                .delete()
-                .eq('session_id', this.sessionId);
+                .select('id, score')
+                .eq('name', this.username)
+                .eq('session_id', this.sessionId)
+                .order('score', { ascending: false });
                 
-            if (deleteError) {
-                console.error('Error deleting session entries:', deleteError);
-                // Continue anyway to insert the new score
+            if (sessionCheckError) {
+                console.error('Error checking for session entries:', sessionCheckError);
+                throw sessionCheckError;
             }
-        }
-        
-        // Insert the new entry with the session ID
-        const { error: insertError } = await this.supabase
-            .from('leaderboard_entries')
-            .insert([{
-                name: this.username,
-                score: score,
-                created_at: now,
-                session_id: this.sessionId
-            }]);
+            
+            // If user already has entries from this session
+            if (sessionScores && sessionScores.length > 0) {
+                const highestSessionScore = sessionScores[0].score;
                 
-        if (insertError) {
-            console.error('Error inserting score to Supabase:', insertError);
-            throw insertError;
+                // If they already have a higher score in this session, don't update
+                if (highestSessionScore >= score) {
+                    console.log('User already has a higher score in this session:', highestSessionScore);
+                    return true; // Return true to avoid showing error
+                }
+                
+                // New high score for this session - delete previous session entries
+                console.log('Removing previous session scores for this user');
+                
+                // Delete all previous entries from this session
+                const { error: deleteError } = await this.supabase
+                    .from('leaderboard_entries')
+                    .delete()
+                    .eq('session_id', this.sessionId);
+                    
+                if (deleteError) {
+                    console.error('Error deleting session entries:', deleteError);
+                    // Continue anyway to insert the new score
+                }
+            }
+            
+            // Insert the new entry with the session ID
+            const { error: insertError } = await this.supabase
+                .from('leaderboard_entries')
+                .insert([{
+                    name: this.username,
+                    score: score,
+                    created_at: now,
+                    session_id: this.sessionId
+                }]);
+                    
+            if (insertError) {
+                console.error('Error inserting score to Supabase:', insertError);
+                throw insertError;
+            }
+            
+            console.log('Score added successfully to Supabase');
+            return true;
+        } catch (error) {
+            console.error('Error updating Supabase score:', error);
+            throw error;
         }
-        
-        console.log('Score added successfully to Supabase');
-        return true;
-    } catch (error) {
-        console.error('Error updating Supabase score:', error);
-        throw error;
     }
-}
     
     updateTemporaryScore(score) {
-        // Always add a new entry for this session (allows multiple entries per username)
+        // Add a new entry for this session
         const now = new Date();
         const entry = {
             name: this.username,
@@ -599,7 +593,6 @@ class LeaderboardManager {
         this.leaderboardData = this.leaderboardData.slice(0, this.maxEntries);
         
         this.renderLeaderboard();
-        console.log('Score added to temporary leaderboard');
     }
     
     showUpdateStatus(message, type = 'info') {
@@ -628,6 +621,31 @@ class LeaderboardManager {
         }
     }
 
+    // Show leaderboard and refresh data
+    showLeaderboard() {
+        const leaderboardTable = document.getElementById('leaderboard-table');
+        const toggleButton = document.getElementById('leaderboard-toggle');
+        
+        if (leaderboardTable && leaderboardTable.classList.contains('hidden')) {
+            // Show the leaderboard
+            leaderboardTable.classList.remove('hidden');
+            
+            // Add active class to button to flip arrow
+            if (toggleButton) {
+                toggleButton.classList.add('active');
+            }
+            
+            // Mark as visible
+            this.leaderboardVisible = true;
+            
+            // Show a loading message
+            leaderboardTable.innerHTML = '<div class="leaderboard-row" style="justify-content: center; padding: 20px;">Loading leaderboard data...</div>';
+            
+            // Refresh the leaderboard data
+            this.refreshLeaderboard();
+        }
+    }
+
     toggleLeaderboardVisibility() {
         const leaderboardTable = document.getElementById('leaderboard-table');
         const toggleButton = document.getElementById('leaderboard-toggle');
@@ -644,7 +662,10 @@ class LeaderboardManager {
                     toggleButton.classList.add('active');
                 }
                 
-                // Show a loading message within the leaderboard table itself
+                // Mark as visible
+                this.leaderboardVisible = true;
+                
+                // Show a loading message
                 leaderboardTable.innerHTML = '<div class="leaderboard-row" style="justify-content: center; padding: 20px;">Loading leaderboard data...</div>';
                 
                 // Refresh the leaderboard data
@@ -657,13 +678,19 @@ class LeaderboardManager {
                 if (toggleButton) {
                     toggleButton.classList.remove('active');
                 }
+                
+                // Mark as not visible
+                this.leaderboardVisible = false;
             }
         }
     }
     
     async refreshLeaderboard() {
         try {
+            // Always force a fresh load from Supabase when refreshing
+            this.forceRefresh = true;
             await this.loadLeaderboard();
+            this.forceRefresh = false;
             return true;
         } catch (error) {
             console.error('Error refreshing leaderboard:', error);
@@ -677,7 +704,6 @@ class LeaderboardManager {
             if (this.supabase && (!this.leaderboardLoaded || this.forceRefresh)) {
                 await this.loadFromSupabase();
                 this.leaderboardLoaded = true;
-                this.forceRefresh = false;
             }
             
             // Render the leaderboard with whatever data we have
@@ -685,12 +711,9 @@ class LeaderboardManager {
         } catch (error) {
             console.error('Error loading leaderboard data:', error);
             
-            // If there was an error, still try to render what we have
-            this.renderLeaderboard();
-            
             // Show error message in the leaderboard
             const leaderboardTable = document.getElementById('leaderboard-table');
-            if (leaderboardTable && leaderboardTable.childElementCount === 0) {
+            if (leaderboardTable) {
                 leaderboardTable.innerHTML = '<div class="leaderboard-row" style="justify-content: center; padding: 20px; color: #e53e3e;">Error loading leaderboard data. Please try again later.</div>';
             }
         }
@@ -769,6 +792,15 @@ class LeaderboardManager {
             // Highlight current user
             if (entry.name === this.username) {
                 row.classList.add('current-user');
+                // Add animation for new entries
+                if (entry.score === this.sessionHighScore) {
+                    row.classList.add('new-entry');
+                    
+                    // Remove the animation class after it's done
+                    setTimeout(() => {
+                        row.classList.remove('new-entry');
+                    }, 2000);
+                }
             }
             
             const rankCell = document.createElement('div');
