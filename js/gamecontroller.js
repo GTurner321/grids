@@ -244,7 +244,7 @@ class GameController {
             return;
         }
 
-        // Add the new cell to the path// Add the new cell to the path
+        // Add the new cell to the path
         this.state.userPath.push(cellIndex);
 
         // Add a visual pulse effect
