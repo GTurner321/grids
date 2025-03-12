@@ -107,13 +107,11 @@ body {
         margin: 0 auto; /* Ensure centered while maintaining connection to grid */
         border-radius: 6px 6px 0 0; /* Maintain rounded top corners at smaller sizes */
     }
-}
     
     .score-left, .score-right {
         font-size: 0.75rem; /* Slightly smaller font on mobile */
     }
-}
-
+    
     #grid-container {
         width: 100%;
         max-width: 401px;
