@@ -1,4 +1,6 @@
-// leaderboard-integration.js - Optimized version with automatic updates
+// leaderboard-integration.js - Updated with bottom buttons and improved UI
+
+import supabaseLeaderboard from '/js/supabase-leaderboard.js';
 
 // Load CSS
 function loadStylesheet(url) {
@@ -54,10 +56,211 @@ class LeaderboardManager {
         this.updateScore = debounce(this.updateScore.bind(this), 300);
         this.processScore = this.processScore.bind(this);
         
+        this.initializeUI();
         this.initSupabase();
-        this.createLeaderboardUI();
         this.addEventListeners();
         this.findScoreManager();
+    }
+    
+    initializeUI() {
+        // Add bottom buttons container
+        this.createBottomButtons();
+        
+        // Create username submission area
+        this.createUsernameSubmissionArea();
+        
+        // Create leaderboard table
+        this.createLeaderboardTable();
+    }
+    
+    createBottomButtons() {
+        const gameContainer = document.querySelector('.game-container');
+        if (!gameContainer) return;
+        
+        const buttonsContainer = document.createElement('div');
+        buttonsContainer.className = 'bottom-buttons';
+        
+        // Record Score Button
+        const recordScoreButton = document.createElement('button');
+        recordScoreButton.id = 'record-score-btn';
+        recordScoreButton.className = 'bottom-btn';
+        recordScoreButton.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 20h9"></path>
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+            </svg>
+            RECORD SCORE
+        `;
+        
+        // Leaderboard Button
+        const leaderboardButton = document.createElement('button');
+        leaderboardButton.id = 'leaderboard-btn';
+        leaderboardButton.className = 'bottom-btn';
+        leaderboardButton.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 9l6 6 6-6"></path>
+            </svg>
+            LEADERBOARD
+        `;
+        
+        buttonsContainer.appendChild(recordScoreButton);
+        buttonsContainer.appendChild(leaderboardButton);
+        
+        gameContainer.appendChild(buttonsContainer);
+    }
+    
+    createUsernameSubmissionArea() {
+        const gameContainer = document.querySelector('.game-container');
+        if (!gameContainer) return;
+        
+        // Create username area container
+        const usernameAreaContainer = document.createElement('div');
+        usernameAreaContainer.id = 'username-area-container';
+        usernameAreaContainer.style.display = 'none';
+        usernameAreaContainer.style.marginTop = '10px';
+        usernameAreaContainer.style.width = '100%';
+        usernameAreaContainer.style.maxWidth = '400px';
+        usernameAreaContainer.style.margin = '10px auto';
+        
+        // Username submission area
+        const usernameArea = document.createElement('div');
+        usernameArea.className = 'username-area';
+        
+        const usernameForm = document.createElement('div');
+        usernameForm.className = 'username-form';
+        
+        const usernamePrompt = document.createElement('p');
+        usernamePrompt.textContent = 'RECORD YOUR SCORE - SUBMIT YOUR NAME:';
+        usernamePrompt.className = 'username-prompt';
+        
+        const inputWrapper = document.createElement('div');
+        inputWrapper.className = 'input-wrapper';
+        
+        const usernameInput = document.createElement('input');
+        usernameInput.type = 'text';
+        usernameInput.id = 'username-input';
+        usernameInput.maxLength = 12;
+        usernameInput.placeholder = 'Enter name (max 12 char)';
+        
+        const submitButton = document.createElement('button');
+        submitButton.id = 'submit-username';
+        submitButton.textContent = 'Submit';
+        
+        const returnButton = document.createElement('button');
+        returnButton.id = 'return-to-record-btn';
+        returnButton.innerHTML = '&#9650;'; // Upwards triangle
+        returnButton.style.background = 'none';
+        returnButton.style.border = 'none';
+        returnButton.style.color = '#3b82f6';
+        returnButton.style.fontSize = '24px';
+        returnButton.style.cursor = 'pointer';
+        returnButton.style.marginTop = '10px';
+        returnButton.style.transition = 'color 0.2s ease';
+        
+        const statusMessage = document.createElement('div');
+        statusMessage.id = 'username-status';
+        statusMessage.className = 'status-message';
+        
+        inputWrapper.appendChild(usernameInput);
+        inputWrapper.appendChild(submitButton);
+        
+        usernameForm.appendChild(usernamePrompt);
+        usernameForm.appendChild(inputWrapper);
+        usernameForm.appendChild(statusMessage);
+        usernameForm.appendChild(returnButton);
+        
+        usernameArea.appendChild(usernameForm);
+        usernameAreaContainer.appendChild(usernameArea);
+        
+        gameContainer.appendChild(usernameAreaContainer);
+    }
+    
+    createLeaderboardTable() {
+        const gameContainer = document.querySelector('.game-container');
+        if (!gameContainer) return;
+        
+        // Create leaderboard table container
+        const leaderboardContainer = document.createElement('div');
+        leaderboardContainer.id = 'leaderboard-table-container';
+        leaderboardContainer.style.display = 'none';
+        leaderboardContainer.style.marginTop = '10px';
+        leaderboardContainer.style.width = '100%';
+        
+        // Create the table div
+        const leaderboardTable = document.createElement('div');
+        leaderboardTable.className = 'leaderboard-table';
+        leaderboardTable.id = 'leaderboard-table';
+        
+        leaderboardContainer.appendChild(leaderboardTable);
+        gameContainer.appendChild(leaderboardContainer);
+    }
+    addEventListeners() {
+        const recordScoreBtn = document.getElementById('record-score-btn');
+        const leaderboardBtn = document.getElementById('leaderboard-btn');
+        const usernameAreaContainer = document.getElementById('username-area-container');
+        const leaderboardTableContainer = document.getElementById('leaderboard-table-container');
+        const returnToRecordBtn = document.getElementById('return-to-record-btn');
+        const submitUsernameBtn = document.getElementById('submit-username');
+        
+        // Record Score Button Click
+        recordScoreBtn.addEventListener('click', () => {
+            if (!this.isUsernameSet) {
+                usernameAreaContainer.style.display = 'block';
+                leaderboardTableContainer.style.display = 'none';
+            }
+        });
+        
+        // Leaderboard Button Click
+        leaderboardBtn.addEventListener('click', () => {
+            this.toggleLeaderboard();
+        });
+        
+        // Return to Record Button Click
+        returnToRecordBtn.addEventListener('click', () => {
+            usernameAreaContainer.style.display = 'none';
+        });
+        
+        // Submit Username Button Click
+        submitUsernameBtn.addEventListener('click', () => {
+            this.handleUsernameSubmission();
+        });
+        
+        // Listen for Enter key in the input field
+        const usernameInput = document.getElementById('username-input');
+        if (usernameInput) {
+            usernameInput.addEventListener('keyup', (event) => {
+                if (event.key === 'Enter') {
+                    this.handleUsernameSubmission();
+                }
+            });
+        }
+        
+        // Listen for score updates
+        window.addEventListener('scoreUpdated', (event) => {
+            const score = event.detail.score;
+            
+            // Conditionally process score based on username set status
+            if (!this.isUsernameSet && score >= this.scoreThreshold) {
+                recordScoreBtn.classList.add('highlight');
+            }
+        });
+    }
+    
+    toggleLeaderboard() {
+        const leaderboardTableContainer = document.getElementById('leaderboard-table-container');
+        const usernameAreaContainer = document.getElementById('username-area-container');
+        
+        if (leaderboardTableContainer.style.display === 'none') {
+            // Show leaderboard
+            leaderboardTableContainer.style.display = 'block';
+            usernameAreaContainer.style.display = 'none';
+            
+            // Load leaderboard data
+            this.loadLeaderboard();
+        } else {
+            // Hide leaderboard
+            leaderboardTableContainer.style.display = 'none';
+        }
     }
     
     async initSupabase() {
@@ -95,83 +298,6 @@ class LeaderboardManager {
         } catch (error) {
             console.error('Error initializing leaderboard table:', error);
             return false;
-        }
-    }
-    
-    createLeaderboardUI() {
-        // Create leaderboard container
-        const leaderboardSection = document.createElement('section');
-        leaderboardSection.className = 'leaderboard-section';
-        
-        // Create username submission area
-        const usernameArea = document.createElement('div');
-        usernameArea.className = 'username-area';
-        
-        const usernameForm = document.createElement('div');
-        usernameForm.className = 'username-form';
-        
-        const usernamePrompt = document.createElement('p');
-        usernamePrompt.textContent = 'RECORD YOUR SCORE - SUBMIT YOUR NAME:';
-        usernamePrompt.className = 'username-prompt';
-        
-        const inputWrapper = document.createElement('div');
-        inputWrapper.className = 'input-wrapper';
-        
-        const usernameInput = document.createElement('input');
-        usernameInput.type = 'text';
-        usernameInput.id = 'username-input';
-        usernameInput.maxLength = 12;
-        usernameInput.placeholder = 'Enter name (max 12 char)';
-        
-        const submitButton = document.createElement('button');
-        submitButton.id = 'submit-username';
-        submitButton.textContent = 'Submit';
-        
-        inputWrapper.appendChild(usernameInput);
-        inputWrapper.appendChild(submitButton);
-        
-        const statusMessage = document.createElement('div');
-        statusMessage.id = 'username-status';
-        statusMessage.className = 'status-message';
-        
-        usernameForm.appendChild(usernamePrompt);
-        usernameForm.appendChild(inputWrapper);
-        usernameForm.appendChild(statusMessage);
-        
-        // Create welcome message area (initially hidden)
-        const welcomeMessage = document.createElement('div');
-        welcomeMessage.id = 'welcome-message';
-        welcomeMessage.className = 'welcome-message hidden';
-        
-        usernameArea.appendChild(usernameForm);
-        usernameArea.appendChild(welcomeMessage);
-        
-        // Create leaderboard title
-        const leaderboardTitle = document.createElement('button');
-        leaderboardTitle.textContent = 'LEADERBOARD';
-        leaderboardTitle.className = 'leaderboard-title-button';
-        leaderboardTitle.id = 'leaderboard-toggle';
-        
-        // Add threshold subtitle
-        const thresholdSubtitle = document.createElement('div');
-        thresholdSubtitle.textContent = 'CLICK TO REVEAL - SCORE 5000+';
-        thresholdSubtitle.className = 'leaderboard-subtitle';
-        
-        // Create leaderboard table (initially hidden)
-        const leaderboardTable = document.createElement('div');
-        leaderboardTable.className = 'leaderboard-table hidden';
-        leaderboardTable.id = 'leaderboard-table';
-        
-        // Add all elements to the leaderboard section
-        leaderboardSection.appendChild(usernameArea);
-        leaderboardSection.appendChild(leaderboardTitle);
-        leaderboardSection.appendChild(thresholdSubtitle);
-        leaderboardSection.appendChild(leaderboardTable);
-        
-        // Find the game-container and append the leaderboard section
-        const gameContainer = document.querySelector('.game-container');
-        if (gameContainer) {
-            gameContainer.appendChild(leaderboardSection);
         }
     }
     
@@ -274,48 +400,8 @@ class LeaderboardManager {
             return false;
         }
     }
-    
-    addEventListeners() {
-        // Add event listener for username submission
-        const submitButton = document.getElementById('submit-username');
-        if (submitButton) {
-            submitButton.addEventListener('click', () => {
-                this.handleUsernameSubmission();
-            });
-        }
-        
-        // Listen for Enter key in the input field
-        const usernameInput = document.getElementById('username-input');
-        if (usernameInput) {
-            usernameInput.addEventListener('keyup', (event) => {
-                if (event.key === 'Enter') {
-                    this.handleUsernameSubmission();
-                }
-            });
-        }
-        
-        // Listen for score updates
-        window.addEventListener('scoreUpdated', (event) => {
-            console.log('Score updated event received:', event.detail);
-            const score = event.detail.score;
-            
-            // Process score updates whenever username is set
-            if (this.isUsernameSet && score > 0) {
-                this.processScore(score);
-            }
-        });
 
-        // Toggle leaderboard visibility
-        const toggleButton = document.getElementById('leaderboard-toggle');
-        if (toggleButton) {
-            toggleButton.addEventListener('click', () => {
-                this.toggleLeaderboardVisibility();
-            });
-        }
-    }
-    
-    // Process scores - track session high score and determine if submission needed
-    processScore(score) {
+processScore(score) {
         console.log('Processing score:', score);
         
         // Always update session high score if it's higher
@@ -369,10 +455,6 @@ class LeaderboardManager {
                     // If the leaderboard is visible, refresh it
                     if (this.leaderboardVisible) {
                         await this.refreshLeaderboard();
-                    } else {
-                        // If the leaderboard isn't visible yet but should be shown,
-                        // because the score is now high enough
-                        this.showLeaderboard();
                     }
                     
                     // Show success message
@@ -427,14 +509,10 @@ class LeaderboardManager {
             if (isApproved) {
                 this.setUsername(username);
                 
-                // Hide the form and show welcome message
-                const usernameForm = document.querySelector('.username-form');
-                const welcomeMessage = document.getElementById('welcome-message');
-                
-                if (usernameForm && welcomeMessage) {
-                    usernameForm.classList.add('hidden');
-                    welcomeMessage.classList.remove('hidden');
-                    welcomeMessage.textContent = `Hello ${username} - high scores will appear in the leaderboard below.`;
+                // Hide the username area
+                const usernameAreaContainer = document.getElementById('username-area-container');
+                if (usernameAreaContainer) {
+                    usernameAreaContainer.style.display = 'none';
                 }
                 
                 // Get current score and process it
@@ -446,9 +524,10 @@ class LeaderboardManager {
                 statusMessage.textContent = '';
                 statusMessage.className = 'status-message';
                 
-                // Only show the leaderboard if the score is high enough
-                if (currentScore >= this.scoreThreshold) {
-                    this.showLeaderboard();
+                // Record score button gets removed after username set
+                const recordScoreBtn = document.getElementById('record-score-btn');
+                if (recordScoreBtn) {
+                    recordScoreBtn.style.display = 'none';
                 }
             } else {
                 statusMessage.textContent = 'Username not appropriate for family-friendly environment. Please try another.';
@@ -510,7 +589,6 @@ class LeaderboardManager {
             
             // Create a session ID if we don't have one yet
             if (!this.sessionId) {
-                // Generate a session ID based on username and timestamp
                 this.sessionId = `${this.username}-${Date.now()}`;
                 console.log('Created new session ID:', this.sessionId);
             }
@@ -620,87 +698,6 @@ class LeaderboardManager {
             statusEl.style.display = 'none';
         }
     }
-
-    // Show leaderboard and refresh data
-    showLeaderboard() {
-    const leaderboardTable = document.getElementById('leaderboard-table');
-    const toggleButton = document.getElementById('leaderboard-toggle');
-    const subtitle = document.querySelector('.leaderboard-subtitle');
-    
-    if (leaderboardTable && leaderboardTable.classList.contains('hidden')) {
-        // Show the leaderboard
-        leaderboardTable.classList.remove('hidden');
-        
-        // Add active class to button to flip arrow
-        if (toggleButton) {
-            toggleButton.classList.add('active');
-        }
-        
-        // Mark as visible
-        this.leaderboardVisible = true;
-        
-        // Hide subtitle when leaderboard is shown
-        if (subtitle) {
-            subtitle.style.display = 'none';
-        }
-        
-        // Show a loading message
-        leaderboardTable.innerHTML = '<div class="leaderboard-row" style="justify-content: center; padding: 20px;">Loading leaderboard data...</div>';
-        
-        // Refresh the leaderboard data
-        this.refreshLeaderboard();
-    }
-}
-    
-    toggleLeaderboardVisibility() {
-    const leaderboardTable = document.getElementById('leaderboard-table');
-    const toggleButton = document.getElementById('leaderboard-toggle');
-    const subtitle = document.querySelector('.leaderboard-subtitle');
-    
-    if (leaderboardTable) {
-        const isHidden = leaderboardTable.classList.contains('hidden');
-        
-        if (isHidden) {
-            // Show the leaderboard
-            leaderboardTable.classList.remove('hidden');
-            
-            // Add active class to button to flip arrow
-            if (toggleButton) {
-                toggleButton.classList.add('active');
-            }
-            
-            // Mark as visible
-            this.leaderboardVisible = true;
-            
-            // Hide subtitle when leaderboard is shown
-            if (subtitle) {
-                subtitle.style.display = 'none';
-            }
-            
-            // Show a loading message
-            leaderboardTable.innerHTML = '<div class="leaderboard-row" style="justify-content: center; padding: 20px;">Loading leaderboard data...</div>';
-            
-            // Refresh the leaderboard data
-            this.refreshLeaderboard();
-        } else {
-            // Hide the leaderboard
-            leaderboardTable.classList.add('hidden');
-            
-            // Remove active class from button
-            if (toggleButton) {
-                toggleButton.classList.remove('active');
-            }
-            
-            // Mark as not visible
-            this.leaderboardVisible = false;
-            
-            // Show subtitle when leaderboard is hidden
-            if (subtitle) {
-                subtitle.style.display = '';
-            }
-        }
-    }
-}
     
     async refreshLeaderboard() {
         try {
@@ -768,11 +765,14 @@ class LeaderboardManager {
     }
     
     renderLeaderboard() {
-        const leaderboardTable = document.getElementById('leaderboard-table');
+        const leaderboardTable = document.getElementById('leaderboard-table-container');
         if (!leaderboardTable) return;
         
+        const tableBody = leaderboardTable.querySelector('.leaderboard-table');
+        if (!tableBody) return;
+        
         // Clear existing content
-        leaderboardTable.innerHTML = '';
+        tableBody.innerHTML = '';
         
         // Create header row
         const headerRow = document.createElement('div');
@@ -799,7 +799,7 @@ class LeaderboardManager {
         headerRow.appendChild(scoreHeader);
         headerRow.appendChild(dateHeader);
         
-        leaderboardTable.appendChild(headerRow);
+        tableBody.appendChild(headerRow);
         
         // Add data rows
         this.leaderboardData.forEach((entry, index) => {
@@ -819,8 +819,7 @@ class LeaderboardManager {
                     }, 2000);
                 }
             }
-            
-            const rankCell = document.createElement('div');
+const rankCell = document.createElement('div');
             rankCell.className = 'leaderboard-cell rank';
             rankCell.textContent = `${index + 1}`;
             
@@ -842,7 +841,7 @@ class LeaderboardManager {
             row.appendChild(scoreCell);
             row.appendChild(dateCell);
             
-            leaderboardTable.appendChild(row);
+            tableBody.appendChild(row);
         });
         
         // If no entries, show a message
@@ -850,7 +849,7 @@ class LeaderboardManager {
             const emptyRow = document.createElement('div');
             emptyRow.className = 'leaderboard-row empty';
             emptyRow.textContent = 'No scores yet. Start playing to get on the leaderboard!';
-            leaderboardTable.appendChild(emptyRow);
+            tableBody.appendChild(emptyRow);
         }
     }
 }
