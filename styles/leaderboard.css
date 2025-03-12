@@ -1,7 +1,7 @@
 /* leaderboard.css - Complete updated file with spacing adjustments */
 
 .leaderboard-section {
-    margin-top: 1.5rem;
+    margin-top: 1rem;
     width: 100%;
     max-width: 640px;
     font-family: 'Courier New', monospace;
@@ -20,7 +20,7 @@
     background-color: #ede9fe;
     border: 2px solid #16a34a;
     border-radius: 6px;
-    padding: 8px 10px 4px; /* Reduced bottom padding */
+    padding: 4px 8px 4px; /* Reduced bottom padding */
     margin-bottom: 10px;
     max-width: 400px;
     margin-left: auto;
