@@ -11,6 +11,12 @@ function handleUsernameSuccess(username) {
     const welcomeMessage = document.getElementById('welcome-message');
     const usernameArea = document.querySelector('.username-area');
     
+    // Update the level selector title to include the username
+    const levelSelectorTitle = document.querySelector('.level-selector-title');
+    if (levelSelectorTitle) {
+        levelSelectorTitle.textContent = `CHOOSE YOUR LEVEL, ${username}`;
+    }
+    
     if (usernameForm && welcomeMessage) {
         // Hide the form
         usernameForm.classList.add('hidden');
