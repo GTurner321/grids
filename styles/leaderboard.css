@@ -1,4 +1,4 @@
-/* leaderboard.css - Modified to remove loading indicator */
+/* leaderboard.css - Complete updated file with spacing adjustments */
 
 .leaderboard-section {
     margin-top: 1.5rem;
@@ -150,6 +150,7 @@
     color: #b91c1c;
 }
 
+/* Updated: Make the leaderboard table 8% narrower */
 .leaderboard-table {
     background-color: #ede9fe; /* Light lilac - same as username-area */
     border: 2px solid #16a34a; /* Dark green border - same as username-area */
@@ -157,15 +158,17 @@
     overflow: hidden;
     max-height: 400px;
     overflow-y: auto;
-    max-width: 400px;
+    max-width: 368px; /* Reduced from 400px (8% less) */
     margin-left: auto;
     margin-right: auto;
-    width: 100%;
+    width: 92%; /* 8% less than 100% */
 }
 
+/* Updated: Adjust the grid column widths with better spacing */
 .leaderboard-row {
     display: grid;
-    grid-template-columns: 40px 1fr 70px 80px;
+    grid-template-columns: 40px minmax(80px, 1fr) 70px 80px;
+    column-gap: 10px; /* Add spacing between all columns */
     padding: 6px 8px;
     border-bottom: 1px solid #f3f4f6;
 }
@@ -181,6 +184,16 @@
     position: sticky;
     top: 0;
     z-index: 10;
+}
+
+/* Updated: Improve header cell alignment */
+.leaderboard-row.header .leaderboard-cell.rank {
+    text-align: center;
+}
+
+.leaderboard-row.header .leaderboard-cell.name {
+    text-align: left;
+    padding-left: 5px;
 }
 
 .leaderboard-row.current-user {
@@ -204,12 +217,16 @@
     text-align: center;
 }
 
+/* Updated: Push SCORE right with extra padding */
 .leaderboard-cell.score {
     text-align: right;
+    padding-right: 10px; /* Add extra padding on the right */
 }
 
+/* Updated: Push DATE further right */
 .leaderboard-cell.date {
     text-align: right;
+    padding-right: 5px;
 }
 
 .leaderboard-row.empty {
@@ -219,12 +236,17 @@
     grid-column: 1 / -1;
 }
 
-/* Responsiveness adjustments */
+/* Updated: Adjust responsive styling for smaller screens */
 @media (max-width: 480px) {
     .leaderboard-row {
-        grid-template-columns: 40px 1fr 70px 90px;
+        grid-template-columns: 35px minmax(70px, 1fr) 60px 70px;
+        column-gap: 8px;
         font-size: 0.8rem;
-        padding: 6px 8px;
+        padding: 6px;
+    }
+    
+    .leaderboard-table {
+        max-width: 92%; /* Keep it proportionally smaller */
     }
     
     .leaderboard-cell {
