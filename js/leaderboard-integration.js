@@ -1,6 +1,6 @@
 // leaderboard-integration.js - Updated with bottom buttons and improved UI
 
-import supabaseLeaderboard from '/js/supabase-leaderboard.js';
+import supabaseLeaderboard from 'https://raw.githubusercontent.com/GTurner321/grids/main/js/supabase-leaderboard.js';
 
 // Load CSS
 function loadStylesheet(url) {
