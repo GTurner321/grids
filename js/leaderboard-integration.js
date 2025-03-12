@@ -623,10 +623,44 @@ class LeaderboardManager {
 
     // Show leaderboard and refresh data
     showLeaderboard() {
-        const leaderboardTable = document.getElementById('leaderboard-table');
-        const toggleButton = document.getElementById('leaderboard-toggle');
+    const leaderboardTable = document.getElementById('leaderboard-table');
+    const toggleButton = document.getElementById('leaderboard-toggle');
+    const subtitle = document.querySelector('.leaderboard-subtitle');
+    
+    if (leaderboardTable && leaderboardTable.classList.contains('hidden')) {
+        // Show the leaderboard
+        leaderboardTable.classList.remove('hidden');
         
-        if (leaderboardTable && leaderboardTable.classList.contains('hidden')) {
+        // Add active class to button to flip arrow
+        if (toggleButton) {
+            toggleButton.classList.add('active');
+        }
+        
+        // Mark as visible
+        this.leaderboardVisible = true;
+        
+        // Hide subtitle when leaderboard is shown
+        if (subtitle) {
+            subtitle.style.display = 'none';
+        }
+        
+        // Show a loading message
+        leaderboardTable.innerHTML = '<div class="leaderboard-row" style="justify-content: center; padding: 20px;">Loading leaderboard data...</div>';
+        
+        // Refresh the leaderboard data
+        this.refreshLeaderboard();
+    }
+}
+    
+    toggleLeaderboardVisibility() {
+    const leaderboardTable = document.getElementById('leaderboard-table');
+    const toggleButton = document.getElementById('leaderboard-toggle');
+    const subtitle = document.querySelector('.leaderboard-subtitle');
+    
+    if (leaderboardTable) {
+        const isHidden = leaderboardTable.classList.contains('hidden');
+        
+        if (isHidden) {
             // Show the leaderboard
             leaderboardTable.classList.remove('hidden');
             
@@ -638,52 +672,35 @@ class LeaderboardManager {
             // Mark as visible
             this.leaderboardVisible = true;
             
+            // Hide subtitle when leaderboard is shown
+            if (subtitle) {
+                subtitle.style.display = 'none';
+            }
+            
             // Show a loading message
             leaderboardTable.innerHTML = '<div class="leaderboard-row" style="justify-content: center; padding: 20px;">Loading leaderboard data...</div>';
             
             // Refresh the leaderboard data
             this.refreshLeaderboard();
-        }
-    }
-
-    toggleLeaderboardVisibility() {
-        const leaderboardTable = document.getElementById('leaderboard-table');
-        const toggleButton = document.getElementById('leaderboard-toggle');
-        
-        if (leaderboardTable) {
-            const isHidden = leaderboardTable.classList.contains('hidden');
+        } else {
+            // Hide the leaderboard
+            leaderboardTable.classList.add('hidden');
             
-            if (isHidden) {
-                // Show the leaderboard
-                leaderboardTable.classList.remove('hidden');
-                
-                // Add active class to button to flip arrow
-                if (toggleButton) {
-                    toggleButton.classList.add('active');
-                }
-                
-                // Mark as visible
-                this.leaderboardVisible = true;
-                
-                // Show a loading message
-                leaderboardTable.innerHTML = '<div class="leaderboard-row" style="justify-content: center; padding: 20px;">Loading leaderboard data...</div>';
-                
-                // Refresh the leaderboard data
-                this.refreshLeaderboard();
-            } else {
-                // Hide the leaderboard
-                leaderboardTable.classList.add('hidden');
-                
-                // Remove active class from button
-                if (toggleButton) {
-                    toggleButton.classList.remove('active');
-                }
-                
-                // Mark as not visible
-                this.leaderboardVisible = false;
+            // Remove active class from button
+            if (toggleButton) {
+                toggleButton.classList.remove('active');
+            }
+            
+            // Mark as not visible
+            this.leaderboardVisible = false;
+            
+            // Show subtitle when leaderboard is hidden
+            if (subtitle) {
+                subtitle.style.display = '';
             }
         }
     }
+}
     
     async refreshLeaderboard() {
         try {
