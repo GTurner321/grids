@@ -60,16 +60,13 @@ body {
 }
 
 /* Score Row */
-/* CSS update for score display */
-
-/* Update the score row layout */
 .score-row {
     display: grid;
     grid-template-columns: 60% 40%; /* 60/40 split as requested */
     width: calc(10 * 40px + 9 * 1px + 2px); /* 10 columns × 40px + 9 gaps × 1px + 2px border */
     height: 70px;
     background-color: white;
-    border-radius: 6px 6px 0 0; /* Keep rounded corners only at top */
+    border-radius: 0; /* Remove rounded corners */
     margin: 0 auto 0 auto; /* Removed bottom margin to connect with grid */
     border: 1px solid #94a3b8; /* Darker gray border */
     border-bottom: none; /* Remove bottom border as it will connect with grid */
@@ -104,18 +101,19 @@ body {
     .score-row {
         width: 100%;
         max-width: 401px;
-        margin: 0 auto; /* Ensure centered while maintaining connection to grid */
-        border-radius: 6px 6px 0 0; /* Maintain rounded top corners at smaller sizes */
+        margin: 0 auto;
+        border-radius: 0; /* Explicitly remove all rounded corners */
     }
     
     .score-left, .score-right {
         font-size: 0.75rem; /* Slightly smaller font on mobile */
     }
     
-    #grid-container {
+        #grid-container {
         width: 100%;
         max-width: 401px;
         margin: 0 auto;
+        border-radius: 0; /* Explicitly remove all rounded corners */
     }
 }
 
@@ -162,7 +160,7 @@ body {
     gap: 1px;
     background-color: #94a3b8; /* Darker gray to match border */
     padding: 1px;
-    border-radius: 0 0 4px 4px; /* Round only bottom corners */
+    border-radius: 0; /* Changed from 0 0 4px 4px */
     margin: 0 auto; /* Remove top margin to connect with score row */
     width: fit-content;
 }
