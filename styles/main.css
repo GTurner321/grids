@@ -69,9 +69,10 @@ body {
     width: calc(10 * 40px + 9 * 1px + 2px); /* 10 columns × 40px + 9 gaps × 1px + 2px border */
     height: 70px;
     background-color: white;
-    border-radius: 6px 6px 0 0;
-    margin: 0 auto 1px auto;
-    border: 1px solid #e5e7eb;
+    border-radius: 6px 6px 0 0; /* Keep rounded corners only at top */
+    margin: 0 auto 0 auto; /* Removed bottom margin to connect with grid */
+    border: 1px solid #94a3b8; /* Darker gray border */
+    border-bottom: none; /* Remove bottom border as it will connect with grid */
     box-sizing: border-box;
 }
 
@@ -103,10 +104,20 @@ body {
     .score-row {
         width: 100%;
         max-width: 401px;
+        margin: 0 auto; /* Ensure centered while maintaining connection to grid */
+        border-radius: 6px 6px 0 0; /* Maintain rounded top corners at smaller sizes */
     }
+}
     
     .score-left, .score-right {
         font-size: 0.75rem; /* Slightly smaller font on mobile */
+    }
+}
+
+    #grid-container {
+        width: 100%;
+        max-width: 401px;
+        margin: 0 auto;
     }
 }
 
@@ -151,10 +162,10 @@ body {
     display: grid;
     grid-template-columns: repeat(10, 40px);
     gap: 1px;
-    background-color: #cbd5e1;
+    background-color: #94a3b8; /* Darker gray to match border */
     padding: 1px;
-    border-radius: 4px;
-    margin: 8px auto;
+    border-radius: 0 0 4px 4px; /* Round only bottom corners */
+    margin: 0 auto; /* Remove top margin to connect with score row */
     width: fit-content;
 }
 
@@ -174,7 +185,7 @@ body {
     transition: background-color 0.2s ease;
     user-select: none;
     -webkit-user-select: none;
-    border: 1px solid #e5e7eb;
+    border: 1px solid #e5e7eb; /* Keep the original cell borders */
     overflow: hidden;
     position: relative;
     touch-action: none; /* Disable browser handling of touch actions */
