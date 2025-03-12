@@ -236,6 +236,79 @@
     grid-column: 1 / -1;
 }
 
+/* Styles for bottom buttons */
+.bottom-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.bottom-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 15px;
+    font-size: 0.85rem;
+    background-color: #3b82f6; /* Blue color */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    text-transform: uppercase;
+    max-width: 300px;
+    width: 100%;
+}
+
+.bottom-btn:hover {
+    background-color: #2563eb; /* Darker blue on hover */
+}
+
+.bottom-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.bottom-btn.highlight {
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { background-color: #3b82f6; }
+    50% { background-color: #1d4ed8; }
+}
+
+/* Update return to record button */
+#return-to-record-btn {
+    background: none;
+    border: none;
+    color: #3b82f6;
+    font-size: 24px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: color 0.2s ease;
+}
+
+#return-to-record-btn:hover {
+    color: #1e40af;
+}
+
+/* Adjust username area and leaderboard table containers */
+#username-area-container,
+#leaderboard-table-container {
+    margin-top: 10px;
+    width: 100%;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 /* Updated: Adjust responsive styling for smaller screens */
 @media (max-width: 480px) {
     .leaderboard-row {
