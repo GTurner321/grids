@@ -1,4 +1,40 @@
-// 7. Enhance grid elements
+// Hide leaderboard return button
+          const returnFromLeaderboardBtn = document.getElementById('return-from-leaderboard-btn');
+          if (returnFromLeaderboardBtn) {
+            returnFromLeaderboardBtn.style.display = 'none';
+          }
+          
+          // Center and resize username input and submit button
+          const usernameInput = document.getElementById('username-input');
+          if (usernameInput) {
+            usernameInput.style.width = '80%';
+            usernameInput.style.maxWidth = '80%';
+            usernameInput.style.margin = '0 auto';
+            usernameInput.style.display = 'block';
+          }
+          
+          const submitUsername = document.getElementById('submit-username');
+          if (submitUsername) {
+            submitUsername.style.width = '80%';
+            submitUsername.style.margin = '0 auto';
+            submitUsername.style.display = 'block';
+          }
+          
+          // Increase font size in leaderboard table
+          document.querySelectorAll('.leaderboard-cell').forEach(cell => {
+            cell.style.fontSize = '1.1rem';
+          });
+          
+          document.querySelectorAll('.leaderboard-row.header .leaderboard-cell').forEach(headerCell => {
+            headerCell.style.fontSize = '1.1rem';
+            headerCell.style.fontWeight = 'bold';
+          });
+          
+          // Add white text shadow to game messages
+          const gameMessages = document.getElementById('game-messages');
+          if (gameMessages) {
+            gameMessages.style.textShadow = '0 0 5px white, 0 0 10px white, 0 0 15px white';
+          }        // 7. Enhance grid elements
         setTimeout(() => {
           // Increase text size in grid cells
           document.querySelectorAll('.grid-cell').forEach(cell => {
@@ -41,11 +77,36 @@
         }
         
         if (recordBtn) {
-          recordBtn.style.cssText = "font-family: 'Trebuchet MS', Arial, sans-serif !important; font-size: 1rem !important; font-weight: bold !important; width: 130px !important; max-width: 140px !important; height: 42px !important; text-transform: none !important; padding: 8px 10px !important;";
+          recordBtn.style.cssText = "font-family: 'Trebuchet MS', Arial, sans-serif !important; font-size: 1rem !important; font-weight: bold !important; width: 175px !important; height: 42px !important; text-transform: none !important; padding: 8px 10px !important;";
+          
+          // Ensure pencil icon exists
+          if (!recordBtn.querySelector('svg')) {
+            // Keep existing content
+            const oldContent = recordBtn.textContent.trim();
+            recordBtn.innerHTML = `
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 20h9"></path>
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+              </svg>
+              ${oldContent}
+            `;
+          }
         }
         
         if (leaderboardBtn) {
-          leaderboardBtn.style.cssText = "font-family: 'Trebuchet MS', Arial, sans-serif !important; font-size: 1rem !important; font-weight: bold !important; width: 130px !important; max-width: 140px !important; height: 42px !important; text-transform: none !important; padding: 8px 10px !important;";
+          leaderboardBtn.style.cssText = "font-family: 'Trebuchet MS', Arial, sans-serif !important; font-size: 1rem !important; font-weight: bold !important; width: 156px !important; height: 42px !important; text-transform: none !important; padding: 8px 10px !important;";
+          
+          // Add down triangle icon before leaderboard text
+          if (!leaderboardBtn.querySelector('svg')) {
+            // Keep existing content
+            const oldContent = leaderboardBtn.textContent.trim();
+            leaderboardBtn.innerHTML = `
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 9l6 6 6-6"></path>
+              </svg>
+              ${oldContent}
+            `;
+          }
         }// mobile-responsive.js - Enhances mobile experience for the Path Puzzle game
 
 (function() {
