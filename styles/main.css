@@ -244,7 +244,7 @@ body {
 }
 
 .grid-cell.user-solved-path {
-    background-color: #fef08a;
+    background-color: #f0e68c; /* Replace #fef08a with this softer yellow */
     border: 1px solid #e5e7eb;
     z-index: 15;
 }
