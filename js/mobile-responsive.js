@@ -1,4 +1,19 @@
-// mobile-responsive.js - Enhances mobile experience for the Path Puzzle game
+// 3. Style bottom buttons - use !important to override leaderboard.css
+        const bottomButtons = document.querySelector('.bottom-buttons');
+        const recordBtn = document.getElementById('record-score-btn');
+        const leaderboardBtn = document.getElementById('leaderboard-btn');
+        
+        if (bottomButtons) {
+          bottomButtons.style.cssText = "display: flex !important; flex-direction: row !important; justify-content: center !important; gap: 10px !important; width: 320px !important; margin: 10px auto !important;";
+        }
+        
+        if (recordBtn) {
+          recordBtn.style.cssText = "font-family: 'Trebuchet MS', Arial, sans-serif !important; font-size: 1rem !important; font-weight: bold !important; width: 130px !important; max-width: 140px !important; height: 42px !important; text-transform: none !important; padding: 8px 10px !important;";
+        }
+        
+        if (leaderboardBtn) {
+          leaderboardBtn.style.cssText = "font-family: 'Trebuchet MS', Arial, sans-serif !important; font-size: 1rem !important; font-weight: bold !important; width: 130px !important; max-width: 140px !important; height: 42px !important; text-transform: none !important; padding: 8px 10px !important;";
+        }// mobile-responsive.js - Enhances mobile experience for the Path Puzzle game
 
 (function() {
   // Execute when DOM is fully loaded
@@ -132,34 +147,21 @@
           resetButton.style.fontWeight = "bold";
         }
         
-        // 3. Style bottom buttons
+        // 3. Style bottom buttons - use !important to override leaderboard.css
         const bottomButtons = document.querySelector('.bottom-buttons');
         const recordBtn = document.getElementById('record-score-btn');
         const leaderboardBtn = document.getElementById('leaderboard-btn');
         
         if (bottomButtons) {
-          bottomButtons.style.display = "flex";
-          bottomButtons.style.flexDirection = "row";
-          bottomButtons.style.justifyContent = "center";
-          bottomButtons.style.gap = "10px";
-          bottomButtons.style.width = "320px";
-          bottomButtons.style.margin = "10px auto 0";
+          bottomButtons.style.cssText = "display: flex !important; flex-direction: row !important; justify-content: center !important; gap: 10px !important; width: 320px !important; margin: 10px auto !important;";
         }
         
         if (recordBtn) {
-          recordBtn.style.fontFamily = "'Trebuchet MS', Arial, sans-serif";
-          recordBtn.style.fontSize = "1rem"; // Slightly larger
-          recordBtn.style.fontWeight = "bold";
-          recordBtn.style.width = "130px"; // Fixed width
-          recordBtn.style.height = "42px"; 
+          recordBtn.style.cssText = "font-family: 'Trebuchet MS', Arial, sans-serif !important; font-size: 1rem !important; font-weight: bold !important; width: 130px !important; max-width: 140px !important; height: 42px !important; text-transform: none !important; padding: 8px 10px !important;";
         }
         
         if (leaderboardBtn) {
-          leaderboardBtn.style.fontFamily = "'Trebuchet MS', Arial, sans-serif";
-          leaderboardBtn.style.fontSize = "1rem"; // Slightly larger
-          leaderboardBtn.style.fontWeight = "bold";
-          leaderboardBtn.style.width = "130px"; // Fixed width
-          leaderboardBtn.style.height = "42px";
+          leaderboardBtn.style.cssText = "font-family: 'Trebuchet MS', Arial, sans-serif !important; font-size: 1rem !important; font-weight: bold !important; width: 130px !important; max-width: 140px !important; height: 42px !important; text-transform: none !important; padding: 8px 10px !important;";
         }
         
         // 4. Style score elements
