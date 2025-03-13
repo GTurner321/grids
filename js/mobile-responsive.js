@@ -222,61 +222,94 @@
         if (window.innerWidth <= 768) {
           // Adjust game control buttons
           const gameButtons = gameControls.querySelectorAll('button');
-          gameButtons.forEach(button => {
-            // Set font family and size
-            button.style.fontFamily = "'Trebuchet MS', Arial, sans-serif";
-            button.style.fontSize = "0.9rem";
-            button.style.fontWeight = "bold";
-            
-            // Set specific sizes
-            if (button.id === 'check-solution') {
-              button.style.flex = "0.85";
-            }
-            else if (button.id === 'remove-spare') {
-              button.style.flex = "1.25";
-              
-              // Ensure the cross SVG is present
-              if (!button.innerHTML.includes('svg')) {
-                button.innerHTML = `
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                  </svg>
-                  Remove
-                `;
-              }
-            }
-            else if (button.id === 'reset-path') {
-              button.style.flex = "0.85";
-            }
-          });
           
-          // Adjust bottom buttons
-          const bottomBtns = bottomButtons.querySelectorAll('.bottom-btn');
-          bottomBtns.forEach(button => {
-            // Set font family and size
-            button.style.fontFamily = "'Trebuchet MS', Arial, sans-serif";
-            button.style.fontSize = "0.9rem";
-            button.style.fontWeight = "bold";
-            
-            // Make buttons fixed width
-            button.style.flex = "1";
-            button.style.minWidth = "130px";
-            button.style.maxWidth = "150px";
-          });
+          // Apply size directly
+          const checkButton = document.getElementById('check-solution');
+          const removeButton = document.getElementById('remove-spare');
+          const resetButton = document.getElementById('reset-path');
           
-          // Adjust score bar fonts
+          if (checkButton) {
+            checkButton.style.width = "30%";
+            checkButton.style.fontFamily = "'Trebuchet MS', Arial, sans-serif";
+            checkButton.style.fontSize = "0.9rem";
+            checkButton.style.fontWeight = "bold";
+          }
+          
+          if (removeButton) {
+            removeButton.style.width = "40%";
+            removeButton.style.fontFamily = "'Trebuchet MS', Arial, sans-serif";
+            removeButton.style.fontSize = "0.9rem";
+            removeButton.style.fontWeight = "bold";
+            
+            // Ensure the cross SVG is present
+            if (!removeButton.querySelector('svg')) {
+              removeButton.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+                Remove
+              `;
+            }
+          }
+          
+          if (resetButton) {
+            resetButton.style.width = "30%";
+            resetButton.style.fontFamily = "'Trebuchet MS', Arial, sans-serif";
+            resetButton.style.fontSize = "0.9rem";
+            resetButton.style.fontWeight = "bold";
+          }
+          
+          // Adjust bottom buttons to match game control buttons
+          const recordBtn = document.getElementById('record-score-btn');
+          const leaderboardBtn = document.getElementById('leaderboard-btn');
+          
+          if (recordBtn && leaderboardBtn) {
+            // Apply font styles to match game control buttons
+            recordBtn.style.fontFamily = "'Trebuchet MS', Arial, sans-serif";
+            recordBtn.style.fontSize = "0.9rem";
+            recordBtn.style.fontWeight = "bold";
+            recordBtn.style.width = "auto";
+            recordBtn.style.maxWidth = "140px";
+            
+            leaderboardBtn.style.fontFamily = "'Trebuchet MS', Arial, sans-serif";
+            leaderboardBtn.style.fontSize = "0.9rem";
+            leaderboardBtn.style.fontWeight = "bold";
+            leaderboardBtn.style.width = "auto";
+            leaderboardBtn.style.maxWidth = "140px";
+            
+            // Make sure parent container has correct styles for side-by-side layout
+            bottomButtons.style.display = "flex";
+            bottomButtons.style.flexDirection = "row";
+            bottomButtons.style.justifyContent = "center";
+            bottomButtons.style.gap = "8px";
+            bottomButtons.style.width = "var(--container-width)";
+            bottomButtons.style.marginLeft = "auto";
+            bottomButtons.style.marginRight = "auto";
+          }
+          
+          // Adjust score bar fonts and layout
           const scoreLeft = document.querySelector('.score-left');
           const scoreRight = document.querySelector('.score-right');
           
           if (scoreLeft) {
             scoreLeft.style.fontFamily = "'Trebuchet MS', Arial, sans-serif";
             scoreLeft.style.fontWeight = "bold";
+            scoreLeft.style.width = "60%";
           }
           
           if (scoreRight) {
             scoreRight.style.fontFamily = "'Trebuchet MS', Arial, sans-serif";
             scoreRight.style.fontWeight = "bold";
+            scoreRight.style.width = "40%";
+            scoreRight.style.textAlign = "right";
+            scoreRight.style.justifyContent = "flex-end";
+          }
+          
+          // Increase game messages font size
+          const gameMessages = document.getElementById('game-messages');
+          if (gameMessages) {
+            gameMessages.style.fontSize = "1.3rem";
           }
         }
       }
