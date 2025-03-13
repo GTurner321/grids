@@ -21,6 +21,9 @@
     // Improve button layout for mobile
     improveButtonLayout();
     
+    // Enhance message display
+    enhanceMessageDisplay();
+    
     // Add custom CSS to head
     addMobileStylesIfNeeded();
   });
@@ -224,5 +227,41 @@
       metaTag.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
       document.head.appendChild(metaTag);
     }
+  }
+  
+  // Enhance message display for mobile
+  function enhanceMessageDisplay() {
+    // Wait for game controller to initialize
+    const checkInterval = setInterval(() => {
+      if (window.gameController) {
+        clearInterval(checkInterval);
+        
+        // Patch the showMessage method to improve mobile display
+        const originalShowMessage = window.gameController.showMessage;
+        if (originalShowMessage && window.innerWidth <= 768) {
+          window.gameController.showMessage = function(text, type = 'info', duration = null) {
+            // Call original method
+            originalShowMessage.call(this, text, type, duration);
+            
+            // Additional mobile enhancements for message element
+            const messageElement = document.getElementById('game-messages');
+            if (messageElement) {
+              // Ensure message fits and is properly centered
+              messageElement.style.display = 'flex';
+              messageElement.style.alignItems = 'center';
+              messageElement.style.justifyContent = 'center';
+              
+              // Force text to wrap properly
+              if (text.length > 30) {
+                messageElement.style.whiteSpace = 'normal';
+              }
+            }
+          };
+        }
+      }
+    }, 100);
+    
+    // Stop checking after 5 seconds
+    setTimeout(() => clearInterval(checkInterval), 5000);
   }
 })();
