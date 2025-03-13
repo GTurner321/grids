@@ -80,8 +80,8 @@
   
   /* Title - larger for mobile */
   .game-header h1 {
-    font-size: 2.5rem; /* Increased from 2rem */
-    margin: 10px 0 0.5rem 0; /* Reduced top and bottom margins */
+    font-size: 2.5rem;
+    margin: 10px 0 0.3rem 0; /* Further reduced bottom margin */
   }
   
   /* Level buttons - more compact row */
@@ -165,19 +165,19 @@
   /* Game messages - ensure visibility */
   #game-messages {
     width: calc(10 * var(--mobile-grid-cell-size) + 9 * 1px);
-    margin: 8px auto 6px; /* Reduced bottom margin from 10px to 6px */
-    padding: 6px 0; /* Reduced from 8px 0 */
-    font-size: 1.2rem; /* Increased from 1rem - two sizes larger */
-    min-height: 42px; /* Slightly reduced from 45px */
+    margin: 8px auto 3px; /* Further reduced bottom margin */
+    padding: 6px 0;
+    font-size: 1.2rem;
+    min-height: 40px; /* Further reduced height */
     text-align: center;
     line-height: 1.3;
     display: flex;
     align-items: center;
     justify-content: center;
-    word-wrap: break-word; /* Allow words to break */
+    word-wrap: break-word;
     overflow-wrap: break-word;
-    white-space: normal; /* Allow text to wrap */
-    color: #1e40af; /* Ensure text color is visible */
+    white-space: normal;
+    color: #1e40af;
     font-weight: bold;
   }
   
@@ -225,25 +225,89 @@
     font-size: 0.75rem;
   }
   
-  /* Make the leaderboard and username submission appear as modal popups */
+  /* Fixed modal popup styling */
   #username-area-container,
   #leaderboard-table-container {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw; /* Use viewport width to ensure complete coverage */
-    height: 100vh; /* Use viewport height to ensure complete coverage */
-    z-index: 1000;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2000;
     background-color: rgba(0, 0, 0, 0.7);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 20px;
+    padding: 0;
+    margin: 0;
     box-sizing: border-box;
-    margin: 0; /* Remove any margin */
-    border: 0; /* Remove any border */
-    overflow: auto; /* Allow scrolling if content is too tall */
+    overflow: auto;
+    
+    /* iOS-specific fixes to ensure full coverage */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+  
+  /* Modal content styling */
+  .username-area,
+  .leaderboard-table {
+    width: 90%;
+    max-width: 350px;
+    background-color: #ede9fe;
+    border: 2px solid #16a34a;
+    border-radius: 6px;
+    padding: 15px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2001;
+  }
+  
+  /* Username form styling - centered */
+  .username-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    text-align: center;
+  }
+  
+  /* Input wrapper styling - centered */
+  .input-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 90%;
+    max-width: 280px;
+    margin: 0 auto;
+    gap: 12px;
+  }
+  
+  /* Input field styling - centered */
+  #username-input {
+    width: 100%;
+    padding: 12px;
+    font-size: 1.2rem;
+    text-align: center;
+    border: 2px solid #cbd5e1;
+    border-radius: 6px;
+    max-width: 100%;
+  }
+  
+  /* Submit button styling - centered */
+  #submit-username {
+    width: 100%;
+    padding: 12px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: center;
   }
   
   .username-area,
