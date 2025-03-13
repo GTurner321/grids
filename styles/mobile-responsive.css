@@ -3,6 +3,492 @@
 /* First, detect mobile devices more reliably */
 @media (max-width: 768px) {
   :root {
+    --mobile-grid-cell-size: 30px; /* Fixed cell size instead of calculation */
+    --app-height: 100%;
+    --container-width: 320px; /* Fixed container width */
+    --button-font-size: 1rem; /* Consistent font size for all buttons */
+  }
+  
+  body {
+    padding: 0;
+    margin: 0;
+    min-height: 100vh;
+    /* Use viewport units for consistent sizing */
+    height: var(--app-height);
+    width: 100vw;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    /* Mobile background pattern */
+    background-color: #b0d8b6;
+    background-image: url("data:image/svg+xml,%3Csvg width='32' height='64' viewBox='0 0 32 64' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 28h20V16h-4v8H4V4h28v28h-4V8H8v12h4v-8h12v20H0v-4zm12 8h20v4H16v24H0v-4h12V36zm16 12h-4v12h8v4H20V44h12v12h-4v-8zM0 36h8v20H0v-4h4V40H0v-4z' fill='%238fc096' fill-opacity='0.73' fill-rule='evenodd'/%3E%3C/svg%3E");
+  }
+  
+  /* Main container - limit margins to save space */
+  .game-container {
+    padding: 0;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  /* Title - larger for mobile */
+  .game-header h1 {
+    font-size: 2.5rem;
+    margin: 10px 0 0.3rem 0; /* Further reduced bottom margin */
+  }
+  
+  /* Level buttons - more compact row */
+  .level-selector-container {
+    margin-bottom: 10px; /* Reduced from 15px to save space */
+  }
+  
+  .level-selector-title {
+    font-size: 1rem; /* Increased from 0.9rem */
+    margin-bottom: 8px; /* Increased from 4px */
+  }
+  
+  .level-buttons {
+    gap: 5px; /* Increased from 3px */
+  }
+  
+  /* Level buttons - larger text */
+  .level-btn {
+    min-width: 38px;
+    padding: 8px 10px;
+    font-size: var(--button-font-size);
+    font-weight: bold;
+  }
+  
+  /* Score row - match grid width exactly */
+  .score-row {
+    width: var(--container-width) !important;
+    height: 50px;
+    margin: 0 auto;
+    border: 1px solid #666 !important;
+    border-radius: 0 !important; /* No rounded corners */
+    border-bottom: none !important;
+    display: flex;
+    align-items: center;
+    background-color: #e6f2ff;
+    box-sizing: border-box;
+  }
+  
+  .score-left {
+    text-align: left;
+    padding-left: 12px;
+    font-family: 'Trebuchet MS', Arial, sans-serif;
+    font-size: 0.9rem;
+    color: #ef4444;
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    width: 60%;
+  }
+
+  .score-right {
+    text-align: right;
+    padding-right: 12px;
+    font-family: 'Trebuchet MS', Arial, sans-serif;
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #1e40af;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 40%;
+  }
+  
+  /* Grid container - fill width exactly */
+  #grid-container {
+    grid-template-columns: repeat(10, var(--mobile-grid-cell-size));
+    width: var(--container-width) !important;
+    margin: 0 auto;
+    box-sizing: border-box;
+    justify-content: center;
+    gap: 1px;
+    background-color: #94a3b8;
+    padding: 1px;
+    display: grid;
+    border: 1px solid #666 !important;
+    border-top: none !important;
+    border-radius: 0 !important; /* No rounded corners */
+  }
+  
+  /* Grid cells - dynamic sizing */
+  .grid-cell {
+    width: var(--mobile-grid-cell-size);
+    height: var(--mobile-grid-cell-size);
+    touch-action: none;
+    margin: 0;
+    box-sizing: border-box;
+  }
+  
+  /* Control buttons - ensure single row with appropriately sized text */
+  .game-controls {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    width: var(--container-width) !important;
+    margin: 12px auto 0 !important;
+    gap: 8px !important; /* Add gap between buttons */
+  }
+  
+  /* Common button styles */
+  .game-controls button {
+    padding: 8px 6px;
+    font-size: 0.9rem;
+    font-family: 'Trebuchet MS', Arial, sans-serif;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    border-radius: 5px;
+  }
+  
+  /* Specific button widths - adjusted percentages */
+  .game-controls #check-solution {
+    width: 25% !important; /* Narrower */
+  }
+  
+  .game-controls #remove-spare {
+    width: 50% !important; /* Wider */
+  }
+  
+  .game-controls #reset-path {
+    width: 25% !important; /* Narrower */
+  }
+  
+  .game-controls button svg {
+    width: 14px;
+    height: 14px;
+    margin-right: 4px;
+  }
+  
+  /* Game messages - ensure visibility */
+  #game-messages {
+    width: var(--container-width) !important;
+    margin: 8px auto 3px;
+    padding: 6px 0;
+    font-size: 1.4rem !important; /* Increased from 1.3rem */
+    min-height: 45px !important;
+    text-align: center;
+    line-height: 1.3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    color: #1e40af;
+    font-weight: bold;
+  }
+  
+  /* Force bottom buttons to display horizontally on mobile */
+  .bottom-buttons {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    gap: 10px !important;
+    width: var(--container-width) !important;
+    margin: 10px auto !important;
+  }
+  
+  /* Bottom buttons styling to match game buttons */
+  .bottom-btn {
+    width: 130px !important;
+    max-width: 140px !important;
+    font-family: 'Trebuchet MS', Arial, sans-serif !important;
+    font-size: 1rem !important; /* Slightly larger than game buttons */
+    font-weight: bold !important;
+    height: 42px !important; /* Slightly taller */
+    padding: 8px 10px !important;
+    border-radius: 5px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-transform: none !important;
+  }
+  
+  /* Make the leaderboard and username submission appear as modal popups */
+  #username-area-container,
+  #leaderboard-table-container {
+    display: none; /* Hidden by default */
+  }
+  
+  #username-area-container.visible,
+  #leaderboard-table-container.visible {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  
+  /* Modal content styling */
+  .username-area,
+  .leaderboard-table {
+    width: 90%;
+    max-width: 350px;
+    background-color: #ede9fe;
+    border: 2px solid #16a34a;
+    border-radius: 6px;
+    padding: 15px;
+    margin: 0 auto;
+    position: relative;
+  }
+  
+  /* Username form styling - centered */
+  .username-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    text-align: center;
+  }
+  
+  /* Username prompt styling */
+  .username-prompt {
+    font-size: 1.2rem; /* Increased significantly from default */
+    font-weight: bold;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+  
+  /* Input wrapper styling - centered */
+  .input-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 90%;
+    max-width: 280px;
+    margin: 0 auto;
+    gap: 12px;
+  }
+  
+  /* Input field styling - centered */
+  #username-input {
+    width: 100%;
+    padding: 12px;
+    font-size: 1.2rem;
+    text-align: center;
+    border: 2px solid #cbd5e1;
+    border-radius: 6px;
+    max-width: 100%;
+  }
+  
+  /* Submit button styling - centered */
+  #submit-username {
+    width: 100%;
+    padding: 12px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: center;
+  }
+  
+  /* Return buttons */
+  #return-to-record-btn,
+  #return-from-leaderboard-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 10000;
+    border: none;
+    color: #3b82f6;
+    font-size: 24px;
+    cursor: pointer;
+  }
+  
+  /* Leaderboard table styling */
+  .leaderboard-table {
+    background-color: #ede9fe;
+    border: 2px solid #16a34a;
+    border-radius: 6px;
+    overflow: hidden;
+    max-height: 70vh; /* Limit height to ensure it fits on screen */
+    overflow-y: auto;
+    width: 90%;
+    max-width: 350px;
+    margin: 0 auto;
+  }
+  
+  /* Leaderboard title */
+  .leaderboard-title {
+    font-size: 1.4rem; /* Increased from default */
+    margin: 15px 0;
+    font-weight: bold;
+  }
+  
+  /* Leaderboard header row */
+  .leaderboard-row.header {
+    background-color: #f3f4f6;
+    font-weight: bold;
+    font-size: 0.9rem; /* Match cell size */
+    padding: 8px 4px;
+  }
+  
+  /* Ensure leaderboard rows fit */
+  .leaderboard-row {
+    grid-template-columns: 30px minmax(70px, 1fr) 60px 70px;
+    column-gap: 5px;
+    padding: 4px;
+  }
+  
+  .leaderboard-cell {
+    font-size: 0.9rem; /* Increased from 0.75rem */
+  }
+  
+  /* Improve path arrows visibility */
+  .path-arrow {
+    width: 14px;
+    height: 14px;
+  }
+  
+  /* Make sure touch interaction is optimized */
+  .touch-device button {
+    min-height: 36px;
+  }
+  
+  /* Orientation warning */
+  .orientation-warning {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 2000;
+    color: white;
+    text-align: center;
+    font-size: 1.2rem;
+    padding: 20px;
+    box-sizing: border-box;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  
+  .orientation-warning svg {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 20px;
+    animation: rotate 2s ease-in-out infinite;
+  }
+  
+  @keyframes rotate {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(90deg); }
+    50% { transform: rotate(90deg); }
+    75% { transform: rotate(0deg); }
+    100% { transform: rotate(0deg); }
+  }
+  
+  @media (orientation: landscape) {
+    .orientation-warning {
+      display: flex;
+    }
+  }
+}
+
+/* Small phone optimization */
+@media (max-width: 360px) {
+  .game-controls button {
+    font-size: 0.75rem; /* Increased from 0.65rem */
+    padding: 8px 5px; /* Increased height slightly */
+  }
+  
+  .game-controls button svg {
+    width: 12px;
+    height: 12px;
+  }
+  
+  .level-btn {
+    min-width: 32px; /* Decreased from larger screens but still bigger than original */
+    padding: 6px 8px;
+  }
+  
+  #game-messages {
+    font-size: 1.1rem; /* Slightly smaller than larger screens but still bigger than original */
+  }
+}
+
+/* iOS-specific fixes for notch phones */
+@supports (-webkit-touch-callout: none) {
+  body {
+    /* Avoid overscroll effects */
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+  
+  .game-container {
+    /* Avoid bottom bar issues */
+    padding-bottom: env(safe-area-inset-bottom, 10px);
+    /* Avoid notch issues */
+    padding-top: env(safe-area-inset-top, 10px);
+    /* Scroll container instead of body */
+    height: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}  /* Override styles from leaderboard.css for mobile */
+  @media (max-width: 768px) {
+    /* Override bottom buttons container */
+    .bottom-buttons {
+      display: flex !important;
+      flex-direction: row !important;
+      justify-content: center !important;
+      gap: 10px !important;
+      width: 320px !important;
+      margin: 10px auto !important;
+    }
+    
+    /* Override bottom button styles */
+    .bottom-btn {
+      width: 130px !important;
+      max-width: 140px !important;
+      font-family: 'Trebuchet MS', Arial, sans-serif !important;
+      font-size: 1rem !important; /* Slightly larger */
+      font-weight: bold !important;
+      height: 42px !important;
+      padding: 8px 10px !important;
+      border-radius: 5px !important;
+      text-transform: none !important;
+    }
+  }/* Mobile-Responsive CSS for Path Puzzle Game */
+
+/* First, detect mobile devices more reliably */
+@media (max-width: 768px) {
+  :root {
     --mobile-grid-cell-size: calc((100vw - 40px) / 10); /* Added small margins on sides */
     --app-height: 100%;
     --container-width: calc(10 * var(--mobile-grid-cell-size) + 9 * 1px);
