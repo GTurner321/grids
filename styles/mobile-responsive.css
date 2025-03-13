@@ -134,7 +134,7 @@
     justify-content: center !important;
     width: var(--container-width) !important;
     margin: 12px auto 0 !important;
-    gap: 8px !important; /* Add gap between buttons */
+    gap: 5px !important; /* Reduced from 8px */
   }
   
   /* Common button styles */
@@ -156,11 +156,11 @@
   }
   
   .game-controls #remove-spare {
-    width: 40% !important; /* Narrower by 5% */
+    width: 45% !important; /* Wider by 5% more */
   }
   
   .game-controls #reset-path {
-    width: 30% !important; /* Wider by 5% */
+    width: 25% !important; /* Reduced by 5% */
   }
   
   .game-controls button svg {
@@ -186,6 +186,7 @@
     white-space: normal;
     color: #1e40af;
     font-weight: bold;
+    text-shadow: 0 0 5px white, 0 0 10px white, 0 0 15px white !important; /* White shadow for better visibility */
   }
   
   /* Force bottom buttons to display horizontally on mobile */
@@ -200,8 +201,6 @@
   
   /* Bottom buttons styling to match game buttons */
   .bottom-btn {
-    width: 130px !important;
-    max-width: 140px !important;
     font-family: 'Trebuchet MS', Arial, sans-serif !important;
     font-size: 1rem !important; /* Slightly larger than game buttons */
     font-weight: bold !important;
@@ -212,6 +211,15 @@
     align-items: center !important;
     justify-content: center !important;
     text-transform: none !important;
+  }
+  
+  /* Specific widths for bottom buttons */
+  #record-score-btn {
+    width: 175px !important; /* 35% wider than original 130px */
+  }
+  
+  #leaderboard-btn {
+    width: 156px !important; /* 20% wider than original 130px */
   }
   
   /* Make the leaderboard and username submission appear as modal popups */
@@ -280,20 +288,22 @@
     gap: 12px;
   }
   
-  /* Input field styling - centered */
+  /* Input field styling - centered and narrower */
   #username-input {
-    width: 100%;
+    width: 80% !important; /* Reduced by 20% */
     padding: 12px;
     font-size: 1.2rem;
     text-align: center;
     border: 2px solid #cbd5e1;
     border-radius: 6px;
-    max-width: 100%;
+    max-width: 80% !important;
+    margin: 0 auto !important;
+    display: block !important;
   }
   
-  /* Submit button styling - centered */
+  /* Submit button styling - centered and narrower */
   #submit-username {
-    width: 100%;
+    width: 80% !important; /* Reduced by 20% */
     padding: 12px;
     font-size: 1.2rem;
     font-weight: bold;
@@ -303,6 +313,23 @@
     border-radius: 6px;
     cursor: pointer;
     text-align: center;
+    margin: 0 auto !important;
+    display: block !important;
+  }
+  
+  /* Hide leaderboard return button on mobile */
+  #return-from-leaderboard-btn {
+    display: none !important;
+  }
+  
+  /* Leaderboard table - larger text */
+  .leaderboard-cell {
+    font-size: 1.1rem !important; /* Larger text */
+  }
+  
+  .leaderboard-row.header {
+    font-size: 1.1rem !important; /* Larger header text */
+    font-weight: bold !important;
   }
   
   /* Return buttons */
