@@ -69,17 +69,21 @@ class GameController {
     // Add reset path button handler - FIXED
     const resetButton = document.getElementById('reset-path');
     if (resetButton) {
-        resetButton.addEventListener('click', (e) => {
-            console.log('Reset path button clicked');
-            e.preventDefault(); // Prevent any default behavior
-            this.resetPath(); // Call the resetPath method
+    // Update the button text to "Reset" while preserving the SVG
+    const svgContent = resetButton.innerHTML.split('</svg>')[0] + '</svg>';
+    resetButton.innerHTML = svgContent + ' Reset';
+    
+    resetButton.addEventListener('click', (e) => {
+        console.log('Reset button clicked');
+        e.preventDefault(); // Prevent any default behavior
+        this.resetPath(); // Call the resetPath method
         });
     } else {
-        console.error('Reset path button not found');
-    }
+        console.error('Reset button not found');
+    }   
     
-    console.log('Game event listeners initialized');
-}
+        console.log('Game event listeners initialized');
+    }
     
     async startLevel(level) {
         // Reset state
