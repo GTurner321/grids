@@ -63,17 +63,20 @@
   /* Score row - match grid width exactly */
   .score-row {
     width: var(--container-width);
-    height: 45px;
+    height: 50px; /* Increased from 45px */
     margin: 0 auto;
     border-radius: 5px 5px 0 0;
+    border: 2px solid #666; /* Darker gray outline */
+    display: flex;
+    align-items: center; /* Center text vertically */
   }
   
   .score-left {
     text-align: left;
-    padding-left: 12px; /* Increased from 10px */
-    font-family: 'Courier New', monospace;
-    font-size: 0.9rem; /* Increased from 0.85rem */
-    color: #ef4444; /* Red color */
+    padding-left: 12px;
+    font-family: 'Trebuchet MS', Arial, sans-serif;
+    font-size: 0.9rem;
+    color: #ef4444;
     display: flex;
     align-items: center;
     font-weight: bold;
@@ -81,14 +84,14 @@
 
   .score-right {
     text-align: right;
-    padding-right: 12px; /* Increased from 10px */
-    font-family: 'Courier New', monospace;
-    font-size: 0.9rem; /* Increased from 0.85rem */
+    padding-right: 12px;
+    font-family: 'Trebuchet MS', Arial, sans-serif;
+    font-size: 0.9rem;
     font-weight: bold;
-    color: #1e40af; /* Dark blue */
+    color: #1e40af;
     display: flex;
     align-items: center;
-    justify-content: flex-end; /* Keep text right-aligned */
+    justify-content: flex-end;
   }
   
   /* Grid container - fill width exactly */
@@ -103,6 +106,7 @@
     background-color: #94a3b8;
     padding: 1px;
     display: grid;
+    border: 2px solid #666; /* Darker gray outline */
   }
   
   /* Grid cells - dynamic sizing */
@@ -123,20 +127,30 @@
     gap: 8px; /* Add gap between buttons */
   }
   
+  /* Common button styles */
   .game-controls button {
     padding: 8px 6px;
-    font-size: 0.9rem; /* Reduced from 1rem */
+    font-size: 0.9rem;
     font-family: 'Trebuchet MS', Arial, sans-serif;
     font-weight: bold;
-    flex: 1;
-    margin: 0;
-    white-space: nowrap;
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 40px; /* Reduced slightly */
-    max-width: 110px; /* Limit max width */
+    height: 40px;
     border-radius: 5px;
+  }
+  
+  /* Specific button widths */
+  .game-controls #check-solution {
+    flex: 0.85; /* Narrower */
+  }
+  
+  .game-controls #remove-spare {
+    flex: 1.25; /* Wider */
+  }
+  
+  .game-controls #reset-path {
+    flex: 0.85; /* Narrower */
   }
   
   .game-controls button svg {
@@ -182,13 +196,13 @@
     font-family: 'Trebuchet MS', Arial, sans-serif;
     font-weight: bold;
     height: 40px; /* Match game control buttons */
-    width: auto; /* Let content determine width */
-    min-width: 120px; /* Minimum width */
-    max-width: 140px; /* Maximum width */
+    min-width: 130px; /* Minimum width */
+    max-width: 150px; /* Maximum width */
     border-radius: 5px;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex: 1;
   }
   
   /* Make the leaderboard and username submission appear as modal popups */
