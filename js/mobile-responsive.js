@@ -214,13 +214,20 @@
     // Wait for game controls to be available
     const checkInterval = setInterval(() => {
       const gameControls = document.querySelector('.game-controls');
-      if (gameControls) {
+      const bottomButtons = document.querySelector('.bottom-buttons');
+      
+      if (gameControls && bottomButtons) {
         clearInterval(checkInterval);
         
         if (window.innerWidth <= 768) {
           // Adjust game control buttons
-          const buttons = gameControls.querySelectorAll('button');
-          buttons.forEach(button => {
+          const gameButtons = gameControls.querySelectorAll('button');
+          gameButtons.forEach(button => {
+            // Set font family and size
+            button.style.fontFamily = "'Trebuchet MS', Arial, sans-serif";
+            button.style.fontSize = "0.9rem";
+            button.style.fontWeight = "bold";
+            
             // Shorten text if needed
             if (button.id === 'remove-spare') {
               // Find the SVG and keep it
@@ -240,6 +247,20 @@
                 button.appendChild(document.createTextNode(' Reset'));
               }
             }
+          });
+          
+          // Adjust bottom buttons
+          const bottomBtns = bottomButtons.querySelectorAll('.bottom-btn');
+          bottomBtns.forEach(button => {
+            // Set font family and size
+            button.style.fontFamily = "'Trebuchet MS', Arial, sans-serif";
+            button.style.fontSize = "0.9rem";
+            button.style.fontWeight = "bold";
+            
+            // Make buttons narrower
+            button.style.minWidth = "120px";
+            button.style.maxWidth = "140px";
+            button.style.width = "auto";
           });
         }
       }
