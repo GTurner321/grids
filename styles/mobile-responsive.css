@@ -1,4 +1,25 @@
-/* Mobile-Responsive CSS for Path Puzzle Game */
+.score-left {
+    text-align: left;
+    padding-left: 12px; /* Increased from 10px */
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem; /* Increased from 0.85rem */
+    color: #ef4444; /* Red color */
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+  }
+
+  .score-right {
+    text-align: right;
+    padding-right: 12px; /* Increased from 10px */
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem; /* Increased from 0.85rem */
+    font-weight: bold;
+    color: #1e40af; /* Dark blue */
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* Keep text right-aligned */
+  }/* Mobile-Responsive CSS for Path Puzzle Game */
 
 /* First, detect mobile devices more reliably */
 @media (max-width: 768px) {
@@ -31,42 +52,44 @@
     align-items: center;
   }
   
-  /* Title - compact for mobile */
+  /* Title - larger for mobile */
   .game-header h1 {
-    font-size: 2rem;
-    margin: 0 0 0.2rem 0;
+    font-size: 2.5rem; /* Increased from 2rem */
+    margin: 15px 0 0.8rem 0; /* Increased top margin for more space from URL bar */
   }
   
   /* Level buttons - more compact row */
   .level-selector-container {
-    margin-bottom: 8px;
+    margin-bottom: 15px; /* Increased from 8px to create more space before grid */
   }
   
   .level-selector-title {
-    font-size: 0.9rem;
-    margin-bottom: 4px;
+    font-size: 1rem; /* Increased from 0.9rem */
+    margin-bottom: 8px; /* Increased from 4px */
   }
   
   .level-buttons {
-    gap: 3px;
+    gap: 5px; /* Increased from 3px */
   }
   
   .level-btn {
-    min-width: 32px;
-    padding: 6px 8px;
+    min-width: 38px; /* Increased from 32px */
+    padding: 8px 10px; /* Increased from 6px 8px */
+    font-size: 0.9rem; /* Increased from default */
   }
   
   /* Score row - match grid width exactly */
   .score-row {
-    width: calc(10 * var(--mobile-grid-cell-size) + 9 * 1px + 2px);
-    height: 40px;
+    width: calc(10 * var(--mobile-grid-cell-size) + 9 * 1px);
+    height: 45px; /* Increased from 40px */
     margin: 0 auto;
+    border-radius: 5px 5px 0 0; /* Added rounded top corners */
   }
   
   /* Grid container - fill width exactly */
   #grid-container {
     grid-template-columns: repeat(10, var(--mobile-grid-cell-size));
-    width: calc(10 * var(--mobile-grid-cell-size) + 9 * 1px + 2px);
+    width: calc(10 * var(--mobile-grid-cell-size) + 9 * 1px);
     max-width: 100%;
     margin: 0 auto;
     box-sizing: border-box;
@@ -87,38 +110,39 @@
     box-sizing: border-box;
   }
   
-  /* Control buttons - ensure single row with smaller text */
+  /* Control buttons - ensure single row with appropriately sized text */
   .game-controls {
     flex-direction: row;
     justify-content: space-between;
-    width: calc(10 * var(--mobile-grid-cell-size) + 9 * 1px + 2px);
-    margin: 8px auto 0;
+    width: calc(10 * var(--mobile-grid-cell-size) + 9 * 1px);
+    margin: 12px auto 0; /* Increased top margin */
   }
   
   .game-controls button {
-    padding: 8px 6px;
-    font-size: 0.7rem;
+    padding: 10px 8px; /* Increased from 8px 6px */
+    font-size: 0.85rem; /* Increased from 0.7rem */
     flex-grow: 1;
-    margin: 0 2px;
+    margin: 0 3px; /* Increased horizontal separation */
     white-space: nowrap;
     display: flex;
     align-items: center;
     justify-content: center;
+    height: 42px; /* Added explicit height */
   }
   
   .game-controls button svg {
-    width: 12px;
-    height: 12px;
-    margin-right: 3px;
+    width: 14px; /* Increased from 12px */
+    height: 14px; /* Increased from 12px */
+    margin-right: 4px;
   }
   
   /* Game messages - ensure visibility */
   #game-messages {
-    width: calc(10 * var(--mobile-grid-cell-size) + 9 * 1px + 2px);
-    margin: 8px auto;
-    padding: 6px 0;
-    font-size: 1rem; /* Increased from 0.8rem */
-    min-height: 40px; /* Increased to accommodate two lines */
+    width: calc(10 * var(--mobile-grid-cell-size) + 9 * 1px);
+    margin: 10px auto;
+    padding: 8px 0;
+    font-size: 1.2rem; /* Increased from 1rem - two sizes larger */
+    min-height: 45px; /* Increased from 40px */
     text-align: center;
     line-height: 1.3;
     display: flex;
@@ -127,16 +151,24 @@
     word-wrap: break-word; /* Allow words to break */
     overflow-wrap: break-word;
     white-space: normal; /* Allow text to wrap */
+    color: #1e40af; /* Ensure text color is visible */
+    font-weight: bold;
   }
   
   /* Leaderboard buttons - single row */
   .bottom-buttons {
     flex-direction: row;
     margin-top: 20px; /* Increased from 8px to move buttons down */
-    gap: 5px;
-    width: calc(10 * var(--mobile-grid-cell-size) + 9 * 1px + 2px);
+    gap: 8px; /* Increased from 5px */
+    width: calc(10 * var(--mobile-grid-cell-size) + 9 * 1px);
     margin-left: auto;
     margin-right: auto;
+  }
+  
+  .bottom-btn {
+    padding: 10px 12px; /* Increased from 8px 10px */
+    font-size: 0.9rem; /* Increased from 0.7rem */
+    height: 44px;
   }
   
   .bottom-btn {
@@ -274,18 +306,22 @@
 /* Small phone optimization */
 @media (max-width: 360px) {
   .game-controls button {
-    font-size: 0.65rem;
-    padding: 6px 4px;
+    font-size: 0.75rem; /* Increased from 0.65rem */
+    padding: 8px 5px; /* Increased height slightly */
   }
   
   .game-controls button svg {
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
   }
   
   .level-btn {
-    min-width: 28px;
-    padding: 5px 6px;
+    min-width: 32px; /* Decreased from larger screens but still bigger than original */
+    padding: 6px 8px;
+  }
+  
+  #game-messages {
+    font-size: 1.1rem; /* Slightly smaller than larger screens but still bigger than original */
   }
 }
 
