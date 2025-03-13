@@ -495,10 +495,20 @@ class GameController {
     // Update score
     scoreManager.completePuzzle();
     
-    // Mark all cells in the path as solved
-    this.state.userPath.forEach(index => {
+    // Mark cells in the path as solved, but preserve start and end cell colors
+    this.state.userPath.forEach((index, position) => {
         const cell = document.querySelector(`[data-index="${index}"]`);
-        if (cell) {
+        if (!cell) return;
+        
+        // Keep start cell dark green and end cell dark red
+        if (position === 0) {
+            // Start cell - keep it green/dark green
+            cell.classList.add('start-cell-selected');
+        } else if (position === this.state.userPath.length - 1) {
+            // End cell - keep it red/dark red
+            cell.classList.add('end-cell-selected');
+        } else {
+            // Middle cells - add solved path class for yellow
             cell.classList.add('user-solved-path');
         }
     });
