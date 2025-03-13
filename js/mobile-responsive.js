@@ -228,24 +228,26 @@
             button.style.fontSize = "0.9rem";
             button.style.fontWeight = "bold";
             
-            // Shorten text if needed
-            if (button.id === 'remove-spare') {
-              // Find the SVG and keep it
-              const svg = button.querySelector('svg');
-              if (svg) {
-                button.innerHTML = '';
-                button.appendChild(svg);
-                button.appendChild(document.createTextNode(' Remove'));
+            // Set specific sizes
+            if (button.id === 'check-solution') {
+              button.style.flex = "0.85";
+            }
+            else if (button.id === 'remove-spare') {
+              button.style.flex = "1.25";
+              
+              // Ensure the cross SVG is present
+              if (!button.innerHTML.includes('svg')) {
+                button.innerHTML = `
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                  Remove
+                `;
               }
             }
-            if (button.id === 'reset-path') {
-              // Find the SVG and keep it
-              const svg = button.querySelector('svg');
-              if (svg) {
-                button.innerHTML = '';
-                button.appendChild(svg);
-                button.appendChild(document.createTextNode(' Reset'));
-              }
+            else if (button.id === 'reset-path') {
+              button.style.flex = "0.85";
             }
           });
           
@@ -257,11 +259,25 @@
             button.style.fontSize = "0.9rem";
             button.style.fontWeight = "bold";
             
-            // Make buttons narrower
-            button.style.minWidth = "120px";
-            button.style.maxWidth = "140px";
-            button.style.width = "auto";
+            // Make buttons fixed width
+            button.style.flex = "1";
+            button.style.minWidth = "130px";
+            button.style.maxWidth = "150px";
           });
+          
+          // Adjust score bar fonts
+          const scoreLeft = document.querySelector('.score-left');
+          const scoreRight = document.querySelector('.score-right');
+          
+          if (scoreLeft) {
+            scoreLeft.style.fontFamily = "'Trebuchet MS', Arial, sans-serif";
+            scoreLeft.style.fontWeight = "bold";
+          }
+          
+          if (scoreRight) {
+            scoreRight.style.fontFamily = "'Trebuchet MS', Arial, sans-serif";
+            scoreRight.style.fontWeight = "bold";
+          }
         }
       }
     }, 100);
