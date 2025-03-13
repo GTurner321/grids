@@ -39,6 +39,9 @@
     window.addEventListener('resize', () => {
       const newHeight = window.innerHeight;
       document.documentElement.style.setProperty('--app-height', `${newHeight}px`);
+      
+      // Also fix modal containers when the window is resized
+      fixModalContainers();
     });
     
     // Add touch-device class for better control
@@ -50,6 +53,39 @@
         document.body.classList.add('ios-device');
       }
     }
+    
+    // Initial fix for modals
+    fixModalContainers();
+  }
+  
+  // Fix modal container sizing to ensure they cover the entire screen
+  function fixModalContainers() {
+    // Look for modal containers
+    const modalContainers = [
+      document.getElementById('username-area-container'),
+      document.getElementById('leaderboard-table-container')
+    ];
+    
+    modalContainers.forEach(container => {
+      if (container) {
+        // Set explicit dimensions using viewport units
+        container.style.width = '100%';
+        container.style.height = '100%';
+        container.style.top = '0';
+        container.style.left = '0';
+        container.style.right = '0';
+        container.style.bottom = '0';
+        container.style.margin = '0';
+        container.style.padding = '0';
+        container.style.position = 'fixed';
+        container.style.zIndex = '2000';
+        container.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+        
+        // Add CSS transform to force GPU acceleration for better rendering
+        container.style.transform = 'translateZ(0)';
+        container.style.webkitTransform = 'translateZ(0)';
+      }
+    });
   }
   
   // Create warning for landscape orientation
@@ -82,20 +118,8 @@
         
         // For small screens, modify the behavior
         if (window.innerWidth <= 768) {
-          // Ensure modal containers cover the entire screen
-          [usernameArea, leaderboardTable].forEach(container => {
-            // Set explicit dimensions
-            container.style.width = '100vw';
-            container.style.height = '100vh';
-            container.style.margin = '0';
-            container.style.padding = '20px';
-            container.style.boxSizing = 'border-box';
-            container.style.position = 'fixed';
-            container.style.top = '0';
-            container.style.left = '0';
-            // Set explicit z-index to ensure it's on top
-            container.style.zIndex = '2000';
-          });
+          // Call the fix function to ensure modal containers cover the entire screen
+          fixModalContainers();
           
           // Record button behavior
           const originalRecordClickHandler = recordBtn.onclick;
@@ -106,27 +130,41 @@
             }
             
             if (usernameArea.style.display === 'block') {
-              usernameArea.classList.add('modal-style');
+              // Apply modal styles
+              fixModalContainers();
               document.body.style.overflow = 'hidden';
               
-              // Ensure username input is styled properly
+              // Center the input box and adjust text sizes
               const usernameInput = document.getElementById('username-input');
+              const usernamePrompt = document.querySelector('.username-prompt');
+              const submitButton = document.getElementById('submit-username');
+              const inputWrapper = document.querySelector('.input-wrapper');
+              
               if (usernameInput) {
                 usernameInput.style.textAlign = 'center';
                 usernameInput.style.fontSize = '1.2rem';
+                usernameInput.style.width = '100%';
+                usernameInput.style.maxWidth = '100%';
               }
               
-              // Ensure username prompt is styled properly
-              const usernamePrompt = document.querySelector('.username-prompt');
               if (usernamePrompt) {
                 usernamePrompt.style.fontSize = '1.2rem';
                 usernamePrompt.style.fontWeight = 'bold';
+                usernamePrompt.style.textAlign = 'center';
               }
               
-              // Ensure submit button is styled properly
-              const submitButton = document.getElementById('submit-username');
               if (submitButton) {
                 submitButton.style.fontSize = '1.2rem';
+                submitButton.style.width = '100%';
+                submitButton.style.textAlign = 'center';
+              }
+              
+              if (inputWrapper) {
+                inputWrapper.style.display = 'flex';
+                inputWrapper.style.flexDirection = 'column';
+                inputWrapper.style.alignItems = 'center';
+                inputWrapper.style.width = '90%';
+                inputWrapper.style.margin = '0 auto';
               }
             }
           };
