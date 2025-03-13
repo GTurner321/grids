@@ -82,6 +82,21 @@
         
         // For small screens, modify the behavior
         if (window.innerWidth <= 768) {
+          // Ensure modal containers cover the entire screen
+          [usernameArea, leaderboardTable].forEach(container => {
+            // Set explicit dimensions
+            container.style.width = '100vw';
+            container.style.height = '100vh';
+            container.style.margin = '0';
+            container.style.padding = '20px';
+            container.style.boxSizing = 'border-box';
+            container.style.position = 'fixed';
+            container.style.top = '0';
+            container.style.left = '0';
+            // Set explicit z-index to ensure it's on top
+            container.style.zIndex = '2000';
+          });
+          
           // Record button behavior
           const originalRecordClickHandler = recordBtn.onclick;
           recordBtn.onclick = function(e) {
@@ -93,6 +108,26 @@
             if (usernameArea.style.display === 'block') {
               usernameArea.classList.add('modal-style');
               document.body.style.overflow = 'hidden';
+              
+              // Ensure username input is styled properly
+              const usernameInput = document.getElementById('username-input');
+              if (usernameInput) {
+                usernameInput.style.textAlign = 'center';
+                usernameInput.style.fontSize = '1.2rem';
+              }
+              
+              // Ensure username prompt is styled properly
+              const usernamePrompt = document.querySelector('.username-prompt');
+              if (usernamePrompt) {
+                usernamePrompt.style.fontSize = '1.2rem';
+                usernamePrompt.style.fontWeight = 'bold';
+              }
+              
+              // Ensure submit button is styled properly
+              const submitButton = document.getElementById('submit-username');
+              if (submitButton) {
+                submitButton.style.fontSize = '1.2rem';
+              }
             }
           };
           
@@ -107,6 +142,17 @@
             if (leaderboardTable.style.display === 'block') {
               leaderboardTable.classList.add('modal-style');
               document.body.style.overflow = 'hidden';
+              
+              // Increase leaderboard text size
+              const leaderboardCells = document.querySelectorAll('.leaderboard-cell');
+              leaderboardCells.forEach(cell => {
+                cell.style.fontSize = '0.9rem';
+              });
+              
+              // Ensure proper modal positioning
+              leaderboardTable.style.display = 'flex';
+              leaderboardTable.style.alignItems = 'center';
+              leaderboardTable.style.justifyContent = 'center';
             }
           };
           
