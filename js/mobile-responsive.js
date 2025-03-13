@@ -1,4 +1,37 @@
-// 3. Style bottom buttons - use !important to override leaderboard.css
+// 7. Enhance grid elements
+        setTimeout(() => {
+          // Increase text size in grid cells
+          document.querySelectorAll('.grid-cell').forEach(cell => {
+            // Increase general font size
+            cell.style.fontSize = '1.4rem';
+            
+            // Special handling for operators
+            if (cell.classList.contains('operator')) {
+              cell.style.fontSize = '1.6rem';
+            }
+          });
+          
+          // Make path arrows larger and fatter
+          document.addEventListener('DOMNodeInserted', function(e) {
+            if (e.target.classList && e.target.classList.contains('path-arrow')) {
+              e.target.style.width = '18px';
+              e.target.style.height = '18px';
+              
+              // Get SVG inside and make it fatter
+              const svg = e.target.querySelector('svg');
+              if (svg) {
+                svg.style.strokeWidth = '3';
+                svg.style.width = '100%';
+                svg.style.height = '100%';
+              }
+            }
+          });
+          
+          // Make symbol containers larger
+          document.querySelectorAll('.symbol-container').forEach(container => {
+            container.style.transform = 'scale(1.3)';
+          });
+        }, 1000); // Delay to ensure grid is rendered        // 3. Style bottom buttons - use !important to override leaderboard.css
         const bottomButtons = document.querySelector('.bottom-buttons');
         const recordBtn = document.getElementById('record-score-btn');
         const leaderboardBtn = document.getElementById('leaderboard-btn');
@@ -38,6 +71,9 @@
     
     // Add custom CSS to head
     addMobileStylesIfNeeded();
+    
+    // Enhance path arrows
+    enhancePathArrows();
   });
   
   // Fix for mobile browsers, especially iOS Safari
@@ -286,6 +322,55 @@
       metaTag.name = 'viewport';
       metaTag.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
       document.head.appendChild(metaTag);
+    }
+  }
+  
+  // Enhance path arrows for mobile
+  function enhancePathArrows() {
+    if (window.innerWidth <= 768) { // Only for mobile devices
+      // Watch for arrows being added to the DOM
+      const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if (mutation.addedNodes) {
+            mutation.addedNodes.forEach(function(node) {
+              if (node && node.classList && node.classList.contains('path-arrow')) {
+                // Enlarge and bolden the arrow
+                node.style.width = '18px';
+                node.style.height = '18px';
+                
+                // Make the SVG stroke wider
+                const svg = node.querySelector('svg');
+                if (svg) {
+                  svg.setAttribute('stroke-width', '3');
+                  svg.style.width = '100%';
+                  svg.style.height = '100%';
+                  svg.style.fill = '#3b82f6';
+                }
+              }
+            });
+          }
+        });
+      });
+      
+      // Start observing the document
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+      
+      // Also enhance any arrows that might already be in the DOM
+      document.querySelectorAll('.path-arrow').forEach(function(arrow) {
+        arrow.style.width = '18px';
+        arrow.style.height = '18px';
+        
+        const svg = arrow.querySelector('svg');
+        if (svg) {
+          svg.setAttribute('stroke-width', '3');
+          svg.style.width = '100%';
+          svg.style.height = '100%';
+          svg.style.fill = '#3b82f6';
+        }
+      });
     }
   }
 })();
