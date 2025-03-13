@@ -152,15 +152,15 @@
   
   /* Specific button widths - adjusted percentages */
   .game-controls #check-solution {
-    width: 25% !important; /* Narrower */
+    width: 30% !important; /* Wider by 5% */
   }
   
   .game-controls #remove-spare {
-    width: 50% !important; /* Wider */
+    width: 40% !important; /* Narrower by 5% */
   }
   
   .game-controls #reset-path {
-    width: 25% !important; /* Narrower */
+    width: 30% !important; /* Wider by 5% */
   }
   
   .game-controls button svg {
@@ -367,8 +367,29 @@
   
   /* Improve path arrows visibility */
   .path-arrow {
-    width: 14px;
-    height: 14px;
+    width: 18px !important; /* Larger arrows */
+    height: 18px !important;
+  }
+  
+  .path-arrow svg {
+    width: 100% !important;
+    height: 100% !important;
+    stroke-width: 3 !important; /* Fatter arrows */
+    fill: #3b82f6 !important; /* Make sure color is visible */
+  }
+  
+  /* Increase grid cell text size */
+  .grid-cell {
+    font-size: 1.4rem !important; /* 2 sizes larger */
+  }
+  
+  .grid-cell.operator {
+    font-size: 1.6rem !important; /* Make operators even larger */
+  }
+  
+  /* Improve symbol container for numbers 1-6 */
+  .symbol-container {
+    transform: scale(1.3) !important; /* Make SVG symbols larger */
   }
   
   /* Make sure touch interaction is optimized */
