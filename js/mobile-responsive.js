@@ -9,17 +9,14 @@
     // Add orientation warning
     createOrientationWarning();
     
-    // Make record name and leaderboard buttons open modal-style
-    enhanceBottomButtons();
+    // Apply direct button styling
+    applyDirectStylesForMobile();
     
     // Improve touch handling on grid cells
     optimizeTouchInteractions();
     
     // Improve modal sizing
     improveModalSizing();
-    
-    // Improve button layout for mobile
-    improveButtonLayout();
     
     // Enhance message display
     enhanceMessageDisplay();
@@ -68,108 +65,140 @@
     }
   }
   
-  // Enhance bottom buttons to show content as modals
-  function enhanceBottomButtons() {
-    // Wait for elements to be available through leaderboard-integration.js
-    const checkInterval = setInterval(() => {
-      const recordBtn = document.getElementById('record-score-btn');
-      const leaderboardBtn = document.getElementById('leaderboard-btn');
-      const usernameArea = document.getElementById('username-area-container');
-      const leaderboardTable = document.getElementById('leaderboard-table-container');
-      
-      if (recordBtn && leaderboardBtn && usernameArea && leaderboardTable) {
-        clearInterval(checkInterval);
+  // Apply styles directly to mobile elements
+  function applyDirectStylesForMobile() {
+    if (window.innerWidth <= 768) {
+      // Apply styles with a small delay to ensure DOM is ready
+      setTimeout(() => {
+        console.log("Applying direct styles for mobile");
         
-        // For small screens, modify the behavior
-        if (window.innerWidth <= 768) {
-          // Record button behavior
-          const originalRecordClickHandler = recordBtn.onclick;
-          recordBtn.onclick = function(e) {
-            // Call original handler to initialize state
-            if (originalRecordClickHandler) {
-              originalRecordClickHandler.call(this, e);
-            }
-            
-            if (usernameArea.style.display === 'block') {
-              // Add visible class for modal styling
-              usernameArea.classList.add('visible');
-              document.body.style.overflow = 'hidden';
-              
-              // Center the input box and adjust text sizes
-              const usernameInput = document.getElementById('username-input');
-              const usernamePrompt = document.querySelector('.username-prompt');
-              const submitButton = document.getElementById('submit-username');
-              
-              if (usernameInput) {
-                usernameInput.style.textAlign = 'center';
-                usernameInput.style.fontSize = '1.2rem';
-              }
-              
-              if (usernamePrompt) {
-                usernamePrompt.style.fontSize = '1.2rem';
-                usernamePrompt.style.fontWeight = 'bold';
-              }
-              
-              if (submitButton) {
-                submitButton.style.fontSize = '1.2rem';
-              }
-            }
-          };
+        // Set background pattern
+        document.body.style.backgroundColor = "#b0d8b6";
+        document.body.style.backgroundImage = "url(\"data:image/svg+xml,%3Csvg width='32' height='64' viewBox='0 0 32 64' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 28h20V16h-4v8H4V4h28v28h-4V8H8v12h4v-8h12v20H0v-4zm12 8h20v4H16v24H0v-4h12V36zm16 12h-4v12h8v4H20V44h12v12h-4v-8zM0 36h8v20H0v-4h4V40H0v-4z' fill='%238fc096' fill-opacity='0.73' fill-rule='evenodd'/%3E%3C/svg%3E\")";
+        
+        // 1. Find the grid and score elements
+        const gridContainer = document.getElementById('grid-container');
+        const scoreRow = document.querySelector('.score-row');
+        
+        // Apply border styles
+        if (gridContainer) {
+          gridContainer.style.border = "1px solid #666";
+          gridContainer.style.borderTop = "none";
+          gridContainer.style.borderRadius = "0";
+          gridContainer.style.width = "320px";
+        }
+        
+        if (scoreRow) {
+          scoreRow.style.border = "1px solid #666";
+          scoreRow.style.borderBottom = "none";
+          scoreRow.style.borderRadius = "0";
+          scoreRow.style.width = "320px";
+        }
+        
+        // 2. Style the game control buttons
+        const checkButton = document.getElementById('check-solution');
+        const removeButton = document.getElementById('remove-spare');
+        const resetButton = document.getElementById('reset-path');
+        
+        if (checkButton) {
+          checkButton.style.width = "25%";
+          checkButton.style.fontFamily = "'Trebuchet MS', Arial, sans-serif";
+          checkButton.style.fontSize = "0.9rem";
+          checkButton.style.fontWeight = "bold";
+        }
+        
+        if (removeButton) {
+          removeButton.style.width = "50%";
+          removeButton.style.fontFamily = "'Trebuchet MS', Arial, sans-serif";
+          removeButton.style.fontSize = "0.9rem";
+          removeButton.style.fontWeight = "bold";
           
-          // Leaderboard button behavior
-          const originalLeaderboardClickHandler = leaderboardBtn.onclick;
-          leaderboardBtn.onclick = function(e) {
-            // Call original handler to initialize state
-            if (originalLeaderboardClickHandler) {
-              originalLeaderboardClickHandler.call(this, e);
-            }
-            
-            if (leaderboardTable.style.display === 'block') {
-              // Add visible class for modal styling
-              leaderboardTable.classList.add('visible');
-              document.body.style.overflow = 'hidden';
-              
-              // Increase leaderboard text size
-              const leaderboardCells = document.querySelectorAll('.leaderboard-cell');
-              leaderboardCells.forEach(cell => {
-                cell.style.fontSize = '0.9rem';
-              });
-            }
-          };
-          
-          // Return buttons behavior
-          const returnToRecordBtn = document.getElementById('return-to-record-btn');
-          const returnFromLeaderboardBtn = document.getElementById('return-from-leaderboard-btn');
-          
-          if (returnToRecordBtn) {
-            const originalReturnHandler = returnToRecordBtn.onclick;
-            returnToRecordBtn.onclick = function(e) {
-              if (originalReturnHandler) {
-                originalReturnHandler.call(this, e);
-              }
-              usernameArea.classList.remove('visible');
-              usernameArea.style.display = 'none';
-              document.body.style.overflow = '';
-            };
-          }
-          
-          if (returnFromLeaderboardBtn) {
-            const originalReturnHandler = returnFromLeaderboardBtn.onclick;
-            returnFromLeaderboardBtn.onclick = function(e) {
-              if (originalReturnHandler) {
-                originalReturnHandler.call(this, e);
-              }
-              leaderboardTable.classList.remove('visible');
-              leaderboardTable.style.display = 'none';
-              document.body.style.overflow = '';
-            };
+          // Fix missing SVG icon
+          if (!removeButton.querySelector('svg')) {
+            removeButton.innerHTML = `
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+              Remove
+            `;
           }
         }
-      }
-    }, 100);
-    
-    // Stop checking after 10 seconds to prevent memory leaks
-    setTimeout(() => clearInterval(checkInterval), 10000);
+        
+        if (resetButton) {
+          resetButton.style.width = "25%";
+          resetButton.style.fontFamily = "'Trebuchet MS', Arial, sans-serif";
+          resetButton.style.fontSize = "0.9rem";
+          resetButton.style.fontWeight = "bold";
+        }
+        
+        // 3. Style bottom buttons
+        const bottomButtons = document.querySelector('.bottom-buttons');
+        const recordBtn = document.getElementById('record-score-btn');
+        const leaderboardBtn = document.getElementById('leaderboard-btn');
+        
+        if (bottomButtons) {
+          bottomButtons.style.display = "flex";
+          bottomButtons.style.flexDirection = "row";
+          bottomButtons.style.justifyContent = "center";
+          bottomButtons.style.gap = "10px";
+          bottomButtons.style.width = "320px";
+          bottomButtons.style.margin = "10px auto 0";
+        }
+        
+        if (recordBtn) {
+          recordBtn.style.fontFamily = "'Trebuchet MS', Arial, sans-serif";
+          recordBtn.style.fontSize = "1rem"; // Slightly larger
+          recordBtn.style.fontWeight = "bold";
+          recordBtn.style.width = "130px"; // Fixed width
+          recordBtn.style.height = "42px"; 
+        }
+        
+        if (leaderboardBtn) {
+          leaderboardBtn.style.fontFamily = "'Trebuchet MS', Arial, sans-serif";
+          leaderboardBtn.style.fontSize = "1rem"; // Slightly larger
+          leaderboardBtn.style.fontWeight = "bold";
+          leaderboardBtn.style.width = "130px"; // Fixed width
+          leaderboardBtn.style.height = "42px";
+        }
+        
+        // 4. Style score elements
+        const scoreLeft = document.querySelector('.score-left');
+        const scoreRight = document.querySelector('.score-right');
+        
+        if (scoreLeft) {
+          scoreLeft.style.fontFamily = "'Trebuchet MS', Arial, sans-serif";
+          scoreLeft.style.fontWeight = "bold";
+          scoreLeft.style.width = "60%";
+        }
+        
+        if (scoreRight) {
+          scoreRight.style.fontFamily = "'Trebuchet MS', Arial, sans-serif";
+          scoreRight.style.fontWeight = "bold";
+          scoreRight.style.width = "40%";
+          scoreRight.style.textAlign = "right";
+          scoreRight.style.justifyContent = "flex-end";
+        }
+        
+        // 5. Make game messages larger
+        const gameMessages = document.getElementById('game-messages');
+        if (gameMessages) {
+          gameMessages.style.fontSize = "1.4rem";
+          gameMessages.style.width = "320px";
+          gameMessages.style.minHeight = "45px";
+        }
+        
+        // 6. Fix game controls container
+        const gameControls = document.querySelector('.game-controls');
+        if (gameControls) {
+          gameControls.style.display = "flex";
+          gameControls.style.flexDirection = "row";
+          gameControls.style.width = "320px";
+          gameControls.style.margin = "12px auto 0";
+          gameControls.style.gap = "8px";
+        }
+      }, 500); // 500ms delay to ensure DOM is ready
+    }
   }
   
   // Optimize touch interactions for mobile
@@ -197,8 +226,8 @@
               // Ensure content doesn't overflow screen
               const rulesContent = rulesModal.querySelector('.rules-content');
               if (rulesContent) {
-                rulesContent.style.maxHeight = '80vh';
-                rulesContent.style.overflowY = 'auto';
+                rulesContent.style.maxHeight = "80vh";
+                rulesContent.style.overflowY = "auto";
               }
             }
           }
@@ -207,116 +236,6 @@
       
       observer.observe(rulesContainer, { childList: true });
     }
-  }
-  
-  // Improve button layout for mobile
-  function improveButtonLayout() {
-    // Wait for game controls to be available
-    const checkInterval = setInterval(() => {
-      const gameControls = document.querySelector('.game-controls');
-      const bottomButtons = document.querySelector('.bottom-buttons');
-      
-      if (gameControls && bottomButtons) {
-        clearInterval(checkInterval);
-        
-        if (window.innerWidth <= 768) {
-          // Adjust game control buttons
-          const gameButtons = gameControls.querySelectorAll('button');
-          
-          // Apply size directly
-          const checkButton = document.getElementById('check-solution');
-          const removeButton = document.getElementById('remove-spare');
-          const resetButton = document.getElementById('reset-path');
-          
-          if (checkButton) {
-            checkButton.style.width = "30%";
-            checkButton.style.fontFamily = "'Trebuchet MS', Arial, sans-serif";
-            checkButton.style.fontSize = "0.9rem";
-            checkButton.style.fontWeight = "bold";
-          }
-          
-          if (removeButton) {
-            removeButton.style.width = "40%";
-            removeButton.style.fontFamily = "'Trebuchet MS', Arial, sans-serif";
-            removeButton.style.fontSize = "0.9rem";
-            removeButton.style.fontWeight = "bold";
-            
-            // Ensure the cross SVG is present
-            if (!removeButton.querySelector('svg')) {
-              removeButton.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-                Remove
-              `;
-            }
-          }
-          
-          if (resetButton) {
-            resetButton.style.width = "30%";
-            resetButton.style.fontFamily = "'Trebuchet MS', Arial, sans-serif";
-            resetButton.style.fontSize = "0.9rem";
-            resetButton.style.fontWeight = "bold";
-          }
-          
-          // Adjust bottom buttons to match game control buttons
-          const recordBtn = document.getElementById('record-score-btn');
-          const leaderboardBtn = document.getElementById('leaderboard-btn');
-          
-          if (recordBtn && leaderboardBtn) {
-            // Apply font styles to match game control buttons
-            recordBtn.style.fontFamily = "'Trebuchet MS', Arial, sans-serif";
-            recordBtn.style.fontSize = "0.9rem";
-            recordBtn.style.fontWeight = "bold";
-            recordBtn.style.width = "auto";
-            recordBtn.style.maxWidth = "140px";
-            
-            leaderboardBtn.style.fontFamily = "'Trebuchet MS', Arial, sans-serif";
-            leaderboardBtn.style.fontSize = "0.9rem";
-            leaderboardBtn.style.fontWeight = "bold";
-            leaderboardBtn.style.width = "auto";
-            leaderboardBtn.style.maxWidth = "140px";
-            
-            // Make sure parent container has correct styles for side-by-side layout
-            bottomButtons.style.display = "flex";
-            bottomButtons.style.flexDirection = "row";
-            bottomButtons.style.justifyContent = "center";
-            bottomButtons.style.gap = "8px";
-            bottomButtons.style.width = "var(--container-width)";
-            bottomButtons.style.marginLeft = "auto";
-            bottomButtons.style.marginRight = "auto";
-          }
-          
-          // Adjust score bar fonts and layout
-          const scoreLeft = document.querySelector('.score-left');
-          const scoreRight = document.querySelector('.score-right');
-          
-          if (scoreLeft) {
-            scoreLeft.style.fontFamily = "'Trebuchet MS', Arial, sans-serif";
-            scoreLeft.style.fontWeight = "bold";
-            scoreLeft.style.width = "60%";
-          }
-          
-          if (scoreRight) {
-            scoreRight.style.fontFamily = "'Trebuchet MS', Arial, sans-serif";
-            scoreRight.style.fontWeight = "bold";
-            scoreRight.style.width = "40%";
-            scoreRight.style.textAlign = "right";
-            scoreRight.style.justifyContent = "flex-end";
-          }
-          
-          // Increase game messages font size
-          const gameMessages = document.getElementById('game-messages');
-          if (gameMessages) {
-            gameMessages.style.fontSize = "1.3rem";
-          }
-        }
-      }
-    }, 100);
-    
-    // Stop checking after 5 seconds
-    setTimeout(() => clearInterval(checkInterval), 5000);
   }
   
   // Enhance message display for mobile
@@ -337,13 +256,15 @@
             const messageElement = document.getElementById('game-messages');
             if (messageElement) {
               // Ensure message fits and is properly centered
-              messageElement.style.display = 'flex';
-              messageElement.style.alignItems = 'center';
-              messageElement.style.justifyContent = 'center';
+              messageElement.style.display = "flex";
+              messageElement.style.alignItems = "center";
+              messageElement.style.justifyContent = "center";
+              messageElement.style.fontSize = "1.4rem";
+              messageElement.style.width = "320px";
               
               // Force text to wrap properly
               if (text.length > 30) {
-                messageElement.style.whiteSpace = 'normal';
+                messageElement.style.whiteSpace = "normal";
               }
             }
           };
