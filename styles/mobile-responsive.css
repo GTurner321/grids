@@ -3,12 +3,13 @@
 /* First, detect mobile devices more reliably */
 @media (max-width: 768px) {
   :root {
-    --mobile-grid-cell-size: calc((100vw - 22px) / 10);
+    /* Adjusted calculation for exact fit - removed extra padding */
+    --mobile-grid-cell-size: calc((100vw - 2px) / 10);
     --app-height: 100%;
   }
   
   body {
-    padding: 10px;
+    padding: 0;
     margin: 0;
     min-height: 100vh;
     /* Use viewport units for consistent sizing */
@@ -20,11 +21,14 @@
   
   /* Main container - limit margins to save space */
   .game-container {
-    padding: 5px;
-    margin: 0;
+    padding: 0;
+    margin: 0 auto;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
   
   /* Title - compact for mobile */
@@ -62,10 +66,16 @@
   /* Grid container - fill width exactly */
   #grid-container {
     grid-template-columns: repeat(10, var(--mobile-grid-cell-size));
-    width: 100%;
+    width: calc(10 * var(--mobile-grid-cell-size) + 9 * 1px + 2px);
     max-width: 100%;
     margin: 0 auto;
     box-sizing: border-box;
+    /* Ensure grid fills width exactly with no extra margin */
+    justify-content: center;
+    gap: 1px;
+    background-color: #94a3b8;
+    padding: 1px;
+    display: grid;
   }
   
   /* Grid cells - dynamic sizing */
@@ -73,6 +83,8 @@
     width: var(--mobile-grid-cell-size);
     height: var(--mobile-grid-cell-size);
     touch-action: none;
+    margin: 0;
+    box-sizing: border-box;
   }
   
   /* Control buttons - ensure single row with smaller text */
@@ -105,15 +117,22 @@
     width: calc(10 * var(--mobile-grid-cell-size) + 9 * 1px + 2px);
     margin: 8px auto;
     padding: 6px 0;
-    font-size: 0.8rem;
-    min-height: 20px;
+    font-size: 1rem; /* Increased from 0.8rem */
+    min-height: 40px; /* Increased to accommodate two lines */
     text-align: center;
+    line-height: 1.3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    word-wrap: break-word; /* Allow words to break */
+    overflow-wrap: break-word;
+    white-space: normal; /* Allow text to wrap */
   }
   
   /* Leaderboard buttons - single row */
   .bottom-buttons {
     flex-direction: row;
-    margin-top: 8px;
+    margin-top: 20px; /* Increased from 8px to move buttons down */
     gap: 5px;
     width: calc(10 * var(--mobile-grid-cell-size) + 9 * 1px + 2px);
     margin-left: auto;
