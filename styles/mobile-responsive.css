@@ -1,0 +1,293 @@
+/* Mobile-Responsive CSS for Path Puzzle Game */
+
+/* First, detect mobile devices more reliably */
+@media (max-width: 768px) {
+  :root {
+    --mobile-grid-cell-size: calc((100vw - 22px) / 10);
+    --app-height: 100%;
+  }
+  
+  body {
+    padding: 10px;
+    margin: 0;
+    min-height: 100vh;
+    /* Use viewport units for consistent sizing */
+    height: var(--app-height);
+    width: 100vw;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+  
+  /* Main container - limit margins to save space */
+  .game-container {
+    padding: 5px;
+    margin: 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  
+  /* Title - compact for mobile */
+  .game-header h1 {
+    font-size: 2rem;
+    margin: 0 0 0.2rem 0;
+  }
+  
+  /* Level buttons - more compact row */
+  .level-selector-container {
+    margin-bottom: 8px;
+  }
+  
+  .level-selector-title {
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+  }
+  
+  .level-buttons {
+    gap: 3px;
+  }
+  
+  .level-btn {
+    min-width: 32px;
+    padding: 6px 8px;
+  }
+  
+  /* Score row - match grid width exactly */
+  .score-row {
+    width: calc(10 * var(--mobile-grid-cell-size) + 9 * 1px + 2px);
+    height: 40px;
+    margin: 0 auto;
+  }
+  
+  /* Grid container - fill width exactly */
+  #grid-container {
+    grid-template-columns: repeat(10, var(--mobile-grid-cell-size));
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    box-sizing: border-box;
+  }
+  
+  /* Grid cells - dynamic sizing */
+  .grid-cell {
+    width: var(--mobile-grid-cell-size);
+    height: var(--mobile-grid-cell-size);
+    touch-action: none;
+  }
+  
+  /* Control buttons - ensure single row with smaller text */
+  .game-controls {
+    flex-direction: row;
+    justify-content: space-between;
+    width: calc(10 * var(--mobile-grid-cell-size) + 9 * 1px + 2px);
+    margin: 8px auto 0;
+  }
+  
+  .game-controls button {
+    padding: 8px 6px;
+    font-size: 0.7rem;
+    flex-grow: 1;
+    margin: 0 2px;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .game-controls button svg {
+    width: 12px;
+    height: 12px;
+    margin-right: 3px;
+  }
+  
+  /* Game messages - ensure visibility */
+  #game-messages {
+    width: calc(10 * var(--mobile-grid-cell-size) + 9 * 1px + 2px);
+    margin: 8px auto;
+    padding: 6px 0;
+    font-size: 0.8rem;
+    min-height: 20px;
+    text-align: center;
+  }
+  
+  /* Leaderboard buttons - single row */
+  .bottom-buttons {
+    flex-direction: row;
+    margin-top: 8px;
+    gap: 5px;
+    width: calc(10 * var(--mobile-grid-cell-size) + 9 * 1px + 2px);
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .bottom-btn {
+    padding: 8px 10px;
+    font-size: 0.7rem;
+  }
+  
+  /* Rules modal - don't fill entire screen */
+  .rules-modal {
+    padding: 10px;
+  }
+  
+  .rules-content {
+    width: 90%;
+    max-width: 90%;
+    padding: 1rem;
+  }
+  
+  .rules-title {
+    font-size: 1.5rem;
+  }
+  
+  .rules-subtitle {
+    font-size: 1.2rem;
+  }
+  
+  .rules-section {
+    font-size: 0.75rem;
+  }
+  
+  /* Make the leaderboard and username submission appear as modal popups */
+  #username-area-container,
+  #leaderboard-table-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  
+  .username-area,
+  .leaderboard-table {
+    width: 90%;
+    max-width: 90%;
+    margin: 0 auto;
+  }
+  
+  #return-to-record-btn,
+  #return-from-leaderboard-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Ensure leaderboard rows fit */
+  .leaderboard-row {
+    grid-template-columns: 30px minmax(70px, 1fr) 60px 70px;
+    column-gap: 5px;
+    padding: 4px;
+  }
+  
+  .leaderboard-cell {
+    font-size: 0.75rem;
+  }
+  
+  /* Improve path arrows visibility */
+  .path-arrow {
+    width: 14px;
+    height: 14px;
+  }
+  
+  /* Make sure touch interaction is optimized */
+  .touch-device button {
+    min-height: 36px;
+  }
+  
+  /* Orientation warning */
+  .orientation-warning {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 2000;
+    color: white;
+    text-align: center;
+    font-size: 1.2rem;
+    padding: 20px;
+    box-sizing: border-box;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  
+  .orientation-warning svg {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 20px;
+    animation: rotate 2s ease-in-out infinite;
+  }
+  
+  @keyframes rotate {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(90deg); }
+    50% { transform: rotate(90deg); }
+    75% { transform: rotate(0deg); }
+    100% { transform: rotate(0deg); }
+  }
+  
+  @media (orientation: landscape) {
+    .orientation-warning {
+      display: flex;
+    }
+  }
+}
+
+/* Small phone optimization */
+@media (max-width: 360px) {
+  .game-controls button {
+    font-size: 0.65rem;
+    padding: 6px 4px;
+  }
+  
+  .game-controls button svg {
+    width: 10px;
+    height: 10px;
+  }
+  
+  .level-btn {
+    min-width: 28px;
+    padding: 5px 6px;
+  }
+}
+
+/* iOS-specific fixes for notch phones */
+@supports (-webkit-touch-callout: none) {
+  body {
+    /* Avoid overscroll effects */
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+  
+  .game-container {
+    /* Avoid bottom bar issues */
+    padding-bottom: env(safe-area-inset-bottom, 10px);
+    /* Avoid notch issues */
+    padding-top: env(safe-area-inset-top, 10px);
+    /* Scroll container instead of body */
+    height: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
