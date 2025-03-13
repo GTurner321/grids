@@ -81,12 +81,12 @@
   /* Title - larger for mobile */
   .game-header h1 {
     font-size: 2.5rem; /* Increased from 2rem */
-    margin: 15px 0 0.8rem 0; /* Increased top margin for more space from URL bar */
+    margin: 10px 0 0.5rem 0; /* Reduced top and bottom margins */
   }
   
   /* Level buttons - more compact row */
   .level-selector-container {
-    margin-bottom: 15px; /* Increased from 8px to create more space before grid */
+    margin-bottom: 10px; /* Reduced from 15px to save space */
   }
   
   .level-selector-title {
@@ -165,10 +165,10 @@
   /* Game messages - ensure visibility */
   #game-messages {
     width: calc(10 * var(--mobile-grid-cell-size) + 9 * 1px);
-    margin: 10px auto;
-    padding: 8px 0;
+    margin: 8px auto 6px; /* Reduced bottom margin from 10px to 6px */
+    padding: 6px 0; /* Reduced from 8px 0 */
     font-size: 1.2rem; /* Increased from 1rem - two sizes larger */
-    min-height: 45px; /* Increased from 40px */
+    min-height: 42px; /* Slightly reduced from 45px */
     text-align: center;
     line-height: 1.3;
     display: flex;
@@ -184,7 +184,7 @@
   /* Leaderboard buttons - single row */
   .bottom-buttons {
     flex-direction: row;
-    margin-top: 20px; /* Increased from 8px to move buttons down */
+    margin-top: 12px; /* Reduced from 20px to save space */
     gap: 8px; /* Increased from 5px */
     width: calc(10 * var(--mobile-grid-cell-size) + 9 * 1px);
     margin-left: auto;
