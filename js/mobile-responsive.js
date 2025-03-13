@@ -60,32 +60,49 @@
   
   // Fix modal container sizing to ensure they cover the entire screen
   function fixModalContainers() {
-    // Look for modal containers
-    const modalContainers = [
-      document.getElementById('username-area-container'),
-      document.getElementById('leaderboard-table-container')
-    ];
+    // Function to create and apply a full-screen overlay
+    function createOverlay(container) {
+      if (!container) return;
+      
+      // Force container to be completely full screen with !important rules
+      const styles = {
+        position: 'fixed',
+        top: '0',
+        left: '0',
+        right: '0',
+        bottom: '0',
+        width: '100vw',
+        height: '100vh',
+        margin: '0',
+        padding: '0',
+        zIndex: '9999',
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden'
+      };
+      
+      // Apply styles forcing important to override any other styles
+      Object.keys(styles).forEach(key => {
+        container.style.setProperty(key, styles[key], 'important');
+      });
+      
+      // Special fixes for iOS
+      container.style.setProperty('-webkit-transform', 'translateZ(0)', 'important');
+      container.style.setProperty('transform', 'translateZ(0)', 'important');
+      container.style.setProperty('-webkit-backface-visibility', 'hidden', 'important');
+      container.style.setProperty('backface-visibility', 'hidden', 'important');
+      container.style.setProperty('-webkit-overflow-scrolling', 'touch', 'important');
+      
+      // Add a completely transparent border to force redraw in some browsers
+      container.style.setProperty('border', '1px solid rgba(0,0,0,0)', 'important');
+    }
     
-    modalContainers.forEach(container => {
-      if (container) {
-        // Set explicit dimensions using viewport units
-        container.style.width = '100%';
-        container.style.height = '100%';
-        container.style.top = '0';
-        container.style.left = '0';
-        container.style.right = '0';
-        container.style.bottom = '0';
-        container.style.margin = '0';
-        container.style.padding = '0';
-        container.style.position = 'fixed';
-        container.style.zIndex = '2000';
-        container.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-        
-        // Add CSS transform to force GPU acceleration for better rendering
-        container.style.transform = 'translateZ(0)';
-        container.style.webkitTransform = 'translateZ(0)';
-      }
-    });
+    // Apply to both modal containers
+    createOverlay(document.getElementById('username-area-container'));
+    createOverlay(document.getElementById('leaderboard-table-container'));
   }
   
   // Create warning for landscape orientation
@@ -101,6 +118,39 @@
         <div>Please rotate your device to portrait mode for the best experience</div>
       `;
       document.body.appendChild(warningDiv);
+      
+      // Add special style for modals in the document head
+      const styleTag = document.createElement('style');
+      styleTag.innerHTML = `
+        @media (max-width: 768px) {
+          body.has-modal {
+            overflow: hidden !important;
+            position: fixed !important;
+            width: 100% !important;
+            height: 100% !important;
+          }
+          
+          /* Enforce modal full coverage */
+          .modal-active {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            z-index: 9999 !important;
+            background-color: rgba(0, 0, 0, 0.8) !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            overflow: hidden !important;
+          }
+        }
+      `;
+      document.head.appendChild(styleTag);
     }
   }
   
@@ -124,74 +174,87 @@
           // Record button behavior
           const originalRecordClickHandler = recordBtn.onclick;
           recordBtn.onclick = function(e) {
+            // First enforce full screen overlay
+            fixModalContainers();
+            
             // Call original handler to initialize state
             if (originalRecordClickHandler) {
               originalRecordClickHandler.call(this, e);
             }
             
-            if (usernameArea.style.display === 'block') {
-              // Apply modal styles
+            // Apply modal styles again after the original handler has run
+            setTimeout(() => {
               fixModalContainers();
-              document.body.style.overflow = 'hidden';
               
-              // Center the input box and adjust text sizes
-              const usernameInput = document.getElementById('username-input');
-              const usernamePrompt = document.querySelector('.username-prompt');
-              const submitButton = document.getElementById('submit-username');
-              const inputWrapper = document.querySelector('.input-wrapper');
-              
-              if (usernameInput) {
-                usernameInput.style.textAlign = 'center';
-                usernameInput.style.fontSize = '1.2rem';
-                usernameInput.style.width = '100%';
-                usernameInput.style.maxWidth = '100%';
+              if (usernameArea.style.display === 'block') {
+                document.body.style.overflow = 'hidden';
+                
+                // Center the input box and adjust text sizes
+                const usernameInput = document.getElementById('username-input');
+                const usernamePrompt = document.querySelector('.username-prompt');
+                const submitButton = document.getElementById('submit-username');
+                const inputWrapper = document.querySelector('.input-wrapper');
+                
+                if (usernameInput) {
+                  usernameInput.style.textAlign = 'center';
+                  usernameInput.style.fontSize = '1.2rem';
+                  usernameInput.style.width = '100%';
+                  usernameInput.style.maxWidth = '100%';
+                }
+                
+                if (usernamePrompt) {
+                  usernamePrompt.style.fontSize = '1.2rem';
+                  usernamePrompt.style.fontWeight = 'bold';
+                  usernamePrompt.style.textAlign = 'center';
+                }
+                
+                if (submitButton) {
+                  submitButton.style.fontSize = '1.2rem';
+                  submitButton.style.width = '100%';
+                  submitButton.style.textAlign = 'center';
+                }
+                
+                if (inputWrapper) {
+                  inputWrapper.style.display = 'flex';
+                  inputWrapper.style.flexDirection = 'column';
+                  inputWrapper.style.alignItems = 'center';
+                  inputWrapper.style.width = '90%';
+                  inputWrapper.style.margin = '0 auto';
+                }
               }
-              
-              if (usernamePrompt) {
-                usernamePrompt.style.fontSize = '1.2rem';
-                usernamePrompt.style.fontWeight = 'bold';
-                usernamePrompt.style.textAlign = 'center';
-              }
-              
-              if (submitButton) {
-                submitButton.style.fontSize = '1.2rem';
-                submitButton.style.width = '100%';
-                submitButton.style.textAlign = 'center';
-              }
-              
-              if (inputWrapper) {
-                inputWrapper.style.display = 'flex';
-                inputWrapper.style.flexDirection = 'column';
-                inputWrapper.style.alignItems = 'center';
-                inputWrapper.style.width = '90%';
-                inputWrapper.style.margin = '0 auto';
-              }
-            }
+            }, 0);
           };
           
           // Leaderboard button behavior
           const originalLeaderboardClickHandler = leaderboardBtn.onclick;
           leaderboardBtn.onclick = function(e) {
+            // First enforce full screen overlay
+            fixModalContainers();
+            
             // Call original handler to initialize state
             if (originalLeaderboardClickHandler) {
               originalLeaderboardClickHandler.call(this, e);
             }
             
-            if (leaderboardTable.style.display === 'block') {
-              leaderboardTable.classList.add('modal-style');
-              document.body.style.overflow = 'hidden';
+            // Apply modal styles again after the original handler has run
+            setTimeout(() => {
+              fixModalContainers();
               
-              // Increase leaderboard text size
-              const leaderboardCells = document.querySelectorAll('.leaderboard-cell');
-              leaderboardCells.forEach(cell => {
-                cell.style.fontSize = '0.9rem';
-              });
-              
-              // Ensure proper modal positioning
-              leaderboardTable.style.display = 'flex';
-              leaderboardTable.style.alignItems = 'center';
-              leaderboardTable.style.justifyContent = 'center';
-            }
+              if (leaderboardTable.style.display === 'block') {
+                document.body.style.overflow = 'hidden';
+                
+                // Increase leaderboard text size
+                const leaderboardCells = document.querySelectorAll('.leaderboard-cell');
+                leaderboardCells.forEach(cell => {
+                  cell.style.fontSize = '0.9rem';
+                });
+                
+                // Ensure proper modal positioning
+                leaderboardTable.style.display = 'flex';
+                leaderboardTable.style.alignItems = 'center';
+                leaderboardTable.style.justifyContent = 'center';
+              }
+            }, 0);
           };
           
           // Return buttons behavior
