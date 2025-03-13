@@ -117,22 +117,26 @@
   /* Control buttons - ensure single row with appropriately sized text */
   .game-controls {
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: center; /* Center the buttons */
     width: var(--container-width);
     margin: 12px auto 0;
+    gap: 8px; /* Add gap between buttons */
   }
   
   .game-controls button {
-    padding: 10px 8px;
-    font-size: var(--button-font-size); /* Use consistent size */
-    flex-grow: 1;
-    margin: 0 3px;
+    padding: 8px 6px;
+    font-size: 0.9rem; /* Reduced from 1rem */
+    font-family: 'Trebuchet MS', Arial, sans-serif;
+    font-weight: bold;
+    flex: 1;
+    margin: 0;
     white-space: nowrap;
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 44px;
-    font-weight: bold;
+    height: 40px; /* Reduced slightly */
+    max-width: 110px; /* Limit max width */
+    border-radius: 5px;
   }
   
   .game-controls button svg {
@@ -173,12 +177,18 @@
   
   /* Bottom buttons styling */
   .bottom-btn {
-    padding: 10px 12px;
-    font-size: var(--button-font-size); /* Use consistent size */
-    height: 44px;
+    padding: 8px 6px;
+    font-size: 0.9rem; /* Match game control buttons */
+    font-family: 'Trebuchet MS', Arial, sans-serif;
     font-weight: bold;
-    width: calc(50% - 4px); /* Set width to 50% minus gap */
-    max-width: 150px; /* Limit maximum width */
+    height: 40px; /* Match game control buttons */
+    width: auto; /* Let content determine width */
+    min-width: 120px; /* Minimum width */
+    max-width: 140px; /* Maximum width */
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
   /* Make the leaderboard and username submission appear as modal popups */
