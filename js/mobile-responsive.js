@@ -39,9 +39,6 @@
     window.addEventListener('resize', () => {
       const newHeight = window.innerHeight;
       document.documentElement.style.setProperty('--app-height', `${newHeight}px`);
-      
-      // Also fix modal containers when the window is resized
-      fixModalContainers();
     });
     
     // Add touch-device class for better control
@@ -53,56 +50,6 @@
         document.body.classList.add('ios-device');
       }
     }
-    
-    // Initial fix for modals
-    fixModalContainers();
-  }
-  
-  // Fix modal container sizing to ensure they cover the entire screen
-  function fixModalContainers() {
-    // Function to create and apply a full-screen overlay
-    function createOverlay(container) {
-      if (!container) return;
-      
-      // Force container to be completely full screen with !important rules
-      const styles = {
-        position: 'fixed',
-        top: '0',
-        left: '0',
-        right: '0',
-        bottom: '0',
-        width: '100vw',
-        height: '100vh',
-        margin: '0',
-        padding: '0',
-        zIndex: '9999',
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        overflow: 'hidden'
-      };
-      
-      // Apply styles forcing important to override any other styles
-      Object.keys(styles).forEach(key => {
-        container.style.setProperty(key, styles[key], 'important');
-      });
-      
-      // Special fixes for iOS
-      container.style.setProperty('-webkit-transform', 'translateZ(0)', 'important');
-      container.style.setProperty('transform', 'translateZ(0)', 'important');
-      container.style.setProperty('-webkit-backface-visibility', 'hidden', 'important');
-      container.style.setProperty('backface-visibility', 'hidden', 'important');
-      container.style.setProperty('-webkit-overflow-scrolling', 'touch', 'important');
-      
-      // Add a completely transparent border to force redraw in some browsers
-      container.style.setProperty('border', '1px solid rgba(0,0,0,0)', 'important');
-    }
-    
-    // Apply to both modal containers
-    createOverlay(document.getElementById('username-area-container'));
-    createOverlay(document.getElementById('leaderboard-table-container'));
   }
   
   // Create warning for landscape orientation
@@ -118,39 +65,6 @@
         <div>Please rotate your device to portrait mode for the best experience</div>
       `;
       document.body.appendChild(warningDiv);
-      
-      // Add special style for modals in the document head
-      const styleTag = document.createElement('style');
-      styleTag.innerHTML = `
-        @media (max-width: 768px) {
-          body.has-modal {
-            overflow: hidden !important;
-            position: fixed !important;
-            width: 100% !important;
-            height: 100% !important;
-          }
-          
-          /* Enforce modal full coverage */
-          .modal-active {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            bottom: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            z-index: 9999 !important;
-            background-color: rgba(0, 0, 0, 0.8) !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            overflow: hidden !important;
-          }
-        }
-      `;
-      document.head.appendChild(styleTag);
     }
   }
   
@@ -168,93 +82,59 @@
         
         // For small screens, modify the behavior
         if (window.innerWidth <= 768) {
-          // Call the fix function to ensure modal containers cover the entire screen
-          fixModalContainers();
-          
           // Record button behavior
           const originalRecordClickHandler = recordBtn.onclick;
           recordBtn.onclick = function(e) {
-            // First enforce full screen overlay
-            fixModalContainers();
-            
             // Call original handler to initialize state
             if (originalRecordClickHandler) {
               originalRecordClickHandler.call(this, e);
             }
             
-            // Apply modal styles again after the original handler has run
-            setTimeout(() => {
-              fixModalContainers();
+            if (usernameArea.style.display === 'block') {
+              // Add visible class for modal styling
+              usernameArea.classList.add('visible');
+              document.body.style.overflow = 'hidden';
               
-              if (usernameArea.style.display === 'block') {
-                document.body.style.overflow = 'hidden';
-                
-                // Center the input box and adjust text sizes
-                const usernameInput = document.getElementById('username-input');
-                const usernamePrompt = document.querySelector('.username-prompt');
-                const submitButton = document.getElementById('submit-username');
-                const inputWrapper = document.querySelector('.input-wrapper');
-                
-                if (usernameInput) {
-                  usernameInput.style.textAlign = 'center';
-                  usernameInput.style.fontSize = '1.2rem';
-                  usernameInput.style.width = '100%';
-                  usernameInput.style.maxWidth = '100%';
-                }
-                
-                if (usernamePrompt) {
-                  usernamePrompt.style.fontSize = '1.2rem';
-                  usernamePrompt.style.fontWeight = 'bold';
-                  usernamePrompt.style.textAlign = 'center';
-                }
-                
-                if (submitButton) {
-                  submitButton.style.fontSize = '1.2rem';
-                  submitButton.style.width = '100%';
-                  submitButton.style.textAlign = 'center';
-                }
-                
-                if (inputWrapper) {
-                  inputWrapper.style.display = 'flex';
-                  inputWrapper.style.flexDirection = 'column';
-                  inputWrapper.style.alignItems = 'center';
-                  inputWrapper.style.width = '90%';
-                  inputWrapper.style.margin = '0 auto';
-                }
+              // Center the input box and adjust text sizes
+              const usernameInput = document.getElementById('username-input');
+              const usernamePrompt = document.querySelector('.username-prompt');
+              const submitButton = document.getElementById('submit-username');
+              
+              if (usernameInput) {
+                usernameInput.style.textAlign = 'center';
+                usernameInput.style.fontSize = '1.2rem';
               }
-            }, 0);
+              
+              if (usernamePrompt) {
+                usernamePrompt.style.fontSize = '1.2rem';
+                usernamePrompt.style.fontWeight = 'bold';
+              }
+              
+              if (submitButton) {
+                submitButton.style.fontSize = '1.2rem';
+              }
+            }
           };
           
           // Leaderboard button behavior
           const originalLeaderboardClickHandler = leaderboardBtn.onclick;
           leaderboardBtn.onclick = function(e) {
-            // First enforce full screen overlay
-            fixModalContainers();
-            
             // Call original handler to initialize state
             if (originalLeaderboardClickHandler) {
               originalLeaderboardClickHandler.call(this, e);
             }
             
-            // Apply modal styles again after the original handler has run
-            setTimeout(() => {
-              fixModalContainers();
+            if (leaderboardTable.style.display === 'block') {
+              // Add visible class for modal styling
+              leaderboardTable.classList.add('visible');
+              document.body.style.overflow = 'hidden';
               
-              if (leaderboardTable.style.display === 'block') {
-                document.body.style.overflow = 'hidden';
-                
-                // Increase leaderboard text size
-                const leaderboardCells = document.querySelectorAll('.leaderboard-cell');
-                leaderboardCells.forEach(cell => {
-                  cell.style.fontSize = '0.9rem';
-                });
-                
-                // Ensure proper modal positioning
-                leaderboardTable.style.display = 'flex';
-                leaderboardTable.style.alignItems = 'center';
-                leaderboardTable.style.justifyContent = 'center';
-              }
-            }, 0);
+              // Increase leaderboard text size
+              const leaderboardCells = document.querySelectorAll('.leaderboard-cell');
+              leaderboardCells.forEach(cell => {
+                cell.style.fontSize = '0.9rem';
+              });
+            }
           };
           
           // Return buttons behavior
@@ -267,6 +147,8 @@
               if (originalReturnHandler) {
                 originalReturnHandler.call(this, e);
               }
+              usernameArea.classList.remove('visible');
+              usernameArea.style.display = 'none';
               document.body.style.overflow = '';
             };
           }
@@ -277,6 +159,8 @@
               if (originalReturnHandler) {
                 originalReturnHandler.call(this, e);
               }
+              leaderboardTable.classList.remove('visible');
+              leaderboardTable.style.display = 'none';
               document.body.style.overflow = '';
             };
           }
@@ -365,17 +249,6 @@
     setTimeout(() => clearInterval(checkInterval), 5000);
   }
   
-  // Add mobile styles dynamically if needed
-  function addMobileStylesIfNeeded() {
-    // Only add the viewport meta if not present
-    if (!document.querySelector('meta[name="viewport"]')) {
-      const metaTag = document.createElement('meta');
-      metaTag.name = 'viewport';
-      metaTag.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
-      document.head.appendChild(metaTag);
-    }
-  }
-  
   // Enhance message display for mobile
   function enhanceMessageDisplay() {
     // Wait for game controller to initialize
@@ -410,5 +283,16 @@
     
     // Stop checking after 5 seconds
     setTimeout(() => clearInterval(checkInterval), 5000);
+  }
+  
+  // Add mobile styles dynamically if needed
+  function addMobileStylesIfNeeded() {
+    // Only add the viewport meta if not present
+    if (!document.querySelector('meta[name="viewport"]')) {
+      const metaTag = document.createElement('meta');
+      metaTag.name = 'viewport';
+      metaTag.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+      document.head.appendChild(metaTag);
+    }
   }
 })();
