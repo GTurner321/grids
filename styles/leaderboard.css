@@ -467,3 +467,81 @@
     -webkit-overflow-scrolling: touch;
     overflow-y: scroll;
 }
+
+/* Add these styles to your existing leaderboard.css file */
+
+/* Welcome message styling */
+.welcome-message {
+    padding: 15px;
+    background-color: #ede9fe;
+    border: 2px solid #16a34a;
+    border-radius: 6px;
+    text-align: center;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    color: #166534;
+    line-height: 1.4;
+    margin: 10px auto;
+    max-width: 400px;
+    width: 100%;
+}
+
+.welcome-message strong {
+    font-weight: bold;
+    color: #1e40af;
+}
+
+/* Return buttons styling */
+#return-to-record-btn,
+#return-from-leaderboard-btn {
+    background: none;
+    border: none;
+    color: #3b82f6;
+    font-size: 24px;
+    cursor: pointer;
+    margin: 10px auto;
+    display: block;
+    text-align: center;
+    transition: color 0.2s ease;
+    padding: 5px;
+    width: 40px;
+    height: 40px;
+}
+
+#return-to-record-btn:hover,
+#return-from-leaderboard-btn:hover {
+    color: #1e40af;
+}
+
+/* Level selector title transition */
+.level-selector-title {
+    transition: opacity 0.5s ease-out;
+}
+
+/* Username in score area */
+#score-bonus {
+    transition: color 0.3s ease;
+}
+
+/* Highlight animation for bottom buttons */
+.bottom-btn.highlight {
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { background-color: #3b82f6; }
+    50% { background-color: #1d4ed8; }
+}
+
+/* Mobile optimizations */
+@media (max-width: 480px) {
+    .welcome-message {
+        font-size: 0.8rem;
+        padding: 10px;
+    }
+    
+    #return-to-record-btn,
+    #return-from-leaderboard-btn {
+        font-size: 20px;
+    }
+}
