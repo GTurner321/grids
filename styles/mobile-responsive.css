@@ -249,14 +249,24 @@
   }
 
   /* Bottom buttons container with responsive width - ADDITIONAL FIX #5: Initially hidden */
-  .bottom-buttons {
-    display: none !important; /* ADDITIONAL FIX #5: Initially hidden */
+.bottom-buttons {
+    display: flex !important; /* Changed from 'none' to 'flex' */
     flex-direction: row !important;
     justify-content: center !important;
     gap: 10px !important;
     width: var(--container-width) !important;
     margin: 10px auto !important;
-  }
+}
+
+/* Hide bottom buttons when game is not active */
+.game-container:not(.game-active) .bottom-buttons {
+    display: none !important;
+}
+
+/* Ensure grid container is visible */
+#grid-container {
+    display: grid !important;
+}
   
   /* ADDITIONAL FIX #5: Show bottom buttons when game is active */
   .game-active .bottom-buttons {
