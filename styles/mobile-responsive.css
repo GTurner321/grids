@@ -453,14 +453,14 @@
     width: 18px !important;
     height: 18px !important;
   }
-  
-  .path-arrow svg {
+
+.path-arrow svg {
     width: 100% !important;
     height: 100% !important;
     stroke-width: 3 !important;
-    fill: var(--crimson-red) !important; /* Match game button color */
-    stroke: white !important; /* White outline */
-  }
+    fill: #374ee3 !important; 
+    stroke: #374ee3 !important; 
+}
   
   /* Symbol container for grid cells */
   .symbol-container {
@@ -538,6 +538,7 @@
   
   .rules-title {
     font-size: 2.2rem !important; /* Larger title */
+    margin-top: 1rem
     margin-bottom: 1rem;
     text-align: center;
   }
@@ -739,10 +740,6 @@
   /* Adjust rules spacing */
   .rules-content {
     padding-top: 10px !important; /* Reduced top padding */
-  }
-
-  .rules-title {
-    margin-top: 0 !important; /* Minimize top margin */
   }
 
   /* Enhanced start button */
