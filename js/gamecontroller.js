@@ -86,45 +86,45 @@ class GameController {
     }
     
     async startLevel(level) {
-        // Reset state
-        this.state.currentLevel = level;
-        this.state.userPath = [];
-        this.state.gridEntries = new Array(100).fill(null);
-        this.state.removedCells.clear();
-        this.state.gameActive = true;
+    // Reset state
+    this.state.currentLevel = level;
+    this.state.userPath = [];
+    this.state.gridEntries = new Array(100).fill(null);
+    this.state.removedCells.clear();
+    this.state.gameActive = true;
+    
+    document.querySelector('.game-container').classList.add('game-active');
+    
+    scoreManager.startLevel(level);
+
+    try {
+        // Generate path and sequence
+        this.state.path = await generatePath();
+        this.state.sequence = await generateSequence(level);
+        this.state.sequenceEntries = sequenceToEntries(this.state.sequence);
+
+        // Place sequence on path
+        this.placeMathSequence();
         
-        document.querySelector('.game-container').classList.add('game-active');
-        
-        scoreManager.startLevel(level);
+        // Fill remaining cells
+        this.fillRemainingCells();
 
-        try {
-            // Generate path and sequence
-            this.state.path = await generatePath();
-            this.state.sequence = await generateSequence(level);
-            this.state.sequenceEntries = sequenceToEntries(this.state.sequence);
+        // Render grid
+        renderGrid(this.state.gridEntries, {
+            startCoord: this.state.path[0],
+            endCoord: this.state.path[this.state.path.length - 1]
+        });
 
-            // Place sequence on path
-            this.placeMathSequence();
-            
-            // Fill remaining cells
-            this.fillRemainingCells();
+        // Update UI
+        this.updateUI();
+        this.showMessage('Find the path by following the mathematical sequence.');
 
-            // Render grid
-            renderGrid(this.state.gridEntries, {
-                startCoord: this.state.path[0],
-                endCoord: this.state.path[this.state.path.length - 1]
-            });
-
-            // Update UI
-            this.updateUI();
-            this.showMessage('Find the path by following the mathematical sequence.');
-
-        } catch (error) {
-            console.error('Error starting level:', error);
-            this.showMessage('Error starting game. Please try again.', 'error');
-        }
+    } catch (error) {
+        console.error('Error starting level:', error);
+        this.showMessage('Error starting game. Please try again.', 'error');
     }
-
+}
+    
     placeMathSequence() {
         this.state.path.forEach((coord, index) => {
             if (index < this.state.sequenceEntries.length) {
@@ -436,7 +436,7 @@ class GameController {
     gridContainer.addEventListener('touchend', clearDragTargets);
     gridContainer.addEventListener('touchcancel', clearDragTargets);
     
-    // Add button click animation handling (Fix for game control buttons)
+    // Add button animation (ADDITIONAL FIX #2: Pulse animation instead of color change)
     const controlButtons = document.querySelectorAll('.game-controls button');
     controlButtons.forEach(button => {
         button.addEventListener('click', () => {
@@ -446,7 +446,7 @@ class GameController {
             // Remove class after animation completes
             setTimeout(() => {
                 button.classList.remove('clicked');
-            }, 3000); // 3 seconds matching the CSS animation
+            }, 500); // 0.5 seconds matching the CSS animation
         });
     });
 }
@@ -646,28 +646,59 @@ updateUI() {
 }
    
     showMessage(text, type = 'info', duration = null) {
-        const messageElement = document.getElementById('game-messages');
-        if (messageElement) {
-            // Clear any existing timeout
-            if (this.messageTimeout) {
-                clearTimeout(this.messageTimeout);
-                this.messageTimeout = null;
-            }
+    const messageElement = document.getElementById('game-messages');
+    if (messageElement) {
+        // Clear any existing timeout
+        if (this.messageTimeout) {
+            clearTimeout(this.messageTimeout);
+            this.messageTimeout = null;
+        }
+        
+        // Clear previous content
+        messageElement.innerHTML = '';
+        
+        // Check if this is a message that needs a penalty line
+        if (text.includes('Removed')) {
+            // Main message
+            const mainMessage = document.createElement('div');
+            mainMessage.textContent = text;
+            messageElement.appendChild(mainMessage);
             
+            // Penalty message
+            const penaltyMessage = document.createElement('div');
+            penaltyMessage.className = 'penalty-message';
+            penaltyMessage.textContent = '(-1/3 points)';
+            messageElement.appendChild(penaltyMessage);
+        } 
+        else if (text === 'Path is mathematically correct! Continue to the end square.') {
+            // Changed message (ADDITIONAL FIX #1)
+            const mainMessage = document.createElement('div');
+            mainMessage.textContent = 'Path is mathematically correct!';
+            messageElement.appendChild(mainMessage);
+            
+            // Penalty message
+            const penaltyMessage = document.createElement('div');
+            penaltyMessage.className = 'penalty-message';
+            penaltyMessage.textContent = '(-1/4 points)';
+            messageElement.appendChild(penaltyMessage);
+        }
+        else {
+            // Regular message without penalty
             messageElement.textContent = text;
-            messageElement.className = type ? `message-box ${type}` : 'message-box';
-            
-            if (duration) {
-                this.messageTimeout = setTimeout(() => {
-                    messageElement.textContent = '';
-                    messageElement.className = 'message-box';
-                    this.messageTimeout = null;
-                }, duration);
-            }
+        }
+        
+        messageElement.className = type ? `message-box ${type}` : 'message-box';
+        
+        if (duration) {
+            this.messageTimeout = setTimeout(() => {
+                messageElement.textContent = '';
+                messageElement.className = 'message-box';
+                this.messageTimeout = null;
+            }, duration);
         }
     }
 }
-
+    
 // Initialize game and store reference
 window.addEventListener('DOMContentLoaded', () => {
     window.gameController = new GameController();
