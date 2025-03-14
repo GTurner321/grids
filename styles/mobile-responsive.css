@@ -835,3 +835,51 @@
     padding: 4px 6px;
   }
 }
+
+/* Fix for grid visibility */
+#grid-container {
+  display: grid !important;
+}
+
+/* Hide bottom buttons when game is not active */
+.game-container:not(.game-active) .bottom-buttons {
+  display: none !important;
+}
+
+/* Ensure grid container is visible */
+.game-container.game-active #grid-container {
+  display: grid !important;
+}
+
+/* Hide placeholder gray line when grid is empty */
+#grid-container:empty {
+  display: none !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Show UI elements only when game is active */
+.game-container:not(.game-active) .score-row,
+.game-container:not(.game-active) .game-controls,
+.game-container:not(.game-active) #game-messages {
+  visibility: hidden;
+  opacity: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.game-container.game-active .score-row,
+.game-container.game-active .game-controls,
+.game-container.game-active #game-messages {
+  visibility: visible;
+  opacity: 1;
+  height: auto;
+  overflow: visible;
+}
+
+/* Ensure bottom buttons display correctly in active game state */
+.game-container.game-active .bottom-buttons {
+  display: flex !important;
+}
