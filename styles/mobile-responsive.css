@@ -84,8 +84,8 @@
     width: var(--container-width) !important;
     height: 50px;
     margin: 0 auto 10px auto !important;
-    border: var(--border-width) solid var(--green-border) !important;
-    border-radius: 5px !important;
+    border: var(--border-width) solid var(--light-blue-border) !important;
+    border-radius: 3px !important;
     display: flex;
     align-items: center;
     background-color: #e6f2ff;
@@ -168,7 +168,7 @@
     height: 40px;
     border-radius: 5px;
     background-color: var(--crimson-red);
-    color: black;
+    color: white;
     border: 2px solid var(--light-red-border);
     border-bottom-width: 3px;
   }
