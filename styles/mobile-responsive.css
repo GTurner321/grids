@@ -1,18 +1,19 @@
-/* Mobile-Responsive CSS for Path Puzzle Game - Consolidated and Enhanced */
+/* Mobile-Responsive CSS for Path Puzzle Game - Complete Rewrite */
 
 /* Mobile devices (width up to 768px) */
 @media (max-width: 768px) {
   :root {
-    /* Grid sizing calculation for perfect alignment */
-    --mobile-grid-cell-size: 30px;
-    --mobile-grid-gap: 1px;
+    /* Responsive width calculation that adapts to screen size */
+    --screen-padding: 20px; /* Padding on each side of the screen */
+    --mobile-grid-cell-size: calc((100vw - (var(--screen-padding) * 2) - 11px) / 10); /* Dynamically sized cells */
+    --container-width: calc(100vw - (var(--screen-padding) * 2)); /* Container uses most of screen width */
     --border-width: 3px;
-    --container-width: calc((var(--mobile-grid-cell-size) * 10) + (var(--mobile-grid-gap) * 9));
+    --app-height: 100%;
     --button-font-size: 1rem;
-    
+
     /* Color variables */
-    --crimson-red: #8b1b3c;
-    --light-red-border: #c53a62;
+    --crimson-red: #e54d5e;
+    --light-red-border: #fd8593;
     --light-blue-border: #93c5fd;
     --green-border: #166534;
   }
@@ -78,25 +79,17 @@
     border-bottom-width: 1px;
   }
   
-  /* Score row and grid container - shared styles for alignment */
-  .score-row, 
-  #grid-container {
-    width: var(--container-width) !important;
-    margin: 0 auto;
-    box-sizing: border-box;
-    border-left: var(--border-width) solid var(--green-border) !important;
-    border-right: var(--border-width) solid var(--green-border) !important;
-  }
-  
-  /* Score row specific styles */
+  /* Score row with full responsive width and complete border */
   .score-row {
+    width: var(--container-width) !important;
     height: 50px;
+    margin: 0 auto 10px auto !important;
+    border: var(--border-width) solid var(--green-border) !important;
+    border-radius: 5px !important;
     display: flex;
     align-items: center;
     background-color: #e6f2ff;
-    border-top: var(--border-width) solid var(--green-border) !important;
-    border-bottom: none !important;
-    border-radius: 0 !important;
+    box-sizing: border-box;
   }
   
   .score-left {
@@ -124,20 +117,22 @@
     width: 40%;
   }
   
-  /* Grid container specific styles */
+  /* Grid container with responsive sizing and complete border */
   #grid-container {
-    grid-template-columns: repeat(10, var(--mobile-grid-cell-size));
+    width: var(--container-width) !important;
+    margin: 0 auto;
+    box-sizing: border-box;
     justify-content: center;
-    gap: var(--mobile-grid-gap);
+    gap: 1px;
     background-color: #94a3b8;
     padding: 1px;
     display: grid;
-    border-top: none !important;
-    border-bottom: var(--border-width) solid var(--green-border) !important;
-    border-radius: 0 !important;
+    grid-template-columns: repeat(10, var(--mobile-grid-cell-size));
+    border: var(--border-width) solid var(--green-border) !important;
+    border-radius: 5px !important;
   }
   
-  /* Grid cells */
+  /* Grid cells with responsive sizing */
   .grid-cell {
     width: var(--mobile-grid-cell-size);
     height: var(--mobile-grid-cell-size);
@@ -151,7 +146,7 @@
     font-size: 1.6rem !important;
   }
   
-  /* Game controls container */
+  /* Game controls container with responsive width */
   .game-controls {
     display: flex !important;
     flex-direction: row !important;
@@ -196,7 +191,7 @@
   
   /* Button widths adjusted */
   .game-controls #check-solution {
-    width: 20% !important; /* Reduced by 10% */
+    width: 20% !important; /* Reduced width */
   }
   
   .game-controls #remove-spare {
@@ -227,7 +222,7 @@
     text-shadow: 0 0 12px white, 0 0 20px white, 0 0 30px white !important; /* More expansive white shadow */
   }
   
-  /* Bottom buttons container */
+  /* Bottom buttons container with responsive width */
   .bottom-buttons {
     display: flex !important;
     flex-direction: row !important;
@@ -258,13 +253,13 @@
     border-bottom-width: 1px !important;
   }
   
-  /* Specific bottom button widths (15% wider) */
+  /* Specific bottom button widths (record name button 10% wider) */
   #record-score-btn {
-    width: 190px !important;
+    width: calc((var(--container-width) * 0.55) - 5px) !important; /* 55% of container minus half the gap */
   }
   
   #leaderboard-btn {
-    width: 170px !important;
+    width: calc((var(--container-width) * 0.45) - 5px) !important; /* 45% of container minus half the gap */
   }
   
   /* Modal containers */
@@ -293,14 +288,27 @@
   }
   
   /* Modal content styling - 20% more narrow */
-  .username-area,
-  .leaderboard-table {
-    width: 70%; /* Reduced from 90% */
-    max-width: 280px; /* Reduced from 350px */
+  .username-area {
+    width: 70% !important; /* Reduced from 90% */
+    max-width: 280px !important; /* Reduced from 350px */
     background-color: #ede9fe;
     border: 2px solid #16a34a;
     border-radius: 6px;
     padding: 15px;
+    margin: 0 auto;
+    position: relative;
+  }
+  
+  /* Leaderboard table - keeping the size larger */
+  .leaderboard-table {
+    width: 90%;
+    max-width: 350px;
+    background-color: #ede9fe;
+    border: 2px solid #16a34a;
+    border-radius: 6px;
+    overflow: hidden;
+    max-height: 70vh;
+    overflow-y: auto;
     margin: 0 auto;
     position: relative;
   }
@@ -367,7 +375,7 @@
     text-transform: uppercase;
   }
 
-/* Return buttons */
+  /* Return buttons */
   #return-to-record-btn,
   #return-from-leaderboard-btn {
     position: absolute;
@@ -393,19 +401,6 @@
     display: none !important;
   }
   
-  /* Leaderboard table styling */
-  .leaderboard-table {
-    background-color: #ede9fe;
-    border: 2px solid #16a34a;
-    border-radius: 6px;
-    overflow: hidden;
-    max-height: 70vh;
-    overflow-y: auto;
-    width: 90%;
-    max-width: 350px;
-    margin: 0 auto;
-  }
-  
   /* Leaderboard title */
   .leaderboard-title {
     font-size: 1.4rem;
@@ -414,12 +409,13 @@
     font-family: 'Trebuchet MS', Arial, sans-serif;
   }
   
-  /* Leaderboard rows with more spacing */
+  /* Leaderboard rows with more spacing between columns */
   .leaderboard-row {
     display: grid;
-    grid-template-columns: 35px minmax(90px, 1fr) 55px 65px; /* Adjusted column widths for spacing */
-    column-gap: 12px; /* Increased from 5px for more space between columns */
-    padding: 6px 8px; /* Slightly more vertical padding */
+    /* Adjusted column widths: wider gap between rank & name, and score & date */
+    grid-template-columns: 35px minmax(90px, 1fr) 60px 70px;
+    column-gap: 15px !important; /* Significantly increased column gap */
+    padding: 6px 8px;
   }
   
   /* Header row styling */
@@ -520,6 +516,11 @@
 
 /* Small phone optimization */
 @media (max-width: 360px) {
+  :root {
+    /* Less padding on small screens */
+    --screen-padding: 10px;
+  }
+  
   .game-controls button {
     font-size: 0.75rem;
     padding: 8px 5px;
@@ -537,20 +538,14 @@
     border-bottom-width: 3px;
   }
   
-  .level-btn:active {
-    transform: translateY(2px);
-    border-bottom-width: 1px;
-  }
-  
   #game-messages {
     font-size: 1.3rem !important;
   }
   
-  /* Adjust widths for narrower screens */
-  .username-area,
-  .leaderboard-table {
-    width: 85%;
-    max-width: 250px;
+  /* Adjust modal sizes for very small screens */
+  .username-area {
+    width: 80% !important;
+    max-width: 240px !important;
     padding: 12px;
   }
   
@@ -566,8 +561,25 @@
   /* Adjust leaderboard row spacing for small screens */
   .leaderboard-row {
     grid-template-columns: 30px minmax(70px, 1fr) 50px 60px;
-    column-gap: 8px;
+    column-gap: 10px !important;
     padding: 4px 6px;
+  }
+}
+
+/* Very large phones/small tablets */
+@media (min-width: 480px) and (max-width: 768px) {
+  :root {
+    /* More padding on larger screens to avoid excessive stretching */
+    --screen-padding: 40px;
+  }
+  
+  .game-controls button,
+  .bottom-btn {
+    font-size: 1.1rem !important;
+  }
+  
+  #game-messages {
+    font-size: 1.8rem !important;
   }
 }
 
