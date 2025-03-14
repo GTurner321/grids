@@ -366,7 +366,7 @@
   
   /* Username prompt styling with Trebuchet MS - Larger text per fix #6 */
   .username-prompt {
-    font-size: 1.2rem !important; /* CHANGE: Increased from 1.2rem per fix #6 */
+    font-size: 1rem !important; /* CHANGE: Increased from 1.2rem per fix #6 */
     font-family: 'Trebuchet MS', Arial, sans-serif;
     font-weight: bold;
     margin-bottom: 12px;
@@ -389,7 +389,7 @@
   #username-input {
     width: 90% !important; /* ADDITIONAL FIX #2: 10% larger */
     padding: 12px;
-    font-size: 1.2rem !important; /* CHANGE: Increased from 1.2rem per fix #6 */
+    font-size: 1.1rem !important; /* CHANGE: Increased from 1.2rem per fix #6 */
     text-align: center;
     border: 2px solid #cbd5e1;
     border-radius: 6px;
@@ -404,7 +404,7 @@
   #submit-username {
     width: 50% !important; /* ADDITIONAL FIX #2: 10% wider than original 40% */
     padding: 12px;
-    font-size: 1.3rem !important; /* ADDITIONAL FIX #2: Slightly smaller than 1.4rem */
+    font-size: 1.2rem !important; /* ADDITIONAL FIX #2: Slightly smaller than 1.4rem */
     font-weight: bold;
     background-color: #3b82f6;
     color: white;
@@ -421,11 +421,11 @@
   }
 
   /* ADDITIONAL FIX #2: Rocket icon before Submit */
-  #submit-username::before {
-    content: "🚀 ";
-    margin-right: 5px;
-    font-size: 1.2rem;
-  }
+  #submit-username::after {
+  content: " 🚀";
+  margin-left: 5px;
+  font-size: 1.2rem;
+}
 
   /* Return buttons */
   #return-to-record-btn,
@@ -815,7 +815,7 @@
   
   /* Adjust modal sizes for very small screens */
   .username-area {
-    width: 85% !important;
+    width: 90% !important;
     max-width: 240px !important;
     padding: 12px;
   }
