@@ -9,12 +9,13 @@
     --container-width: calc(100vw - (var(--screen-padding) * 2)); /* Container uses most of screen width */
     --border-width: 0px; /* CHANGE: Removed borders completely per fix #5 */
     --app-height: 100%;
-    --button-font-size: 1rem;
+    --button-font-size: 1.1rem; /* ADDITIONAL FIX #4: Increase from 1rem */
 
     /* Color variables */
     --crimson-red: #dd717e;
     --light-red-border: #9c3c47;
     --light-blue-border: #93c5fd; /* CHANGE: Using lighter blue border from fix #6/#7 */
+    --green-border: #166534;
     --form-bg-color: #e6f2ff; /* CHANGE: Added for username/leaderboard forms per fix #6/#7 */
   }
   
@@ -67,11 +68,12 @@
     gap: 5px;
   }
   
-  /* Level buttons with light blue border */
+  /* Level buttons with light blue border - ADDITIONAL FIX #4: Larger buttons with Trebuchet MS font */
   .level-btn {
-    min-width: 38px;
-    padding: 8px 10px;
-    font-size: var(--button-font-size);
+    min-width: 42px; /* ADDITIONAL FIX #4: Increased from 38px */
+    padding: 10px 12px; /* ADDITIONAL FIX #4: Increased from 8px 10px */
+    font-size: var(--button-font-size); /* ADDITIONAL FIX #4: Using larger font size */
+    font-family: 'Trebuchet MS', Arial, sans-serif !important; /* ADDITIONAL FIX #4: Changed to Trebuchet MS */
     font-weight: bold;
     border: 2px solid var(--light-blue-border);
     border-bottom-width: 3px;
@@ -159,7 +161,7 @@
     gap: 5px !important;
   }
   
-  /* Game control buttons - crimson with light red border */
+  /* Game control buttons - ADDITIONAL FIX #2: Pulse on click instead of color change */
   .game-controls button {
     padding: 8px 6px;
     font-size: 0.9rem;
@@ -174,29 +176,27 @@
     color: white;
     border: 2px solid var(--light-red-border);
     border-bottom-width: 3px;
-    transition: background-color 0.3s ease; /* ADDITIONAL FIX #3: Transition for button color */
   }
   
   .game-controls button:hover {
-    background-color: #6a1530;
+    background-color: var(--crimson-red); /* ADDITIONAL FIX #2: Keep original color */
   }
   
   .game-controls button:active {
     transform: translateY(2px);
     border-bottom-width: 1px;
-    background-color: #6a1530; /* ADDITIONAL FIX #3: Darker red when clicked */
+    background-color: var(--crimson-red); /* ADDITIONAL FIX #2: Keep original color */
   }
   
-  /* ADDITIONAL FIX #3: Button click animation */
+  /* ADDITIONAL FIX #2: Button pulse animation instead of color change */
   .game-controls button.clicked {
-    background-color: #6a1530;
-    animation: buttonReset 3s forwards;
+    animation: buttonPulse 0.5s;
   }
   
-  @keyframes buttonReset {
-    0% { background-color: #6a1530; }
-    90% { background-color: #6a1530; }
-    100% { background-color: var(--crimson-red); }
+  @keyframes buttonPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
   }
   
   .game-controls button svg {
@@ -229,6 +229,7 @@
     text-align: center;
     line-height: 1.3;
     display: flex;
+    flex-direction: column; /* ADDITIONAL FIX #1: Change to column for penalty message */
     align-items: center;
     justify-content: center;
     word-wrap: break-word;
@@ -239,14 +240,27 @@
     text-shadow: 0 0 15px white, 0 0 25px white, 0 0 35px white, 0 0 40px white !important; /* CHANGE: Enhanced shadow per fix #8 */
   }
 
-  /* Bottom buttons container with responsive width */
+  /* ADDITIONAL FIX #1: Style for penalty messages */
+  #game-messages .penalty-message {
+    font-size: 1.2rem !important;
+    margin-top: 5px;
+    color: #ef4444; /* Red color to stand out */
+    text-shadow: 0 0 15px white, 0 0 25px white, 0 0 35px white, 0 0 40px white !important;
+  }
+
+  /* Bottom buttons container with responsive width - ADDITIONAL FIX #5: Initially hidden */
   .bottom-buttons {
-    display: flex !important;
+    display: none !important; /* ADDITIONAL FIX #5: Initially hidden */
     flex-direction: row !important;
     justify-content: center !important;
     gap: 10px !important;
     width: var(--container-width) !important;
     margin: 10px auto !important;
+  }
+  
+  /* ADDITIONAL FIX #5: Show bottom buttons when game is active */
+  .game-active .bottom-buttons {
+    display: flex !important;
   }
   
   /* Bottom buttons common styles with light blue border */
@@ -651,7 +665,7 @@
     color: #ef4444; /* Red for emphasis */
   }
 
-/* Enhanced Rules Modal Styles for Mobile - FIX #2, #4 */
+/* Enhanced Rules Modal Styles for Mobile - FIX #2, #4 - ADDITIONAL FIX #3: Adjusted width */
 
   /* Rules modal container - FIX #2: Full width background */
   .rules-modal {
@@ -665,9 +679,9 @@
     justify-content: center;
   }
   
-  /* Rules content wrapper */
+  /* Rules content wrapper - ADDITIONAL FIX #3: Reduced width to 95% */
   .rules-content {
-    width: 100%;
+    width: 95% !important; /* ADDITIONAL FIX #3: Reduced from 100% to 95% */
     height: auto; /* Allow height to adapt to content */
     max-height: 85vh; /* Limit maximum height */
     overflow-y: auto; /* Enable scrolling if needed */
@@ -809,53 +823,5 @@
     grid-template-columns: 40px minmax(75px, 1fr) 60px 55px !important; /* ADDITIONAL FIX #6: Wider rank column */
     column-gap: 10px !important; /* Slightly smaller gaps on tiny screens */
     padding: 4px 6px;
-  }
-}
-
-/* Very large phones/small tablets */
-@media (min-width: 480px) and (max-width: 768px) {
-  :root {
-    /* More padding on larger screens to avoid excessive stretching */
-    --screen-padding: 40px;
-  }
-  
-  .game-controls button,
-  .bottom-btn {
-    font-size: 1.1rem !important;
-  }
-  
-  #game-messages {
-    font-size: 1.8rem !important;
-  }
-}
-
-/* iOS-specific fixes for notch phones */
-@supports (-webkit-touch-callout: none) {
-  body {
-    /* Avoid overscroll effects */
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-  }
-  
-  .game-container {
-    /* Avoid bottom bar issues */
-    padding-bottom: env(safe-area-inset-bottom, 10px);
-    /* Avoid notch issues */
-    padding-top: env(safe-area-inset-top, 10px);
-    /* Scroll container instead of body */
-    height: 100%;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  
-  /* Ensure buttons are tappable */
-  .game-controls button,
-  .bottom-btn,
-  #submit-username {
-    cursor: pointer;
-    -webkit-touch-callout: none;
-    -webkit-tap-highlight-color: transparent;
   }
 }
