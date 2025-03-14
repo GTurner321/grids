@@ -201,30 +201,32 @@ class GameController {
     }
 
     handleCellClick(cell) {
-        // Early exit if we don't have a valid cell or game is not active
-        if (!cell || !this.state.gameActive) return;
-        
-        // Debounce clicks to prevent accidental double clicks
-        const now = Date.now();
-        if (now - this.state.lastClickTime < 200) { // 200ms threshold
-            return;
-        }
-        this.state.lastClickTime = now;
-        
-        const cellIndex = parseInt(cell.dataset.index);
-        if (isNaN(cellIndex)) return;
+    // Early exit if we don't have a valid cell or game is not active
+    if (!cell || !this.state.gameActive) return;
+    
+    // Debounce clicks to prevent accidental double clicks
+    const now = Date.now();
+    if (now - this.state.lastClickTime < 200) { // 200ms threshold
+        return;
+    }
+    this.state.lastClickTime = now;
+    
+    const cellIndex = parseInt(cell.dataset.index);
+    if (isNaN(cellIndex)) return;
 
-        // First click must be start cell
-        if (this.state.userPath.length === 0) {
-            if (this.isStartCell(cell)) {
-                this.state.userPath = [cellIndex];
-                this.updatePathHighlight();
-                this.showMessage('Path started! Continue by selecting connected cells.');
-            } else {
-                this.showMessage('You must start at the green square!', 'error');
-            }
-            return;
+    // First click must be start cell - COMMENT THIS OUT as it's handled in initializeGridInteractions
+    /* 
+    if (this.state.userPath.length === 0) {
+        if (this.isStartCell(cell)) {
+            this.state.userPath = [cellIndex];
+            this.updatePathHighlight();
+            this.showMessage('Path started! Continue by selecting connected cells.');
+        } else {
+            this.showMessage('You must start at the green square!', 'error');
         }
+        return;
+    }
+    */
 
         // Handle deselection of last cell
         const lastCellIndex = this.state.userPath[this.state.userPath.length - 1];
