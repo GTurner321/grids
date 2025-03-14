@@ -1,113 +1,4 @@
-// Hide leaderboard return button
-          const returnFromLeaderboardBtn = document.getElementById('return-from-leaderboard-btn');
-          if (returnFromLeaderboardBtn) {
-            returnFromLeaderboardBtn.style.display = 'none';
-          }
-          
-          // Center and resize username input and submit button
-          const usernameInput = document.getElementById('username-input');
-          if (usernameInput) {
-            usernameInput.style.width = '80%';
-            usernameInput.style.maxWidth = '80%';
-            usernameInput.style.margin = '0 auto';
-            usernameInput.style.display = 'block';
-          }
-          
-          const submitUsername = document.getElementById('submit-username');
-          if (submitUsername) {
-            submitUsername.style.width = '80%';
-            submitUsername.style.margin = '0 auto';
-            submitUsername.style.display = 'block';
-          }
-          
-          // Increase font size in leaderboard table
-          document.querySelectorAll('.leaderboard-cell').forEach(cell => {
-            cell.style.fontSize = '1.1rem';
-          });
-          
-          document.querySelectorAll('.leaderboard-row.header .leaderboard-cell').forEach(headerCell => {
-            headerCell.style.fontSize = '1.1rem';
-            headerCell.style.fontWeight = 'bold';
-          });
-          
-          // Add white text shadow to game messages
-          const gameMessages = document.getElementById('game-messages');
-          if (gameMessages) {
-            gameMessages.style.textShadow = '0 0 5px white, 0 0 10px white, 0 0 15px white';
-          }        // 7. Enhance grid elements
-        setTimeout(() => {
-          // Increase text size in grid cells
-          document.querySelectorAll('.grid-cell').forEach(cell => {
-            // Increase general font size
-            cell.style.fontSize = '1.4rem';
-            
-            // Special handling for operators
-            if (cell.classList.contains('operator')) {
-              cell.style.fontSize = '1.6rem';
-            }
-          });
-          
-          // Make path arrows larger and fatter
-          document.addEventListener('DOMNodeInserted', function(e) {
-            if (e.target.classList && e.target.classList.contains('path-arrow')) {
-              e.target.style.width = '18px';
-              e.target.style.height = '18px';
-              
-              // Get SVG inside and make it fatter
-              const svg = e.target.querySelector('svg');
-              if (svg) {
-                svg.style.strokeWidth = '3';
-                svg.style.width = '100%';
-                svg.style.height = '100%';
-              }
-            }
-          });
-          
-          // Make symbol containers larger
-          document.querySelectorAll('.symbol-container').forEach(container => {
-            container.style.transform = 'scale(1.3)';
-          });
-        }, 1000); // Delay to ensure grid is rendered        // 3. Style bottom buttons - use !important to override leaderboard.css
-        const bottomButtons = document.querySelector('.bottom-buttons');
-        const recordBtn = document.getElementById('record-score-btn');
-        const leaderboardBtn = document.getElementById('leaderboard-btn');
-        
-        if (bottomButtons) {
-          bottomButtons.style.cssText = "display: flex !important; flex-direction: row !important; justify-content: center !important; gap: 10px !important; width: 320px !important; margin: 10px auto !important;";
-        }
-        
-        if (recordBtn) {
-          recordBtn.style.cssText = "font-family: 'Trebuchet MS', Arial, sans-serif !important; font-size: 1rem !important; font-weight: bold !important; width: 175px !important; height: 42px !important; text-transform: none !important; padding: 8px 10px !important;";
-          
-          // Ensure pencil icon exists
-          if (!recordBtn.querySelector('svg')) {
-            // Keep existing content
-            const oldContent = recordBtn.textContent.trim();
-            recordBtn.innerHTML = `
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 20h9"></path>
-                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-              </svg>
-              ${oldContent}
-            `;
-          }
-        }
-        
-        if (leaderboardBtn) {
-          leaderboardBtn.style.cssText = "font-family: 'Trebuchet MS', Arial, sans-serif !important; font-size: 1rem !important; font-weight: bold !important; width: 156px !important; height: 42px !important; text-transform: none !important; padding: 8px 10px !important;";
-          
-          // Add down triangle icon before leaderboard text
-          if (!leaderboardBtn.querySelector('svg')) {
-            // Keep existing content
-            const oldContent = leaderboardBtn.textContent.trim();
-            leaderboardBtn.innerHTML = `
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M6 9l6 6 6-6"></path>
-              </svg>
-              ${oldContent}
-            `;
-          }
-        }// mobile-responsive.js - Enhances mobile experience for the Path Puzzle game
+// mobile-responsive.js - Enhances mobile experience for the Path Puzzle game
 
 (function() {
   // Execute when DOM is fully loaded
@@ -120,6 +11,9 @@
     
     // Apply direct button styling
     applyDirectStylesForMobile();
+    
+    // Apply enhanced styles for requested improvements
+    applyEnhancedMobileStyles();
     
     // Improve touch handling on grid cells
     optimizeTouchInteractions();
@@ -300,6 +194,105 @@
     }
   }
   
+  // NEW FUNCTION: Apply enhanced mobile styles for requested improvements
+  function applyEnhancedMobileStyles() {
+    // Only apply these styles on mobile devices
+    if (window.innerWidth > 768) return;
+    
+    console.log('Applying enhanced mobile styles for visual improvements');
+    
+    setTimeout(() => {
+      // 1. Enhanced game messages with wider white shadow
+      const gameMessages = document.getElementById('game-messages');
+      if (gameMessages) {
+        gameMessages.style.fontSize = '1.6rem';
+        gameMessages.style.textShadow = '0 0 8px white, 0 0 15px white, 0 0 20px white';
+        gameMessages.style.fontWeight = 'bold';
+      }
+      
+      // 2. Add white shadow to title
+      const gameTitle = document.querySelector('.game-header h1');
+      if (gameTitle) {
+        gameTitle.style.textShadow = '0 0 8px white, 0 0 15px white, 0 0 20px white';
+      }
+      
+      // 3-4. Adjust button widths
+      const checkButton = document.getElementById('check-solution');
+      if (checkButton) {
+        checkButton.style.width = '20%'; // 10% less wide than original 25%
+      }
+      
+      const recordButton = document.getElementById('record-score-btn');
+      if (recordButton) {
+        recordButton.style.width = '190px'; // 15% wider than original
+        recordButton.style.border = '2px solid #166534';
+        recordButton.style.borderBottomWidth = '3px';
+      }
+      
+      const leaderboardButton = document.getElementById('leaderboard-btn');
+      if (leaderboardButton) {
+        leaderboardButton.style.width = '170px'; // 15% wider than original
+        leaderboardButton.style.border = '2px solid #166534';
+        leaderboardButton.style.borderBottomWidth = '3px';
+      }
+      
+      // 5. Enhanced grid and score borders
+      const scoreRow = document.querySelector('.score-row');
+      if (scoreRow) {
+        scoreRow.style.border = '3px solid #166534'; // Thicker green border
+        scoreRow.style.borderBottom = 'none';
+      }
+      
+      const gridContainer = document.getElementById('grid-container');
+      if (gridContainer) {
+        gridContainer.style.border = '3px solid #166534'; // Matching green border
+        gridContainer.style.borderTop = 'none';
+      }
+      
+      // 6. Add green borders to level buttons
+      document.querySelectorAll('.level-btn').forEach(btn => {
+        btn.style.border = '2px solid #166534';
+        btn.style.borderBottomWidth = '3px';
+      });
+      
+      // 7. Make game control buttons crimson with white text
+      document.querySelectorAll('.game-controls button').forEach(btn => {
+        btn.style.backgroundColor = '#dc2626'; // Crimson red background
+        btn.style.color = 'white';
+        btn.style.border = '2px solid #166534'; // Green border
+        btn.style.borderBottomWidth = '3px';
+        
+        // Make SVG icons white
+        const svg = btn.querySelector('svg');
+        if (svg) {
+          svg.style.stroke = 'white';
+        }
+      });
+      
+      // Add active state listeners for 3D button press effect
+      const allButtons = document.querySelectorAll('.game-controls button, .level-btn, #record-score-btn, #leaderboard-btn');
+      allButtons.forEach(btn => {
+        btn.addEventListener('touchstart', function() {
+          this.style.transform = 'translateY(2px)';
+          this.style.borderBottomWidth = '1px';
+        });
+        
+        btn.addEventListener('touchend', function() {
+          this.style.transform = '';
+          this.style.borderBottomWidth = '3px';
+        });
+      });
+      
+      // Enhance path arrows (additional tweaks to arrow colors to match new theme)
+      document.querySelectorAll('.path-arrow svg').forEach(svg => {
+        svg.style.fill = '#dc2626'; // Match crimson from buttons
+        svg.style.stroke = 'white'; // White outline
+      });
+      
+      console.log('Enhanced mobile styles applied successfully');
+    }, 800); // Delay slightly longer than the basic styles to ensure we override them
+  }
+  
   // Optimize touch interactions for mobile
   function optimizeTouchInteractions() {
     // Improve grid cell responsiveness
@@ -358,8 +351,9 @@
               messageElement.style.display = "flex";
               messageElement.style.alignItems = "center";
               messageElement.style.justifyContent = "center";
-              messageElement.style.fontSize = "1.4rem";
+              messageElement.style.fontSize = "1.6rem"; // Increased from 1.4rem
               messageElement.style.width = "320px";
+              messageElement.style.textShadow = "0 0 8px white, 0 0 15px white, 0 0 20px white"; // Enhanced shadow
               
               // Force text to wrap properly
               if (text.length > 30) {
@@ -405,7 +399,8 @@
                   svg.setAttribute('stroke-width', '3');
                   svg.style.width = '100%';
                   svg.style.height = '100%';
-                  svg.style.fill = '#3b82f6';
+                  svg.style.fill = '#dc2626'; // Match crimson color from buttons
+                  svg.style.stroke = 'white'; // White outline for better visibility
                 }
               }
             });
@@ -429,7 +424,8 @@
           svg.setAttribute('stroke-width', '3');
           svg.style.width = '100%';
           svg.style.height = '100%';
-          svg.style.fill = '#3b82f6';
+          svg.style.fill = '#dc2626'; // Match crimson color from buttons
+          svg.style.stroke = 'white'; // White outline for better visibility
         }
       });
     }
