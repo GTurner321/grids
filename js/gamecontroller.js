@@ -297,14 +297,14 @@ class GameController {
     let lastTouchedCell = null;
     let isDragging = false;
     
-    // Improved click handler for all cells, especially the start cell
+    // Direct click handler for all cells (Fix #4: Single-click handling)
     gridContainer.addEventListener('click', (e) => {
         if (!this.state.gameActive) return;
         
         const cell = e.target.closest('.grid-cell');
         if (!cell) return;
         
-        // Handle first click on start cell specially
+        // Handle first click on start cell specially to fix single-click issue
         if (this.isStartCell(cell) && this.state.userPath.length === 0) {
             console.log('Start cell clicked directly');
             const cellIndex = parseInt(cell.dataset.index);
@@ -320,7 +320,7 @@ class GameController {
         this.handleCellClick(cell);
     });
     
-    // Mouse down handler - prevent text selection and handle drag start
+    // Mouse down handler - prevent text selection
     gridContainer.addEventListener('mousedown', (e) => {
         if (!this.state.gameActive) return;
         
@@ -435,8 +435,22 @@ class GameController {
     gridContainer.addEventListener('mouseleave', clearDragTargets);
     gridContainer.addEventListener('touchend', clearDragTargets);
     gridContainer.addEventListener('touchcancel', clearDragTargets);
+    
+    // Add button click animation handling (Fix for game control buttons)
+    const controlButtons = document.querySelectorAll('.game-controls button');
+    controlButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Add animation class
+            button.classList.add('clicked');
+            
+            // Remove class after animation completes
+            setTimeout(() => {
+                button.classList.remove('clicked');
+            }, 3000); // 3 seconds matching the CSS animation
+        });
+    });
 }
-
+    
     removeAllSpareCells() {
         const spareCells = this.state.gridEntries
             .map((entry, index) => (!entry?.isPartOfPath && !this.state.removedCells.has(index)) ? index : null)
