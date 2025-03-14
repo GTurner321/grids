@@ -530,11 +530,10 @@
     box-sizing: border-box;
   }
   
-  /* Main title and subtitle with white shadow */
+  /* Main title and subtitle */
   .rules-title,
   .rules-subtitle {
     font-family: 'Black Ops One', cursive;
-    text-shadow: 0 0 10px white, 0 0 15px white, 0 0 20px white; /* White shadow for better legibility */
   }
   
   .rules-title {
@@ -572,7 +571,7 @@
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s;
-    margin-top: 1.5rem;
+    margin-top: 0.5rem;
   }
   
   .start-button:hover {
@@ -717,7 +716,6 @@
 }
 
 /* Additional Mobile CSS Fixes */
-
 @media (max-width: 768px) {
   /* 'Choose your level' text enhancement */
   .level-selector-title {
@@ -747,15 +745,10 @@
     margin-top: 0 !important; /* Minimize top margin */
   }
 
-  .rules-button-container {
-    margin-top: 0.8rem !important; /* Less space before button */
-  }
-
   /* Enhanced start button */
   .start-button {
     padding: 12px 40px !important; /* Wider button */
-    text-shadow: 0 0 8px white, 0 0 12px white !important; /* Add white shadow */
-    border-width: 3px !important; /* Thicker border */
+    border-width: 5px !important; /* Thicker border */
   }
 
   /* Leaderboard table enhancements */
