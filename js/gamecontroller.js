@@ -289,131 +289,153 @@ class GameController {
     }
 
     initializeGridInteractions() {
-        const gridContainer = document.getElementById('grid-container');
-        
-        // Track touch and drag state
-        let touchStartTime = 0;
-        let touchStartCell = null;
-        let lastTouchedCell = null;
-        let isDragging = false;
-        
-        // Mouse click handler - simple and reliable
-        gridContainer.addEventListener('mousedown', (e) => {
-            if (!this.state.gameActive) return;
-            
-            const cell = e.target.closest('.grid-cell');
-            if (cell) {
-                this.handleCellClick(cell);
-                e.preventDefault(); // Prevent text selection
-            }
-        });
-        
-        // Touch event handling - optimized for mobile
-        gridContainer.addEventListener('touchstart', (e) => {
-    if (!this.state.gameActive) return;
+    const gridContainer = document.getElementById('grid-container');
     
-    const touch = e.touches[0];
-    const element = document.elementFromPoint(touch.clientX, touch.clientY);
-    if (!element) return;
+    // Track touch and drag state
+    let touchStartTime = 0;
+    let touchStartCell = null;
+    let lastTouchedCell = null;
+    let isDragging = false;
     
-    const cell = element.closest('.grid-cell');
-    if (cell) {
-        e.preventDefault(); // Prevent scrolling
-        touchStartCell = cell;
-        lastTouchedCell = cell;
-        touchStartTime = Date.now();
-        isDragging = false;
+    // Improved click handler for all cells, especially the start cell
+    gridContainer.addEventListener('click', (e) => {
+        if (!this.state.gameActive) return;
         
-        // If starting at the green cell and path is empty, add it to path immediately
-        // This makes the cell "selected" so drag can continue from it
+        const cell = e.target.closest('.grid-cell');
+        if (!cell) return;
+        
+        // Handle first click on start cell specially
         if (this.isStartCell(cell) && this.state.userPath.length === 0) {
-            const startCellIndex = parseInt(cell.dataset.index);
-            this.state.userPath = [startCellIndex];
+            console.log('Start cell clicked directly');
+            const cellIndex = parseInt(cell.dataset.index);
+            if (isNaN(cellIndex)) return;
+            
+            this.state.userPath = [cellIndex];
             this.updatePathHighlight();
             this.showMessage('Path started! Continue by selecting connected cells.');
-        }
-    }
-}, { passive: false });
-        
-        gridContainer.addEventListener('touchmove', (e) => {
-    if (!this.state.gameActive) return;
-    e.preventDefault(); // Prevent scrolling
-    
-    // Mark that we're dragging
-    if (Date.now() - touchStartTime > 100) {
-        isDragging = true;
-    }
-    
-    const touch = e.touches[0];
-    const element = document.elementFromPoint(touch.clientX, touch.clientY);
-    if (!element) return;
-    
-    const cell = element.closest('.grid-cell');
-    if (!cell || cell === lastTouchedCell) return;
-    
-    // In drag mode, process cells
-    if (isDragging) {
-        // Start path if needed
-        if (this.state.userPath.length === 0) {
-            // If we're dragging from start cell, automatically start the path
-            if (this.isStartCell(touchStartCell)) {
-                // Add start cell to path
-                const startCellIndex = parseInt(touchStartCell.dataset.index);
-                this.state.userPath = [startCellIndex];
-                this.updatePathHighlight();
-                lastTouchedCell = touchStartCell;
-                this.showMessage('Path started! Continue by selecting connected cells.');
-            } else {
-                return; // Can't start drag from non-start cell
-            }
-        }
-        
-        // Validate the new cell
-        const cellIndex = parseInt(cell.dataset.index);
-        const lastPathIndex = this.state.userPath[this.state.userPath.length - 1];
-        
-        // For deselection - if we drag back to previous cell
-        if (this.state.userPath.length > 1 && 
-            cellIndex === this.state.userPath[this.state.userPath.length - 2]) {
-            this.state.userPath.pop(); // Remove last cell
-            this.updatePathHighlight();
-            lastTouchedCell = cell;
             return;
         }
         
-        // For new cell addition - must be valid move and not already in path
-        if (this.isValidMove(cellIndex) && !this.state.userPath.includes(cellIndex)) {
-            this.handleCellClick(cell);
-            lastTouchedCell = cell;
-        }
-    }
-}, { passive: false });
+        // For all other cells, use the regular handler
+        this.handleCellClick(cell);
+    });
+    
+    // Mouse down handler - prevent text selection and handle drag start
+    gridContainer.addEventListener('mousedown', (e) => {
+        if (!this.state.gameActive) return;
         
-        gridContainer.addEventListener('touchend', (e) => {
-            if (!this.state.gameActive) return;
+        const cell = e.target.closest('.grid-cell');
+        if (cell) {
+            e.preventDefault(); // Prevent text selection
+        }
+    });
+    
+    // Touch event handling - optimized for mobile
+    gridContainer.addEventListener('touchstart', (e) => {
+        if (!this.state.gameActive) return;
+        
+        const touch = e.touches[0];
+        const element = document.elementFromPoint(touch.clientX, touch.clientY);
+        if (!element) return;
+        
+        const cell = element.closest('.grid-cell');
+        if (cell) {
+            e.preventDefault(); // Prevent scrolling
+            touchStartCell = cell;
+            lastTouchedCell = cell;
+            touchStartTime = Date.now();
+            isDragging = false;
             
-            // If it was a short tap (not a drag), treat as click
-            if (!isDragging && touchStartCell && Date.now() - touchStartTime < 300) {
-                this.handleCellClick(touchStartCell);
+            // If starting at the green cell and path is empty, add it to path immediately
+            // This makes the cell "selected" so drag can continue from it
+            if (this.isStartCell(cell) && this.state.userPath.length === 0) {
+                const startCellIndex = parseInt(cell.dataset.index);
+                this.state.userPath = [startCellIndex];
+                this.updatePathHighlight();
+                this.showMessage('Path started! Continue by selecting connected cells.');
+            }
+        }
+    }, { passive: false });
+    
+    gridContainer.addEventListener('touchmove', (e) => {
+        if (!this.state.gameActive) return;
+        e.preventDefault(); // Prevent scrolling
+        
+        // Mark that we're dragging
+        if (Date.now() - touchStartTime > 100) {
+            isDragging = true;
+        }
+        
+        const touch = e.touches[0];
+        const element = document.elementFromPoint(touch.clientX, touch.clientY);
+        if (!element) return;
+        
+        const cell = element.closest('.grid-cell');
+        if (!cell || cell === lastTouchedCell) return;
+        
+        // In drag mode, process cells
+        if (isDragging) {
+            // Start path if needed
+            if (this.state.userPath.length === 0) {
+                // If we're dragging from start cell, automatically start the path
+                if (this.isStartCell(touchStartCell)) {
+                    // Add start cell to path
+                    const startCellIndex = parseInt(touchStartCell.dataset.index);
+                    this.state.userPath = [startCellIndex];
+                    this.updatePathHighlight();
+                    lastTouchedCell = touchStartCell;
+                    this.showMessage('Path started! Continue by selecting connected cells.');
+                } else {
+                    return; // Can't start drag from non-start cell
+                }
             }
             
-            // Reset touch tracking
-            touchStartCell = null;
-            lastTouchedCell = null;
-            isDragging = false;
+            // Validate the new cell
+            const cellIndex = parseInt(cell.dataset.index);
+            const lastPathIndex = this.state.userPath[this.state.userPath.length - 1];
+            
+            // For deselection - if we drag back to previous cell
+            if (this.state.userPath.length > 1 && 
+                cellIndex === this.state.userPath[this.state.userPath.length - 2]) {
+                this.state.userPath.pop(); // Remove last cell
+                this.updatePathHighlight();
+                lastTouchedCell = cell;
+                return;
+            }
+            
+            // For new cell addition - must be valid move and not already in path
+            if (this.isValidMove(cellIndex) && !this.state.userPath.includes(cellIndex)) {
+                this.handleCellClick(cell);
+                lastTouchedCell = cell;
+            }
+        }
+    }, { passive: false });
+    
+    gridContainer.addEventListener('touchend', (e) => {
+        if (!this.state.gameActive) return;
+        
+        // If it was a short tap (not a drag), treat as click
+        if (!isDragging && touchStartCell && Date.now() - touchStartTime < 300) {
+            this.handleCellClick(touchStartCell);
+        }
+        
+        // Reset touch tracking
+        touchStartCell = null;
+        lastTouchedCell = null;
+        isDragging = false;
+    });
+    
+    // Clean up any hover states when touch/mouse interaction ends
+    const clearDragTargets = () => {
+        document.querySelectorAll('.drag-target').forEach(cell => {
+            cell.classList.remove('drag-target');
         });
-        
-        // Clean up any hover states when touch/mouse interaction ends
-        const clearDragTargets = () => {
-            document.querySelectorAll('.drag-target').forEach(cell => {
-                cell.classList.remove('drag-target');
-            });
-        };
-        
-        gridContainer.addEventListener('mouseleave', clearDragTargets);
-        gridContainer.addEventListener('touchend', clearDragTargets);
-        gridContainer.addEventListener('touchcancel', clearDragTargets);
-    }
+    };
+    
+    gridContainer.addEventListener('mouseleave', clearDragTargets);
+    gridContainer.addEventListener('touchend', clearDragTargets);
+    gridContainer.addEventListener('touchcancel', clearDragTargets);
+}
 
     removeAllSpareCells() {
         const spareCells = this.state.gridEntries
