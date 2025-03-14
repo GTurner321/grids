@@ -244,7 +244,8 @@
   #game-messages .penalty-message {
     font-size: 1.2rem !important;
     margin-top: 5px;
-    color: #ef4444; /* Red color to stand out */
+    color: #1e40af;
+    font-weight: bold;
     text-shadow: 0 0 15px white, 0 0 25px white, 0 0 35px white, 0 0 40px white !important;
   }
 
