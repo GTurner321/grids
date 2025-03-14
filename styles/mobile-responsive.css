@@ -191,11 +191,11 @@
   
   /* Button widths adjusted */
   .game-controls #check-solution {
-    width: 20% !important; /* Reduced width */
+    width: 25% !important;
   }
   
   .game-controls #remove-spare {
-    width: 45% !important;
+    width: 44% !important;
   }
   
   .game-controls #reset-path {
@@ -219,7 +219,7 @@
     white-space: normal;
     color: #1e40af;
     font-weight: bold;
-    text-shadow: 0 0 15px white, 0 0 25px white, 0 0 35px white !important; /* More expansive white shadow */
+    text-shadow: 0 0 20px white, 0 0 30px white, 0 0 40px white !important;
   }
 
   /* Bottom buttons container with responsive width */
@@ -255,11 +255,11 @@
   
   /* Specific bottom button widths (record name button 10% wider) */
   #record-score-btn {
-    width: calc((var(--container-width) * 0.55) - 5px) !important; /* 55% of container minus half the gap */
+    width: calc((var(--container-width) * 0.5) - 5px) !important; /* 50% of container minus half the gap */
   }
   
   #leaderboard-btn {
-    width: calc((var(--container-width) * 0.45) - 5px) !important; /* 45% of container minus half the gap */
+    width: calc((var(--container-width) * 0.5) - 5px) !important; /* 50% of container minus half the gap */
   }
   
   /* Modal containers */
