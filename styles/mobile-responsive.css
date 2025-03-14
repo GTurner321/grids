@@ -170,24 +170,24 @@
   }
   
   /* Game messages - ensure visibility */
-  #game-messages {
-    width: var(--container-width) !important;
-    margin: 8px auto 3px;
-    padding: 6px 0;
-    font-size: 1.4rem !important; /* Increased from 1.3rem */
-    min-height: 45px !important;
-    text-align: center;
-    line-height: 1.3;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    white-space: normal;
-    color: #1e40af;
-    font-weight: bold;
-    text-shadow: 0 0 5px white, 0 0 10px white, 0 0 15px white !important; /* White shadow for better visibility */
-  }
+#game-messages {
+  width: var(--container-width) !important;
+  margin: 8px auto 3px;
+  padding: 6px 0;
+  font-size: 1.6rem !important; /* Increased from 1.4rem */
+  min-height: 45px !important;
+  text-align: center;
+  line-height: 1.3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  color: #1e40af;
+  font-weight: bold;
+  text-shadow: 0 0 8px white, 0 0 15px white, 0 0 20px white !important; /* Enhanced white shadow */
+}
   
   /* Force bottom buttons to display horizontally on mobile */
   .bottom-buttons {
@@ -214,13 +214,22 @@
   }
   
   /* Specific widths for bottom buttons */
-  #record-score-btn {
-    width: 175px !important; /* 35% wider than original 130px */
-  }
-  
-  #leaderboard-btn {
-    width: 156px !important; /* 20% wider than original 130px */
-  }
+#record-score-btn {
+  width: 190px !important; /* 15% wider than original 175px */
+  border: 2px solid #166534 !important; /* Green border */
+  border-bottom-width: 3px !important; /* 3D effect */
+}
+
+#leaderboard-btn {
+  width: 170px !important; /* 15% wider than original 156px */
+  border: 2px solid #166534 !important; /* Green border */
+  border-bottom-width: 3px !important; /* 3D effect */
+}
+
+.bottom-btn:active {
+  transform: translateY(2px) !important;
+  border-bottom-width: 1px !important;
+}
   
   /* Make the leaderboard and username submission appear as modal popups */
   #username-area-container,
@@ -401,7 +410,7 @@
   .path-arrow svg {
     width: 100% !important;
     height: 100% !important;
-    stroke-width: 3 !important; /* Fatter arrows */
+    stroke-width: 5 !important; /* Fatter arrows */
     fill: #3b82f6 !important; /* Make sure color is visible */
   }
   
@@ -570,10 +579,11 @@
   }
   
   /* Title - larger for mobile */
-  .game-header h1 {
-    font-size: 2.5rem;
-    margin: 10px 0 0.3rem 0; /* Further reduced bottom margin */
-  }
+.game-header h1 {
+  font-size: 2.5rem;
+  margin: 10px 0 0.3rem 0;
+  text-shadow: 0 0 8px white, 0 0 15px white, 0 0 20px white; /* Add white shadow to match messages */
+}
   
   /* Level buttons - more compact row */
   .level-selector-container {
@@ -598,18 +608,18 @@
   }
   
   /* Score row - match grid width exactly */
-  .score-row {
-    width: var(--container-width);
-    height: 50px;
-    margin: 0 auto;
-    border: 1px solid #666;
-    border-radius: 0; /* No rounded corners */
-    border-bottom: none;
-    display: flex;
-    align-items: center;
-    background-color: #e6f2ff;
-    box-sizing: border-box;
-  }
+.score-row {
+  width: var(--container-width) !important;
+  height: 50px;
+  margin: 0 auto;
+  border: 3px solid #166534 !important; /* Thicker green border */
+  border-radius: 0 !important;
+  border-bottom: none !important;
+  display: flex;
+  align-items: center;
+  background-color: #e6f2ff;
+  box-sizing: border-box;
+}
   
   .score-left {
     text-align: left;
@@ -637,20 +647,20 @@
   }
   
   /* Grid container - fill width exactly */
-  #grid-container {
-    grid-template-columns: repeat(10, var(--mobile-grid-cell-size));
-    width: var(--container-width);
-    margin: 0 auto;
-    box-sizing: border-box;
-    justify-content: center;
-    gap: 1px;
-    background-color: #94a3b8;
-    padding: 1px;
-    display: grid;
-    border: 1px solid #666;
-    border-top: none;
-    border-radius: 0; /* No rounded corners */
-  }
+#grid-container {
+  grid-template-columns: repeat(10, var(--mobile-grid-cell-size));
+  width: var(--container-width) !important;
+  margin: 0 auto;
+  box-sizing: border-box;
+  justify-content: center;
+  gap: 1px;
+  background-color: #94a3b8;
+  padding: 1px;
+  display: grid;
+  border: 3px solid #166534 !important; /* Thicker green border */
+  border-top: none !important;
+  border-radius: 0 !important;
+}
   
   /* Grid cells - dynamic sizing */
   .grid-cell {
@@ -672,21 +682,34 @@
   }
   
   /* Common button styles */
-  .game-controls button {
-    padding: 8px 6px;
-    font-size: 0.9rem;
-    font-family: 'Trebuchet MS', Arial, sans-serif;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 40px;
-    border-radius: 5px;
-  }
+.game-controls button {
+  padding: 8px 6px;
+  font-size: 0.9rem;
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  border-radius: 5px;
+  background-color: #dc2626; /* Crimson red background */
+  color: white; /* White text */
+  border: 2px solid #166534; /* Green border */
+  border-bottom-width: 3px; /* 3D effect */
+}
+
+  .game-controls button:hover {
+  background-color: #b91c1c; /* Darker red on hover */
+}
+
+.game-controls button:active {
+  transform: translateY(2px);
+  border-bottom-width: 1px;
+}
   
   /* Specific button widths - adjusted percentages */
   .game-controls #check-solution {
-    width: 25%; /* Narrower */
+    width: 22%; /* Narrower */
   }
   
   .game-controls #remove-spare {
@@ -697,11 +720,12 @@
     width: 25%; /* Narrower */
   }
   
-  .game-controls button svg {
-    width: 14px;
-    height: 14px;
-    margin-right: 4px;
-  }
+.game-controls button svg {
+  width: 14px;
+  height: 14px;
+  margin-right: 4px;
+  stroke: white; /* White icons */
+}
   
   /* Game messages - ensure visibility */
   #game-messages {
@@ -964,10 +988,19 @@
     height: 12px;
   }
   
-  .level-btn {
-    min-width: 32px; /* Decreased from larger screens but still bigger than original */
-    padding: 6px 8px;
-  }
+.level-btn {
+  min-width: 38px;
+  padding: 8px 10px;
+  font-size: var(--button-font-size);
+  font-weight: bold;
+  border: 2px solid #166534; /* Green border */
+  border-bottom-width: 3px; /* 3D effect */
+}
+
+.level-btn:active {
+  transform: translateY(2px);
+  border-bottom-width: 1px;
+}
   
   #game-messages {
     font-size: 1.1rem; /* Slightly smaller than larger screens but still bigger than original */
