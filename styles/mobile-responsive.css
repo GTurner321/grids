@@ -1,9 +1,9 @@
-/* Mobile-Responsive CSS for Path Puzzle Game - Enhanced Version */
+/* Updated Mobile-Responsive CSS */
 
 /* Mobile devices (width up to 768px) */
 @media (max-width: 768px) {
   :root {
-    /* Responsive width calculation with reduced margins (point 5) */
+    /* Responsive width calculation with reduced margins */
     --screen-padding: 10px; /* Reduced from 20px for wider container */
     --mobile-grid-cell-size: calc((100vw - (var(--screen-padding) * 2) - 11px) / 10);
     --container-width: calc(100vw - (var(--screen-padding) * 2));
@@ -14,13 +14,14 @@
     /* Color variables */
     --crimson-red: #dd717e;
     --light-red-border: #9c3c47;
-    --light-blue-border: #93c5fd;
+    /* Updated: Lighter brighter blue for score bar border (#4) */
+    --light-blue-border: #60a5fa; /* Changed from #93c5fd to a brighter blue */
     --button-blue: #3b82f6;
     --green-border: #166534;
     --form-bg-color: #e6f2ff;
-    --text-blue: #1e40af;
-    --score-red: #ef4444; /* Red for round scores (point 2) */
-    --score-blue: #1e40af; /* Dark blue for total and username (point 2) */
+    /* Updated: Dark blue for username (#4) */
+    --text-blue: #1e40af; /* Dark blue for total and username */
+    --score-red: #ef4444; /* Red for round scores */
   }
   
   /* Base body styles */
@@ -58,6 +59,9 @@
   /* Level selector container */
   .level-selector-container {
     margin-bottom: 10px;
+    /* #8: Remove the gray line */
+    border-bottom: none !important;
+    box-shadow: none !important;
   }
   
   .level-selector-title {
@@ -70,12 +74,15 @@
   
   .level-buttons {
     gap: 5px;
+    /* #8: Remove the gray line */
+    border-bottom: none !important;
+    box-shadow: none !important;
   }
   
-  /* Level buttons with light blue border */
+  /* Level buttons with light blue border - 10% less tall (#6) */
   .level-btn {
     min-width: 42px;
-    padding: 10px 12px;
+    padding: 9px 12px; /* Reduced from 10px 12px (10% less tall) */
     font-size: var(--button-font-size);
     font-family: 'Trebuchet MS', Arial, sans-serif !important;
     font-weight: bold;
@@ -84,18 +91,21 @@
     border: 2px solid var(--light-blue-border);
     border-bottom-width: 3px;
     border-radius: 5px;
+    height: 40px; /* Explicit height to ensure consistency */
   }
   
   .level-btn:active {
     transform: translateY(2px);
     border-bottom-width: 1px;
+    height: 38px; /* Adjust height when active */
   }
   
-  /* Score row with full responsive width and light blue border (point 2) */
+  /* Score row with full responsive width and light blue border (#4) */
   .score-row {
     width: var(--container-width) !important;
-    height: 60px; /* Increased from 50px (point 2) */
+    height: 60px; /* Increased height */
     margin: 0 auto 10px auto !important;
+    /* #4: Lighter brighter blue border */
     border: 2px solid var(--light-blue-border) !important;
     border-radius: 3px !important;
     display: flex;
@@ -109,7 +119,7 @@
     padding-left: 12px;
     font-family: 'Trebuchet MS', Arial, sans-serif;
     font-size: 0.9rem;
-    color: var(--score-red) !important; /* Red color (point 2) */
+    color: var(--score-red) !important; /* Red color for round score */
     display: flex;
     align-items: center;
     font-weight: bold;
@@ -122,14 +132,14 @@
     font-family: 'Trebuchet MS', Arial, sans-serif;
     font-size: 0.9rem;
     font-weight: bold;
-    color: var(--score-blue) !important; /* Dark blue (point 2) */
+    color: var(--text-blue) !important; /* Dark blue */
     display: flex;
     align-items: center;
     justify-content: flex-end;
     width: 40%;
   }
   
-  /* Grid container with responsive sizing (point 5) */
+  /* Grid container with responsive sizing */
   #grid-container {
     width: var(--container-width) !important;
     margin: 0 auto;
@@ -188,7 +198,7 @@
     z-index: -1;
   }
   
-  /* Game controls container with responsive width (point 5) */
+  /* Game controls container with responsive width */
   .game-controls {
     display: flex !important;
     flex-direction: row !important;
@@ -198,7 +208,7 @@
     gap: 5px !important;
   }
   
-  /* Game control buttons - Pulse on click instead of color change (point 4) */
+  /* Game control buttons - Pulse on click instead of color change (#7) */
   .game-controls button {
     padding: 8px 6px;
     font-size: 0.9rem;
@@ -220,9 +230,10 @@
     border-bottom-width: 1px;
   }
   
-  /* Button pulse animation instead of color change (point 4) */
+  /* Button pulse animation instead of color change (#7) */
   .game-controls button.clicked {
-    animation: buttonPulse 0.3s ease-in-out forwards; /* Shortened from 0.5s to 0.3s */
+    animation: buttonPulse 0.3s ease-in-out forwards;
+    background-color: #c13a49 !important; /* Darker red when pulsing */
   }
   
   @keyframes buttonPulse {
@@ -251,10 +262,10 @@
     width: 25% !important;
   }
   
-  /* Game messages with enhanced white shadow (point 6) and reduced space to buttons (point 3) */
+  /* Game messages with enhanced white shadow and reduced space to buttons (#3) */
   #game-messages {
     width: var(--container-width) !important;
-    margin: 4px auto 8px !important; /* Reduced from 4px auto 12px (point 3) */
+    margin: 4px auto 4px !important; /* Reduced from 8px to 4px (#3) */
     padding: 6px 0;
     font-size: 1.6rem !important;
     min-height: 45px !important;
@@ -269,7 +280,7 @@
     white-space: normal;
     color: var(--text-blue);
     font-weight: bold;
-    text-shadow: 0 0 15px white, 0 0 25px white, 0 0 35px white, 0 0 40px white, 0 0 45px white !important; /* More intense white shadow (point 6) */
+    text-shadow: 0 0 15px white, 0 0 25px white, 0 0 35px white, 0 0 40px white, 0 0 45px white !important;
   }
 
   /* Style for penalty messages */
@@ -281,14 +292,14 @@
     text-shadow: 0 0 15px white, 0 0 25px white, 0 0 35px white, 0 0 40px white !important;
   }
 
-  /* Bottom buttons container - same style as level buttons (point 5) */
+  /* Bottom buttons container - Reduced height margin (#3) */
   .bottom-buttons {
     display: flex !important;
     flex-direction: row !important;
     justify-content: center !important;
     gap: 10px !important;
     width: var(--container-width) !important;
-    margin: 5px auto !important; /* Reduced from 10px (point 3) */
+    margin: 2px auto !important; /* Reduced from 5px to 2px (#3) */
   }
   
   /* Hide bottom buttons when game is not active */
@@ -296,7 +307,7 @@
     display: none !important;
   }
   
-  /* Bottom buttons styling - matching level buttons */
+  /* Bottom buttons styling - Reduced width by 10% with spacing (#2) */
   .bottom-btn {
     font-family: 'Trebuchet MS', Arial, sans-serif !important;
     font-size: 1rem !important;
@@ -328,13 +339,19 @@
     margin: 0 auto !important;
   }
   
-  /* Specific bottom button widths */
+  /* Specific bottom button widths - Reduced by 10% (#2) */
   #record-score-btn {
-    width: calc((var(--container-width) * 0.5) - 5px) !important;
+    width: calc((var(--container-width) * 0.45) - 5px) !important; /* Reduced from 0.5 to 0.45 (10% less) */
   }
   
   #leaderboard-btn {
-    width: calc((var(--container-width) * 0.5) - 5px) !important;
+    width: calc((var(--container-width) * 0.45) - 5px) !important; /* Reduced from 0.5 to 0.45 (10% less) */
+  }
+  
+  /* Add spacing between icon and text in bottom buttons (#2) */
+  #record-score-btn svg,
+  #leaderboard-btn svg {
+    margin-right: 6px !important; /* Added spacing between icon and text */
   }
   
   /* Modal containers */
@@ -362,9 +379,9 @@
     box-sizing: border-box;
   }
   
-  /* Modal content styling */
+  /* Modal content styling - Wider username area (#5) */
   .username-area {
-    width: 85% !important;
+    width: 92% !important; /* Increased from 85% to 92% (#5) */
     max-width: 340px !important;
     background-color: var(--form-bg-color) !important;
     border: 2px solid var(--light-blue-border) !important;
@@ -374,10 +391,10 @@
     position: relative;
   }
   
-  /* Leaderboard table (point 1) */
+  /* Leaderboard table */
   .leaderboard-table {
-    width: 100% !important; /* Changed from 90% to 100% (10% wider) */
-    max-width: 385px !important; /* 10% wider than original 350px */
+    width: 100% !important;
+    max-width: 385px !important;
     background-color: var(--form-bg-color) !important;
     border: 2px solid var(--light-blue-border) !important;
     border-radius: 6px;
@@ -388,11 +405,11 @@
     position: relative;
   }
   
-  /* Leaderboard row (point 1) */
+  /* Leaderboard row */
   .leaderboard-row {
     display: grid;
-    grid-template-columns: 45px minmax(80px, 1fr) 70px 70px !important; /* Changed last column from 60px to 70px */
-    column-gap: 8px !important; /* Reduced from 20px */
+    grid-template-columns: 45px minmax(80px, 1fr) 70px 70px !important;
+    column-gap: 8px !important;
     padding: 8px 12px !important;
   }
   
@@ -421,10 +438,10 @@
     font-weight: bold;
   }
   
-  /* Add right margin to date column (point 1) */
+  /* Add right margin to date column */
   .leaderboard-cell.date {
     text-align: right;
-    padding-right: 10px !important; /* Added right padding */
+    padding-right: 10px !important;
   }
   
   /* Leaderboard empty state */
@@ -508,11 +525,10 @@
     font-size: 1.2rem;
   }
 
-  /* Return buttons */
-  #return-to-record-btn,
-  #return-from-leaderboard-btn {
+  /* Return buttons - Moved to bottom right (#5) */
+  #return-to-record-btn {
     position: absolute;
-    top: 10px;
+    bottom: 10px; /* Changed from top to bottom (#5) */
     right: 10px;
     background-color: rgba(255, 255, 255, 0.8);
     border-radius: 50%;
@@ -795,69 +811,15 @@
     display: none !important;
   }
   
+  /* Remove any gray line under the level buttons (#8) */
+  .game-header {
+    border-bottom: none !important;
+    box-shadow: none !important;
+  }
+  
   /* Landscape mode warning */
   @media (orientation: landscape) {
     .orientation-warning {
       display: flex;
     }
   }
-}
-
-/* Small phone optimization */
-@media (max-width: 360px) {
-  :root {
-    /* Less padding on small screens */
-    --screen-padding: 6px; /* Reduced to give even more width on tiny screens */
-  }
-  
-  .game-controls button {
-    font-size: 0.75rem;
-    padding: 8px 5px;
-  }
-  
-  .game-controls button svg {
-    width: 12px;
-    height: 12px;
-  }
-  
-  .level-btn {
-    min-width: 32px;
-    padding: 6px 8px;
-  }
-  
-  #game-messages {
-    font-size: 1.3rem !important;
-  }
-  
-  /* Adjust modal sizes for very small screens */
-  .username-area {
-    width: 95% !important;
-    max-width: 240px !important;
-    padding: 12px;
-  }
-  
-  /* Adjust leaderboard row spacing for small screens */
-  .leaderboard-row {
-    grid-template-columns: 40px minmax(75px, 1fr) 60px 60px !important; /* Last column increased */
-    column-gap: 8px !important;
-    padding: 4px 6px;
-  }
-  
-  /* Rules title adjustments for tiny screens */
-  .rules-title {
-    font-size: 2rem !important;
-  }
-  
-  .rules-subtitle {
-    font-size: 1.6rem !important;
-  }
-  
-  .rules-section p {
-    font-size: 1rem !important;
-  }
-  
-  .start-button {
-    font-size: 1.8rem !important;
-    padding: 12px 30px !important;
-  }
-}
