@@ -4,7 +4,8 @@ import supabaseLeaderboard from 'https://gturner321.github.io/grids/js/supabase-
 
 // Load CSS
 function loadStylesheet(url) {
-    const link = document.createElement('link');
+    const link = document.createElement('link');handlel
+    
     link.rel = 'stylesheet';
     link.type = 'text/css';
     link.href = url;
@@ -550,87 +551,92 @@ class LeaderboardManager {
         }
     }
     
-    async handleUsernameSubmission() {
-        const usernameInput = document.getElementById('username-input');
-        const statusMessage = document.getElementById('username-status');
-        const username = usernameInput.value.trim();
-        
-        if (!username) {
-            statusMessage.textContent = 'Please enter a name.';
-            statusMessage.className = 'status-message error';
-            return;
-        }
-        
-        // Show checking message
-        statusMessage.textContent = 'Checking name...';
-        statusMessage.className = 'status-message checking';
+   async handleUsernameSubmission() {
+    const usernameInput = document.getElementById('username-input');
+    const statusMessage = document.getElementById('username-status');
+    const username = usernameInput.value.trim();
+    
+    if (!username) {
+        statusMessage.textContent = 'Please enter a name.';
+        statusMessage.className = 'status-message error';
+        return;
+    }
+    
+    // Show checking message
+    statusMessage.textContent = 'Checking name...';
+    statusMessage.className = 'status-message checking';
+    
+    try {
+        let isApproved = false;
         
         try {
-            let isApproved = false;
+            // Try to use the username checker module
+            const usernameCheckerModule = await import('./username-checker.js');
+            const usernameChecker = usernameCheckerModule.default;
+            isApproved = await usernameChecker.checkUsername(username);
+        } catch (e) {
+            console.warn('Could not load username checker, using fallback check');
+            isApproved = this.checkUsername(username);
+        }
+        
+        if (isApproved) {
+            this.setUsername(username);
             
-            try {
-                // Try to use the username checker module
-                const usernameCheckerModule = await import('./username-checker.js');
-                const usernameChecker = usernameCheckerModule.default;
-                isApproved = await usernameChecker.checkUsername(username);
-            } catch (e) {
-                console.warn('Could not load username checker, using fallback check');
-                isApproved = this.checkUsername(username);
+            // Hide the username area immediately
+            const usernameAreaContainer = document.getElementById('username-area-container');
+            if (usernameAreaContainer) {
+                usernameAreaContainer.style.display = 'none';
             }
             
-            if (isApproved) {
-                this.setUsername(username);
-                
-                // Hide the username form immediately
-                const usernameAreaContainer = document.getElementById('username-area-container');
-                if (usernameAreaContainer) {
-                    usernameAreaContainer.style.display = 'none';
-                }
-                
-                // Get current score and process it
-                const currentScore = this.getCurrentScore();
-                if (currentScore > 0) {
-                    this.processScore(currentScore);
-                }
-                
-                // Show welcome message in the game messages area instead
-                if (window.gameController) {
-                    window.gameController.showMessage(`Welcome ${username}! Score at least 5000 to make the leaderboard.`, 'info', 8000);
-                }
-                
-                // Display username in score area
-                const scoreLeftElement = document.getElementById('score-bonus');
-                if (scoreLeftElement) {
-                    scoreLeftElement.textContent = username;
-                    scoreLeftElement.style.color = '#6b7280'; // Gray text
-                    scoreLeftElement.style.visibility = 'visible';
-                }
-                
-                // Hide record name button
-                const recordScoreBtn = document.getElementById('record-score-btn');
-                if (recordScoreBtn) {
-                    recordScoreBtn.style.display = 'none';
-                }
-                
-                // Center the leaderboard button
-                const leaderboardBtn = document.getElementById('leaderboard-btn');
-                const bottomButtons = document.querySelector('.bottom-buttons');
-                if (leaderboardBtn && bottomButtons) {
-                    // Apply centering styles
-                    leaderboardBtn.style.margin = '0 auto';
-                    bottomButtons.style.justifyContent = 'center';
-                }
-                
-            } else {
-                statusMessage.textContent = 'Username not appropriate for family-friendly environment. Please try another.';
-                statusMessage.className = 'status-message error';
+            // Get current score and process it
+            const currentScore = this.getCurrentScore();
+            if (currentScore > 0) {
+                this.processScore(currentScore);
             }
-        } catch (error) {
-            console.error('Error checking username:', error);
-            statusMessage.textContent = 'Error checking username. Please try again.';
+            
+            // Show welcome message in the game messages area using gameController
+            if (window.gameController && window.gameController.showMessage) {
+                window.gameController.showMessage(`Welcome ${username}! Score at least 5000 to make the leaderboard.`, 'info', 8000);
+            }
+            
+            // Display username in score area
+            const scoreLeftElement = document.getElementById('score-bonus');
+            if (scoreLeftElement) {
+                scoreLeftElement.textContent = username;
+                scoreLeftElement.style.color = '#6b7280'; // Gray text
+                scoreLeftElement.style.visibility = 'visible';
+            }
+            
+            // Hide record button and center leaderboard button
+            this.handleButtonsAfterSubmission();
+            
+        } else {
+            statusMessage.textContent = 'Username not appropriate for family-friendly environment. Please try another.';
             statusMessage.className = 'status-message error';
         }
+    } catch (error) {
+        console.error('Error checking username:', error);
+        statusMessage.textContent = 'Error checking username. Please try again.';
+        statusMessage.className = 'status-message error';
     }
+}
+
+// Helper method to handle buttons after username submission
+handleButtonsAfterSubmission() {
+    // Hide record name button
+    const recordScoreBtn = document.getElementById('record-score-btn');
+    if (recordScoreBtn) {
+        recordScoreBtn.style.display = 'none';
+    }
+    
+    // Center the leaderboard button
+    const leaderboardBtn = document.getElementById('leaderboard-btn');
+    const bottomButtons = document.querySelector('.bottom-buttons');
+    if (leaderboardBtn && bottomButtons) {
+        bottomButtons.classList.add('single-button');
+        leaderboardBtn.style.margin = '0 auto';
+    }
+}
     
     checkUsername(username) {
         if (!username || username.length < 2 || username.length > 12) {
