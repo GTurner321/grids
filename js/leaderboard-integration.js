@@ -4,7 +4,7 @@ import supabaseLeaderboard from 'https://gturner321.github.io/grids/js/supabase-
 
 // Load CSS
 function loadStylesheet(url) {
-    const link = document.createElement('link');handlel
+    const link = document.createElement('link');
     
     link.rel = 'stylesheet';
     link.type = 'text/css';
