@@ -1,4 +1,4 @@
-// leaderboard-integration.js - Completely rewritten version
+// leaderboard-integration.js - Fixed version
 
 import supabaseLeaderboard from 'https://gturner321.github.io/grids/js/supabase-leaderboard.js';
 
@@ -49,6 +49,7 @@ class LeaderboardManager {
         this.initSupabase();
         this.addEventListeners();
         this.findScoreManager();
+        this.initLevelButtonHandlers();
         
         // Force check for button visibility multiple times
         this.checkButtonVisibility();
@@ -81,6 +82,27 @@ class LeaderboardManager {
         }
     }
     
+    // Initialize level button click handlers
+    initLevelButtonHandlers() {
+        // Use a regular function instead of arrow function to maintain correct context
+        const handleClick = function() {
+            const levelSelectorTitle = document.querySelector('.level-selector-title');
+            if (levelSelectorTitle) {
+                levelSelectorTitle.style.transition = 'opacity 0.5s ease-out';
+                levelSelectorTitle.style.opacity = '0';
+                
+                // After transition, hide the element
+                setTimeout(() => {
+                    levelSelectorTitle.style.display = 'none';
+                }, 500);
+            }
+        };
+        
+        document.querySelectorAll('.level-btn').forEach(btn => {
+            btn.addEventListener('click', handleClick, { once: true }); // Only trigger once
+        });
+    }
+    
     // Create bottom buttons
     createBottomButtons() {
         const gameContainer = document.querySelector('.game-container');
@@ -89,20 +111,6 @@ class LeaderboardManager {
         const buttonsContainer = document.createElement('div');
         buttonsContainer.className = 'bottom-buttons';
         buttonsContainer.id = 'bottom-buttons';
-        
-        // Set inline styles to ensure visibility
-        buttonsContainer.style.cssText = `
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            gap: 10px;
-            width: 320px;
-            margin: 15px auto;
-            visibility: visible;
-            opacity: 1;
-            position: relative;
-            z-index: 20;
-        `;
         
         // Record Name Button
         const recordScoreButton = document.createElement('button');
@@ -127,27 +135,6 @@ class LeaderboardManager {
             LEADERBOARD
         `;
         
-        // Set button styles directly to ensure visibility
-        const buttonStyle = `
-            display: block;
-            visibility: visible;
-            opacity: 1;
-            font-family: 'Trebuchet MS', Arial, sans-serif;
-            font-size: 1rem;
-            font-weight: bold;
-            background-color: #3b82f6;
-            color: white;
-            border: 2px solid #93c5fd;
-            border-radius: 5px;
-            padding: 8px 12px;
-            height: 42px;
-            width: 150px;
-            cursor: pointer;
-        `;
-        
-        recordScoreButton.style.cssText = buttonStyle;
-        leaderboardButton.style.cssText = buttonStyle;
-        
         buttonsContainer.appendChild(recordScoreButton);
         buttonsContainer.appendChild(leaderboardButton);
         
@@ -162,7 +149,6 @@ class LeaderboardManager {
         // Create container
         const usernameAreaContainer = document.createElement('div');
         usernameAreaContainer.id = 'username-area-container';
-        usernameAreaContainer.style.display = 'none';
         usernameAreaContainer.style.cssText = `
             position: fixed;
             top: 0;
@@ -311,32 +297,26 @@ class LeaderboardManager {
             position: relative;
         `;
         
-        // Add return button
-        const returnButton = document.createElement('button');
-        returnButton.id = 'return-from-leaderboard-btn';
-        returnButton.innerHTML = '&#9650;'; // Upwards triangle
-        returnButton.style.cssText = `
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 50%;
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            z-index: 10000;
+        // Create close button
+        const closeButton = document.createElement('button');
+        closeButton.id = 'close-leaderboard-btn';
+        closeButton.textContent = 'CLOSE';
+        closeButton.style.cssText = `
+            margin-top: 15px;
+            padding: 8px 15px;
+            background-color: #3b82f6;
+            color: white;
             border: none;
-            color: #3b82f6;
-            font-size: 24px;
+            border-radius: 4px;
+            font-family: 'Trebuchet MS', Arial, sans-serif;
+            font-weight: bold;
+            font-size: 1rem;
             cursor: pointer;
         `;
         
         leaderboardContainer.appendChild(leaderboardTitle);
         leaderboardContainer.appendChild(leaderboardTable);
-        leaderboardContainer.appendChild(returnButton);
+        leaderboardContainer.appendChild(closeButton);
         
         gameContainer.appendChild(leaderboardContainer);
     }
@@ -378,8 +358,6 @@ class LeaderboardManager {
         
         // Return buttons
         const returnToRecordBtn = document.getElementById('return-to-record-btn');
-        const returnFromLeaderboardBtn = document.getElementById('return-from-leaderboard-btn');
-        
         if (returnToRecordBtn) {
             returnToRecordBtn.addEventListener('click', () => {
                 if (usernameAreaContainer) {
@@ -388,8 +366,10 @@ class LeaderboardManager {
             });
         }
         
-        if (returnFromLeaderboardBtn) {
-            returnFromLeaderboardBtn.addEventListener('click', () => {
+        // Close leaderboard button
+        const closeLeaderboardBtn = document.getElementById('close-leaderboard-btn');
+        if (closeLeaderboardBtn) {
+            closeLeaderboardBtn.addEventListener('click', () => {
                 if (leaderboardTableContainer) {
                     leaderboardTableContainer.style.display = 'none';
                 }
@@ -747,7 +727,6 @@ class LeaderboardManager {
         const bottomButtons = document.getElementById('bottom-buttons');
         if (leaderboardBtn && bottomButtons) {
             bottomButtons.classList.add('single-button');
-            bottomButtons.style.justifyContent = 'center';
             leaderboardBtn.style.margin = '0 auto';
         }
     }
@@ -1082,40 +1061,9 @@ class LeaderboardManager {
             console.log('Checking buttons visibility:', 
                 gameContainer.classList.contains('game-active') ? 'game active' : 'game not active');
             
-            // Always ensure buttons container is visible when game is active
+            // Just ensure the display property is set correctly
             if (gameContainer.classList.contains('game-active')) {
-                bottomButtons.style.cssText = `
-                    display: flex !important;
-                    flex-direction: row !important;
-                    justify-content: center !important;
-                    gap: 10px !important;
-                    width: 320px !important;
-                    margin: 15px auto !important;
-                    visibility: visible !important;
-                    opacity: 1 !important;
-                    position: relative !important;
-                    z-index: 20 !important;
-                `;
-                
-                // Make sure both buttons are visible too
-                const recordBtn = document.getElementById('record-score-btn');
-                const leaderboardBtn = document.getElementById('leaderboard-btn');
-                
-                if (recordBtn && !this.isUsernameSet) {
-                    recordBtn.style.cssText = `
-                        display: block !important;
-                        visibility: visible !important;
-                        opacity: 1 !important;
-                    `;
-                }
-                
-                if (leaderboardBtn) {
-                    leaderboardBtn.style.cssText = `
-                        display: block !important;
-                        visibility: visible !important;
-                        opacity: 1 !important;
-                    `;
-                }
+                bottomButtons.style.display = 'flex';
                 
                 // If username is set, apply the proper button layout
                 if (this.isUsernameSet) {
