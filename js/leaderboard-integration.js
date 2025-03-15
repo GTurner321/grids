@@ -65,15 +65,38 @@ class LeaderboardManager {
     }
     
     initializeUI() {
-        // Add bottom buttons container
-        this.createBottomButtons();
+    // Add bottom buttons container
+    this.createBottomButtons();
+    
+    // Create username submission area
+    this.createUsernameSubmissionArea();
+    
+    // Create leaderboard table
+    this.createLeaderboardTable();
+    
+    // Setup an observer to ensure buttons stay visible
+    const gameContainer = document.querySelector('.game-container');
+    if (gameContainer) {
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.attributeName === 'class' && 
+                    gameContainer.classList.contains('game-active')) {
+                    const bottomButtons = document.querySelector('.bottom-buttons');
+                    if (bottomButtons) {
+                        bottomButtons.style.display = 'flex';
+                        
+                        // If username is already set, apply button styling
+                        if (this.isUsernameSet) {
+                            this.handleButtonsAfterSubmission();
+                        }
+                    }
+                }
+            });
+        });
         
-        // Create username submission area
-        this.createUsernameSubmissionArea();
-        
-        // Create leaderboard table
-        this.createLeaderboardTable();
+        observer.observe(gameContainer, { attributes: true });
     }
+}
     
     createBottomButtons() {
         const gameContainer = document.querySelector('.game-container');
