@@ -884,3 +884,78 @@
 .game-container.game-active .bottom-buttons {
   display: flex !important;
 }
+
+/* Touch Event CSS Fix - Add to your existing CSS or include as a separate file */
+
+/* Ensure start cell has higher priority for touch events */
+.grid-cell.start-cell {
+    z-index: 30 !important; /* Higher z-index to ensure it's on top */
+    touch-action: manipulation !important; /* Improved touch handling */
+    -webkit-tap-highlight-color: rgba(0,0,0,0) !important; /* Remove tap highlight */
+    cursor: pointer !important;
+    transform: translateZ(0) !important; /* Force hardware acceleration */
+    will-change: transform !important; /* Hint to browser for optimization */
+    position: relative !important; /* Ensure positioning context */
+}
+
+/* Enhance touch experience for all cells */
+.grid-cell {
+    touch-action: manipulation !important; /* Better than 'none' for simple taps */
+    -webkit-user-select: none !important;
+    user-select: none !important;
+    -webkit-touch-callout: none !important;
+}
+
+/* Fix for iOS where touch events can be problematic */
+.ios-device .grid-cell {
+    touch-action: manipulation !important;
+    -webkit-appearance: none !important;
+}
+
+/* Add a slight animation on touch for visual feedback */
+.grid-cell:active {
+    transform: scale(0.97) !important;
+    transition: transform 0.1s !important;
+}
+
+/* Ensure grid container isn't blocking events */
+#grid-container {
+    touch-action: manipulation !important;
+    pointer-events: auto !important;
+}
+
+/* Fix potential issues with event bubbling in the game container */
+.game-container {
+    touch-action: manipulation !important;
+    -webkit-overflow-scrolling: touch !important;
+}
+
+/* Ensure game area doesn't have overlays preventing touches */
+.game-board {
+    z-index: 5 !important;
+    position: relative !important;
+}
+
+/* Disable any animations during initial game loading that might interfere with touch */
+.game-container.game-active {
+    transition-delay: 0.3s !important; /* Slight delay to ensure UI is ready */
+}
+
+/* Additional helper class to enhance click/touch area of the start cell */
+.grid-cell.start-cell::after {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    z-index: -1;
+}
+
+/* Force elements to be ready for interaction right from start */
+body.touch-device .grid-cell,
+body.ios-device .grid-cell {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+}
