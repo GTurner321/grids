@@ -106,7 +106,7 @@
     height: 60px; /* Increased height */
     margin: 0 auto 10px auto !important;
     /* #4: Lighter brighter blue border */
-    border: 2px solid var(--light-blue-border) !important;
+    border: 2px solid #aaecf9 !important;
     border-radius: 3px !important;
     display: flex;
     align-items: center;
@@ -265,7 +265,7 @@
   /* Game messages with enhanced white shadow and reduced space to buttons (#3) */
   #game-messages {
     width: var(--container-width) !important;
-    margin: 4px auto 4px !important; /* Reduced from 8px to 4px (#3) */
+    margin: 2px auto 2px !important; /* Reduced from 8px to 4px (#3) */
     padding: 6px 0;
     font-size: 1.6rem !important;
     min-height: 45px !important;
@@ -299,7 +299,7 @@
     justify-content: center !important;
     gap: 10px !important;
     width: var(--container-width) !important;
-    margin: 2px auto !important; /* Reduced from 5px to 2px (#3) */
+    margin: 0px auto !important; /* Reduced from 5px to 2px (#3) */
   }
   
   /* Hide bottom buttons when game is not active */
