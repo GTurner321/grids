@@ -1,27 +1,13 @@
-// leaderboard-integration.js - Updated with UI improvements
+// leaderboard-integration.js - Completely rewritten version
 
 import supabaseLeaderboard from 'https://gturner321.github.io/grids/js/supabase-leaderboard.js';
 
-// Load CSS
-function loadStylesheet(url) {
-    const link = document.createElement('link');
-    
-    link.rel = 'stylesheet';
-    link.type = 'text/css';
-    link.href = url;
-    document.head.appendChild(link);
-}
-
-// Reset any stored user data
+// Helper functions
 function resetUserSession() {
-    // Clear localStorage items related to the game
     localStorage.removeItem('pathPuzzleUsername');
     localStorage.removeItem('pathPuzzleLeaderboard');
-    
-    // Clear sessionStorage items too
     sessionStorage.removeItem('pathPuzzleUsername');
     sessionStorage.removeItem('pathPuzzleLeaderboard');
-    
     console.log('User session data reset');
 }
 
@@ -35,88 +21,90 @@ function debounce(func, wait) {
     };
 }
 
-// Create the leaderboard class
+// Main LeaderboardManager class
 class LeaderboardManager {
     constructor() {
         // Reset any existing data
         resetUserSession();
     
+        // Initialize state
         this.leaderboardData = [];
         this.username = '';
         this.isUsernameSet = false;
         this.maxEntries = 20;
         this.supabase = null;
         this.sessionId = null;
-        this.sessionHighScore = 0; // Track session high score
+        this.sessionHighScore = 0;
         this.scoreThreshold = 5000; // Only submit scores of 5000+
-        this.leaderboardLoaded = false; // Track if leaderboard has been loaded
-        this.leaderboardVisible = false; // Track if leaderboard is visible
-        this.lastSubmissionTime = 0; // Track last submission time
+        this.leaderboardLoaded = false;
+        this.leaderboardVisible = false;
+        this.lastSubmissionTime = 0;
         
-        // Pre-bind methods
+        // Pre-bind methods to maintain context
         this.updateScore = debounce(this.updateScore.bind(this), 300);
         this.processScore = this.processScore.bind(this);
         
-        this.initializeUI();
+        // Initialize components
+        this.createUI();
         this.initSupabase();
         this.addEventListeners();
         this.findScoreManager();
-        this.initLevelButtonHandlers(); // Initialize level button handlers
-
-        setTimeout(() => {
-            const gameContainer = document.querySelector('.game-container');
-            const bottomButtons = document.querySelector('.bottom-buttons');
-                if (gameContainer && gameContainer.classList.contains('game-active') && bottomButtons) {
-                    bottomButtons.style.display = 'flex';
-                    bottomButtons.style.visibility = 'visible';
-                    bottomButtons.style.opacity = '1';
-                }
-        }, 500);
-    
-    }
-    
-    initializeUI() {
-    // Add bottom buttons container
-    this.createBottomButtons();
-    
-    // Create username submission area
-    this.createUsernameSubmissionArea();
-    
-    // Create leaderboard table
-    this.createLeaderboardTable();
-    
-    // Setup an observer to ensure buttons stay visible
-    const gameContainer = document.querySelector('.game-container');
-    if (gameContainer) {
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (mutation.attributeName === 'class' && 
-                    gameContainer.classList.contains('game-active')) {
-                    const bottomButtons = document.querySelector('.bottom-buttons');
-                    if (bottomButtons) {
-                        bottomButtons.style.display = 'flex';
-                        
-                        // If username is already set, apply button styling
-                        if (this.isUsernameSet) {
-                            this.handleButtonsAfterSubmission();
-                        }
-                    }
-                }
-            });
-        });
         
-        observer.observe(gameContainer, { attributes: true });
+        // Force check for button visibility multiple times
+        this.checkButtonVisibility();
+        setTimeout(() => this.checkButtonVisibility(), 500);
+        setTimeout(() => this.checkButtonVisibility(), 1000);
+        setTimeout(() => this.checkButtonVisibility(), 2000);
     }
-}
     
+    // Create all UI elements
+    createUI() {
+        this.createBottomButtons();
+        this.createUsernameSubmissionArea();
+        this.createLeaderboardTable();
+        this.setupObservers();
+    }
+    
+    // Set up MutationObserver to detect game state changes
+    setupObservers() {
+        const gameContainer = document.querySelector('.game-container');
+        if (gameContainer) {
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.attributeName === 'class') {
+                        this.checkButtonVisibility();
+                    }
+                });
+            });
+            
+            observer.observe(gameContainer, { attributes: true });
+        }
+    }
+    
+    // Create bottom buttons
     createBottomButtons() {
         const gameContainer = document.querySelector('.game-container');
         if (!gameContainer) return;
         
         const buttonsContainer = document.createElement('div');
         buttonsContainer.className = 'bottom-buttons';
+        buttonsContainer.id = 'bottom-buttons';
         
-        // Record Name Button (changed from "Record Score")
+        // Set inline styles to ensure visibility
+        buttonsContainer.style.cssText = `
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            gap: 10px;
+            width: 320px;
+            margin: 15px auto;
+            visibility: visible;
+            opacity: 1;
+            position: relative;
+            z-index: 20;
+        `;
+        
+        // Record Name Button
         const recordScoreButton = document.createElement('button');
         recordScoreButton.id = 'record-score-btn';
         recordScoreButton.className = 'bottom-btn';
@@ -139,28 +127,73 @@ class LeaderboardManager {
             LEADERBOARD
         `;
         
+        // Set button styles directly to ensure visibility
+        const buttonStyle = `
+            display: block;
+            visibility: visible;
+            opacity: 1;
+            font-family: 'Trebuchet MS', Arial, sans-serif;
+            font-size: 1rem;
+            font-weight: bold;
+            background-color: #3b82f6;
+            color: white;
+            border: 2px solid #93c5fd;
+            border-radius: 5px;
+            padding: 8px 12px;
+            height: 42px;
+            width: 150px;
+            cursor: pointer;
+        `;
+        
+        recordScoreButton.style.cssText = buttonStyle;
+        leaderboardButton.style.cssText = buttonStyle;
+        
         buttonsContainer.appendChild(recordScoreButton);
         buttonsContainer.appendChild(leaderboardButton);
         
         gameContainer.appendChild(buttonsContainer);
     }
     
+    // Create username submission area
     createUsernameSubmissionArea() {
         const gameContainer = document.querySelector('.game-container');
         if (!gameContainer) return;
         
-        // Create username area container
+        // Create container
         const usernameAreaContainer = document.createElement('div');
         usernameAreaContainer.id = 'username-area-container';
         usernameAreaContainer.style.display = 'none';
-        usernameAreaContainer.style.marginTop = '10px';
-        usernameAreaContainer.style.width = '100%';
-        usernameAreaContainer.style.maxWidth = '400px';
-        usernameAreaContainer.style.margin = '10px auto';
+        usernameAreaContainer.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+        `;
         
         // Username submission area
         const usernameArea = document.createElement('div');
         usernameArea.className = 'username-area';
+        usernameArea.style.cssText = `
+            width: 85%;
+            max-width: 340px;
+            background-color: #e6f2ff;
+            border: 2px solid #93c5fd;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 0 auto;
+            position: relative;
+        `;
         
         const usernameForm = document.createElement('div');
         usernameForm.className = 'username-form';
@@ -185,13 +218,24 @@ class LeaderboardManager {
         const returnButton = document.createElement('button');
         returnButton.id = 'return-to-record-btn';
         returnButton.innerHTML = '&#9650;'; // Upwards triangle
-        returnButton.style.background = 'none';
-        returnButton.style.border = 'none';
-        returnButton.style.color = '#3b82f6';
-        returnButton.style.fontSize = '24px';
-        returnButton.style.cursor = 'pointer';
-        returnButton.style.marginTop = '10px';
-        returnButton.style.transition = 'color 0.2s ease';
+        returnButton.style.cssText = `
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 10000;
+            border: none;
+            color: #3b82f6;
+            font-size: 24px;
+            cursor: pointer;
+        `;
         
         const statusMessage = document.createElement('div');
         statusMessage.id = 'username-status';
@@ -203,105 +247,164 @@ class LeaderboardManager {
         usernameForm.appendChild(usernamePrompt);
         usernameForm.appendChild(inputWrapper);
         usernameForm.appendChild(statusMessage);
-        usernameForm.appendChild(returnButton);
         
         usernameArea.appendChild(usernameForm);
+        usernameArea.appendChild(returnButton);
+        
         usernameAreaContainer.appendChild(usernameArea);
         
         gameContainer.appendChild(usernameAreaContainer);
     }
     
+    // Create leaderboard table
     createLeaderboardTable() {
         const gameContainer = document.querySelector('.game-container');
         if (!gameContainer) return;
         
-        // Create leaderboard table container
+        // Create leaderboard container
         const leaderboardContainer = document.createElement('div');
         leaderboardContainer.id = 'leaderboard-table-container';
-        leaderboardContainer.style.display = 'none';
-        leaderboardContainer.style.marginTop = '10px';
-        leaderboardContainer.style.width = '100%';
+        leaderboardContainer.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+        `;
+        
+        // Create title
+        const leaderboardTitle = document.createElement('h2');
+        leaderboardTitle.textContent = 'LEADERBOARD';
+        leaderboardTitle.className = 'leaderboard-title';
+        leaderboardTitle.style.cssText = `
+            font-size: 1.4rem;
+            margin: 15px 0;
+            font-weight: bold;
+            font-family: 'Trebuchet MS', Arial, sans-serif;
+            color: white;
+        `;
         
         // Create the table div
         const leaderboardTable = document.createElement('div');
         leaderboardTable.className = 'leaderboard-table';
         leaderboardTable.id = 'leaderboard-table';
+        leaderboardTable.style.cssText = `
+            width: 90%;
+            max-width: 350px;
+            background-color: #e6f2ff;
+            border: 2px solid #93c5fd;
+            border-radius: 6px;
+            overflow: hidden;
+            max-height: 70vh;
+            overflow-y: auto;
+            margin: 0 auto;
+            position: relative;
+        `;
         
-        leaderboardContainer.appendChild(leaderboardTable);
-        
-        // Add return button to the leaderboard
+        // Add return button
         const returnButton = document.createElement('button');
         returnButton.id = 'return-from-leaderboard-btn';
         returnButton.innerHTML = '&#9650;'; // Upwards triangle
-        returnButton.style.background = 'none';
-        returnButton.style.border = 'none';
-        returnButton.style.color = '#3b82f6';
-        returnButton.style.fontSize = '24px';
-        returnButton.style.cursor = 'pointer';
-        returnButton.style.marginTop = '10px';
-        returnButton.style.transition = 'color 0.2s ease';
-        returnButton.style.display = 'block';
-        returnButton.style.margin = '10px auto';
+        returnButton.style.cssText = `
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 10000;
+            border: none;
+            color: #3b82f6;
+            font-size: 24px;
+            cursor: pointer;
+        `;
         
+        leaderboardContainer.appendChild(leaderboardTitle);
+        leaderboardContainer.appendChild(leaderboardTable);
         leaderboardContainer.appendChild(returnButton);
+        
         gameContainer.appendChild(leaderboardContainer);
     }
     
+    // Add all event listeners
     addEventListeners() {
+        // Bottom buttons click handlers
         const recordScoreBtn = document.getElementById('record-score-btn');
         const leaderboardBtn = document.getElementById('leaderboard-btn');
         const usernameAreaContainer = document.getElementById('username-area-container');
         const leaderboardTableContainer = document.getElementById('leaderboard-table-container');
+        
+        if (recordScoreBtn) {
+            recordScoreBtn.addEventListener('click', () => {
+                if (!this.isUsernameSet && usernameAreaContainer) {
+                    usernameAreaContainer.style.display = 'flex';
+                    if (leaderboardTableContainer) {
+                        leaderboardTableContainer.style.display = 'none';
+                    }
+                }
+            });
+        }
+        
+        if (leaderboardBtn) {
+            leaderboardBtn.addEventListener('click', () => {
+                if (leaderboardTableContainer) {
+                    const currentDisplay = leaderboardTableContainer.style.display;
+                    leaderboardTableContainer.style.display = currentDisplay === 'flex' ? 'none' : 'flex';
+                    
+                    if (leaderboardTableContainer.style.display === 'flex') {
+                        if (usernameAreaContainer) {
+                            usernameAreaContainer.style.display = 'none';
+                        }
+                        this.loadLeaderboard();
+                    }
+                }
+            });
+        }
+        
+        // Return buttons
         const returnToRecordBtn = document.getElementById('return-to-record-btn');
         const returnFromLeaderboardBtn = document.getElementById('return-from-leaderboard-btn');
-        const submitUsernameBtn = document.getElementById('submit-username');
         
-        // Record Score Button Click - Toggle behavior
-        recordScoreBtn.addEventListener('click', () => {
-            if (!this.isUsernameSet) {
-                // Toggle visibility of username area
-                if (usernameAreaContainer.style.display === 'block') {
-                    usernameAreaContainer.style.display = 'none';
-                } else {
-                    usernameAreaContainer.style.display = 'block';
-                    leaderboardTableContainer.style.display = 'none'; // Hide leaderboard if open
-                }
-            }
-        });
-        
-        // Leaderboard Button Click - Toggle behavior
-        leaderboardBtn.addEventListener('click', () => {
-            if (leaderboardTableContainer.style.display === 'block') {
-                leaderboardTableContainer.style.display = 'none';
-            } else {
-                leaderboardTableContainer.style.display = 'block';
-                usernameAreaContainer.style.display = 'none'; // Hide username area if open
-                this.loadLeaderboard(); // Load fresh data when opening
-            }
-        });
-        
-        // Return to Record Button Click
         if (returnToRecordBtn) {
             returnToRecordBtn.addEventListener('click', () => {
-                usernameAreaContainer.style.display = 'none';
+                if (usernameAreaContainer) {
+                    usernameAreaContainer.style.display = 'none';
+                }
             });
         }
         
-        // Return from Leaderboard Button Click
         if (returnFromLeaderboardBtn) {
             returnFromLeaderboardBtn.addEventListener('click', () => {
-                leaderboardTableContainer.style.display = 'none';
+                if (leaderboardTableContainer) {
+                    leaderboardTableContainer.style.display = 'none';
+                }
             });
         }
         
-        // Submit Username Button Click
+        // Username submission
+        const submitUsernameBtn = document.getElementById('submit-username');
         if (submitUsernameBtn) {
             submitUsernameBtn.addEventListener('click', () => {
                 this.handleUsernameSubmission();
             });
         }
         
-        // Listen for Enter key in the input field
+        // Enter key in input field
         const usernameInput = document.getElementById('username-input');
         if (usernameInput) {
             usernameInput.addEventListener('keyup', (event) => {
@@ -315,51 +418,24 @@ class LeaderboardManager {
         window.addEventListener('scoreUpdated', (event) => {
             const score = event.detail.score;
             
-            // Conditionally process score based on username set status
-            if (!this.isUsernameSet && score >= this.scoreThreshold) {
+            // Highlight record button if score is high enough but username not set
+            if (!this.isUsernameSet && score >= this.scoreThreshold && recordScoreBtn) {
                 recordScoreBtn.classList.add('highlight');
             }
         });
-    }
-    
-    // Initialize level button click handlers
-    initLevelButtonHandlers() {
+        
+        // Level button listeners to ensure bottom buttons visibility
         document.querySelectorAll('.level-btn').forEach(btn => {
-            btn.addEventListener('click', this.handleLevelButtonClick, { once: true }); // Only trigger once
+            btn.addEventListener('click', () => {
+                // Check button visibility after level selection
+                setTimeout(() => this.checkButtonVisibility(), 100);
+                setTimeout(() => this.checkButtonVisibility(), 500);
+                setTimeout(() => this.checkButtonVisibility(), 1000);
+            });
         });
     }
     
-    // Handle level button click to hide the level selector title
-    handleLevelButtonClick() {
-        const levelSelectorTitle = document.querySelector('.level-selector-title');
-        if (levelSelectorTitle) {
-            levelSelectorTitle.style.transition = 'opacity 0.5s ease-out';
-            levelSelectorTitle.style.opacity = '0';
-            
-            // After transition, hide the element
-            setTimeout(() => {
-                levelSelectorTitle.style.display = 'none';
-            }, 500);
-        }
-    }
-    
-    toggleLeaderboard() {
-        const leaderboardTableContainer = document.getElementById('leaderboard-table-container');
-        const usernameAreaContainer = document.getElementById('username-area-container');
-        
-        if (leaderboardTableContainer.style.display === 'none') {
-            // Show leaderboard
-            leaderboardTableContainer.style.display = 'block';
-            usernameAreaContainer.style.display = 'none';
-            
-            // Load leaderboard data
-            this.loadLeaderboard();
-        } else {
-            // Hide leaderboard
-            leaderboardTableContainer.style.display = 'none';
-        }
-    }
-    
+    // Initialize Supabase
     async initSupabase() {
         try {
             // Try to dynamically import Supabase client
@@ -378,6 +454,7 @@ class LeaderboardManager {
         }
     }
     
+    // Initialize leaderboard table in Supabase
     async initializeLeaderboardTable() {
         if (!this.supabase) return false;
         
@@ -398,6 +475,7 @@ class LeaderboardManager {
         }
     }
     
+    // Find scoreManager instance
     findScoreManager() {
         // First try to use the scoreManager directly imported via module
         import('./scoremanager.js').then(module => {
@@ -407,19 +485,16 @@ class LeaderboardManager {
                 this.patchScoreManager(module.scoreManager);
                 console.log('ScoreManager found via module import and patched successfully');
             } else {
-                console.log('ScoreManager not found in module, checking window...');
                 // Otherwise check window object
                 if (window.scoreManager) {
                     this.patchScoreManager(window.scoreManager);
                     console.log('ScoreManager found in window and patched successfully');
                 } else {
-                    console.log('ScoreManager not found, setting up observer...');
                     // Set up an observer to wait for scoreManager
                     this.setupScoreManagerObserver();
                 }
             }
         }).catch(err => {
-            console.error('Error importing scoremanager module:', err);
             // Try to find it on window
             if (window.scoreManager) {
                 this.patchScoreManager(window.scoreManager);
@@ -429,8 +504,8 @@ class LeaderboardManager {
         });
     }
     
+    // Set up observer to wait for scoreManager
     setupScoreManagerObserver() {
-        // Wait for scoreManager to be available on window
         const checkInterval = setInterval(() => {
             if (window.scoreManager) {
                 clearInterval(checkInterval);
@@ -446,6 +521,7 @@ class LeaderboardManager {
         }, 10000);
     }
     
+    // Patch the scoreManager to integrate with leaderboard
     patchScoreManager(scoreManager) {
         try {
             // Store reference to the original methods
@@ -488,7 +564,7 @@ class LeaderboardManager {
                     }
                 }
                 
-                // Dispatch score updated event regardless of round completion
+                // Dispatch score updated event
                 const scoreUpdatedEvent = new CustomEvent('scoreUpdated', {
                     detail: {
                         score: this.totalScore,
@@ -507,7 +583,8 @@ class LeaderboardManager {
             return false;
         }
     }
-
+    
+    // Process score updates
     processScore(score) {
         console.log('Processing score:', score);
         
@@ -532,6 +609,7 @@ class LeaderboardManager {
         }
     }
     
+    // Update score in database
     async updateScore(score) {
         console.log('updateScore called with:', score);
         
@@ -585,93 +663,96 @@ class LeaderboardManager {
         }
     }
     
-   async handleUsernameSubmission() {
-    const usernameInput = document.getElementById('username-input');
-    const statusMessage = document.getElementById('username-status');
-    const username = usernameInput.value.trim();
-    
-    if (!username) {
-        statusMessage.textContent = 'Please enter a name.';
-        statusMessage.className = 'status-message error';
-        return;
-    }
-    
-    // Show checking message
-    statusMessage.textContent = 'Checking name...';
-    statusMessage.className = 'status-message checking';
-    
-    try {
-        let isApproved = false;
+    // Handle username submission
+    async handleUsernameSubmission() {
+        const usernameInput = document.getElementById('username-input');
+        const statusMessage = document.getElementById('username-status');
+        const username = usernameInput.value.trim();
+        
+        if (!username) {
+            statusMessage.textContent = 'Please enter a name.';
+            statusMessage.className = 'status-message error';
+            return;
+        }
+        
+        // Show checking message
+        statusMessage.textContent = 'Checking name...';
+        statusMessage.className = 'status-message checking';
         
         try {
-            // Try to use the username checker module
-            const usernameCheckerModule = await import('./username-checker.js');
-            const usernameChecker = usernameCheckerModule.default;
-            isApproved = await usernameChecker.checkUsername(username);
-        } catch (e) {
-            console.warn('Could not load username checker, using fallback check');
-            isApproved = this.checkUsername(username);
-        }
-        
-        if (isApproved) {
-            this.setUsername(username);
+            let isApproved = false;
             
-            // Hide the username area immediately
-            const usernameAreaContainer = document.getElementById('username-area-container');
-            if (usernameAreaContainer) {
-                usernameAreaContainer.style.display = 'none';
+            try {
+                // Try to use the username checker module
+                const usernameCheckerModule = await import('./username-checker.js');
+                const usernameChecker = usernameCheckerModule.default;
+                isApproved = await usernameChecker.checkUsername(username);
+            } catch (e) {
+                console.warn('Could not load username checker, using fallback check');
+                isApproved = this.checkUsername(username);
             }
             
-            // Get current score and process it
-            const currentScore = this.getCurrentScore();
-            if (currentScore > 0) {
-                this.processScore(currentScore);
+            if (isApproved) {
+                this.setUsername(username);
+                
+                // Hide the username area immediately
+                const usernameAreaContainer = document.getElementById('username-area-container');
+                if (usernameAreaContainer) {
+                    usernameAreaContainer.style.display = 'none';
+                }
+                
+                // Get current score and process it
+                const currentScore = this.getCurrentScore();
+                if (currentScore > 0) {
+                    this.processScore(currentScore);
+                }
+                
+                // Show welcome message in the game messages area using gameController
+                if (window.gameController && window.gameController.showMessage) {
+                    window.gameController.showMessage(`Welcome ${username}! Score at least 5000 to make the leaderboard.`, 'info', 8000);
+                }
+                
+                // Display username in score area
+                const scoreLeftElement = document.getElementById('score-bonus');
+                if (scoreLeftElement) {
+                    scoreLeftElement.textContent = username;
+                    scoreLeftElement.style.color = '#6b7280'; // Gray text
+                    scoreLeftElement.style.visibility = 'visible';
+                }
+                
+                // Hide record button and center leaderboard button
+                this.handleButtonsAfterSubmission();
+                
+            } else {
+                statusMessage.textContent = 'Username not appropriate for family-friendly environment. Please try another.';
+                statusMessage.className = 'status-message error';
             }
-            
-            // Show welcome message in the game messages area using gameController
-            if (window.gameController && window.gameController.showMessage) {
-                window.gameController.showMessage(`Welcome ${username}! Score at least 5000 to make the leaderboard.`, 'info', 8000);
-            }
-            
-            // Display username in score area
-            const scoreLeftElement = document.getElementById('score-bonus');
-            if (scoreLeftElement) {
-                scoreLeftElement.textContent = username;
-                scoreLeftElement.style.color = '#6b7280'; // Gray text
-                scoreLeftElement.style.visibility = 'visible';
-            }
-            
-            // Hide record button and center leaderboard button
-            this.handleButtonsAfterSubmission();
-            
-        } else {
-            statusMessage.textContent = 'Username not appropriate for family-friendly environment. Please try another.';
+        } catch (error) {
+            console.error('Error checking username:', error);
+            statusMessage.textContent = 'Error checking username. Please try again.';
             statusMessage.className = 'status-message error';
         }
-    } catch (error) {
-        console.error('Error checking username:', error);
-        statusMessage.textContent = 'Error checking username. Please try again.';
-        statusMessage.className = 'status-message error';
-    }
-}
-
-// Helper method to handle buttons after username submission
-handleButtonsAfterSubmission() {
-    // Hide record name button
-    const recordScoreBtn = document.getElementById('record-score-btn');
-    if (recordScoreBtn) {
-        recordScoreBtn.style.display = 'none';
     }
     
-    // Center the leaderboard button
-    const leaderboardBtn = document.getElementById('leaderboard-btn');
-    const bottomButtons = document.querySelector('.bottom-buttons');
-    if (leaderboardBtn && bottomButtons) {
-        bottomButtons.classList.add('single-button');
-        leaderboardBtn.style.margin = '0 auto';
+    // Handle buttons after username submission
+    handleButtonsAfterSubmission() {
+        // Hide record name button
+        const recordScoreBtn = document.getElementById('record-score-btn');
+        if (recordScoreBtn) {
+            recordScoreBtn.style.display = 'none';
+        }
+        
+        // Center the leaderboard button
+        const leaderboardBtn = document.getElementById('leaderboard-btn');
+        const bottomButtons = document.getElementById('bottom-buttons');
+        if (leaderboardBtn && bottomButtons) {
+            bottomButtons.classList.add('single-button');
+            bottomButtons.style.justifyContent = 'center';
+            leaderboardBtn.style.margin = '0 auto';
+        }
     }
-}
     
+    // Check if username is appropriate
     checkUsername(username) {
         if (!username || username.length < 2 || username.length > 12) {
             return false;
@@ -691,6 +772,7 @@ handleButtonsAfterSubmission() {
         return true;
     }
     
+    // Set username and create session
     setUsername(username) {
         this.username = username;
         this.isUsernameSet = true;
@@ -700,9 +782,9 @@ handleButtonsAfterSubmission() {
         console.log('New session created with ID:', this.sessionId);
     }
     
+    // Get current score from scoreManager
     getCurrentScore() {
         try {
-            // Try to get score from multiple places
             if (window.scoreManager) {
                 return window.scoreManager.totalScore || 0;
             }
@@ -712,6 +794,7 @@ handleButtonsAfterSubmission() {
         return 0;
     }
     
+    // Update score in Supabase
     async updateSupabaseScore(score) {
         if (!this.supabase) return false;
         
@@ -786,6 +869,7 @@ handleButtonsAfterSubmission() {
         }
     }
     
+    // Update temporary score (offline mode)
     updateTemporaryScore(score) {
         // Add a new entry for this session
         const now = new Date();
@@ -805,6 +889,7 @@ handleButtonsAfterSubmission() {
         this.renderLeaderboard();
     }
     
+    // Show update status
     showUpdateStatus(message, type = 'info') {
         const statusEl = document.getElementById('leaderboard-status');
         if (!statusEl) {
@@ -824,6 +909,7 @@ handleButtonsAfterSubmission() {
         }
     }
     
+    // Hide update status
     hideUpdateStatus() {
         const statusEl = document.getElementById('leaderboard-status');
         if (statusEl) {
@@ -831,6 +917,7 @@ handleButtonsAfterSubmission() {
         }
     }
     
+    // Refresh leaderboard data
     async refreshLeaderboard() {
         try {
             // Always force a fresh load from Supabase when refreshing
@@ -844,6 +931,7 @@ handleButtonsAfterSubmission() {
         }
     }
     
+    // Load leaderboard data from database
     async loadLeaderboard() {
         try {
             // Only load from Supabase if data isn't loaded yet or if we're forcing a refresh
@@ -865,6 +953,7 @@ handleButtonsAfterSubmission() {
         }
     }
     
+    // Load data from Supabase
     async loadFromSupabase() {
         if (!this.supabase) throw new Error('Supabase client not initialized');
         
@@ -896,11 +985,9 @@ handleButtonsAfterSubmission() {
         console.log('Loaded leaderboard data from Supabase:', this.leaderboardData.length, 'entries');
     }
     
+    // Render leaderboard UI
     renderLeaderboard() {
-        const leaderboardTableContainer = document.getElementById('leaderboard-table-container');
-        if (!leaderboardTableContainer) return;
-        
-        const tableBody = leaderboardTableContainer.querySelector('.leaderboard-table');
+        const tableBody = document.getElementById('leaderboard-table');
         if (!tableBody) return;
         
         // Clear existing content
@@ -985,66 +1072,90 @@ handleButtonsAfterSubmission() {
             tableBody.appendChild(emptyRow);
         }
     }
-}
-
-// Add this function to fix button visibility issues
-function fixBottomButtonsVisibility() {
-  console.log('Running bottom buttons visibility fix');
-  
-  // Force the display of bottom buttons when game is active
-  function checkAndShowButtons() {
-    const gameContainer = document.querySelector('.game-container');
-    const bottomButtons = document.querySelector('.bottom-buttons');
     
-    if (gameContainer && gameContainer.classList.contains('game-active') && bottomButtons) {
-      console.log('Game is active, showing bottom buttons');
-      bottomButtons.style.display = 'flex';
-      bottomButtons.style.visibility = 'visible';
-      bottomButtons.style.opacity = '1';
-      bottomButtons.style.height = 'auto';
-      
-      // Set z-index to ensure buttons appear above other elements
-      bottomButtons.style.zIndex = '20';
-      
-      // Add !important to override any conflicting CSS rules
-      bottomButtons.setAttribute('style', 
-        'display: flex !important; visibility: visible !important; opacity: 1 !important; height: auto !important; z-index: 20 !important;');
-    }
-  }
-  
-  // Check immediately
-  checkAndShowButtons();
-  
-  // Check again after a delay to catch late initialization
-  setTimeout(checkAndShowButtons, 300);
-  setTimeout(checkAndShowButtons, 1000);
-  
-  // Also set up a MutationObserver to watch for the game-active class
-  const gameContainer = document.querySelector('.game-container');
-  if (gameContainer) {
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.attributeName === 'class' && 
-            gameContainer.classList.contains('game-active')) {
-          checkAndShowButtons();
+    // Force check of button visibility
+    checkButtonVisibility() {
+        const gameContainer = document.querySelector('.game-container');
+        const bottomButtons = document.getElementById('bottom-buttons');
+        
+        if (gameContainer && bottomButtons) {
+            console.log('Checking buttons visibility:', 
+                gameContainer.classList.contains('game-active') ? 'game active' : 'game not active');
+            
+            // Always ensure buttons container is visible when game is active
+            if (gameContainer.classList.contains('game-active')) {
+                bottomButtons.style.cssText = `
+                    display: flex !important;
+                    flex-direction: row !important;
+                    justify-content: center !important;
+                    gap: 10px !important;
+                    width: 320px !important;
+                    margin: 15px auto !important;
+                    visibility: visible !important;
+                    opacity: 1 !important;
+                    position: relative !important;
+                    z-index: 20 !important;
+                `;
+                
+                // Make sure both buttons are visible too
+                const recordBtn = document.getElementById('record-score-btn');
+                const leaderboardBtn = document.getElementById('leaderboard-btn');
+                
+                if (recordBtn && !this.isUsernameSet) {
+                    recordBtn.style.cssText = `
+                        display: block !important;
+                        visibility: visible !important;
+                        opacity: 1 !important;
+                    `;
+                }
+                
+                if (leaderboardBtn) {
+                    leaderboardBtn.style.cssText = `
+                        display: block !important;
+                        visibility: visible !important;
+                        opacity: 1 !important;
+                    `;
+                }
+                
+                // If username is set, apply the proper button layout
+                if (this.isUsernameSet) {
+                    this.handleButtonsAfterSubmission();
+                }
+            }
         }
-      });
-    });
-    
-    observer.observe(gameContainer, { attributes: true });
-  }
+    }
 }
 
-// Run the fix immediately
-fixBottomButtonsVisibility();
-
-// Also run it when the window loads
-window.addEventListener('load', fixBottomButtonsVisibility);
-
-// And run it when any level button is clicked
-document.querySelectorAll('.level-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    // Wait a short time for the game to activate
-    setTimeout(fixBottomButtonsVisibility, 200);
-  });
+// Initialize the leaderboard manager when DOM content is loaded
+window.addEventListener('DOMContentLoaded', () => {
+    try {
+        // Reset any stored session data
+        resetUserSession();
+        
+        // Create and initialize the leaderboard
+        window.leaderboardManager = new LeaderboardManager();
+        
+        console.log('Leaderboard initialized successfully');
+    } catch (error) {
+        console.error('Error initializing leaderboard system:', error);
+    }
 });
+
+// Force buttons to be visible when the page loads
+window.addEventListener('load', () => {
+    if (window.leaderboardManager) {
+        window.leaderboardManager.checkButtonVisibility();
+    }
+});
+
+// Force check buttons on game start
+window.addEventListener('gameStart', () => {
+    if (window.leaderboardManager) {
+        setTimeout(() => window.leaderboardManager.checkButtonVisibility(), 100);
+        setTimeout(() => window.leaderboardManager.checkButtonVisibility(), 500);
+        setTimeout(() => window.leaderboardManager.checkButtonVisibility(), 1000);
+    }
+});
+
+// Export for module usage
+export default LeaderboardManager;
