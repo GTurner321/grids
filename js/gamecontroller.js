@@ -689,6 +689,91 @@ class GameController {
 // Initialize game and store reference
 window.addEventListener('DOMContentLoaded', () => {
     window.gameController = new GameController();
+    
+    // Enhanced touch support for start cell
+    setTimeout(function() {
+        console.log('Enhancing touch support for cells...');
+        
+        // Add enhanced touch handling for start cell
+        const enhanceStartCell = function() {
+            const startCells = document.querySelectorAll('.grid-cell.start-cell');
+            if (startCells.length === 0) {
+                setTimeout(enhanceStartCell, 100);
+                return;
+            }
+            
+            startCells.forEach(cell => {
+                // Make start cell more noticeable with CSS
+                cell.style.zIndex = '30';
+                cell.style.touchAction = 'manipulation';
+                cell.style.webkitTapHighlightColor = 'rgba(0,0,0,0)';
+                
+                // Add specific tap handler just for start cell
+                cell.addEventListener('touchstart', function(e) {
+                    if (!window.gameController || 
+                        !window.gameController.state || 
+                        !window.gameController.state.gameActive) return;
+                    
+                    // Directly handle the start cell tap
+                    if (window.gameController.state.userPath.length === 0) {
+                        e.preventDefault(); // Prevent scrolling
+                        e.stopPropagation(); // Stop event bubbling
+                        
+                        const cellIndex = parseInt(cell.dataset.index);
+                        if (isNaN(cellIndex)) return;
+                        
+                        console.log('Start cell tapped directly via enhanced handler');
+                        
+                        // Add cell to path
+                        window.gameController.state.userPath = [cellIndex];
+                        window.gameController.updatePathHighlight();
+                        window.gameController.showMessage('Path started! Continue by selecting connected cells.');
+                        
+                        // Visual feedback
+                        cell.classList.add('start-cell-selected');
+                        
+                        // Add a brief pulse effect for feedback
+                        cell.classList.add('just-selected');
+                        setTimeout(() => {
+                            cell.classList.remove('just-selected');
+                        }, 300);
+                    }
+                }, { passive: false });
+                
+                // iOS fallback using touchend
+                if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+                    cell.addEventListener('touchend', function(e) {
+                        if (!window.gameController || 
+                            !window.gameController.state || 
+                            !window.gameController.state.gameActive) return;
+                            
+                        if (window.gameController.state.userPath.length === 0) {
+                            const cellIndex = parseInt(cell.dataset.index);
+                            if (isNaN(cellIndex)) return;
+                            
+                            console.log('iOS fallback: Start cell tapped via touchend');
+                            window.gameController.state.userPath = [cellIndex];
+                            window.gameController.updatePathHighlight();
+                            window.gameController.showMessage('Path started! Continue by selecting connected cells.');
+                        }
+                    });
+                }
+            });
+            
+            console.log('Start cell enhancement applied');
+        };
+        
+        enhanceStartCell();
+        
+        // Improve all grid cells for better touch response
+        const gridCells = document.querySelectorAll('.grid-cell');
+        gridCells.forEach(cell => {
+            cell.style.touchAction = 'manipulation';
+            cell.style.webkitUserSelect = 'none';
+            cell.style.userSelect = 'none';
+        });
+        
+    }, 500); // Wait for game to initialize
 });
 
 export default GameController;
