@@ -986,3 +986,65 @@ handleButtonsAfterSubmission() {
         }
     }
 }
+
+// Add this function to fix button visibility issues
+function fixBottomButtonsVisibility() {
+  console.log('Running bottom buttons visibility fix');
+  
+  // Force the display of bottom buttons when game is active
+  function checkAndShowButtons() {
+    const gameContainer = document.querySelector('.game-container');
+    const bottomButtons = document.querySelector('.bottom-buttons');
+    
+    if (gameContainer && gameContainer.classList.contains('game-active') && bottomButtons) {
+      console.log('Game is active, showing bottom buttons');
+      bottomButtons.style.display = 'flex';
+      bottomButtons.style.visibility = 'visible';
+      bottomButtons.style.opacity = '1';
+      bottomButtons.style.height = 'auto';
+      
+      // Set z-index to ensure buttons appear above other elements
+      bottomButtons.style.zIndex = '20';
+      
+      // Add !important to override any conflicting CSS rules
+      bottomButtons.setAttribute('style', 
+        'display: flex !important; visibility: visible !important; opacity: 1 !important; height: auto !important; z-index: 20 !important;');
+    }
+  }
+  
+  // Check immediately
+  checkAndShowButtons();
+  
+  // Check again after a delay to catch late initialization
+  setTimeout(checkAndShowButtons, 300);
+  setTimeout(checkAndShowButtons, 1000);
+  
+  // Also set up a MutationObserver to watch for the game-active class
+  const gameContainer = document.querySelector('.game-container');
+  if (gameContainer) {
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'class' && 
+            gameContainer.classList.contains('game-active')) {
+          checkAndShowButtons();
+        }
+      });
+    });
+    
+    observer.observe(gameContainer, { attributes: true });
+  }
+}
+
+// Run the fix immediately
+fixBottomButtonsVisibility();
+
+// Also run it when the window loads
+window.addEventListener('load', fixBottomButtonsVisibility);
+
+// And run it when any level button is clicked
+document.querySelectorAll('.level-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    // Wait a short time for the game to activate
+    setTimeout(fixBottomButtonsVisibility, 200);
+  });
+});
