@@ -252,7 +252,7 @@
   /* Game messages with enhanced white shadow */
   #game-messages {
     width: var(--container-width) !important;
-    margin: 8px auto 3px;
+    margin: 4px auto 2px;
     padding: 6px 0;
     font-size: 1.6rem !important;
     min-height: 45px !important;
