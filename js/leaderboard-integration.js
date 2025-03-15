@@ -62,6 +62,17 @@ class LeaderboardManager {
         this.addEventListeners();
         this.findScoreManager();
         this.initLevelButtonHandlers(); // Initialize level button handlers
+
+        setTimeout(() => {
+            const gameContainer = document.querySelector('.game-container');
+            const bottomButtons = document.querySelector('.bottom-buttons');
+                if (gameContainer && gameContainer.classList.contains('game-active') && bottomButtons) {
+                    bottomButtons.style.display = 'flex';
+                    bottomButtons.style.visibility = 'visible';
+                    bottomButtons.style.opacity = '1';
+                }
+        }, 500);
+    
     }
     
     initializeUI() {
