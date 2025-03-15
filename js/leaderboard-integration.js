@@ -1,4 +1,4 @@
-// leaderboard-integration.js - Updated with improved UI functionality
+// leaderboard-integration.js - Updated with UI improvements
 
 import supabaseLeaderboard from 'https://gturner321.github.io/grids/js/supabase-leaderboard.js';
 
@@ -581,27 +581,10 @@ class LeaderboardManager {
             if (isApproved) {
                 this.setUsername(username);
                 
-                // Replace username form with welcome message
+                // Hide the username form immediately
                 const usernameAreaContainer = document.getElementById('username-area-container');
                 if (usernameAreaContainer) {
-                    // Clear content and add welcome message
-                    usernameAreaContainer.innerHTML = '';
-                    const welcomeMessage = document.createElement('div');
-                    welcomeMessage.className = 'welcome-message';
-                    welcomeMessage.innerHTML = `Welcome <strong>${username}</strong> - score at least 5000 to make it onto the leaderboard`;
-                    usernameAreaContainer.appendChild(welcomeMessage);
-                    
-                    // Set a timeout to fade away after 15 seconds
-                    setTimeout(() => {
-                        // Add smooth fade-out transition
-                        usernameAreaContainer.style.transition = 'opacity 1s ease-out';
-                        usernameAreaContainer.style.opacity = '0';
-                        
-                        // After transition, hide the element
-                        setTimeout(() => {
-                            usernameAreaContainer.style.display = 'none';
-                        }, 1000);
-                    }, 15000);
+                    usernameAreaContainer.style.display = 'none';
                 }
                 
                 // Get current score and process it
@@ -610,8 +593,10 @@ class LeaderboardManager {
                     this.processScore(currentScore);
                 }
                 
-                statusMessage.textContent = '';
-                statusMessage.className = 'status-message';
+                // Show welcome message in the game messages area instead
+                if (window.gameController) {
+                    window.gameController.showMessage(`Welcome ${username}! Score at least 5000 to make the leaderboard.`, 'info', 8000);
+                }
                 
                 // Display username in score area
                 const scoreLeftElement = document.getElementById('score-bonus');
@@ -621,11 +606,21 @@ class LeaderboardManager {
                     scoreLeftElement.style.visibility = 'visible';
                 }
                 
-                // Record score button gets hidden after username set
+                // Hide record name button
                 const recordScoreBtn = document.getElementById('record-score-btn');
                 if (recordScoreBtn) {
                     recordScoreBtn.style.display = 'none';
                 }
+                
+                // Center the leaderboard button
+                const leaderboardBtn = document.getElementById('leaderboard-btn');
+                const bottomButtons = document.querySelector('.bottom-buttons');
+                if (leaderboardBtn && bottomButtons) {
+                    // Apply centering styles
+                    leaderboardBtn.style.margin = '0 auto';
+                    bottomButtons.style.justifyContent = 'center';
+                }
+                
             } else {
                 statusMessage.textContent = 'Username not appropriate for family-friendly environment. Please try another.';
                 statusMessage.className = 'status-message error';
@@ -787,7 +782,6 @@ class LeaderboardManager {
             statusEl.textContent = message;
             statusEl.style.display = 'block';
         }
-
     }
     
     hideUpdateStatus() {
@@ -952,24 +946,3 @@ class LeaderboardManager {
         }
     }
 }
-
-// Initialize on DOM content loaded
-window.addEventListener('DOMContentLoaded', () => {
-    try {
-        // First reset any stored session data
-        resetUserSession();
-        
-        // Load leaderboard stylesheet
-        loadStylesheet('./styles/leaderboard.css');
-        
-        // Create and initialize the leaderboard
-        window.leaderboardManager = new LeaderboardManager();
-        
-        console.log('Leaderboard initialized successfully');
-    } catch (error) {
-        console.error('Error initializing leaderboard system:', error);
-    }
-});
-
-// Export for module usage
-export default LeaderboardManager;
