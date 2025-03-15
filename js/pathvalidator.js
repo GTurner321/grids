@@ -164,10 +164,12 @@ export function validatePath(path, gridEntries) {
                 }
             }
             
+            // KEY FIX: Set failedAt to i+1 (keep the first square which is valid from previous calculation)
+            // Instead of completely removing all 4 squares of the failed calculation
             return {
                 isValid: false,
                 error: errorMsg,
-                failedAt: i,
+                failedAt: i + 1, // Keep the first square of current sequence since it's the valid result of the previous calculation
                 cellIndices: cellIndices
             };
         }
