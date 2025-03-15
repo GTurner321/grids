@@ -959,3 +959,22 @@ body.ios-device .grid-cell {
     visibility: visible !important;
     pointer-events: auto !important;
 }
+
+/* Fix for bottom buttons visibility */
+.game-container.game-active .bottom-buttons {
+  display: flex !important;
+}
+
+/* Fix for welcome message boxes */
+.welcome-message {
+  display: none !important; /* Force hide any welcome messages */
+}
+
+/* Style for single button mode */
+.bottom-buttons.single-button {
+  justify-content: center !important;
+}
+
+.bottom-buttons.single-button #leaderboard-btn {
+  margin: 0 auto !important;
+}
