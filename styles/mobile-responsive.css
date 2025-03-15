@@ -995,3 +995,20 @@ body.ios-device .grid-cell {
     display: none !important;
   }
 }
+
+/* Add or update this in your mobile-responsive.css file */
+
+@media (max-width: 768px) {
+  /* Score row with light blue border */
+  .score-row {
+    width: var(--container-width) !important;
+    height: 50px;
+    margin: 0 auto 10px auto !important;
+    border: 2px solid #93c5fd !important; /* Light blue border */
+    border-radius: 3px !important;
+    display: flex;
+    align-items: center;
+    background-color: #e6f2ff;
+    box-sizing: border-box;
+  }
+}
