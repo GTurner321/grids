@@ -232,6 +232,26 @@
         gameTitle.style.textShadow = '0 0 8px white, 0 0 15px white, 0 0 20px white';
       }
       
+      // Remove gray line under level buttons
+      const levelSelectorContainer = document.querySelector('.level-selector-container');
+      if (levelSelectorContainer) {
+        levelSelectorContainer.style.borderBottom = 'none';
+        levelSelectorContainer.style.boxShadow = 'none';
+        levelSelectorContainer.style.marginBottom = '12px';
+      }
+      
+      const levelButtons = document.querySelector('.level-buttons');
+      if (levelButtons) {
+        levelButtons.style.borderBottom = 'none';
+        levelButtons.style.boxShadow = 'none';
+      }
+      
+      const gameHeader = document.querySelector('.game-header');
+      if (gameHeader) {
+        gameHeader.style.borderBottom = 'none';
+        gameHeader.style.boxShadow = 'none';
+      }
+      
       // 3-4. Adjust button widths
       const checkButton = document.getElementById('check-solution');
       if (checkButton) {
