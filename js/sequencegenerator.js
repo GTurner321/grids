@@ -124,10 +124,18 @@ function selectOperatorAndNum2(num1, config) {
     
     const operatorBias = Math.random();
     let operator;
-    if (operatorBias < 0.35) operator = 'x';
-    else if (operatorBias < 0.6) operator = '/';
-    else if (operatorBias < 0.8) operator = '+';
-    else operator = '-';
+    
+    // If we're on level 3 (or any level with fractions), avoid division by fractions
+    if (config.allowFractions) {
+        if (operatorBias < 0.33) operator = 'x';
+        else if (operatorBias < 0.66) operator = '+';
+        else operator = '-';
+    } else {
+        if (operatorBias < 0.35) operator = 'x';
+        else if (operatorBias < 0.6) operator = '/';
+        else if (operatorBias < 0.8) operator = '+';
+        else operator = '-';
+    }
     
     let num2;
     do {
@@ -140,6 +148,11 @@ function selectOperatorAndNum2(num1, config) {
             num2 = Math.floor(Math.random() * (config.maxNum - 1)) + 2;
         }
     } while (num2 === 1);
+    
+    // If division and num2 is a fraction, change to multiplication
+    if (operator === '/' && num2 instanceof Object) {
+        operator = 'x';
+    }
     
     return { operator, num2 };
 }
