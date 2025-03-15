@@ -101,7 +101,7 @@ function calculateResult(num1, operator, num2, config) {
     return null;
 }
 
-function selectOperatorAndNum2(num1, config) {
+function selectOperatorAndNum2(num1, level, config) {
     const n1 = num1 instanceof Object ? num1.toDecimal() : num1;
     
     if (n1 > 16) {
@@ -125,12 +125,13 @@ function selectOperatorAndNum2(num1, config) {
     const operatorBias = Math.random();
     let operator;
     
-    // If we're on level 3 (or any level with fractions), avoid division by fractions
-    if (config.allowFractions) {
+    // Special case for Level 3 only - avoid division by fractions
+    if (level === 3) {
         if (operatorBias < 0.33) operator = 'x';
         else if (operatorBias < 0.66) operator = '+';
         else operator = '-';
     } else {
+        // For all other levels, use normal distribution of operators
         if (operatorBias < 0.35) operator = 'x';
         else if (operatorBias < 0.6) operator = '/';
         else if (operatorBias < 0.8) operator = '+';
@@ -149,8 +150,8 @@ function selectOperatorAndNum2(num1, config) {
         }
     } while (num2 === 1);
     
-    // If division and num2 is a fraction, change to multiplication
-    if (operator === '/' && num2 instanceof Object) {
+    // If level 3 and division and num2 is a fraction, change to multiplication
+    if (level === 3 && operator === '/' && num2 instanceof Object) {
         operator = 'x';
     }
     
@@ -163,7 +164,8 @@ function generateNextSum(startNum, level) {
 
     let attempts = 0;
     while (attempts < 100) {
-        const { operator, num2 } = selectOperatorAndNum2(startNum, config);
+        // Pass the level along with the config
+        const { operator, num2 } = selectOperatorAndNum2(startNum, level, config);
         
         if (startNum instanceof Object && num2 instanceof Object) {
             attempts++;
