@@ -1,4 +1,4 @@
-// gamecontroller.js - Final Fix
+// gamecontroller.js - First Click Fix
 import { generatePath } from './pathgenerator.js';
 import { generateSequence, sequenceToEntries } from './sequencegenerator.js';
 import { renderGrid, updateCell } from './gridrenderer.js';
@@ -79,7 +79,7 @@ class GameController {
                 this.resetPath(); // Call the resetPath method
             });
         } else {
-            console.error('Reset button not found');
+            console.error('Reset path button not found');
         }   
         
         console.log('Game event listeners initialized');
