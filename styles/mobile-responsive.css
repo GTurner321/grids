@@ -1,10 +1,10 @@
-/* Mobile-Responsive CSS for Path Puzzle Game - Simplified Version */
+/* Mobile-Responsive CSS for Path Puzzle Game - Enhanced Version */
 
 /* Mobile devices (width up to 768px) */
 @media (max-width: 768px) {
   :root {
-    /* Responsive width calculation that adapts to screen size */
-    --screen-padding: 20px;
+    /* Responsive width calculation with reduced margins (point 5) */
+    --screen-padding: 10px; /* Reduced from 20px for wider container */
     --mobile-grid-cell-size: calc((100vw - (var(--screen-padding) * 2) - 11px) / 10);
     --container-width: calc(100vw - (var(--screen-padding) * 2));
     --border-width: 0px;
@@ -19,6 +19,8 @@
     --green-border: #166534;
     --form-bg-color: #e6f2ff;
     --text-blue: #1e40af;
+    --score-red: #ef4444; /* Red for round scores (point 2) */
+    --score-blue: #1e40af; /* Dark blue for total and username (point 2) */
   }
   
   /* Base body styles */
@@ -89,10 +91,10 @@
     border-bottom-width: 1px;
   }
   
-  /* Score row with full responsive width and light blue border */
+  /* Score row with full responsive width and light blue border (point 2) */
   .score-row {
     width: var(--container-width) !important;
-    height: 50px;
+    height: 60px; /* Increased from 50px (point 2) */
     margin: 0 auto 10px auto !important;
     border: 2px solid var(--light-blue-border) !important;
     border-radius: 3px !important;
@@ -107,7 +109,7 @@
     padding-left: 12px;
     font-family: 'Trebuchet MS', Arial, sans-serif;
     font-size: 0.9rem;
-    color: #ef4444;
+    color: var(--score-red) !important; /* Red color (point 2) */
     display: flex;
     align-items: center;
     font-weight: bold;
@@ -120,14 +122,14 @@
     font-family: 'Trebuchet MS', Arial, sans-serif;
     font-size: 0.9rem;
     font-weight: bold;
-    color: var(--text-blue);
+    color: var(--score-blue) !important; /* Dark blue (point 2) */
     display: flex;
     align-items: center;
     justify-content: flex-end;
     width: 40%;
   }
   
-  /* Grid container with responsive sizing */
+  /* Grid container with responsive sizing (point 5) */
   #grid-container {
     width: var(--container-width) !important;
     margin: 0 auto;
@@ -186,7 +188,7 @@
     z-index: -1;
   }
   
-  /* Game controls container with responsive width */
+  /* Game controls container with responsive width (point 5) */
   .game-controls {
     display: flex !important;
     flex-direction: row !important;
@@ -196,7 +198,7 @@
     gap: 5px !important;
   }
   
-  /* Game control buttons - Pulse on click instead of color change */
+  /* Game control buttons - Pulse on click instead of color change (point 4) */
   .game-controls button {
     padding: 8px 6px;
     font-size: 0.9rem;
@@ -218,9 +220,9 @@
     border-bottom-width: 1px;
   }
   
-  /* Button pulse animation instead of color change */
+  /* Button pulse animation instead of color change (point 4) */
   .game-controls button.clicked {
-    animation: buttonPulse 0.5s;
+    animation: buttonPulse 0.3s ease-in-out forwards; /* Shortened from 0.5s to 0.3s */
   }
   
   @keyframes buttonPulse {
@@ -249,10 +251,10 @@
     width: 25% !important;
   }
   
-  /* Game messages with enhanced white shadow */
+  /* Game messages with enhanced white shadow (point 6) and reduced space to buttons (point 3) */
   #game-messages {
     width: var(--container-width) !important;
-    margin: 4px auto 2px;
+    margin: 4px auto 8px !important; /* Reduced from 4px auto 12px (point 3) */
     padding: 6px 0;
     font-size: 1.6rem !important;
     min-height: 45px !important;
@@ -267,7 +269,7 @@
     white-space: normal;
     color: var(--text-blue);
     font-weight: bold;
-    text-shadow: 0 0 15px white, 0 0 25px white, 0 0 35px white, 0 0 40px white !important;
+    text-shadow: 0 0 15px white, 0 0 25px white, 0 0 35px white, 0 0 40px white, 0 0 45px white !important; /* More intense white shadow (point 6) */
   }
 
   /* Style for penalty messages */
@@ -279,14 +281,14 @@
     text-shadow: 0 0 15px white, 0 0 25px white, 0 0 35px white, 0 0 40px white !important;
   }
 
-  /* Bottom buttons container - same style as level buttons */
+  /* Bottom buttons container - same style as level buttons (point 5) */
   .bottom-buttons {
     display: flex !important;
     flex-direction: row !important;
     justify-content: center !important;
     gap: 10px !important;
     width: var(--container-width) !important;
-    margin: 10px auto !important;
+    margin: 5px auto !important; /* Reduced from 10px (point 3) */
   }
   
   /* Hide bottom buttons when game is not active */
@@ -372,10 +374,10 @@
     position: relative;
   }
   
-  /* Leaderboard table */
+  /* Leaderboard table (point 1) */
   .leaderboard-table {
-    width: 90%;
-    max-width: 350px;
+    width: 100% !important; /* Changed from 90% to 100% (10% wider) */
+    max-width: 385px !important; /* 10% wider than original 350px */
     background-color: var(--form-bg-color) !important;
     border: 2px solid var(--light-blue-border) !important;
     border-radius: 6px;
@@ -384,6 +386,54 @@
     overflow-y: auto;
     margin: 0 auto;
     position: relative;
+  }
+  
+  /* Leaderboard row (point 1) */
+  .leaderboard-row {
+    display: grid;
+    grid-template-columns: 45px minmax(80px, 1fr) 70px 70px !important; /* Changed last column from 60px to 70px */
+    column-gap: 8px !important; /* Reduced from 20px */
+    padding: 8px 12px !important;
+  }
+  
+  /* All leaderboard cells should use same text size */
+  .leaderboard-cell {
+    font-size: 0.9rem !important;
+    font-family: 'Trebuchet MS', Arial, sans-serif;
+  }
+
+  /* Make "RANK" header fully visible */
+  .leaderboard-cell.rank {
+    width: 45px !important;
+    text-align: center;
+  }
+
+  .leaderboard-row.header {
+    background-color: #f3f4f6;
+    font-weight: bold;
+    font-size: 0.9rem !important;
+    padding: 8px;
+  }
+  
+  /* Current user highlight */
+  .leaderboard-row.current-user {
+    background-color: #dbeafe;
+    font-weight: bold;
+  }
+  
+  /* Add right margin to date column (point 1) */
+  .leaderboard-cell.date {
+    text-align: right;
+    padding-right: 10px !important; /* Added right padding */
+  }
+  
+  /* Leaderboard empty state */
+  .leaderboard-row.empty {
+    text-align: center;
+    padding: 20px;
+    color: #6b7280;
+    grid-column: 1 / -1;
+    font-family: 'Trebuchet MS', Arial, sans-serif;
   }
   
   /* Username form styling */
@@ -490,48 +540,6 @@
     margin: 15px 0;
     font-weight: bold;
     font-family: 'Trebuchet MS', Arial, sans-serif !important;
-  }
-  
-  /* Leaderboard rows with more spacing between columns */
-  .leaderboard-row {
-    display: grid;
-    grid-template-columns: 45px minmax(80px, 1fr) 70px 60px !important;
-    column-gap: 20px !important;
-    padding: 8px 12px !important;
-  }
-  
-  /* All leaderboard cells should use same text size */
-  .leaderboard-cell {
-    font-size: 0.9rem !important;
-    font-family: 'Trebuchet MS', Arial, sans-serif;
-  }
-
-  /* Make "RANK" header fully visible */
-  .leaderboard-cell.rank {
-    width: 45px !important;
-    text-align: center;
-  }
-
-  .leaderboard-row.header {
-    background-color: #f3f4f6;
-    font-weight: bold;
-    font-size: 0.9rem !important;
-    padding: 8px;
-  }
-  
-  /* Current user highlight */
-  .leaderboard-row.current-user {
-    background-color: #dbeafe;
-    font-weight: bold;
-  }
-  
-  /* Leaderboard empty state */
-  .leaderboard-row.empty {
-    text-align: center;
-    padding: 20px;
-    color: #6b7280;
-    grid-column: 1 / -1;
-    font-family: 'Trebuchet MS', Arial, sans-serif;
   }
   
   /* Path arrows - Fixed directions and size */
@@ -799,7 +807,7 @@
 @media (max-width: 360px) {
   :root {
     /* Less padding on small screens */
-    --screen-padding: 10px;
+    --screen-padding: 6px; /* Reduced to give even more width on tiny screens */
   }
   
   .game-controls button {
@@ -823,15 +831,15 @@
   
   /* Adjust modal sizes for very small screens */
   .username-area {
-    width: 90% !important;
+    width: 95% !important;
     max-width: 240px !important;
     padding: 12px;
   }
   
   /* Adjust leaderboard row spacing for small screens */
   .leaderboard-row {
-    grid-template-columns: 40px minmax(75px, 1fr) 60px 55px !important;
-    column-gap: 10px !important;
+    grid-template-columns: 40px minmax(75px, 1fr) 60px 60px !important; /* Last column increased */
+    column-gap: 8px !important;
     padding: 4px 6px;
   }
   
