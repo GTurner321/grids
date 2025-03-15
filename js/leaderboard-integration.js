@@ -566,82 +566,114 @@ class LeaderboardManager {
     
     // Process score updates
     processScore(score) {
-        console.log('Processing score:', score);
+    console.log('Processing score:', score);
+    
+    // Always update session high score if it's higher
+    if (score > this.sessionHighScore) {
+        this.sessionHighScore = score;
+        console.log('New session high score:', score);
         
-        // Always update session high score if it's higher
-        if (score > this.sessionHighScore) {
-            this.sessionHighScore = score;
-            console.log('New session high score:', score);
-            
-            // For scores below threshold, just show a message
-            if (score < this.scoreThreshold) {
-                this.showUpdateStatus(`Score tracked (needs ${this.scoreThreshold - score} more to reach leaderboard)`, 'info');
-                setTimeout(() => this.hideUpdateStatus(), 3000);
-                return;
-            }
-            
-            // For scores over threshold, submit to leaderboard
-            this.updateScore(score);
-        } else if (score >= this.scoreThreshold && this.leaderboardVisible) {
-            // If leaderboard is visible and score is above threshold, refresh leaderboard
-            // even if it's not a new high score
-            this.refreshLeaderboard();
+        // For scores below threshold, just show a message
+        if (score < this.scoreThreshold) {
+            this.showUpdateStatus(`Score tracked (needs ${this.scoreThreshold - score} more to reach leaderboard)`, 'info');
+            setTimeout(() => this.hideUpdateStatus(), 3000);
+            return;
         }
+        
+        // Before making a Supabase request, check if score is high enough
+        this.checkIfScoreQualifies(score).then(qualifies => {
+            if (qualifies) {
+                // For scores over threshold that qualify, submit to leaderboard
+                this.updateScore(score);
+            } else {
+                this.showUpdateStatus('Score improved but not high enough for leaderboard', 'info');
+                setTimeout(() => this.hideUpdateStatus(), 3000);
+            }
+        });
+    } else if (score >= this.scoreThreshold && this.leaderboardVisible) {
+        // Only refresh if the table is actually displayed
+        this.refreshLeaderboard();
     }
+}
+
+    async checkIfScoreQualifies(score) {
+    // If we haven't loaded the leaderboard data yet, or we have fewer than 20 entries,
+    // the score automatically qualifies
+    if (!this.leaderboardLoaded || this.leaderboardData.length < 20) {
+        return true;
+    }
+    
+    // Find the lowest score in the leaderboard
+    const scores = this.leaderboardData.map(entry => entry.score);
+    const lowestScore = Math.min(...scores);
+    
+    // If the new score is higher than the lowest score, it qualifies
+    return score > lowestScore;
+}
     
     // Update score in database
     async updateScore(score) {
-        console.log('updateScore called with:', score);
-        
-        if (!this.isUsernameSet || score < this.scoreThreshold) {
-            console.log(`Score not submitted: ${!this.isUsernameSet ? 'username not set' : 'below threshold of ' + this.scoreThreshold}`);
-            return;
-        }
-        
-        // Throttle submissions to avoid API rate limits
-        const now = Date.now();
-        const timeSinceLastSubmission = now - this.lastSubmissionTime;
-        if (timeSinceLastSubmission < 2000) { // 2 seconds minimum between submissions
-            console.log('Throttling submission, too soon since last one');
-            return;
-        }
-        
-        this.lastSubmissionTime = now;
-        
-        try {
-            this.showUpdateStatus('Updating score...');
-            
-            if (this.supabase) {
-                // Submit the score
-                const result = await this.updateSupabaseScore(score);
-                if (result) {
-                    console.log('Score submitted successfully to Supabase');
-                    
-                    // If the leaderboard is visible, refresh it
-                    if (this.leaderboardVisible) {
-                        await this.refreshLeaderboard();
-                    }
-                    
-                    // Show success message
-                    this.showUpdateStatus('Score added to leaderboard!', 'success');
-                    
-                    // Hide status after 2 seconds
-                    setTimeout(() => {
-                        this.hideUpdateStatus();
-                    }, 2000);
-                }
-            } else {
-                // Fallback to session-only leaderboard
-                this.updateTemporaryScore(score);
-                console.log('Score added to temporary leaderboard');
-                this.showUpdateStatus('Score tracking enabled (offline mode)', 'info');
-                setTimeout(() => this.hideUpdateStatus(), 2000);
-            }
-        } catch (error) {
-            console.error('Error updating score:', error);
-            this.showUpdateStatus('Error updating score: ' + error.message, 'error');
-        }
+    console.log('updateScore called with:', score);
+    
+    if (!this.isUsernameSet || score < this.scoreThreshold) {
+        console.log(`Score not submitted: ${!this.isUsernameSet ? 'username not set' : 'below threshold of ' + this.scoreThreshold}`);
+        return;
     }
+    
+    // Throttle submissions to avoid API rate limits
+    const now = Date.now();
+    const timeSinceLastSubmission = now - this.lastSubmissionTime;
+    if (timeSinceLastSubmission < 2000) { // 2 seconds minimum between submissions
+        console.log('Throttling submission, too soon since last one');
+        return;
+    }
+    
+    this.lastSubmissionTime = now;
+    
+    try {
+        this.showUpdateStatus('Updating score...');
+        
+        if (this.supabase) {
+            // Submit the score
+            const result = await this.updateSupabaseScore(score);
+            if (result) {
+                console.log('Score submitted successfully to Supabase');
+                
+                // Always refresh the data after a successful update
+                await this.refreshLeaderboard();
+                
+                // Show success message
+                this.showUpdateStatus('Score added to leaderboard!', 'success');
+                
+                // If leaderboard is not visible, show it now
+                const leaderboardTableContainer = document.getElementById('leaderboard-table-container');
+                if (leaderboardTableContainer && leaderboardTableContainer.style.display !== 'flex') {
+                    leaderboardTableContainer.style.display = 'flex';
+                    
+                    // Hide username area if it's open
+                    const usernameAreaContainer = document.getElementById('username-area-container');
+                    if (usernameAreaContainer) {
+                        usernameAreaContainer.style.display = 'none';
+                    }
+                }
+                
+                // Hide status after 2 seconds
+                setTimeout(() => {
+                    this.hideUpdateStatus();
+                }, 2000);
+            }
+        } else {
+            // Fallback to session-only leaderboard
+            this.updateTemporaryScore(score);
+            console.log('Score added to temporary leaderboard');
+            this.showUpdateStatus('Score tracking enabled (offline mode)', 'info');
+            setTimeout(() => this.hideUpdateStatus(), 2000);
+        }
+    } catch (error) {
+        console.error('Error updating score:', error);
+        this.showUpdateStatus('Error updating score: ' + error.message, 'error');
+    }
+}
     
     // Handle username submission
     async handleUsernameSubmission() {
@@ -898,39 +930,67 @@ class LeaderboardManager {
     
     // Refresh leaderboard data
     async refreshLeaderboard() {
-        try {
-            // Always force a fresh load from Supabase when refreshing
-            this.forceRefresh = true;
-            await this.loadLeaderboard();
-            this.forceRefresh = false;
-            return true;
-        } catch (error) {
-            console.error('Error refreshing leaderboard:', error);
+    try {
+        // Don't refresh if we're already loading
+        if (this.isLoadingLeaderboard) {
+            console.log('Already loading leaderboard, skipping refresh');
             return false;
         }
+        
+        // Don't refresh if we've loaded within the last 5 seconds
+        const now = Date.now();
+        if (this.lastLeaderboardLoad && now - this.lastLeaderboardLoad < 5000) {
+            console.log('Leaderboard loaded recently, skipping refresh');
+            return false;
+        }
+        
+        // Refresh the data
+        this.forceRefresh = true;
+        await this.loadLeaderboard();
+        this.forceRefresh = false;
+        return true;
+    } catch (error) {
+        console.error('Error refreshing leaderboard:', error);
+        return false;
     }
+}
     
     // Load leaderboard data from database
     async loadLeaderboard() {
-        try {
-            // Only load from Supabase if data isn't loaded yet or if we're forcing a refresh
-            if (this.supabase && (!this.leaderboardLoaded || this.forceRefresh)) {
-                await this.loadFromSupabase();
-                this.leaderboardLoaded = true;
-            }
-            
-            // Render the leaderboard with whatever data we have
-            this.renderLeaderboard();
-        } catch (error) {
-            console.error('Error loading leaderboard data:', error);
-            
-            // Show error message in the leaderboard
-            const leaderboardTable = document.getElementById('leaderboard-table');
-            if (leaderboardTable) {
-                leaderboardTable.innerHTML = '<div class="leaderboard-row" style="justify-content: center; padding: 20px; color: #e53e3e;">Error loading leaderboard data. Please try again later.</div>';
-            }
+    try {
+        this.showUpdateStatus('Loading leaderboard data...', 'info');
+        
+        // Set a flag to indicate we're in the process of loading
+        this.isLoadingLeaderboard = true;
+        
+        // Only load from Supabase if data isn't loaded yet or if we're forcing a refresh
+        if (this.supabase && (!this.leaderboardLoaded || this.forceRefresh)) {
+            await this.loadFromSupabase();
+            this.leaderboardLoaded = true;
+            this.lastLeaderboardLoad = Date.now();
         }
+        
+        // Render the leaderboard with whatever data we have
+        this.renderLeaderboard();
+        this.leaderboardVisible = true;
+        
+        // Clear loading state
+        this.isLoadingLeaderboard = false;
+        this.hideUpdateStatus();
+    } catch (error) {
+        console.error('Error loading leaderboard data:', error);
+        
+        // Show error message in the leaderboard
+        const leaderboardTable = document.getElementById('leaderboard-table');
+        if (leaderboardTable) {
+            leaderboardTable.innerHTML = '<div class="leaderboard-row" style="justify-content: center; padding: 20px; color: #e53e3e;">Error loading leaderboard data. Please try again later.</div>';
+        }
+        
+        // Clear loading state
+        this.isLoadingLeaderboard = false;
+        this.showUpdateStatus('Error loading leaderboard', 'error');
     }
+}
     
     // Load data from Supabase
     async loadFromSupabase() {
