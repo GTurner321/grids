@@ -1,22 +1,24 @@
-/* Mobile-Responsive CSS for Path Puzzle Game - Complete Rewrite with Fixes */
+/* Mobile-Responsive CSS for Path Puzzle Game - Simplified Version */
 
 /* Mobile devices (width up to 768px) */
 @media (max-width: 768px) {
   :root {
     /* Responsive width calculation that adapts to screen size */
-    --screen-padding: 20px; /* Padding on each side of the screen */
-    --mobile-grid-cell-size: calc((100vw - (var(--screen-padding) * 2) - 11px) / 10); /* Dynamically sized cells */
-    --container-width: calc(100vw - (var(--screen-padding) * 2)); /* Container uses most of screen width */
-    --border-width: 0px; /* CHANGE: Removed borders completely per fix #5 */
+    --screen-padding: 20px;
+    --mobile-grid-cell-size: calc((100vw - (var(--screen-padding) * 2) - 11px) / 10);
+    --container-width: calc(100vw - (var(--screen-padding) * 2));
+    --border-width: 0px;
     --app-height: 100%;
-    --button-font-size: 1.1rem; /* ADDITIONAL FIX #4: Increase from 1rem */
+    --button-font-size: 1.1rem;
 
     /* Color variables */
     --crimson-red: #dd717e;
     --light-red-border: #9c3c47;
-    --light-blue-border: #93c5fd; /* CHANGE: Using lighter blue border from fix #6/#7 */
+    --light-blue-border: #93c5fd;
+    --button-blue: #3b82f6;
     --green-border: #166534;
-    --form-bg-color: #e6f2ff; /* CHANGE: Added for username/leaderboard forms per fix #6/#7 */
+    --form-bg-color: #e6f2ff;
+    --text-blue: #1e40af;
   }
   
   /* Base body styles */
@@ -68,15 +70,18 @@
     gap: 5px;
   }
   
-  /* Level buttons with light blue border - ADDITIONAL FIX #4: Larger buttons with Trebuchet MS font */
+  /* Level buttons with light blue border */
   .level-btn {
-    min-width: 42px; /* ADDITIONAL FIX #4: Increased from 38px */
-    padding: 10px 12px; /* ADDITIONAL FIX #4: Increased from 8px 10px */
-    font-size: var(--button-font-size); /* ADDITIONAL FIX #4: Using larger font size */
-    font-family: 'Trebuchet MS', Arial, sans-serif !important; /* ADDITIONAL FIX #4: Changed to Trebuchet MS */
+    min-width: 42px;
+    padding: 10px 12px;
+    font-size: var(--button-font-size);
+    font-family: 'Trebuchet MS', Arial, sans-serif !important;
     font-weight: bold;
+    background-color: var(--button-blue);
+    color: white;
     border: 2px solid var(--light-blue-border);
     border-bottom-width: 3px;
+    border-radius: 5px;
   }
   
   .level-btn:active {
@@ -84,16 +89,16 @@
     border-bottom-width: 1px;
   }
   
-  /* Score row with full responsive width and complete border */
+  /* Score row with full responsive width and light blue border */
   .score-row {
     width: var(--container-width) !important;
     height: 50px;
     margin: 0 auto 10px auto !important;
-    border: none !important; /* CHANGE: Removed borders per fix #5 */
+    border: 2px solid var(--light-blue-border) !important;
     border-radius: 3px !important;
     display: flex;
     align-items: center;
-    background-color: #e6f2ff;
+    background-color: var(--form-bg-color);
     box-sizing: border-box;
   }
   
@@ -115,14 +120,14 @@
     font-family: 'Trebuchet MS', Arial, sans-serif;
     font-size: 0.9rem;
     font-weight: bold;
-    color: #1e40af;
+    color: var(--text-blue);
     display: flex;
     align-items: center;
     justify-content: flex-end;
     width: 40%;
   }
   
-  /* Grid container with responsive sizing and borders removed */
+  /* Grid container with responsive sizing */
   #grid-container {
     width: var(--container-width) !important;
     margin: 0 auto;
@@ -131,9 +136,9 @@
     gap: 1px;
     background-color: #94a3b8;
     padding: 1px;
-    display: grid;
+    display: grid !important;
     grid-template-columns: repeat(10, var(--mobile-grid-cell-size));
-    border: none !important; /* CHANGE: Removed borders per fix #5 */
+    border: none !important;
     border-radius: 5px !important;
   }
   
@@ -141,14 +146,44 @@
   .grid-cell {
     width: var(--mobile-grid-cell-size);
     height: var(--mobile-grid-cell-size);
-    touch-action: none;
+    touch-action: manipulation !important;
     margin: 0;
     box-sizing: border-box;
     font-size: 1.4rem !important;
+    -webkit-user-select: none !important;
+    user-select: none !important;
+    -webkit-touch-callout: none !important;
+    -webkit-tap-highlight-color: rgba(0,0,0,0) !important;
   }
   
   .grid-cell.operator {
     font-size: 1.6rem !important;
+  }
+  
+  /* Enhanced touch behavior for cells */
+  .grid-cell:active {
+    transform: scale(0.97) !important;
+    transition: transform 0.1s !important;
+  }
+  
+  /* Ensure start cell has higher priority for touch events */
+  .grid-cell.start-cell {
+    z-index: 30 !important;
+    cursor: pointer !important;
+    transform: translateZ(0) !important;
+    will-change: transform !important;
+    position: relative !important;
+  }
+  
+  /* Additional helper class to enhance click/touch area of the start cell */
+  .grid-cell.start-cell::after {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    z-index: -1;
   }
   
   /* Game controls container with responsive width */
@@ -161,7 +196,7 @@
     gap: 5px !important;
   }
   
-  /* Game control buttons - ADDITIONAL FIX #2: Pulse on click instead of color change */
+  /* Game control buttons - Pulse on click instead of color change */
   .game-controls button {
     padding: 8px 6px;
     font-size: 0.9rem;
@@ -178,17 +213,12 @@
     border-bottom-width: 3px;
   }
   
-  .game-controls button:hover {
-    background-color: var(--crimson-red); /* ADDITIONAL FIX #2: Keep original color */
-  }
-  
   .game-controls button:active {
     transform: translateY(2px);
     border-bottom-width: 1px;
-    background-color: var(--crimson-red); /* ADDITIONAL FIX #2: Keep original color */
   }
   
-  /* ADDITIONAL FIX #2: Button pulse animation instead of color change */
+  /* Button pulse animation instead of color change */
   .game-controls button.clicked {
     animation: buttonPulse 0.5s;
   }
@@ -219,7 +249,7 @@
     width: 25% !important;
   }
   
-  /* Game messages with enhanced white shadow - FIX #8 */
+  /* Game messages with enhanced white shadow */
   #game-messages {
     width: var(--container-width) !important;
     margin: 8px auto 3px;
@@ -229,52 +259,42 @@
     text-align: center;
     line-height: 1.3;
     display: flex;
-    flex-direction: column; /* ADDITIONAL FIX #1: Change to column for penalty message */
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     word-wrap: break-word;
     overflow-wrap: break-word;
     white-space: normal;
-    color: #1e40af;
-    font-weight: bold;
-    text-shadow: 0 0 15px white, 0 0 25px white, 0 0 35px white, 0 0 40px white !important; /* CHANGE: Enhanced shadow per fix #8 */
-  }
-
-  /* ADDITIONAL FIX #1: Style for penalty messages */
-  #game-messages .penalty-message {
-    font-size: 1.2rem !important;
-    margin-top: 5px;
-    color: #1e40af;
+    color: var(--text-blue);
     font-weight: bold;
     text-shadow: 0 0 15px white, 0 0 25px white, 0 0 35px white, 0 0 40px white !important;
   }
 
-  /* Bottom buttons container with responsive width - ADDITIONAL FIX #5: Initially hidden */
-.bottom-buttons {
-    display: flex !important; /* Changed from 'none' to 'flex' */
+  /* Style for penalty messages */
+  #game-messages .penalty-message {
+    font-size: 1.2rem !important;
+    margin-top: 5px;
+    color: var(--text-blue);
+    font-weight: bold;
+    text-shadow: 0 0 15px white, 0 0 25px white, 0 0 35px white, 0 0 40px white !important;
+  }
+
+  /* Bottom buttons container - same style as level buttons */
+  .bottom-buttons {
+    display: flex !important;
     flex-direction: row !important;
     justify-content: center !important;
     gap: 10px !important;
     width: var(--container-width) !important;
     margin: 10px auto !important;
-}
-
-/* Hide bottom buttons when game is not active */
-.game-container:not(.game-active) .bottom-buttons {
-    display: none !important;
-}
-
-/* Ensure grid container is visible */
-#grid-container {
-    display: grid !important;
-}
-  
-  /* ADDITIONAL FIX #5: Show bottom buttons when game is active */
-  .game-active .bottom-buttons {
-    display: flex !important;
   }
   
-  /* Bottom buttons common styles with light blue border */
+  /* Hide bottom buttons when game is not active */
+  .game-container:not(.game-active) .bottom-buttons {
+    display: none !important;
+  }
+  
+  /* Bottom buttons styling - matching level buttons */
   .bottom-btn {
     font-family: 'Trebuchet MS', Arial, sans-serif !important;
     font-size: 1rem !important;
@@ -286,6 +306,8 @@
     align-items: center !important;
     justify-content: center !important;
     text-transform: none !important;
+    background-color: var(--button-blue) !important;
+    color: white !important;
     border: 2px solid var(--light-blue-border) !important;
     border-bottom-width: 3px !important;
   }
@@ -295,13 +317,22 @@
     border-bottom-width: 1px !important;
   }
   
-  /* Specific bottom button widths (record name button 10% wider) */
+  /* Style for single button mode */
+  .bottom-buttons.single-button {
+    justify-content: center !important;
+  }
+  
+  .bottom-buttons.single-button #leaderboard-btn {
+    margin: 0 auto !important;
+  }
+  
+  /* Specific bottom button widths */
   #record-score-btn {
-    width: calc((var(--container-width) * 0.5) - 5px) !important; /* 50% of container minus half the gap */
+    width: calc((var(--container-width) * 0.5) - 5px) !important;
   }
   
   #leaderboard-btn {
-    width: calc((var(--container-width) * 0.5) - 5px) !important; /* 50% of container minus half the gap */
+    width: calc((var(--container-width) * 0.5) - 5px) !important;
   }
   
   /* Modal containers */
@@ -329,24 +360,24 @@
     box-sizing: border-box;
   }
   
-  /* Modal content styling - Username box 10% wider per fix #6 */
+  /* Modal content styling */
   .username-area {
-    width: 85% !important; /* ADDITIONAL FIX #2: Another 10% wider */
-    max-width: 340px !important; /* ADDITIONAL FIX #2: Increased from 310px */
-    background-color: #e6f2ff !important; /* CHANGE: Match score row color per fix #6 */
-    border: 2px solid var(--light-blue-border) !important; /* CHANGE: Blue border per fix #6 */
+    width: 85% !important;
+    max-width: 340px !important;
+    background-color: var(--form-bg-color) !important;
+    border: 2px solid var(--light-blue-border) !important;
     border-radius: 6px;
     padding: 15px;
     margin: 0 auto;
     position: relative;
   }
   
-  /* Leaderboard table - keeping the size larger */
+  /* Leaderboard table */
   .leaderboard-table {
     width: 90%;
     max-width: 350px;
-    background-color: #e6f2ff !important; /* CHANGE: Match score row color per fix #7 */
-    border: 2px solid var(--light-blue-border) !important; /* CHANGE: Blue border per fix #7 */
+    background-color: var(--form-bg-color) !important;
+    border: 2px solid var(--light-blue-border) !important;
     border-radius: 6px;
     overflow: hidden;
     max-height: 70vh;
@@ -355,7 +386,7 @@
     position: relative;
   }
   
-  /* Username form styling - Larger text per fix #6 */
+  /* Username form styling */
   .username-form {
     display: flex;
     flex-direction: column;
@@ -364,14 +395,14 @@
     text-align: center;
   }
   
-  /* Username prompt styling with Trebuchet MS - Larger text per fix #6 */
+  /* Username prompt styling */
   .username-prompt {
-    font-size: 1rem !important; /* CHANGE: Increased from 1.2rem per fix #6 */
+    font-size: 1rem !important;
     font-family: 'Trebuchet MS', Arial, sans-serif;
     font-weight: bold;
     margin-bottom: 12px;
     text-align: center;
-    text-transform: uppercase; /* Make it match the game style */
+    text-transform: uppercase;
   }
   
   /* Input wrapper styling */
@@ -385,47 +416,47 @@
     gap: 12px;
   }
   
-  /* Input field styling - Larger text per fix #6 */
+  /* Input field styling */
   #username-input {
-    width: 90% !important; /* ADDITIONAL FIX #2: 10% larger */
+    width: 90% !important;
     padding: 12px;
-    font-size: 1.1rem !important; /* CHANGE: Increased from 1.2rem per fix #6 */
+    font-size: 1.1rem !important;
     text-align: center;
     border: 2px solid #cbd5e1;
     border-radius: 6px;
-    max-width: 90% !important; /* ADDITIONAL FIX #2: 10% larger */
+    max-width: 90% !important;
     margin: 0 auto !important;
     display: block !important;
     font-family: 'Trebuchet MS', Arial, sans-serif;
     font-weight: bold;
   }
   
-  /* Submit button styling - ADDITIONAL FIX #2: Slightly smaller text, 10% wider, light blue border, rocket icon */
+  /* Submit button styling - with rocket icon */
   #submit-username {
-    width: 50% !important; /* ADDITIONAL FIX #2: 10% wider than original 40% */
+    width: 50% !important;
     padding: 12px;
-    font-size: 1.2rem !important; /* ADDITIONAL FIX #2: Slightly smaller than 1.4rem */
+    font-size: 1.2rem !important;
     font-weight: bold;
-    background-color: #3b82f6;
+    background-color: var(--button-blue);
     color: white;
-    border: 2px solid var(--light-blue-border) !important; /* ADDITIONAL FIX #2: Blue border */
+    border: 2px solid var(--light-blue-border) !important;
     border-radius: 6px;
     cursor: pointer;
     text-align: center;
     margin: 0 auto !important;
-    display: flex !important; /* Changed to flex for rocket icon */
+    display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     font-family: 'Trebuchet MS', Arial, sans-serif;
     text-transform: uppercase;
   }
 
-  /* ADDITIONAL FIX #2: Rocket icon before Submit */
+  /* Rocket icon after Submit */
   #submit-username::after {
-  content: " 🚀";
-  margin-left: 5px;
-  font-size: 1.2rem;
-}
+    content: " 🚀";
+    margin-left: 5px;
+    font-size: 1.2rem;
+  }
 
   /* Return buttons */
   #return-to-record-btn,
@@ -443,7 +474,7 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     z-index: 10000;
     border: none;
-    color: #3b82f6;
+    color: var(--button-blue);
     font-size: 24px;
     cursor: pointer;
   }
@@ -455,27 +486,27 @@
   
   /* Leaderboard title */
   .leaderboard-title {
-    font-size: 1.4rem !important; /* CHANGE: Larger text per fix #7 */
+    font-size: 1.4rem !important;
     margin: 15px 0;
     font-weight: bold;
-    font-family: 'Trebuchet MS', Arial, sans-serif !important; /* CHANGE: Match other elements per fix #7 */
+    font-family: 'Trebuchet MS', Arial, sans-serif !important;
   }
   
-  /* Leaderboard rows with more spacing between columns - ADDITIONAL FIX #6: More space between rank and name */
+  /* Leaderboard rows with more spacing between columns */
   .leaderboard-row {
     display: grid;
-    grid-template-columns: 45px minmax(80px, 1fr) 70px 60px !important; /* ADDITIONAL FIX #6: Increased from 30px to 45px */
-    column-gap: 20px !important; /* Larger gap between columns */
-    padding: 8px 12px !important; /* Ensure adequate padding */
+    grid-template-columns: 45px minmax(80px, 1fr) 70px 60px !important;
+    column-gap: 20px !important;
+    padding: 8px 12px !important;
   }
   
-  /* All leaderboard cells should use same text size per fix #7 */
+  /* All leaderboard cells should use same text size */
   .leaderboard-cell {
-    font-size: 0.9rem !important; /* CHANGE: Consistent size per fix #7 */
+    font-size: 0.9rem !important;
     font-family: 'Trebuchet MS', Arial, sans-serif;
   }
 
-  /* ADDITIONAL FIX #6: Make "RANK" header fully visible */
+  /* Make "RANK" header fully visible */
   .leaderboard-cell.rank {
     width: 45px !important;
     text-align: center;
@@ -484,7 +515,7 @@
   .leaderboard-row.header {
     background-color: #f3f4f6;
     font-weight: bold;
-    font-size: 0.9rem !important; /* CHANGE: Match cell font size per fix #7 */
+    font-size: 0.9rem !important;
     padding: 8px;
   }
   
@@ -503,16 +534,16 @@
     font-family: 'Trebuchet MS', Arial, sans-serif;
   }
   
-  /* Path arrows - FIX #3 and ADDITIONAL FIX #5: Fix arrow directions */
+  /* Path arrows - Fixed directions and size */
   .path-arrow {
     position: absolute;
-    width: 14px !important; /* CHANGE: Smaller per fix #3 */
-    height: 14px !important; /* CHANGE: Smaller per fix #3 */
-    z-index: 25; /* Ensure arrows are visible over cells */
-    pointer-events: none; /* Don't interfere with cell clicking */
+    width: 14px !important;
+    height: 14px !important;
+    z-index: 25;
+    pointer-events: none;
   }
 
-  /* Position arrows precisely at the center of each edge per fix #3 */
+  /* Position arrows precisely at the center of each edge */
   .path-arrow.right {
     top: 50%;
     right: 0;
@@ -537,7 +568,7 @@
     transform: translateX(-50%);
   }
   
-  /* Create cleaner, tail-less arrows per fix #3 and ADDITIONAL FIX #5: Fix arrow directions */
+  /* Create cleaner, tail-less arrows with correct directions */
   .path-arrow svg {
     display: none !important;
   }
@@ -546,12 +577,11 @@
   .path-arrow::after {
     content: '';
     position: absolute;
-    background-color: #374ee3; /* Blue color for all arrows */
+    background-color: #374ee3;
     width: 8px;
     height: 2px;
   }
 
-  /* ADDITIONAL FIX #5: Fixed arrow directions */
   /* Right arrow - pointing right from right edge */
   .path-arrow.right::before {
     top: 4px;
@@ -649,38 +679,14 @@
     100% { transform: rotate(0deg); }
   }
 
-  /* ADDITIONAL FIX #1: Styling for welcome message box */
+  /* Hide welcome message */
   .welcome-message {
-    width: var(--container-width) !important;
-    max-width: 400px;
-    margin: 10px auto;
-    padding: 12px;
-    background-color: #e6f2ff !important; /* Match score row color */
-    border: 2px solid var(--light-blue-border) !important; /* Blue border to match */
-    border-radius: 6px;
-    text-align: center;
-    font-family: 'Trebuchet MS', Arial, sans-serif !important;
-    font-weight: bold !important;
-    font-size: 1.1rem !important;
-    color: #1e40af;
-    box-sizing: border-box;
-    opacity: 1;
-    transition: opacity 1s ease;
+    display: none !important;
   }
 
-  .welcome-message.hidden {
-    opacity: 0;
-  }
-
-  .welcome-message strong {
-    color: #ef4444; /* Red for emphasis */
-  }
-
-/* Enhanced Rules Modal Styles for Mobile - FIX #2, #4 - ADDITIONAL FIX #3: Adjusted width */
-
-  /* Rules modal container - FIX #2: Full width background */
+  /* Enhanced Rules Modal Styles for Mobile */
   .rules-modal {
-    width: 100% !important; /* Fill entire screen width */
+    width: 100% !important;
     left: 0 !important;
     right: 0 !important;
     background-color: rgba(0, 0, 0, 0.8) !important;
@@ -690,12 +696,12 @@
     justify-content: center;
   }
   
-  /* Rules content wrapper - ADDITIONAL FIX #3: Reduced width to 95% */
+  /* Rules content wrapper */
   .rules-content {
-    width: 95% !important; /* ADDITIONAL FIX #3: Reduced from 100% to 95% */
-    height: auto; /* Allow height to adapt to content */
-    max-height: 85vh; /* Limit maximum height */
-    overflow-y: auto; /* Enable scrolling if needed */
+    width: 95% !important;
+    height: auto;
+    max-height: 85vh;
+    overflow-y: auto;
     padding: 20px 15px;
     box-sizing: border-box;
   }
@@ -707,14 +713,14 @@
   }
   
   .rules-title {
-    font-size: 2.2rem !important; /* Larger title */
+    font-size: 2.2rem !important;
     margin-top: 1rem;
     margin-bottom: 1rem;
     text-align: center;
   }
   
   .rules-subtitle {
-    font-size: 1.8rem !important; /* Larger subtitle */
+    font-size: 1.8rem !important;
     margin-top: 1.5rem;
     margin-bottom: 1rem;
     text-align: center;
@@ -724,20 +730,20 @@
   .rules-section p {
     font-family: 'Trebuchet MS', Arial, sans-serif !important;
     font-weight: bold !important;
-    font-size: 1.1rem !important; /* Larger paragraph text */
+    font-size: 1.1rem !important;
     margin: 0.6rem 0;
     text-align: center;
     line-height: 1.4;
-    color: #fef08a; /* Keep yellow color */
+    color: #fef08a;
   }
   
-  /* Start button - FIX #4: Larger text */
+  /* Start button */
   .start-button {
     padding: 15px 35px !important;
-    font-size: 1.8rem !important; /* FIX #4: Larger button text */
+    font-size: 1.8rem !important;
     font-family: 'Black Ops One', cursive;
     background-color: #343d5f;
-    border: 3px solid #ef4444 !important; /* Thicker border */
+    border: 3px solid #ef4444 !important;
     color: #ef4444;
     border-radius: 8px;
     cursor: pointer;
@@ -758,26 +764,30 @@
     margin-bottom: 0.5rem;
   }
   
-  /* Extra small screens */
-  @media (max-width: 360px) {
-    .rules-title {
-      font-size: 2rem !important;
-    }
-    
-    .rules-subtitle {
-      font-size: 1.6rem !important;
-    }
-    
-    .rules-section p {
-      font-size: 1rem !important;
-    }
-    
-    .start-button {
-      font-size: 1.8rem !important; /* FIX #4: Keep text large even on small screens */
-      padding: 12px 30px !important;
-    }
+  /* Game UI visibility controls */
+  .game-container.game-active .score-row,
+  .game-container.game-active .game-controls,
+  .game-container.game-active #game-messages,
+  .game-container.game-active .bottom-buttons {
+    visibility: visible;
+    opacity: 1;
+    height: auto;
+    overflow: visible;
+    display: flex !important;
   }
   
+  .game-container:not(.game-active) .score-row,
+  .game-container:not(.game-active) .game-controls,
+  .game-container:not(.game-active) #game-messages,
+  .game-container:not(.game-active) .bottom-buttons {
+    visibility: hidden;
+    opacity: 0;
+    height: 0;
+    overflow: hidden;
+    display: none !important;
+  }
+  
+  /* Landscape mode warning */
   @media (orientation: landscape) {
     .orientation-warning {
       display: flex;
@@ -805,8 +815,6 @@
   .level-btn {
     min-width: 32px;
     padding: 6px 8px;
-    border: 2px solid var(--light-blue-border);
-    border-bottom-width: 3px;
   }
   
   #game-messages {
@@ -820,195 +828,28 @@
     padding: 12px;
   }
   
-  /* Smaller leaderboard text on very small phones */
-  .leaderboard-cell {
-    font-size: 0.9rem !important; /* CHANGE: Consistent size per fix #7 */
-  }
-  
-  .leaderboard-row.header {
-    font-size: 0.9rem !important; /* CHANGE: Consistent size per fix #7 */
-  }
-  
   /* Adjust leaderboard row spacing for small screens */
   .leaderboard-row {
-    grid-template-columns: 40px minmax(75px, 1fr) 60px 55px !important; /* ADDITIONAL FIX #6: Wider rank column */
-    column-gap: 10px !important; /* Slightly smaller gaps on tiny screens */
+    grid-template-columns: 40px minmax(75px, 1fr) 60px 55px !important;
+    column-gap: 10px !important;
     padding: 4px 6px;
   }
-}
-
-/* Fix for grid visibility */
-#grid-container {
-  display: grid !important;
-}
-
-/* Hide bottom buttons when game is not active */
-.game-container:not(.game-active) .bottom-buttons {
-  display: none !important;
-}
-
-/* Ensure grid container is visible */
-.game-container.game-active #grid-container {
-  display: grid !important;
-}
-
-/* Hide placeholder gray line when grid is empty */
-#grid-container:empty {
-  display: none !important;
-  background: transparent !important;
-  border: none !important;
-  padding: 0 !important;
-  margin: 0 !important;
-}
-
-/* Show UI elements only when game is active */
-.game-container:not(.game-active) .score-row,
-.game-container:not(.game-active) .game-controls,
-.game-container:not(.game-active) #game-messages {
-  visibility: hidden;
-  opacity: 0;
-  height: 0;
-  overflow: hidden;
-}
-
-.game-container.game-active .score-row,
-.game-container.game-active .game-controls,
-.game-container.game-active #game-messages {
-  visibility: visible;
-  opacity: 1;
-  height: auto;
-  overflow: visible;
-}
-
-/* Ensure bottom buttons display correctly in active game state */
-.game-container.game-active .bottom-buttons {
-  display: flex !important;
-}
-
-/* Touch Event CSS Fix - Add to your existing CSS or include as a separate file */
-
-/* Ensure start cell has higher priority for touch events */
-.grid-cell.start-cell {
-    z-index: 30 !important; /* Higher z-index to ensure it's on top */
-    touch-action: manipulation !important; /* Improved touch handling */
-    -webkit-tap-highlight-color: rgba(0,0,0,0) !important; /* Remove tap highlight */
-    cursor: pointer !important;
-    transform: translateZ(0) !important; /* Force hardware acceleration */
-    will-change: transform !important; /* Hint to browser for optimization */
-    position: relative !important; /* Ensure positioning context */
-}
-
-/* Enhance touch experience for all cells */
-.grid-cell {
-    touch-action: manipulation !important; /* Better than 'none' for simple taps */
-    -webkit-user-select: none !important;
-    user-select: none !important;
-    -webkit-touch-callout: none !important;
-}
-
-/* Fix for iOS where touch events can be problematic */
-.ios-device .grid-cell {
-    touch-action: manipulation !important;
-    -webkit-appearance: none !important;
-}
-
-/* Add a slight animation on touch for visual feedback */
-.grid-cell:active {
-    transform: scale(0.97) !important;
-    transition: transform 0.1s !important;
-}
-
-/* Ensure grid container isn't blocking events */
-#grid-container {
-    touch-action: manipulation !important;
-    pointer-events: auto !important;
-}
-
-/* Fix potential issues with event bubbling in the game container */
-.game-container {
-    touch-action: manipulation !important;
-    -webkit-overflow-scrolling: touch !important;
-}
-
-/* Ensure game area doesn't have overlays preventing touches */
-.game-board {
-    z-index: 5 !important;
-    position: relative !important;
-}
-
-/* Disable any animations during initial game loading that might interfere with touch */
-.game-container.game-active {
-    transition-delay: 0.3s !important; /* Slight delay to ensure UI is ready */
-}
-
-/* Additional helper class to enhance click/touch area of the start cell */
-.grid-cell.start-cell::after {
-    content: '';
-    position: absolute;
-    top: -5px;
-    left: -5px;
-    right: -5px;
-    bottom: -5px;
-    z-index: -1;
-}
-
-/* Force elements to be ready for interaction right from start */
-body.touch-device .grid-cell,
-body.ios-device .grid-cell {
-    opacity: 1 !important;
-    visibility: visible !important;
-    pointer-events: auto !important;
-}
-
-/* Fix for bottom buttons visibility */
-.game-container.game-active .bottom-buttons {
-  display: flex !important;
-}
-
-/* Fix for welcome message boxes */
-.welcome-message {
-  display: none !important; /* Force hide any welcome messages */
-}
-
-/* Style for single button mode */
-.bottom-buttons.single-button {
-  justify-content: center !important;
-}
-
-.bottom-buttons.single-button #leaderboard-btn {
-  margin: 0 auto !important;
-}
-
-@media (max-width: 768px) {
-  /* Show bottom buttons on mobile when game is active */
-  .game-container.game-active .bottom-buttons {
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    height: auto !important;
-    width: var(--container-width) !important;
-    margin: 15px auto !important;
+  
+  /* Rules title adjustments for tiny screens */
+  .rules-title {
+    font-size: 2rem !important;
   }
   
-  /* Fix for welcome message box */
-  .welcome-message {
-    display: none !important;
+  .rules-subtitle {
+    font-size: 1.6rem !important;
   }
-}
-
-/* Add or update this in your mobile-responsive.css file */
-
-@media (max-width: 768px) {
-  /* Score row with light blue border */
-  .score-row {
-    width: var(--container-width) !important;
-    height: 50px;
-    margin: 0 auto 10px auto !important;
-    border: 2px solid #93c5fd !important; /* Light blue border */
-    border-radius: 3px !important;
-    display: flex;
-    align-items: center;
-    background-color: #e6f2ff;
-    box-sizing: border-box;
+  
+  .rules-section p {
+    font-size: 1rem !important;
+  }
+  
+  .start-button {
+    font-size: 1.8rem !important;
+    padding: 12px 30px !important;
   }
 }
