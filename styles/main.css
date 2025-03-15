@@ -629,3 +629,30 @@ body {
 .game-active #game-messages {
     margin: 5px 0;
 }
+
+/* Make bottom buttons visible when game is active */
+.game-active .bottom-buttons {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  height: auto !important;
+  margin: 15px auto !important;
+}
+
+/* Ensure single button is centered properly */
+.bottom-buttons.single-button {
+  justify-content: center !important;
+}
+
+.bottom-buttons.single-button #leaderboard-btn {
+  margin: 0 auto !important;
+}
+
+/* General bottom buttons styling */
+.bottom-buttons {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
