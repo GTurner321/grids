@@ -1,4 +1,4 @@
-// mobile-responsive.js - Enhances mobile experience for the Path Puzzle game
+// mobile-responsive.js - Enhanced version with improvements for button animation, container width and shadow effects
 
 (function() {
   // Execute when DOM is fully loaded
@@ -14,6 +14,9 @@
     
     // Apply enhanced styles for requested improvements
     applyEnhancedMobileStyles();
+    
+    // Add button animation fix (POINT 4)
+    enhanceButtonAnimations();
     
     // Improve touch handling on grid cells
     optimizeTouchInteractions();
@@ -91,14 +94,18 @@
           gridContainer.style.border = "1px solid #666";
           gridContainer.style.borderTop = "none";
           gridContainer.style.borderRadius = "0";
-          gridContainer.style.width = "320px";
+          
+          // POINT 5: Make container wider by reducing margins
+          gridContainer.style.width = `calc(100vw - 20px)`;
         }
         
         if (scoreRow) {
           scoreRow.style.border = "1px solid #666";
           scoreRow.style.borderBottom = "none";
           scoreRow.style.borderRadius = "0";
-          scoreRow.style.width = "320px";
+          
+          // POINT 5: Make container wider by reducing margins
+          scoreRow.style.width = `calc(100vw - 20px)`;
         }
         
         // 2. Style the game control buttons
@@ -144,7 +151,8 @@
         const leaderboardBtn = document.getElementById('leaderboard-btn');
         
         if (bottomButtons) {
-          bottomButtons.style.cssText = "display: flex !important; flex-direction: row !important; justify-content: center !important; gap: 10px !important; width: 320px !important; margin: 10px auto !important;";
+          // POINT 5: Make container wider by reducing margins
+          bottomButtons.style.cssText = "display: flex !important; flex-direction: row !important; justify-content: center !important; gap: 10px !important; width: calc(100vw - 20px) !important; margin: 5px auto !important;"; // POINT 3: Reduced margin from 10px to 5px
         }
         
         if (recordBtn) {
@@ -163,6 +171,9 @@
           scoreLeft.style.fontFamily = "'Trebuchet MS', Arial, sans-serif";
           scoreLeft.style.fontWeight = "bold";
           scoreLeft.style.width = "60%";
+          scoreLeft.style.color = "#ef4444"; // POINT 2: Color the round score red
+          scoreLeft.style.display = "flex";
+          scoreLeft.style.alignItems = "center"; // POINT 2: Center vertically
         }
         
         if (scoreRight) {
@@ -171,14 +182,19 @@
           scoreRight.style.width = "40%";
           scoreRight.style.textAlign = "right";
           scoreRight.style.justifyContent = "flex-end";
+          scoreRight.style.color = "#1e40af"; // POINT 2: Color the total score dark blue
+          scoreRight.style.display = "flex";
+          scoreRight.style.alignItems = "center"; // POINT 2: Center vertically
         }
         
-        // 5. Make game messages larger
+        // 5. Make game messages larger with more intense shadow (POINT 6)
         const gameMessages = document.getElementById('game-messages');
         if (gameMessages) {
-          gameMessages.style.fontSize = "1.4rem";
-          gameMessages.style.width = "320px";
+          gameMessages.style.fontSize = "1.6rem";
+          gameMessages.style.width = `calc(100vw - 20px)`; // POINT 5: Make container wider
           gameMessages.style.minHeight = "45px";
+          gameMessages.style.textShadow = "0 0 15px white, 0 0 25px white, 0 0 35px white, 0 0 40px white, 0 0 45px white"; // POINT 6: More intense shadow
+          gameMessages.style.marginBottom = "8px"; // POINT 3: Reduced margin to bottom buttons
         }
         
         // 6. Fix game controls container
@@ -186,7 +202,7 @@
         if (gameControls) {
           gameControls.style.display = "flex";
           gameControls.style.flexDirection = "row";
-          gameControls.style.width = "320px";
+          gameControls.style.width = `calc(100vw - 20px)`; // POINT 5: Make container wider
           gameControls.style.margin = "12px auto 0";
           gameControls.style.gap = "8px";
         }
@@ -194,7 +210,7 @@
     }
   }
   
-  // NEW FUNCTION: Apply enhanced mobile styles for requested improvements
+  // Apply enhanced mobile styles for requested improvements
   function applyEnhancedMobileStyles() {
     // Only apply these styles on mobile devices
     if (window.innerWidth > 768) return;
@@ -202,11 +218,11 @@
     console.log('Applying enhanced mobile styles for visual improvements');
     
     setTimeout(() => {
-      // 1. Enhanced game messages with wider white shadow
+      // 1. Enhanced game messages with wider white shadow (POINT 6)
       const gameMessages = document.getElementById('game-messages');
       if (gameMessages) {
         gameMessages.style.fontSize = '1.6rem';
-        gameMessages.style.textShadow = '0 0 8px white, 0 0 15px white, 0 0 20px white';
+        gameMessages.style.textShadow = '0 0 15px white, 0 0 25px white, 0 0 35px white, 0 0 40px white, 0 0 45px white';
         gameMessages.style.fontWeight = 'bold';
       }
       
@@ -241,6 +257,7 @@
       if (scoreRow) {
         scoreRow.style.border = '3px solid #166534'; // Thicker green border
         scoreRow.style.borderBottom = 'none';
+        scoreRow.style.height = "60px"; // POINT 2: Make score bar higher
       }
       
       const gridContainer = document.getElementById('grid-container');
@@ -283,6 +300,22 @@
         });
       });
       
+      // POINT 1: Adjust leaderboard table width and spacing
+      const leaderboardTable = document.querySelector('.leaderboard-table');
+      if (leaderboardTable) {
+        leaderboardTable.style.width = '100%';
+        leaderboardTable.style.maxWidth = '385px'; // 10% wider than original 350px
+      }
+      
+      // POINT 1: Adjust leaderboard row column gap and add date column padding
+      document.querySelectorAll('.leaderboard-row').forEach(row => {
+        row.style.columnGap = '8px'; // Reduced from original gap
+      });
+      
+      document.querySelectorAll('.leaderboard-cell.date').forEach(cell => {
+        cell.style.paddingRight = '10px'; // Added padding to date column
+      });
+      
       // Enhance path arrows (additional tweaks to arrow colors to match new theme)
       document.querySelectorAll('.path-arrow svg').forEach(svg => {
         svg.style.fill = '#dc2626'; // Match crimson from buttons
@@ -291,6 +324,42 @@
       
       console.log('Enhanced mobile styles applied successfully');
     }, 800); // Delay slightly longer than the basic styles to ensure we override them
+  }
+  
+  // POINT 4: Fix for button animation
+  function enhanceButtonAnimations() {
+    // Improve game control buttons to pulse instead of staying colored
+    const gameControlButtons = document.querySelectorAll('.game-controls button');
+    
+    gameControlButtons.forEach(button => {
+      // Remove any existing click listeners to prevent duplicates
+      button.removeEventListener('click', handleButtonClick);
+      
+      // Add our enhanced click handler
+      button.addEventListener('click', handleButtonClick);
+    });
+    
+    function handleButtonClick(e) {
+      const button = e.currentTarget;
+      
+      // Remove any existing animation classes
+      button.classList.remove('clicked');
+      
+      // Force a reflow to ensure animation restarts
+      void button.offsetWidth;
+      
+      // Add animation class
+      button.classList.add('clicked');
+      
+      // Remove class after animation completes (300ms matching the CSS animation)
+      setTimeout(() => {
+        button.classList.remove('clicked');
+        
+        // Also clear any inline background color style to avoid staying colored
+        button.style.backgroundColor = '';
+        button.classList.remove('active', 'selected');
+      }, 300);
+    }
   }
   
   // Optimize touch interactions for mobile
@@ -352,8 +421,15 @@
               messageElement.style.alignItems = "center";
               messageElement.style.justifyContent = "center";
               messageElement.style.fontSize = "1.6rem"; // Increased from 1.4rem
-              messageElement.style.width = "320px";
-              messageElement.style.textShadow = "0 0 8px white, 0 0 15px white, 0 0 20px white"; // Enhanced shadow
+              
+              // POINT 5: Make container wider by reducing margins
+              messageElement.style.width = `calc(100vw - 20px)`;
+              
+              // POINT 6: More intense white shadow
+              messageElement.style.textShadow = "0 0 15px white, 0 0 25px white, 0 0 35px white, 0 0 40px white, 0 0 45px white";
+              
+              // POINT 3: Reduced margin to bottom buttons
+              messageElement.style.marginBottom = "8px";
               
               // Force text to wrap properly
               if (text.length > 30) {
@@ -378,6 +454,21 @@
       metaTag.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
       document.head.appendChild(metaTag);
     }
+    
+    // Add CSS for button pulse animation (POINT 4)
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes buttonPulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+      }
+      
+      .game-controls button.clicked {
+        animation: buttonPulse 0.3s ease-in-out;
+      }
+    `;
+    document.head.appendChild(style);
   }
   
   // Enhance path arrows for mobile
