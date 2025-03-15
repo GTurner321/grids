@@ -1,3 +1,4 @@
+// Updated scoremanager.js with new level point values
 class ScoreManager {
     constructor() {
         // Persistent total score
@@ -21,7 +22,15 @@ class ScoreManager {
     
     startLevel(level) {
         this.currentLevel = level;
-        this.maxPoints = 1000 * level;
+        // Updated level point values as requested
+        const levelPoints = {
+            1: 2000,  // Changed from 1000
+            2: 2750,  // Changed from 2000
+            3: 3500,  // Changed from 3000
+            4: 4250,  // Changed from 4000
+            5: 5000   // Same as before
+        };
+        this.maxPoints = levelPoints[level] || 2000; // Default to 2000 if level not found
         this.checkCount = 0;
         this.removedSpares = false;
         this.startTime = new Date();
@@ -37,7 +46,7 @@ class ScoreManager {
         const secondsTaken = (new Date() - this.startTime) / 1000;
         const roundedSeconds = Math.ceil(secondsTaken / 10) * 10;
         
-        return Math.ceil(1000 * this.currentLevel * (20 / roundedSeconds));
+        return Math.ceil(this.maxPoints * (20 / roundedSeconds));
     }
     
     calculateBasePoints() {
@@ -97,35 +106,40 @@ class ScoreManager {
         window.dispatchEvent(event);
     }
     
-    // Update to the updateDisplay method in scoremanager.js
-
-updateDisplay() {
-    // Update total score (always visible)
-    const scoreTotalElement = document.getElementById('score-total');
-    if (scoreTotalElement) {
-        scoreTotalElement.textContent = `TOTAL: ${this.totalScore}`;
-    }
-    
-    // Update bonus info (only when round is complete)
-    const scoreBonusElement = document.getElementById('score-bonus');
-    if (scoreBonusElement) {
-        if (this.roundComplete) {
-            // Format the display to show base points + bonus = round score
-            const basePoints = this.calculateBasePoints();
-            const timeBonus = this.calculateTimeBonus();
-            
-            scoreBonusElement.textContent = `${basePoints} + ${timeBonus} = ${this.roundScore}`;
-            scoreBonusElement.style.visibility = 'visible';
-        } else {
-            scoreBonusElement.textContent = '';
-            scoreBonusElement.style.visibility = 'hidden';
+    updateDisplay() {
+        // Update total score (always visible)
+        const scoreTotalElement = document.getElementById('score-total');
+        if (scoreTotalElement) {
+            scoreTotalElement.textContent = `TOTAL: ${this.totalScore}`;
         }
+        
+        // Update bonus info (only when round is complete)
+        const scoreBonusElement = document.getElementById('score-bonus');
+        if (scoreBonusElement) {
+            if (this.roundComplete) {
+                // Format the display to show base points + bonus = round score
+                const basePoints = this.calculateBasePoints();
+                const timeBonus = this.calculateTimeBonus();
+                
+                scoreBonusElement.textContent = `${basePoints} + ${timeBonus} = ${this.roundScore}`;
+                scoreBonusElement.style.visibility = 'visible';
+                scoreBonusElement.style.color = '#ef4444'; // Red color for round score
+            } else {
+                // If username is displayed here, ensure it's dark blue
+                if (scoreBonusElement.textContent && !scoreBonusElement.textContent.includes('+')) {
+                    scoreBonusElement.style.color = '#1e40af'; // Dark blue for username
+                }
+                
+                if (!scoreBonusElement.textContent) {
+                    scoreBonusElement.style.visibility = 'hidden';
+                }
+            }
+        }
+        
+        // Each time we update the display, dispatch the score update event
+        // This ensures the leaderboard always has the latest score
+        this.dispatchScoreUpdate();
     }
-    
-    // Each time we update the display, dispatch the score update event
-    // This ensures the leaderboard always has the latest score
-    this.dispatchScoreUpdate();
-}
     
     getCurrentState() {
         return {
