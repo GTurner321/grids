@@ -978,3 +978,20 @@ body.ios-device .grid-cell {
 .bottom-buttons.single-button #leaderboard-btn {
   margin: 0 auto !important;
 }
+
+@media (max-width: 768px) {
+  /* Show bottom buttons on mobile when game is active */
+  .game-container.game-active .bottom-buttons {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    height: auto !important;
+    width: var(--container-width) !important;
+    margin: 15px auto !important;
+  }
+  
+  /* Fix for welcome message box */
+  .welcome-message {
+    display: none !important;
+  }
+}
