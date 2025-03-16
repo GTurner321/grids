@@ -15,11 +15,15 @@ class RulesBox {
         // Set the content of the rules box
         rulesBox.innerHTML = `
             <div class="rules-content">
+                <h2 class="rules-box-title">RULES</h2>
                 <div class="rules-section">
                     <p>FIND THE PATH OF SUMS - GREEN TO RED</p>
                     <p>MOVE TO ADJACENT SQUARES ONLY - LEFT / RIGHT / UP / DOWN</p>
                     <p>THE ANSWER TO EACH SUM IS THE FIRST NUMBER OF THE NEXT SUM</p>
                     <p>A SQUARE CANNOT BE REUSED</p>
+                </div>
+                <h2 class="rules-box-subtitle">MORE</h2>
+                <div class="rules-section">
                     <p>THE RIGHT MATHS DOESN'T ALWAYS MEAN YOU'RE ON THE RIGHT PATH!</p>
                 </div>
             </div>
@@ -40,60 +44,85 @@ class RulesBox {
         style.textContent = `
             /* Rules Box Styles */
             .rules-box {
-                background-color: #e6f2ff;
-                border: 2px solid #60a5fa;
-                border-radius: 6px;
-                padding: 10px 15px;
-                margin: 10px auto 15px;
-                text-align: center;
-                font-family: 'Trebuchet MS', Arial, sans-serif;
-                font-weight: bold;
-                color: #1e293b;
-                transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
-                box-sizing: border-box;
+                background-color: #e6f2ff !important;
+                border: 2px solid #60a5fa !important;
+                border-radius: 6px !important;
+                padding: 10px 15px !important;
+                margin: 10px auto 15px !important;
+                text-align: center !important;
+                font-family: 'Trebuchet MS', Arial, sans-serif !important;
+                font-weight: bold !important;
+                color: #1e293b !important;
+                transition: opacity 0.5s ease-out, visibility 0.5s ease-out !important;
+                box-sizing: border-box !important;
+                z-index: 50 !important;
+                position: relative !important;
             }
             
             .rules-box .rules-content {
-                width: 100%;
+                width: 100% !important;
             }
             
             .rules-box .rules-section {
-                width: 100%;
+                width: 100% !important;
+                color: #1e293b !important;
+                margin: 5px 0 !important;
             }
             
             .rules-box p {
-                margin: 8px 0;
-                font-size: 0.85rem;
-                text-transform: uppercase;
-                line-height: 1.4;
+                margin: 8px 0 !important;
+                font-size: 0.85rem !important;
+                text-transform: uppercase !important;
+                line-height: 1.4 !important;
+                color: #1e293b !important;
+                font-family: 'Trebuchet MS', Arial, sans-serif !important;
+                text-align: center !important;
+                font-weight: bold !important;
+            }
+            
+            .rules-box-title, 
+            .rules-box-subtitle {
+                font-family: 'Trebuchet MS', Arial, sans-serif !important;
+                font-size: 1.1rem !important;
+                font-weight: bold !important;
+                margin: 5px 0 !important;
+                text-align: center !important;
+                color: #1e40af !important;
+                letter-spacing: 0.05em !important;
+                text-transform: uppercase !important;
+            }
+            
+            .rules-box-subtitle {
+                font-size: 1rem !important;
+                margin-top: 10px !important;
             }
             
             /* Responsive styles */
             @media (max-width: 768px) {
                 .rules-box {
-                    width: 90%;
-                    margin: 8px auto 12px;
-                    padding: 8px 10px;
+                    width: 90% !important;
+                    margin: 8px auto 12px !important;
+                    padding: 8px 10px !important;
                 }
                 
                 .rules-box p {
-                    font-size: 0.8rem;
-                    margin: 6px 0;
+                    font-size: 0.8rem !important;
+                    margin: 6px 0 !important;
                 }
             }
             
             @media (min-width: 769px) {
                 .rules-box {
-                    width: 60%;
-                    max-width: 640px;
+                    width: 60% !important;
+                    max-width: 640px !important;
                 }
             }
             
             /* Hide rules box when game is active */
             .game-container.game-active .rules-box {
-                display: none;
-                opacity: 0;
-                visibility: hidden;
+                display: none !important;
+                opacity: 0 !important;
+                visibility: hidden !important;
             }
             
             /* Override any default modal styles */
