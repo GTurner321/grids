@@ -1,16 +1,6 @@
-// Initialize the rules box when DOM is loaded
-window.addEventListener('DOMContentLoaded', () => {
-    // Remove the old rules modal if it exists
-    const oldRulesContainer = document.getElementById('rules-container');
-    if (oldRulesContainer) {
-        oldRulesContainer.innerHTML = '';
-    }
-    
-    // Initialize our new rules box
-    new RulesBox();
-});
+// rules.js - Fixed version with proper initialization order
 
-export default RulesBox;// rules.js - Updated to show rules box instead of modal
+// Define the RulesBox class
 class RulesBox {
     constructor() {
         this.createRulesBox();
@@ -424,3 +414,26 @@ class RulesBox {
         }, 100);
     }
 }
+
+// Wait for the DOM to be fully loaded before creating the RulesBox
+document.addEventListener('DOMContentLoaded', () => {
+    try {
+        // Remove the old rules modal if it exists
+        const oldRulesContainer = document.getElementById('rules-container');
+        if (oldRulesContainer) {
+            oldRulesContainer.innerHTML = '';
+        }
+        
+        // Create a new rules box
+        const rulesBoxInstance = new RulesBox();
+        
+        // Make it available globally for debugging
+        window.rulesBoxInstance = rulesBoxInstance;
+        
+    } catch (error) {
+        console.error('Error initializing rules box:', error);
+    }
+});
+
+// Export the class (not an instance)
+export default RulesBox;
