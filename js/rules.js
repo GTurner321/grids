@@ -253,70 +253,93 @@ class RulesBox {
     }
     
     // Style bottom buttons for large screens
-    styleBottomButtons() {
-        const bottomButtonsStyle = document.createElement('style');
-        bottomButtonsStyle.textContent = `
-            /* Bottom buttons styling for large screens (matching mobile style) */
-            @media (min-width: 769px) {
-                .bottom-buttons {
-                    display: flex !important;
-                    flex-direction: row !important;
-                    justify-content: center !important;
-                    gap: 15px !important; /* More space between buttons on larger screens */
-                    width: 100% !important;
-                    max-width: 400px !important;
-                    margin: 15px auto !important;
-                }
-                
-                .bottom-btn {
-                    font-family: 'Trebuchet MS', Arial, sans-serif !important;
-                    font-size: 1rem !important;
-                    font-weight: bold !important;
-                    height: 42px !important;
-                    padding: 8px 15px !important;
-                    border-radius: 5px !important;
-                    display: flex !important;
-                    align-items: center !important;
-                    justify-content: center !important;
-                    text-transform: uppercase !important;
-                    background-color: #3b82f6 !important; /* Blue color */
-                    color: white !important;
-                    border: 2px solid #60a5fa !important; /* Light blue border */
-                    border-bottom-width: 3px !important;
-                    min-width: 150px !important;
-                    max-width: 180px !important;
-                    transition: all 0.2s ease !important;
-                }
-                
-                .bottom-btn:hover {
-                    background-color: #2563eb !important; /* Darker blue on hover */
-                }
-                
-                .bottom-btn:active {
-                    transform: translateY(2px) !important;
-                    border-bottom-width: 1px !important;
-                }
-                
-                /* Style the SVG icons in buttons */
-                .bottom-btn svg {
-                    width: 16px !important;
-                    height: 16px !important;
-                    margin-right: 8px !important;
-                }
-                
-                /* Single button mode (after username submitted) */
-                .bottom-buttons.single-button {
-                    justify-content: center !important;
-                }
-                
-                .bottom-buttons.single-button #leaderboard-btn {
-                    margin: 0 auto !important;
-                    min-width: 200px !important;
-                }
+    // Add this method to your RulesBox class to style bottom buttons like level buttons
+
+styleBottomButtons() {
+    const style = document.createElement('style');
+    style.textContent = `
+        /* Bottom buttons styling to match level buttons */
+        .bottom-buttons {
+            display: flex !important;
+            justify-content: center !important;
+            gap: 10px !important;
+            width: 100% !important;
+            max-width: 400px !important;
+            margin: 15px auto !important;
+        }
+        
+        .bottom-btn {
+            padding: 8px 10px !important;
+            font-size: 0.85rem !important;
+            background-color: #3b82f6 !important; /* Blue color matching level buttons */
+            color: white !important;
+            border: none !important;
+            border-radius: 4px !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+            font-weight: bold !important;
+            min-width: 100px !important;
+            text-align: center !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 6px !important;
+        }
+        
+        .bottom-btn:hover {
+            background-color: #2563eb !important; /* Darker blue on hover - same as level buttons */
+        }
+        
+        .bottom-btn:active {
+            background-color: #1d4ed8 !important; /* Even darker blue when active - same as level buttons */
+            transform: translateY(1px) !important;
+        }
+        
+        .bottom-btn svg {
+            width: 14px !important;
+            height: 14px !important;
+            margin-right: 4px !important;
+        }
+        
+        /* Ensure single button is centered */
+        .bottom-buttons.single-button {
+            justify-content: center !important;
+        }
+        
+        .bottom-buttons.single-button #leaderboard-btn {
+            margin: 0 auto !important;
+        }
+        
+        /* Make sure bottom buttons are shown when game is active */
+        .game-active .bottom-buttons {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            height: auto !important;
+        }
+        
+        /* Hide bottom buttons when game is not active */
+        .game-container:not(.game-active) .bottom-buttons {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            height: 0 !important;
+        }
+        
+        /* Mobile adaptations */
+        @media (max-width: 480px) {
+            .bottom-buttons {
+                gap: 8px !important;
             }
-        `;
-        document.head.appendChild(bottomButtonsStyle);
-    }
+            
+            .bottom-btn {
+                min-width: 120px !important;
+                font-size: 0.8rem !important;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+}
     
     // Remove old rules modal styles that might conflict
     removeOldRulesStyles() {
