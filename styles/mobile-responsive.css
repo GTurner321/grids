@@ -1,4 +1,4 @@
-/* Updated Mobile-Responsive CSS */
+/* Mobile-Responsive CSS - Complete rewrite with all fixes */
 
 /* Mobile devices (width up to 768px) */
 @media (max-width: 768px) {
@@ -13,13 +13,14 @@
 
     /* Color variables */
     --crimson-red: #dd717e;
+    --dark-crimson: #c13a49; /* For pulsing */
     --light-red-border: #9c3c47;
-    /* Updated: Lighter brighter blue for score bar border (#4) */
+    /* #4: Lighter brighter blue for score bar border */
     --light-blue-border: #60a5fa; /* Changed from #93c5fd to a brighter blue */
     --button-blue: #3b82f6;
     --green-border: #166534;
     --form-bg-color: #e6f2ff;
-    /* Updated: Dark blue for username (#4) */
+    /* #4: Dark blue for username */
     --text-blue: #1e40af; /* Dark blue for total and username */
     --score-red: #ef4444; /* Red for round scores */
   }
@@ -56,12 +57,20 @@
     text-shadow: 0 0 10px white, 0 0 15px white, 0 0 20px white;
   }
   
-  /* Level selector container */
-  .level-selector-container {
-    margin-bottom: 10px;
-    /* #8: Remove the gray line */
+  /* #1: Remove gray line under level buttons - Apply to all relevant containers */
+  .level-selector-container,
+  .level-buttons,
+  .game-header,
+  .game-container > *:not(.game-board),
+  /* Target all other containers that might have this line */
+  .level-selector-title,
+  .game-header::after,
+  .level-selector-container::after,
+  .level-buttons::after {
     border-bottom: none !important;
     box-shadow: none !important;
+    border-color: transparent !important;
+    margin-bottom: 10px;
   }
   
   .level-selector-title {
@@ -74,15 +83,12 @@
   
   .level-buttons {
     gap: 5px;
-    /* #8: Remove the gray line */
-    border-bottom: none !important;
-    box-shadow: none !important;
   }
   
-  /* Level buttons with light blue border - 10% less tall (#6) */
+  /* #6: Level buttons 10% less tall with properly centered text */
   .level-btn {
     min-width: 42px;
-    padding: 9px 12px; /* Reduced from 10px 12px (10% less tall) */
+    padding: 0 12px !important; /* Vertical padding removed, only horizontal kept */
     font-size: var(--button-font-size);
     font-family: 'Trebuchet MS', Arial, sans-serif !important;
     font-weight: bold;
@@ -91,7 +97,11 @@
     border: 2px solid var(--light-blue-border);
     border-bottom-width: 3px;
     border-radius: 5px;
-    height: 40px; /* Explicit height to ensure consistency */
+    height: 40px !important; /* Fixed height for consistency */
+    display: flex !important;
+    align-items: center !important; 
+    justify-content: center !important;
+    line-height: normal !important; /* Fix vertical centering */
   }
   
   .level-btn:active {
@@ -100,13 +110,12 @@
     height: 38px; /* Adjust height when active */
   }
   
-  /* Score row with full responsive width and light blue border (#4) */
+  /* #4: Score row with lighter brighter blue border */
   .score-row {
     width: var(--container-width) !important;
     height: 60px; /* Increased height */
     margin: 0 auto 10px auto !important;
-    /* #4: Lighter brighter blue border */
-    border: 2px solid #aaecf9 !important;
+    border: 2px solid var(--light-blue-border) !important;
     border-radius: 3px !important;
     display: flex;
     align-items: center;
@@ -137,6 +146,21 @@
     align-items: center;
     justify-content: flex-end;
     width: 40%;
+  }
+  
+  /* #4: Username and round score colors */
+  #score-bonus:not(:empty) {
+    visibility: visible !important;
+  }
+  
+  #score-bonus {
+    color: var(--text-blue) !important; /* Dark blue for username */
+    transition: color 0.2s ease;
+  }
+  
+  #score-bonus:has(span:contains("+")), 
+  #score-bonus:contains("+") {
+    color: var(--score-red) !important; /* Red for round points */
   }
   
   /* Grid container with responsive sizing */
@@ -208,7 +232,7 @@
     gap: 5px !important;
   }
   
-  /* Game control buttons - Pulse on click instead of color change (#7) */
+  /* #2: Fix game control buttons to not change color after click */
   .game-controls button {
     padding: 8px 6px;
     font-size: 0.9rem;
@@ -219,8 +243,8 @@
     justify-content: center;
     height: 40px;
     border-radius: 5px;
-    background-color: var(--crimson-red);
-    color: white;
+    background-color: var(--crimson-red) !important; /* Force the same color always */
+    color: white !important;
     border: 2px solid var(--light-red-border);
     border-bottom-width: 3px;
   }
@@ -230,16 +254,26 @@
     border-bottom-width: 1px;
   }
   
-  /* Button pulse animation instead of color change (#7) */
+  /* Button pulse animation without color change */
   .game-controls button.clicked {
     animation: buttonPulse 0.3s ease-in-out forwards;
-    background-color: #c13a49 !important; /* Darker red when pulsing */
+    background-color: var(--dark-crimson) !important; /* Darker red only during pulse */
   }
   
   @keyframes buttonPulse {
     0% { transform: scale(1); }
     50% { transform: scale(1.05); }
     100% { transform: scale(1); }
+  }
+  
+  /* Force button to return to original color after animation */
+  .game-controls button.clicked,
+  .game-controls button:active,
+  .game-controls button:focus,
+  .game-controls button.active,
+  .game-controls button.selected {
+    background-color: var(--crimson-red) !important; /* Always return to this color */
+    color: white !important;
   }
   
   .game-controls button svg {
@@ -262,10 +296,10 @@
     width: 25% !important;
   }
   
-  /* Game messages with enhanced white shadow and reduced space to buttons (#3) */
+  /* #3: Game messages with reduced space to bottom buttons */
   #game-messages {
     width: var(--container-width) !important;
-    margin: 2px auto 2px !important; /* Reduced from 8px to 4px (#3) */
+    margin: 2px auto 2px !important; /* Reduced spacing */
     padding: 6px 0;
     font-size: 1.6rem !important;
     min-height: 45px !important;
@@ -292,14 +326,14 @@
     text-shadow: 0 0 15px white, 0 0 25px white, 0 0 35px white, 0 0 40px white !important;
   }
 
-  /* Bottom buttons container - Reduced height margin (#3) */
+  /* #3: Bottom buttons container with reduced margin */
   .bottom-buttons {
     display: flex !important;
     flex-direction: row !important;
     justify-content: center !important;
     gap: 10px !important;
     width: var(--container-width) !important;
-    margin: 0px auto !important; /* Reduced from 5px to 2px (#3) */
+    margin: 0px auto !important; /* Reduced to 0px */
   }
   
   /* Hide bottom buttons when game is not active */
@@ -330,13 +364,14 @@
     border-bottom-width: 1px !important;
   }
   
-  /* Style for single button mode */
+  /* Style for single button mode - Hide record button after submission */
   .bottom-buttons.single-button {
     justify-content: center !important;
   }
   
   .bottom-buttons.single-button #leaderboard-btn {
     margin: 0 auto !important;
+    min-width: 200px !important;
   }
   
   /* Specific bottom button widths - Reduced by 10% (#2) */
@@ -389,6 +424,28 @@
     padding: 15px;
     margin: 0 auto;
     position: relative;
+  }
+  
+  /* #5: Move return button to bottom right */
+  #return-to-record-btn {
+    position: absolute !important;
+    bottom: 10px !important;
+    right: 10px !important;
+    top: auto !important;
+    left: auto !important;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 10000;
+    border: none;
+    color: var(--button-blue);
+    font-size: 24px;
+    cursor: pointer;
   }
   
   /* Leaderboard table */
@@ -451,6 +508,19 @@
     color: #6b7280;
     grid-column: 1 / -1;
     font-family: 'Trebuchet MS', Arial, sans-serif;
+  }
+  
+  /* Hide leaderboard return button on mobile */
+  #return-from-leaderboard-btn {
+    display: none !important;
+  }
+  
+  /* Leaderboard title */
+  .leaderboard-title {
+    font-size: 1.4rem !important;
+    margin: 15px 0;
+    font-weight: bold;
+    font-family: 'Trebuchet MS', Arial, sans-serif !important;
   }
   
   /* Username form styling */
@@ -525,39 +595,6 @@
     font-size: 1.2rem;
   }
 
-  /* Return buttons - Moved to bottom right (#5) */
-  #return-to-record-btn {
-    position: absolute;
-    bottom: 10px; /* Changed from top to bottom (#5) */
-    right: 10px;
-    background-color: rgba(255, 255, 255, 0.8);
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    z-index: 10000;
-    border: none;
-    color: var(--button-blue);
-    font-size: 24px;
-    cursor: pointer;
-  }
-  
-  /* Hide leaderboard return button on mobile */
-  #return-from-leaderboard-btn {
-    display: none !important;
-  }
-  
-  /* Leaderboard title */
-  .leaderboard-title {
-    font-size: 1.4rem !important;
-    margin: 15px 0;
-    font-weight: bold;
-    font-family: 'Trebuchet MS', Arial, sans-serif !important;
-  }
-  
   /* Path arrows - Fixed directions and size */
   .path-arrow {
     position: absolute;
@@ -811,15 +848,10 @@
     display: none !important;
   }
   
-  /* Remove any gray line under the level buttons (#8) */
-  .game-header {
-    border-bottom: none !important;
-    box-shadow: none !important;
-  }
-  
   /* Landscape mode warning */
   @media (orientation: landscape) {
     .orientation-warning {
       display: flex;
     }
   }
+}
