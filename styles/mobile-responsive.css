@@ -1,10 +1,13 @@
-/* Mobile-Responsive CSS - Complete rewrite with all fixes */
+/* mobile-responsive.css - Rewritten for efficiency and clarity */
 
 /* Mobile devices (width up to 768px) */
 @media (max-width: 768px) {
+  /* =====================
+     ROOT VARIABLES
+     ===================== */
   :root {
-    /* Responsive width calculation with reduced margins */
-    --screen-padding: 10px; /* Reduced from 20px for wider container */
+    /* Sizing variables */
+    --screen-padding: 10px;
     --mobile-grid-cell-size: calc((100vw - (var(--screen-padding) * 2) - 11px) / 10);
     --container-width: calc(100vw - (var(--screen-padding) * 2));
     --border-width: 0px;
@@ -13,19 +16,19 @@
 
     /* Color variables */
     --crimson-red: #dd717e;
-    --dark-crimson: #c13a49; /* For pulsing */
+    --dark-crimson: #c13a49;
     --light-red-border: #9c3c47;
-    /* #4: Lighter brighter blue for score bar border */
-    --light-blue-border: #60a5fa; /* Changed from #93c5fd to a brighter blue */
+    --light-blue-border: #60a5fa;
     --button-blue: #3b82f6;
     --green-border: #166534;
     --form-bg-color: #e6f2ff;
-    /* #4: Dark blue for username */
-    --text-blue: #1e40af; /* Dark blue for total and username */
-    --score-red: #ef4444; /* Red for round scores */
+    --text-blue: #1e40af;
+    --score-red: #ef4444;
   }
   
-  /* Base body styles */
+  /* =====================
+     BASE STYLES
+     ===================== */
   body {
     padding: 0;
     margin: 0;
@@ -38,7 +41,6 @@
     background-image: url("data:image/svg+xml,%3Csvg width='32' height='64' viewBox='0 0 32 64' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 28h20V16h-4v8H4V4h28v28h-4V8H8v12h4v-8h12v20H0v-4zm12 8h20v4H16v24H0v-4h12V36zm16 12h-4v12h8v4H20V44h12v12h-4v-8zM0 36h8v20H0v-4h4V40H0v-4z' fill='%238fc096' fill-opacity='0.73' fill-rule='evenodd'/%3E%3C/svg%3E");
   }
   
-  /* Main container */
   .game-container {
     padding: 0;
     margin: 0 auto;
@@ -50,19 +52,20 @@
     align-items: center;
   }
   
-  /* Title with white shadow */
+  /* =====================
+     HEADER & TITLE
+     ===================== */
   .game-header h1 {
     font-size: 2.5rem;
     margin: 10px 0 0.3rem 0;
     text-shadow: 0 0 10px white, 0 0 15px white, 0 0 20px white;
   }
   
-  /* #1: Remove gray line under level buttons - Apply to all relevant containers */
+  /* Remove gray line under level buttons */
   .level-selector-container,
   .level-buttons,
   .game-header,
   .game-container > *:not(.game-board),
-  /* Target all other containers that might have this line */
   .level-selector-title,
   .game-header::after,
   .level-selector-container::after,
@@ -73,6 +76,9 @@
     margin-bottom: 10px;
   }
   
+  /* =====================
+     LEVEL SELECTION
+     ===================== */
   .level-selector-title {
     font-size: 1rem;
     margin-bottom: 8px;
@@ -85,10 +91,9 @@
     gap: 5px;
   }
   
-  /* #6: Level buttons 10% less tall with properly centered text */
   .level-btn {
     min-width: 42px;
-    padding: 0 12px !important; /* Vertical padding removed, only horizontal kept */
+    padding: 0 12px !important;
     font-size: var(--button-font-size);
     font-family: 'Trebuchet MS', Arial, sans-serif !important;
     font-weight: bold;
@@ -97,23 +102,25 @@
     border: 2px solid var(--light-blue-border);
     border-bottom-width: 3px;
     border-radius: 5px;
-    height: 40px !important; /* Fixed height for consistency */
+    height: 40px !important;
     display: flex !important;
     align-items: center !important; 
     justify-content: center !important;
-    line-height: normal !important; /* Fix vertical centering */
+    line-height: normal !important;
   }
   
   .level-btn:active {
     transform: translateY(2px);
     border-bottom-width: 1px;
-    height: 38px; /* Adjust height when active */
+    height: 38px;
   }
   
-  /* #4: Score row with lighter brighter blue border */
+  /* =====================
+     SCORE DISPLAY
+     ===================== */
   .score-row {
     width: var(--container-width) !important;
-    height: 60px; /* Increased height */
+    height: 60px;
     margin: 0 auto 10px auto !important;
     border: 2px solid var(--light-blue-border) !important;
     border-radius: 3px !important;
@@ -128,7 +135,7 @@
     padding-left: 12px;
     font-family: 'Trebuchet MS', Arial, sans-serif;
     font-size: 0.9rem;
-    color: var(--score-red) !important; /* Red color for round score */
+    color: var(--score-red) !important;
     display: flex;
     align-items: center;
     font-weight: bold;
@@ -141,29 +148,30 @@
     font-family: 'Trebuchet MS', Arial, sans-serif;
     font-size: 0.9rem;
     font-weight: bold;
-    color: var(--text-blue) !important; /* Dark blue */
+    color: var(--text-blue) !important;
     display: flex;
     align-items: center;
     justify-content: flex-end;
     width: 40%;
   }
   
-  /* #4: Username and round score colors */
   #score-bonus:not(:empty) {
     visibility: visible !important;
   }
   
   #score-bonus {
-    color: var(--text-blue) !important; /* Dark blue for username */
+    color: var(--text-blue) !important;
     transition: color 0.2s ease;
   }
   
   #score-bonus:has(span:contains("+")), 
   #score-bonus:contains("+") {
-    color: var(--score-red) !important; /* Red for round points */
+    color: var(--score-red) !important;
   }
   
-  /* Grid container with responsive sizing */
+  /* =====================
+     GRID LAYOUT
+     ===================== */
   #grid-container {
     width: var(--container-width) !important;
     margin: 0 auto;
@@ -178,51 +186,21 @@
     border-radius: 5px !important;
   }
   
-  /* Grid cells with responsive sizing */
   .grid-cell {
     width: var(--mobile-grid-cell-size);
     height: var(--mobile-grid-cell-size);
-    touch-action: manipulation !important;
     margin: 0;
     box-sizing: border-box;
     font-size: 1.4rem !important;
-    -webkit-user-select: none !important;
-    user-select: none !important;
-    -webkit-touch-callout: none !important;
-    -webkit-tap-highlight-color: rgba(0,0,0,0) !important;
   }
   
   .grid-cell.operator {
     font-size: 1.6rem !important;
   }
   
-  /* Enhanced touch behavior for cells */
-  .grid-cell:active {
-    transform: scale(0.97) !important;
-    transition: transform 0.1s !important;
-  }
-  
-  /* Ensure start cell has higher priority for touch events */
-  .grid-cell.start-cell {
-    z-index: 30 !important;
-    cursor: pointer !important;
-    transform: translateZ(0) !important;
-    will-change: transform !important;
-    position: relative !important;
-  }
-  
-  /* Additional helper class to enhance click/touch area of the start cell */
-  .grid-cell.start-cell::after {
-    content: '';
-    position: absolute;
-    top: -5px;
-    left: -5px;
-    right: -5px;
-    bottom: -5px;
-    z-index: -1;
-  }
-  
-  /* Game controls container with responsive width */
+  /* =====================
+     GAME CONTROLS
+     ===================== */
   .game-controls {
     display: flex !important;
     flex-direction: row !important;
@@ -232,7 +210,6 @@
     gap: 5px !important;
   }
   
-  /* #2: Fix game control buttons to not change color after click */
   .game-controls button {
     padding: 8px 6px;
     font-size: 0.9rem;
@@ -243,7 +220,7 @@
     justify-content: center;
     height: 40px;
     border-radius: 5px;
-    background-color: var(--crimson-red) !important; /* Force the same color always */
+    background-color: var(--crimson-red) !important;
     color: white !important;
     border: 2px solid var(--light-red-border);
     border-bottom-width: 3px;
@@ -254,10 +231,9 @@
     border-bottom-width: 1px;
   }
   
-  /* Button pulse animation without color change */
   .game-controls button.clicked {
     animation: buttonPulse 0.3s ease-in-out forwards;
-    background-color: var(--dark-crimson) !important; /* Darker red only during pulse */
+    background-color: var(--dark-crimson) !important;
   }
   
   @keyframes buttonPulse {
@@ -266,13 +242,12 @@
     100% { transform: scale(1); }
   }
   
-  /* Force button to return to original color after animation */
   .game-controls button.clicked,
   .game-controls button:active,
   .game-controls button:focus,
   .game-controls button.active,
   .game-controls button.selected {
-    background-color: var(--crimson-red) !important; /* Always return to this color */
+    background-color: var(--crimson-red) !important;
     color: white !important;
   }
   
@@ -283,7 +258,6 @@
     stroke: white;
   }
   
-  /* Button widths adjusted */
   .game-controls #check-solution {
     width: 25% !important;
   }
@@ -296,10 +270,12 @@
     width: 25% !important;
   }
   
-  /* #3: Game messages with reduced space to bottom buttons */
+  /* =====================
+     GAME MESSAGES
+     ===================== */
   #game-messages {
     width: var(--container-width) !important;
-    margin: 2px auto 2px !important; /* Reduced spacing */
+    margin: 2px auto 2px !important;
     padding: 6px 0;
     font-size: 1.6rem !important;
     min-height: 45px !important;
@@ -317,7 +293,6 @@
     text-shadow: 0 0 15px white, 0 0 25px white, 0 0 35px white, 0 0 40px white, 0 0 45px white !important;
   }
 
-  /* Style for penalty messages */
   #game-messages .penalty-message {
     font-size: 1.2rem !important;
     margin-top: 5px;
@@ -326,22 +301,22 @@
     text-shadow: 0 0 15px white, 0 0 25px white, 0 0 35px white, 0 0 40px white !important;
   }
 
-  /* #3: Bottom buttons container with reduced margin */
+  /* =====================
+     BOTTOM BUTTONS
+     ===================== */
   .bottom-buttons {
     display: flex !important;
     flex-direction: row !important;
     justify-content: center !important;
     gap: 10px !important;
     width: var(--container-width) !important;
-    margin: 0px auto !important; /* Reduced to 0px */
+    margin: 0px auto !important;
   }
   
-  /* Hide bottom buttons when game is not active */
   .game-container:not(.game-active) .bottom-buttons {
     display: none !important;
   }
   
-  /* Bottom buttons styling - Reduced width by 10% with spacing (#2) */
   .bottom-btn {
     font-family: 'Trebuchet MS', Arial, sans-serif !important;
     font-size: 1rem !important;
@@ -364,7 +339,6 @@
     border-bottom-width: 1px !important;
   }
   
-  /* Style for single button mode - Hide record button after submission */
   .bottom-buttons.single-button {
     justify-content: center !important;
   }
@@ -374,22 +348,22 @@
     min-width: 200px !important;
   }
   
-  /* Specific bottom button widths - Reduced by 10% (#2) */
   #record-score-btn {
-    width: calc((var(--container-width) * 0.45) - 5px) !important; /* Reduced from 0.5 to 0.45 (10% less) */
+    width: calc((var(--container-width) * 0.45) - 5px) !important;
   }
   
   #leaderboard-btn {
-    width: calc((var(--container-width) * 0.45) - 5px) !important; /* Reduced from 0.5 to 0.45 (10% less) */
+    width: calc((var(--container-width) * 0.45) - 5px) !important;
   }
   
-  /* Add spacing between icon and text in bottom buttons (#2) */
   #record-score-btn svg,
   #leaderboard-btn svg {
-    margin-right: 6px !important; /* Added spacing between icon and text */
+    margin-right: 6px !important;
   }
   
-  /* Modal containers */
+  /* =====================
+     MODAL CONTAINERS
+     ===================== */
   #username-area-container,
   #leaderboard-table-container {
     display: none;
@@ -414,9 +388,8 @@
     box-sizing: border-box;
   }
   
-  /* Modal content styling - Wider username area (#5) */
   .username-area {
-    width: 92% !important; /* Increased from 85% to 92% (#5) */
+    width: 92% !important;
     max-width: 340px !important;
     background-color: var(--form-bg-color) !important;
     border: 2px solid var(--light-blue-border) !important;
@@ -426,7 +399,6 @@
     position: relative;
   }
   
-  /* #5: Move return button to bottom right */
   #return-to-record-btn {
     position: absolute !important;
     bottom: 10px !important;
@@ -448,7 +420,9 @@
     cursor: pointer;
   }
   
-  /* Leaderboard table */
+  /* =====================
+     LEADERBOARD STYLING
+     ===================== */
   .leaderboard-table {
     width: 100% !important;
     max-width: 385px !important;
@@ -462,7 +436,6 @@
     position: relative;
   }
   
-  /* Leaderboard row */
   .leaderboard-row {
     display: grid;
     grid-template-columns: 45px minmax(80px, 1fr) 70px 70px !important;
@@ -470,13 +443,11 @@
     padding: 8px 12px !important;
   }
   
-  /* All leaderboard cells should use same text size */
   .leaderboard-cell {
     font-size: 0.9rem !important;
     font-family: 'Trebuchet MS', Arial, sans-serif;
   }
 
-  /* Make "RANK" header fully visible */
   .leaderboard-cell.rank {
     width: 45px !important;
     text-align: center;
@@ -489,19 +460,16 @@
     padding: 8px;
   }
   
-  /* Current user highlight */
   .leaderboard-row.current-user {
     background-color: #dbeafe;
     font-weight: bold;
   }
   
-  /* Add right margin to date column */
   .leaderboard-cell.date {
     text-align: right;
     padding-right: 10px !important;
   }
   
-  /* Leaderboard empty state */
   .leaderboard-row.empty {
     text-align: center;
     padding: 20px;
@@ -510,12 +478,10 @@
     font-family: 'Trebuchet MS', Arial, sans-serif;
   }
   
-  /* Hide leaderboard return button on mobile */
   #return-from-leaderboard-btn {
     display: none !important;
   }
   
-  /* Leaderboard title */
   .leaderboard-title {
     font-size: 1.4rem !important;
     margin: 15px 0;
@@ -523,7 +489,9 @@
     font-family: 'Trebuchet MS', Arial, sans-serif !important;
   }
   
-  /* Username form styling */
+  /* =====================
+     USERNAME FORM
+     ===================== */
   .username-form {
     display: flex;
     flex-direction: column;
@@ -532,7 +500,6 @@
     text-align: center;
   }
   
-  /* Username prompt styling */
   .username-prompt {
     font-size: 1rem !important;
     font-family: 'Trebuchet MS', Arial, sans-serif;
@@ -542,7 +509,6 @@
     text-transform: uppercase;
   }
   
-  /* Input wrapper styling */
   .input-wrapper {
     display: flex;
     flex-direction: column;
@@ -553,7 +519,6 @@
     gap: 12px;
   }
   
-  /* Input field styling */
   #username-input {
     width: 90% !important;
     padding: 12px;
@@ -568,7 +533,6 @@
     font-weight: bold;
   }
   
-  /* Submit button styling - with rocket icon */
   #submit-username {
     width: 50% !important;
     padding: 12px;
@@ -588,14 +552,15 @@
     text-transform: uppercase;
   }
 
-  /* Rocket icon after Submit */
   #submit-username::after {
     content: " 🚀";
     margin-left: 5px;
     font-size: 1.2rem;
   }
 
-  /* Path arrows - Fixed directions and size */
+  /* =====================
+     PATH ARROWS
+     ===================== */
   .path-arrow {
     position: absolute;
     width: 14px !important;
@@ -604,7 +569,6 @@
     pointer-events: none;
   }
 
-  /* Position arrows precisely at the center of each edge */
   .path-arrow.right {
     top: 50%;
     right: 0;
@@ -629,7 +593,6 @@
     transform: translateX(-50%);
   }
   
-  /* Create cleaner, tail-less arrows with correct directions */
   .path-arrow svg {
     display: none !important;
   }
@@ -643,7 +606,6 @@
     height: 2px;
   }
 
-  /* Right arrow - pointing right from right edge */
   .path-arrow.right::before {
     top: 4px;
     right: 3px;
@@ -656,7 +618,6 @@
     transform: rotate(-45deg);
   }
 
-  /* Left arrow - pointing left from left edge */
   .path-arrow.left::before {
     top: 4px;
     left: 3px;
@@ -669,7 +630,6 @@
     transform: rotate(45deg);
   }
 
-  /* Up arrow - pointing up from top edge */
   .path-arrow.up::before {
     top: 3px;
     left: 2px;
@@ -682,7 +642,6 @@
     transform: rotate(45deg);
   }
 
-  /* Down arrow - pointing down from bottom edge */
   .path-arrow.down::before {
     bottom: 3px;
     left: 2px;
@@ -695,17 +654,45 @@
     transform: rotate(-45deg);
   }
   
-  /* Symbol container for grid cells */
+  /* =====================
+     MISC STYLES
+     ===================== */
   .symbol-container {
     transform: scale(1.3) !important;
   }
   
-  /* Touch device optimization */
-  .touch-device button {
-    min-height: 36px;
+  .welcome-message {
+    display: none !important;
+  }
+ 
+  /* =====================
+     GAME UI VISIBILITY
+     ===================== */
+  .game-container.game-active .score-row,
+  .game-container.game-active .game-controls,
+  .game-container.game-active #game-messages,
+  .game-container.game-active .bottom-buttons {
+    visibility: visible;
+    opacity: 1;
+    height: auto;
+    overflow: visible;
+    display: flex !important;
   }
   
-  /* Orientation warning */
+  .game-container:not(.game-active) .score-row,
+  .game-container:not(.game-active) .game-controls,
+  .game-container:not(.game-active) #game-messages,
+  .game-container:not(.game-active) .bottom-buttons {
+    visibility: hidden;
+    opacity: 0;
+    height: 0;
+    overflow: hidden;
+    display: none !important;
+  }
+  
+  /* =====================
+     ORIENTATION WARNING
+     ===================== */
   .orientation-warning {
     display: none;
     position: fixed;
@@ -739,36 +726,7 @@
     75% { transform: rotate(0deg); }
     100% { transform: rotate(0deg); }
   }
-
-  /* Hide welcome message */
-  .welcome-message {
-    display: none !important;
-  }
- 
-  /* Game UI visibility controls */
-  .game-container.game-active .score-row,
-  .game-container.game-active .game-controls,
-  .game-container.game-active #game-messages,
-  .game-container.game-active .bottom-buttons {
-    visibility: visible;
-    opacity: 1;
-    height: auto;
-    overflow: visible;
-    display: flex !important;
-  }
   
-  .game-container:not(.game-active) .score-row,
-  .game-container:not(.game-active) .game-controls,
-  .game-container:not(.game-active) #game-messages,
-  .game-container:not(.game-active) .bottom-buttons {
-    visibility: hidden;
-    opacity: 0;
-    height: 0;
-    overflow: hidden;
-    display: none !important;
-  }
-  
-  /* Landscape mode warning */
   @media (orientation: landscape) {
     .orientation-warning {
       display: flex;
