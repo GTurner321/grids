@@ -1,0 +1,117 @@
+/* touch-handler.css */
+/* Enhanced touch interactions for mobile devices */
+
+/* Base touch optimizations applied to all cells */
+.grid-cell {
+    touch-action: manipulation !important;
+    -webkit-tap-highlight-color: transparent !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -webkit-touch-callout: none !important;
+    cursor: pointer !important;
+    transform: translateZ(0) !important; /* Hardware acceleration */
+    will-change: transform !important; /* Optimize for animations */
+    transition: transform 0.1s ease-out !important;
+}
+
+/* Start cell enhancements - larger touch target and better visibility */
+.grid-cell.start-cell {
+    position: relative !important;
+    z-index: 50 !important; /* Higher z-index for touch priority */
+}
+
+/* Create a larger touch target for the start cell */
+.grid-cell.start-cell::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    z-index: -1;
+}
+
+/* Visual feedback for touched cells */
+.grid-cell.touch-active {
+    transform: scale(0.95) !important;
+    transition: transform 0.1s ease-out !important;
+}
+
+/* Enhanced pulse effect for selection feedback */
+.grid-cell.just-selected {
+    animation: cell-pulse 0.3s ease-out !important;
+}
+
+@keyframes cell-pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* iOS specific optimizations */
+.ios-device .grid-cell {
+    min-height: 44px !important; /* Apple's minimum touch target size */
+    min-width: 44px !important;
+}
+
+/* Touch device specific enhancements */
+.touch-device .grid-cell {
+    outline: none !important; /* Remove outline on touch */
+}
+
+/* Ensure the start cell is easily tappable */
+.touch-device .grid-cell.start-cell {
+    transform: translateZ(0) !important;
+    backface-visibility: hidden !important; /* Prevents visual glitches */
+}
+
+/* Ensure no text selection is possible */
+.touch-device {
+    -webkit-user-select: none !important;
+    user-select: none !important;
+    -webkit-touch-callout: none !important;
+}
+
+/* Invalid move styling */
+.grid-cell.invalid-move {
+    animation: shake 0.3s ease-in-out !important;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-3px); }
+    75% { transform: translateX(3px); }
+}
+
+/* Additional active state for buttons */
+button:active {
+    transform: translateY(1px) !important;
+}
+
+/* Accessibility - focus styles */
+.grid-cell:focus {
+    outline: 2px solid #3b82f6 !important; /* Blue outline for keyboard focus */
+    outline-offset: -2px !important;
+    z-index: 5 !important;
+}
+
+/* Hide focus outline for mouse but keep for keyboard (a11y) */
+.using-mouse .grid-cell:focus {
+    outline: none !important;
+}
+
+/* Add additional class to track if user is using mouse vs keyboard */
+body:not(.using-mouse) .grid-cell:focus {
+    outline: 2px solid #3b82f6 !important;
+}
+
+/* Ensure cells are clearly seen as interactive elements */
+.grid-cell:hover {
+    background-color: #f9fafb !important; /* Subtle hover effect */
+}
+
+/* Prevent any text selection during touch */
+* {
+    -webkit-touch-callout: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+}
