@@ -1,4 +1,4 @@
-// rules.js - Completely rewritten version
+// rules.js - Update to fix visibility and styling issues
 
 // Wait for the DOM to be fully loaded before executing
 document.addEventListener('DOMContentLoaded', function() {
@@ -54,7 +54,8 @@ function addStyles() {
     style.textContent = `
         /* Rules Box Styles */
         .rules-box {
-            background-color: #e6f2ff !important;
+            background-color: #dbe6fa !important;
+            background-image: url("data:image/svg+xml,%3Csvg width='32' height='64' viewBox='0 0 32 64' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 28h20V16h-4v8H4V4h28v28h-4V8H8v12h4v-8h12v20H0v-4zm12 8h20v4H16v24H0v-4h12V36zm16 12h-4v12h8v4H20V44h12v12h-4v-8zM0 36h8v20H0v-4h4V40H0v-4z' fill='%2381a4e3' fill-opacity='0.14' fill-rule='evenodd'/%3E%3C/svg%3E") !important;
             border: 2px solid #60a5fa !important;
             border-radius: 6px !important;
             padding: 10px 15px !important;
@@ -68,7 +69,7 @@ function addStyles() {
             z-index: 50 !important;
             position: relative !important;
             max-width: 640px !important;
-            width: 60% !important;
+            width: 50% !important; /* Updated to 50% */
         }
         
         @media (max-width: 768px) {
@@ -79,8 +80,16 @@ function addStyles() {
             }
             
             .rules-box p {
-                font-size: 0.8rem !important;
+                font-size: 1.2rem !important; /* Increased by 2 sizes */
                 margin: 6px 0 !important;
+            }
+            
+            .rules-box-title {
+                font-size: 1.5rem !important; /* Increased by 2 sizes */
+            }
+            
+            .rules-box-subtitle {
+                font-size: 1.4rem !important; /* Increased by 2 sizes */
             }
         }
         
@@ -104,7 +113,7 @@ function addStyles() {
         
         .rules-box p {
             margin: 8px 0 !important;
-            font-size: 0.85rem !important;
+            font-size: 1.05rem !important; /* Increased by 2 sizes */
             text-transform: uppercase !important;
             line-height: 1.4 !important;
             color: #1e293b !important;
@@ -116,7 +125,7 @@ function addStyles() {
         .rules-box-title, 
         .rules-box-subtitle {
             font-family: 'Trebuchet MS', Arial, sans-serif !important;
-            font-size: 1.1rem !important;
+            font-size: 1.3rem !important; /* Increased by 2 sizes */
             font-weight: bold !important;
             margin: 5px 0 !important;
             text-align: center !important;
@@ -131,7 +140,7 @@ function addStyles() {
         }
         
         .rules-box-subtitle {
-            font-size: 1rem !important;
+            font-size: 1.2rem !important; /* Increased by 2 sizes */
             margin-top: 10px !important;
         }
         
@@ -200,64 +209,13 @@ function addStyles() {
         
         @media (max-width: 768px) {
             .level-selector-title {
-                font-size: 1.1rem !important;
+                font-size: 1.3rem !important; /* Increased size */
             }
         }
         
-        /* Bottom buttons styling to match level buttons */
-        .bottom-buttons {
-            display: flex !important;
-            justify-content: center !important;
-            gap: 10px !important;
-            width: 100% !important;
-            max-width: 400px !important;
-            margin: 15px auto !important;
-        }
-        
-        .bottom-btn {
-            padding: 8px 10px !important;
-            font-size: 0.85rem !important;
-            background-color: #3b82f6 !important; /* Blue color matching level buttons */
-            color: white !important;
-            border: none !important;
-            border-radius: 4px !important;
-            cursor: pointer !important;
-            transition: all 0.2s ease !important;
-            font-weight: bold !important;
-            min-width: 100px !important;
-            text-align: center !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            gap: 6px !important;
-        }
-        
-        .bottom-btn:hover {
-            background-color: #2563eb !important; /* Darker blue on hover - same as level buttons */
-        }
-        
-        .bottom-btn:active {
-            background-color: #1d4ed8 !important; /* Even darker blue when active - same as level buttons */
-            transform: translateY(1px) !important;
-        }
-        
-        .bottom-btn svg {
-            width: 14px !important;
-            height: 14px !important;
-            margin-right: 4px !important;
-        }
-        
-        /* Ensure single button is centered */
-        .bottom-buttons.single-button {
-            justify-content: center !important;
-        }
-        
-        .bottom-buttons.single-button #leaderboard-btn {
-            margin: 0 auto !important;
-        }
-        
-        /* Game active state handling for rules box */
-        .game-container.game-active .rules-box {
+        /* Game active state handling for rules box and level selector */
+        .game-container.game-active .rules-box,
+        .game-container.game-active .level-selector-title {
             display: none !important;
             opacity: 0 !important;
             visibility: hidden !important;
@@ -299,7 +257,18 @@ function removeGrayLine() {
 // Set up event handlers for level buttons
 function setupLevelButtonHandlers() {
     document.querySelectorAll('.level-btn').forEach(btn => {
-        btn.addEventListener('click', hideRulesBox);
+        btn.addEventListener('click', () => {
+            // First hide the rules box
+            hideRulesBox();
+            
+            // Then hide the level selector title
+            const levelSelectorTitle = document.querySelector('.level-selector-title');
+            if (levelSelectorTitle) {
+                levelSelectorTitle.style.display = 'none';
+                levelSelectorTitle.style.visibility = 'hidden';
+                levelSelectorTitle.style.opacity = '0';
+            }
+        });
     });
 }
 
