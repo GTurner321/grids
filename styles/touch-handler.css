@@ -115,3 +115,38 @@ body:not(.using-mouse) .grid-cell:focus {
     -webkit-touch-callout: none !important;
     -webkit-tap-highlight-color: transparent !important;
 }
+
+/* Add this to your touch-handler.css or create a small update to be included after the main CSS */
+
+/* Force bottom buttons to be visible when game is active */
+.game-container.game-active .bottom-buttons {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    height: auto !important;
+    margin: 15px auto !important;
+    width: 100% !important;
+    max-width: 400px !important;
+    position: relative !important;
+    z-index: 100 !important;
+}
+
+/* Button styling reinforcement */
+.bottom-btn {
+    padding: 10px 15px !important;
+    font-size: 0.95rem !important;
+    background-color: #3b82f6 !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    font-weight: bold !important;
+    min-width: 120px !important;
+    text-align: center !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    margin: 0 5px !important;
+}
