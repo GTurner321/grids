@@ -27,6 +27,8 @@
     <!-- Styles -->
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/mobile-responsive.css">
+    <!-- New touch optimization styles -->
+    <link rel="stylesheet" href="styles/touch-handler.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">    
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap" rel="stylesheet">
@@ -93,9 +95,13 @@
     </div>
     
     <!-- Game Scripts -->
-    <script type="module" src="js/rules.js"></script>
-    <script type="module" src="js/scoremanager.js"></script>
-    <script type="module" src="js/gamecontroller.js"></script>
-    <script type="module" src="js/leaderboard-integration.js"></script>
+    <!-- Use the new game initializer as the entry point -->
+    <script type="module" src="js/game-initializer.js"></script>
+    
+    <!-- The following scripts are now loaded by game-initializer.js -->
+    <!-- <script type="module" src="js/rules.js"></script> -->
+    <!-- <script type="module" src="js/scoremanager.js"></script> -->
+    <!-- <script type="module" src="js/gamecontroller.js"></script> -->
+    <!-- <script type="module" src="js/leaderboard-integration.js"></script> -->
 </body>
 </html>
