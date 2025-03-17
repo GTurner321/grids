@@ -246,82 +246,81 @@ class TouchHandler {
         this.activeTouch = null;
     }
     
-    enhanceStartCell() {
-        // This function ensures the start cell is especially responsive to touch
-        const enhanceStartCellElements = () => {
-            const startCells = document.querySelectorAll('.grid-cell.start-cell');
-            if (startCells.length === 0) {
-                // If start cells aren't found yet, try again later
-                setTimeout(enhanceStartCellElements, 100);
-                return;
-            }
-            
-            startCells.forEach(cell => {
-                // Make the start cell more responsive
-                cell.style.zIndex = '50'; // Higher z-index for priority
-                cell.style.touchAction = 'manipulation';
-                cell.style.webkitTapHighlightColor = 'transparent';
-                
-                // Add a dedicated touch handler just for start cell
-                // This ensures the first touch is always registered
-                cell.addEventListener('touchstart', (e) => {
-                    if (!this.gameController.state.gameActive) return;
-                    
-                    // For first selection only
-                    if (this.gameController.state.userPath.length === 0) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        
-                        const cellIndex = parseInt(cell.dataset.index);
-                        if (isNaN(cellIndex)) return;
-                        
-                        console.log('Direct start cell handler activated');
-                        
-                        // Directly modify the path
-                        this.gameController.state.userPath = [cellIndex];
-                        this.gameController.updatePathHighlight();
-                        
-                        // Visual feedback
-                        this.addVisualFeedback(cell);
-                        
-                        // Show message
-                        this.gameController.showMessage('Path started! Continue by selecting connected cells.');
-                    }
-                }, { passive: false });
-                
-                // Add click handler as fallback
-                cell.addEventListener('click', (e) => {
-                    if (!this.gameController.state.gameActive) return;
-                    
-                    // For first selection only
-                    if (this.gameController.state.userPath.length === 0) {
-                        const cellIndex = parseInt(cell.dataset.index);
-                        if (isNaN(cellIndex)) return;
-                        
-                        console.log('Direct start cell click handler activated');
-                        
-                        // Direct path modification
-                        this.gameController.state.userPath = [cellIndex];
-                        this.gameController.updatePathHighlight();
-                        
-                        // Visual feedback
-                        this.addVisualFeedback(cell);
-                        
-                        // Show message
-                        this.gameController.showMessage('Path started! Continue by selecting connected cells.');
-                        
-                        // Prevent event propagation
-                        e.stopPropagation();
-                    }
-                });
-            });
-            
-            console.log('Start cell enhancement applied');
-        };
+    // Update to touch-handler.js
+// Focus on the enhanceStartCell method to ensure the start cell is clickable
+
+enhanceStartCell() {
+    // This function ensures the start cell is especially responsive to touch
+    const enhanceStartCellElements = () => {
+        const startCells = document.querySelectorAll('.grid-cell.start-cell');
+        if (startCells.length === 0) {
+            // If start cells aren't found yet, try again later
+            setTimeout(enhanceStartCellElements, 100);
+            return;
+        }
         
-        // Start the enhancement process
-        enhanceStartCellElements();
-    }
+        startCells.forEach(cell => {
+            // Make the start cell more responsive
+            cell.style.zIndex = '100'; // Higher z-index for priority - increased from 50
+            cell.style.position = 'relative'; // Ensure positioning context
+            cell.style.touchAction = 'manipulation';
+            cell.style.webkitTapHighlightColor = 'transparent';
+            
+            // CRITICAL: Add a direct click event that will always work
+            cell.onclick = (e) => {
+                console.log('Start cell clicked with direct onclick handler');
+                if (!this.gameController.state.gameActive) return;
+                
+                // For first selection only
+                if (this.gameController.state.userPath.length === 0) {
+                    const cellIndex = parseInt(cell.dataset.index);
+                    if (isNaN(cellIndex)) return;
+                    
+                    // Directly modify the path
+                    this.gameController.state.userPath = [cellIndex];
+                    this.gameController.updatePathHighlight();
+                    
+                    // Visual feedback
+                    this.addVisualFeedback(cell);
+                    
+                    // Show message
+                    this.gameController.showMessage('Path started! Continue by selecting connected cells.');
+                    
+                    // Prevent default
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            };
+            
+            // Add a FALLBACK direct DOM element property
+            cell.addEventListener('pointerdown', (e) => {
+                console.log('Start cell pointerdown event fired');
+                if (!this.gameController.state.gameActive) return;
+                
+                // For first selection only
+                if (this.gameController.state.userPath.length === 0) {
+                    const cellIndex = parseInt(cell.dataset.index);
+                    if (isNaN(cellIndex)) return;
+                    
+                    // Directly modify the path
+                    this.gameController.state.userPath = [cellIndex];
+                    this.gameController.updatePathHighlight();
+                    
+                    // Visual feedback
+                    this.addVisualFeedback(cell);
+                    
+                    // Show message
+                    this.gameController.showMessage('Path started! Continue by selecting connected cells.');
+                }
+            });
+        });
+        
+        console.log('Start cell enhancement applied with direct click handler');
+    };
+    
+    // Start the enhancement process
+    enhanceStartCellElements();
+}
     
     applyTouchOptimizations() {
         // Improve all cells for better touch response
