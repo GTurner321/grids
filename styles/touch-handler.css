@@ -150,3 +150,71 @@ body:not(.using-mouse) .grid-cell:focus {
     gap: 6px !important;
     margin: 0 5px !important;
 }
+
+/* Add these styles to your touch-handler.css file */
+
+/* Force bottom buttons to be visible when game is active */
+.game-container.game-active .bottom-buttons {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    height: auto !important;
+    margin: 15px auto !important;
+    width: 100% !important;
+    max-width: 400px !important;
+    position: relative !important;
+    z-index: 100 !important;
+}
+
+/* Button styling reinforcement */
+.bottom-btn {
+    padding: 10px 15px !important;
+    font-size: 0.95rem !important;
+    background-color: #3b82f6 !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    font-weight: bold !important;
+    min-width: 120px !important;
+    text-align: center !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    margin: 0 5px !important;
+}
+
+/* Enhance start cell visibility */
+.grid-cell.start-cell {
+    position: relative !important;
+    z-index: 50 !important;
+    transition: transform 0.2s ease-out !important;
+}
+
+/* Add subtle highlight effect to start cell */
+.grid-cell.start-cell:hover,
+.grid-cell.start-cell:focus {
+    transform: scale(1.05) !important;
+}
+
+/* Stronger pulse animation for start cell */
+.grid-cell.start-cell.just-selected {
+    animation: start-cell-pulse 0.3s ease-out !important;
+}
+
+@keyframes start-cell-pulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.3); }
+    50% { transform: scale(1.1); box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.5); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0px rgba(34, 197, 94, 0); }
+}
+
+/* Single button layout (after username submission) */
+.bottom-buttons.single-button {
+    justify-content: center !important;
+}
+
+.bottom-buttons.single-button #leaderboard-btn {
+    margin: 0 auto !important;
+}
