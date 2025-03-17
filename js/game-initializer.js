@@ -1,10 +1,7 @@
-// game-initializer.js
-// A clean entry point for initializing the game controller and managing device detection
+// game-initializer.js - updated to include rules module
 
 import GameController from './gamecontroller.js';
-import './rules.js'; // Import rules.js to ensure it runs
-import './scoremanager.js'; // Import scoremanager for global access
-import './leaderboard-integration.js'; // Import leaderboard integration
+import './rules.js'; // Import rules to ensure it loads properly
 
 function initializeGame() {
     console.log('Initializing game...');
