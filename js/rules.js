@@ -55,7 +55,8 @@ function addStyles() {
         /* Rules Box Styles */
         .rules-box {
             background-color: #dbe6fa !important;
-            background-image: url("data:image/svg+xml,%3Csvg width='32' height='64' viewBox='0 0 32 64' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 28h20V16h-4v8H4V4h28v28h-4V8H8v12h4v-8h12v20H0v-4zm12 8h20v4H16v24H0v-4h12V36zm16 12h-4v12h8v4H20V44h12v12h-4v-8zM0 36h8v20H0v-4h4V40H0v-4z' fill='%2381a4e3' fill-opacity='0.14' fill-rule='evenodd'/%3E%3C/svg%3E") !important;
+            background-image: background-color: #c7d5ee;
+            background-image: url("data:image/svg+xml,%3Csvg width='40' height='12' viewBox='0 0 40 12' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 6.172L6.172 0h5.656L0 11.828V6.172zm40 5.656L28.172 0h5.656L40 6.172v5.656zM6.172 12l12-12h3.656l12 12h-5.656L20 3.828 11.828 12H6.172zm12 0L20 10.172 21.828 12h-3.656z' fill='%2381a4e3' fill-opacity='0.14' fill-rule='evenodd'/%3E%3C/svg%3E") !important;
             border: 2px solid #60a5fa !important;
             border-radius: 6px !important;
             padding: 10px 15px !important;
