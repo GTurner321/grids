@@ -54,63 +54,109 @@ class GridInteractionManager {
         }
     }
     
-    initMouseHandlers() {
-        // Direct click handler for grid cells
-        this.gridContainer.addEventListener('click', (e) => {
-            if (!this.gameController.state.gameActive) return;
-            
-            // Debounce clicks
-            const now = Date.now();
-            if (now - this.lastClickTime < this.clickDebounceTime) {
-                return;
-            }
-            this.lastClickTime = now;
-            
-            // Find the clicked cell
-            const cell = e.target.closest('.grid-cell');
-            if (!cell) return;
-            
-            // Special handling for first click on start cell
-            const isStartCell = cell.classList.contains('start-cell');
-            if (isStartCell && this.gameController.state.userPath.length === 0) {
-                console.log('Start cell clicked directly');
-                const cellIndex = parseInt(cell.dataset.index);
-                if (isNaN(cellIndex)) return;
-                
-                // Directly modify the path
-                this.gameController.state.userPath = [cellIndex];
-                this.gameController.updatePathHighlight();
-                
-                // Add visual feedback
-                this.addVisualFeedback(cell);
-                
-                // Show message
-                this.gameController.showMessage('Path started! Continue by selecting connected cells.');
-                return;
-            }
-            
-            // For all other cells, use the regular handler
-            this.gameController.handleCellClick(cell);
-        });
+    // Update the initMouseHandlers method in grid-interaction-manager.js
+// Find the initMouseHandlers method and replace it with this version:
+
+initMouseHandlers() {
+    // Direct click handler for grid cells
+    this.gridContainer.addEventListener('click', (e) => {
+        if (!this.gameController.state.gameActive) return;
         
-        // Prevent text selection on mouse down
-        this.gridContainer.addEventListener('mousedown', (e) => {
-            if (!this.gameController.state.gameActive) return;
-            
-            const cell = e.target.closest('.grid-cell');
-            if (cell) {
-                e.preventDefault(); // Prevent text selection
-            }
-        });
+        // Debounce clicks
+        const now = Date.now();
+        if (now - this.lastClickTime < this.clickDebounceTime) {
+            return;
+        }
+        this.lastClickTime = now;
         
-        // Clean up hover states when mouse leaves
-        this.gridContainer.addEventListener('mouseleave', () => {
-            document.querySelectorAll('.drag-target').forEach(cell => {
-                cell.classList.remove('drag-target');
-            });
+        // Find the clicked cell
+        const cell = e.target.closest('.grid-cell');
+        if (!cell) return;
+        
+        // Special handling for first click on start cell
+        const isStartCell = cell.classList.contains('start-cell');
+        if (isStartCell && this.gameController.state.userPath.length === 0) {
+            console.log('Start cell clicked directly in grid-interaction-manager');
+            const cellIndex = parseInt(cell.dataset.index);
+            if (isNaN(cellIndex)) return;
+            
+            // Directly modify the path - USING MORE VERBOSE DEBUGGING
+            console.log('Adding start cell to path, index:', cellIndex);
+            this.gameController.state.userPath = [cellIndex];
+            
+            // Make multiple attempts to update the path highlight
+            this.gameController.updatePathHighlight();
+            
+            // Also try the direct method on pathManager if available
+            if (this.gameController.pathManager && this.gameController.pathManager.updatePathHighlight) {
+                this.gameController.pathManager.updatePathHighlight();
+            }
+            
+            // Add visual feedback
+            this.addVisualFeedback(cell);
+            
+            // Show message
+            this.gameController.showMessage('Path started! Continue by selecting connected cells.');
+            
+            // Stop event propagation
+            e.stopPropagation();
+            e.preventDefault();
+            return;
+        }
+        
+        // For all other cells, use the regular handler
+        this.gameController.handleCellClick(cell);
+    });
+    
+    // Prevent text selection on mouse down
+    this.gridContainer.addEventListener('mousedown', (e) => {
+        if (!this.gameController.state.gameActive) return;
+        
+        const cell = e.target.closest('.grid-cell');
+        if (cell) {
+            e.preventDefault(); // Prevent text selection
+        }
+    });
+    
+    // Clean up hover states when mouse leaves
+    this.gridContainer.addEventListener('mouseleave', () => {
+        document.querySelectorAll('.drag-target').forEach(cell => {
+            cell.classList.remove('drag-target');
         });
+    });
+    
+    // Add a helper method for visual feedback if it doesn't exist
+    if (!this.addVisualFeedback) {
+        this.addVisualFeedback = (cell) => {
+            // Add a visual pulse effect
+            cell.classList.add('just-selected');
+            setTimeout(() => {
+                cell.classList.remove('just-selected');
+            }, 300);
+        };
     }
     
+    // Also add additional style for start cell to make it more noticeable
+    const style = document.createElement('style');
+    style.textContent = `
+        .grid-cell.start-cell {
+            position: relative;
+            z-index: 50;
+        }
+        
+        .grid-cell.start-cell.just-selected {
+            animation: cell-pulse-stronger 0.3s ease-out;
+        }
+        
+        @keyframes cell-pulse-stronger {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+    `;
+    document.head.appendChild(style);
+}
+        
     initKeyboardHandlers() {
         // Add keyboard navigation for accessibility
         // This is a good practice but may not be required for all games
