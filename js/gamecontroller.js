@@ -94,52 +94,74 @@ class GameController {
     }
     
     async startLevel(level) {
-        // Reset state
-        this.state.currentLevel = level;
-        this.state.userPath = [];
-        this.state.gridEntries = new Array(100).fill(null);
-        this.state.removedCells.clear();
-        this.state.gameActive = true;
+    // Reset state
+    this.state.currentLevel = level;
+    this.state.userPath = [];
+    this.state.gridEntries = new Array(100).fill(null);
+    this.state.removedCells.clear();
+    this.state.gameActive = true;
+    
+    // IMPORTANT: This ensures the game-active class is properly applied
+    const gameContainer = document.querySelector('.game-container');
+    if (gameContainer) {
+        gameContainer.classList.add('game-active');
         
-        document.querySelector('.game-container').classList.add('game-active');
-        
-        scoreManager.startLevel(level);
-
-        try {
-            // Generate path and sequence
-            this.state.path = await generatePath();
-            this.state.sequence = await generateSequence(level);
-            this.state.sequenceEntries = sequenceToEntries(this.state.sequence);
-
-            // Place sequence on path
-            this.placeMathSequence();
-            
-            // Fill remaining cells
-            this.fillRemainingCells();
-
-            // Render grid
-            renderGrid(this.state.gridEntries, {
-                startCoord: this.state.path[0],
-                endCoord: this.state.path[this.state.path.length - 1]
-            });
-
-            // Reset path manager
-            this.pathManager.resetPath();
-            
-            // Update UI
-            this.updateUI();
-            this.showMessage('Find the path by following the mathematical sequence.');
-
-            // Reinitialize grid interactions for the new grid
-            setTimeout(() => {
-                this.interactionManager.init();
-            }, 200);
-
-        } catch (error) {
-            console.error('Error starting level:', error);
-            this.showMessage('Error starting game. Please try again.', 'error');
+        // Force bottom buttons to be visible
+        const bottomButtons = document.querySelector('.bottom-buttons');
+        if (bottomButtons) {
+            bottomButtons.style.display = 'flex';
+            bottomButtons.style.visibility = 'visible';
+            bottomButtons.style.opacity = '1';
+            bottomButtons.style.height = 'auto';
+            bottomButtons.style.margin = '15px auto';
         }
     }
+    
+    scoreManager.startLevel(level);
+
+    try {
+        // Generate path and sequence
+        this.state.path = await generatePath();
+        this.state.sequence = await generateSequence(level);
+        this.state.sequenceEntries = sequenceToEntries(this.state.sequence);
+
+        // Place sequence on path
+        this.placeMathSequence();
+        
+        // Fill remaining cells
+        this.fillRemainingCells();
+
+        // Render grid
+        renderGrid(this.state.gridEntries, {
+            startCoord: this.state.path[0],
+            endCoord: this.state.path[this.state.path.length - 1]
+        });
+
+        // Reset path manager
+        this.pathManager.resetPath();
+        
+        // Update UI
+        this.updateUI();
+        this.showMessage('Find the path by following the mathematical sequence.');
+
+        // Reinitialize grid interactions for the new grid
+        setTimeout(() => {
+            this.interactionManager.init();
+            
+            // Force buttons visible again after grid initialization
+            const bottomButtons = document.querySelector('.bottom-buttons');
+            if (bottomButtons) {
+                bottomButtons.style.display = 'flex';
+                bottomButtons.style.visibility = 'visible';
+                bottomButtons.style.opacity = '1';
+            }
+        }, 200);
+
+    } catch (error) {
+        console.error('Error starting level:', error);
+        this.showMessage('Error starting game. Please try again.', 'error');
+    }
+}
     
     placeMathSequence() {
         this.state.path.forEach((coord, index) => {
@@ -424,29 +446,46 @@ class GameController {
     }
     
     updateUI() {
-        // Update button states
-        const checkButton = document.getElementById('check-solution');
-        const removeButton = document.getElementById('remove-spare');
-        const resetButton = document.getElementById('reset-path');
-        
-        if (checkButton) {
-            checkButton.disabled = !this.state.gameActive || this.state.userPath.length === 0;
-        }
-        
-        if (removeButton) {
-            removeButton.disabled = !this.state.gameActive || this.state.removedCells.size > 0;
-        }
-        
-        if (resetButton) {
-            // Only disable when game is not active OR path is empty
-            resetButton.disabled = !this.state.gameActive || this.state.userPath.length === 0;
-        }
-
-        // Update level buttons
-        document.querySelectorAll('.level-btn').forEach(btn => {
-            btn.classList.toggle('active', parseInt(btn.dataset.level) === this.state.currentLevel);
-        });
+    // Update button states
+    const checkButton = document.getElementById('check-solution');
+    const removeButton = document.getElementById('remove-spare');
+    const resetButton = document.getElementById('reset-path');
+    
+    if (checkButton) {
+        checkButton.disabled = !this.state.gameActive || this.state.userPath.length === 0;
     }
+    
+    if (removeButton) {
+        removeButton.disabled = !this.state.gameActive || this.state.removedCells.size > 0;
+    }
+    
+    if (resetButton) {
+        // Only disable when game is not active OR path is empty
+        resetButton.disabled = !this.state.gameActive || this.state.userPath.length === 0;
+    }
+
+    // Update level buttons
+    document.querySelectorAll('.level-btn').forEach(btn => {
+        btn.classList.toggle('active', parseInt(btn.dataset.level) === this.state.currentLevel);
+    });
+    
+    // IMPORTANT: This ensures the bottom buttons are visible when they should be
+    if (this.state.gameActive) {
+        const bottomButtons = document.querySelector('.bottom-buttons');
+        if (bottomButtons) {
+            bottomButtons.style.display = 'flex';
+            bottomButtons.style.visibility = 'visible';
+            bottomButtons.style.opacity = '1';
+            bottomButtons.style.height = 'auto';
+        }
+        
+        // Make sure game-active class is applied to container
+        const gameContainer = document.querySelector('.game-container');
+        if (gameContainer && !gameContainer.classList.contains('game-active')) {
+            gameContainer.classList.add('game-active');
+        }
+    }
+}
    
     showMessage(text, type = 'info', duration = null) {
         const messageElement = document.getElementById('game-messages');
