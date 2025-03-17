@@ -249,6 +249,8 @@ class TouchHandler {
     // Update to touch-handler.js
 // Focus on the enhanceStartCell method to ensure the start cell is clickable
 
+// Replace the enhanceStartCell method in touch-handler.js with this updated version
+
 enhanceStartCell() {
     // This function ensures the start cell is especially responsive to touch
     const enhanceStartCellElements = () => {
@@ -260,46 +262,50 @@ enhanceStartCell() {
         }
         
         startCells.forEach(cell => {
-            // Make the start cell more responsive
-            cell.style.zIndex = '100'; // Higher z-index for priority - increased from 50
-            cell.style.position = 'relative'; // Ensure positioning context
+            // Make the start cell more responsive with higher z-index and clearer positioning
+            cell.style.zIndex = '100'; // Increased from previous value
+            cell.style.position = 'relative';
             cell.style.touchAction = 'manipulation';
             cell.style.webkitTapHighlightColor = 'transparent';
             
-            // CRITICAL: Add a direct click event that will always work
-            cell.onclick = (e) => {
+            // Remove any existing handlers by cloning to avoid conflicts
+            const newCell = cell.cloneNode(true);
+            cell.parentNode.replaceChild(newCell, cell);
+            
+            // Add guaranteed-to-work direct handler
+            newCell.onclick = (e) => {
                 console.log('Start cell clicked with direct onclick handler');
                 if (!this.gameController.state.gameActive) return;
                 
                 // For first selection only
                 if (this.gameController.state.userPath.length === 0) {
-                    const cellIndex = parseInt(cell.dataset.index);
+                    const cellIndex = parseInt(newCell.dataset.index);
                     if (isNaN(cellIndex)) return;
                     
-                    // Directly modify the path
+                    // Directly modify the path - CRITICAL PART
                     this.gameController.state.userPath = [cellIndex];
                     this.gameController.updatePathHighlight();
                     
                     // Visual feedback
-                    this.addVisualFeedback(cell);
+                    this.addVisualFeedback(newCell);
                     
                     // Show message
                     this.gameController.showMessage('Path started! Continue by selecting connected cells.');
                     
-                    // Prevent default
+                    // Stop event propagation
                     e.preventDefault();
                     e.stopPropagation();
                 }
             };
             
-            // Add a FALLBACK direct DOM element property
-            cell.addEventListener('pointerdown', (e) => {
-                console.log('Start cell pointerdown event fired');
+            // Also add touchstart handler for mobile
+            newCell.addEventListener('touchstart', (e) => {
+                console.log('Start cell touchstart direct handler');
                 if (!this.gameController.state.gameActive) return;
                 
                 // For first selection only
                 if (this.gameController.state.userPath.length === 0) {
-                    const cellIndex = parseInt(cell.dataset.index);
+                    const cellIndex = parseInt(newCell.dataset.index);
                     if (isNaN(cellIndex)) return;
                     
                     // Directly modify the path
@@ -307,15 +313,19 @@ enhanceStartCell() {
                     this.gameController.updatePathHighlight();
                     
                     // Visual feedback
-                    this.addVisualFeedback(cell);
+                    this.addVisualFeedback(newCell);
                     
                     // Show message
                     this.gameController.showMessage('Path started! Continue by selecting connected cells.');
+                    
+                    // Stop event propagation
+                    e.preventDefault();
+                    e.stopPropagation();
                 }
-            });
+            }, { passive: false });
         });
         
-        console.log('Start cell enhancement applied with direct click handler');
+        console.log('Start cell enhancement applied with direct handlers');
     };
     
     // Start the enhancement process
