@@ -504,3 +504,57 @@ body {
     max-width: 400px;
     margin: 0 auto;
 }
+
+/* Add these styles to your main.css or mobile-responsive.css file */
+
+/* Force bottom buttons visibility when game is active */
+.game-container.game-active .bottom-buttons {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    height: auto !important;
+    margin: 15px auto !important;
+    max-width: 400px;
+    width: 100%;
+    position: relative;
+    z-index: 100;
+}
+
+/* Ensure single button layout works properly */
+.bottom-buttons.single-button {
+    justify-content: center !important;
+}
+
+.bottom-buttons.single-button #leaderboard-btn {
+    margin: 0 auto !important;
+}
+
+/* Improve visual feedback for cell selection */
+.grid-cell.start-cell {
+    position: relative;
+    z-index: 50;
+    transition: transform 0.2s ease-out;
+    cursor: pointer;
+}
+
+.grid-cell.start-cell.just-selected {
+    animation: start-cell-pulse 0.3s ease-out;
+}
+
+@keyframes start-cell-pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+}
+
+/* When game is active, ensure all UI elements are visible */
+.game-active .score-row,
+.game-active .game-controls,
+.game-active #game-messages,
+.game-active .bottom-buttons {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    height: auto !important;
+    overflow: visible !important;
+}
