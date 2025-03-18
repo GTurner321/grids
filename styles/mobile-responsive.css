@@ -56,6 +56,22 @@
     margin: 10px 0 0.3rem 0;
     text-shadow: 0 0 10px white, 0 0 15px white, 0 0 20px white;
   }
+
+  .rules-box {
+        width: 90%;
+        margin: 8px auto 12px;
+        padding: 8px 10px;
+    }
+    
+    .rules-box p {
+        font-size: 0.8rem;
+        margin: 6px 0;
+    }
+    
+    .rules-box-title, 
+    .rules-box-subtitle {
+        font-size: 1rem;
+    }
   
   /* #1: Remove gray line under level buttons - Apply to all relevant containers */
   .level-selector-container,
