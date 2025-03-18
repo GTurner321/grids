@@ -1,0 +1,547 @@
+/* leaderboard.css - Complete updated file with spacing adjustments */
+
+.leaderboard-section {
+    margin-top: 1rem;
+    width: 100%;
+    max-width: 640px;
+    font-family: 'Courier New', monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.leaderboard-section > button,
+.leaderboard-section > div {
+    width: 100%;
+}
+
+/* Username submission area */
+.username-area {
+    background-color: #ede9fe;
+    border: 2px solid #16a34a;
+    border-radius: 6px;
+    padding: 4px 8px 4px; /* Reduced bottom padding */
+    margin-bottom: 10px;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; /* Changed from center */
+}
+
+.username-form {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 100%;
+    align-items: center;
+}
+
+.username-prompt {
+    margin: 0;
+    font-weight: bold;
+    font-size: 0.9rem;
+    color: #4a5568; /* Dark gray - consistent with other text */
+}
+
+.input-wrapper {
+    display: flex;
+    gap: 8px;
+    max-width: 300px;
+    width: 100%;
+    justify-content: center;
+}
+
+#username-input {
+    flex: 1;
+    padding: 6px 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    max-width: 200px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+}
+
+#username-input:focus {
+    outline: 1px solid #cbd5e1; /* Light gray outline */
+    box-shadow: 0 0 2px #e2e8f0; /* Very subtle light gray shadow */
+}
+
+#submit-username {
+    padding: 6px 12px;
+    background-color: #3b82f6; /* Blue color to match level buttons */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+}
+
+#submit-username:hover {
+    background-color: #2563eb; /* Darker blue on hover */
+}
+
+.status-message {
+    font-size: 0.8rem;
+    padding: 2px 0;
+    min-height: 0.5rem;
+}
+
+.status-message.error {
+    color: #dc2626;
+}
+
+.status-message.checking {
+    color: #3b82f6;
+}
+
+.status-message.success {
+    color: #22c55e;
+}
+
+.welcome-message {
+    padding: 8px 0;
+    font-weight: bold;
+    color: #166534;
+    font-size: 0.9rem;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Leaderboard styling */
+.leaderboard-title {
+    text-align: center;
+    font-size: 1.2rem;
+    margin: 8px 0;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    letter-spacing: 0.05em;
+}
+
+/* Status message for updates */
+.leaderboard-status {
+    text-align: center;
+    padding: 8px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+.leaderboard-status.info {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+.leaderboard-status.success {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+.leaderboard-status.error {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+/* Updated: Make the leaderboard table 8% narrower */
+.leaderboard-table {
+    background-color: #ede9fe; /* Light lilac - same as username-area */
+    border: 2px solid #16a34a; /* Dark green border - same as username-area */
+    border-radius: 6px;
+    overflow: hidden;
+    max-height: 400px;
+    overflow-y: auto;
+    max-width: 368px; /* Reduced from 400px (8% less) */
+    margin-left: auto;
+    margin-right: auto;
+    width: 92%; /* 8% less than 100% */
+}
+
+/* Updated: Adjust the grid column widths with better spacing */
+.leaderboard-row {
+    display: grid;
+    grid-template-columns: 40px minmax(80px, 1fr) 70px 80px;
+    column-gap: 10px; /* Add spacing between all columns */
+    padding: 6px 8px;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.leaderboard-row:last-child {
+    border-bottom: none;
+}
+
+.leaderboard-row.header {
+    background-color: #f3f4f6;
+    font-weight: bold;
+    font-size: 0.8rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+/* Updated: Improve header cell alignment */
+.leaderboard-row.header .leaderboard-cell.rank {
+    text-align: center;
+}
+
+.leaderboard-row.header .leaderboard-cell.name {
+    text-align: left;
+    padding-left: 5px;
+}
+
+.leaderboard-row.current-user {
+    background-color: #f0fdf4;
+    font-weight: bold;
+}
+
+.leaderboard-cell {
+    font-size: 0.85rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.leaderboard-cell.name {
+    max-width: 120px;
+    min-width: 100px;
+}
+
+.leaderboard-cell.rank {
+    text-align: center;
+}
+
+/* Updated: Push SCORE right with extra padding */
+.leaderboard-cell.score {
+    text-align: right;
+    padding-right: 10px; /* Add extra padding on the right */
+}
+
+/* Updated: Push DATE further right */
+.leaderboard-cell.date {
+    text-align: right;
+    padding-right: 5px;
+}
+
+.leaderboard-row.empty {
+    text-align: center;
+    padding: 20px;
+    color: #6b7280;
+    grid-column: 1 / -1;
+}
+
+/* Styles for bottom buttons */
+.bottom-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.bottom-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 15px;
+    font-size: 0.85rem;
+    background-color: #3b82f6; /* Blue color */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    text-transform: uppercase;
+    max-width: 300px;
+    width: 100%;
+}
+
+.bottom-btn:hover {
+    background-color: #2563eb; /* Darker blue on hover */
+}
+
+.bottom-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.bottom-btn.highlight {
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { background-color: #3b82f6; }
+    50% { background-color: #1d4ed8; }
+}
+
+/* Update return to record button */
+#return-to-record-btn {
+    background: none;
+    border: none;
+    color: #3b82f6;
+    font-size: 24px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: color 0.2s ease;
+}
+
+#return-to-record-btn:hover {
+    color: #1e40af;
+}
+
+/* Adjust username area and leaderboard table containers */
+#username-area-container,
+#leaderboard-table-container {
+    margin-top: 10px;
+    width: 100%;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Updated: Adjust responsive styling for smaller screens */
+@media (max-width: 480px) {
+    .leaderboard-row {
+        grid-template-columns: 35px minmax(70px, 1fr) 60px 70px;
+        column-gap: 8px;
+        font-size: 0.8rem;
+        padding: 6px;
+    }
+    
+    .leaderboard-table {
+        max-width: 92%; /* Keep it proportionally smaller */
+    }
+    
+    .leaderboard-cell {
+        font-size: 0.75rem;
+    }
+    
+    .input-wrapper {
+        flex-direction: column;
+    }
+    
+    #submit-username {
+        width: 100%;
+    }
+}
+
+/* Leaderboard scrollbar styling */
+.leaderboard-table::-webkit-scrollbar {
+    width: 8px;
+}
+
+.leaderboard-table::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 0 6px 6px 0;
+}
+
+.leaderboard-table::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+.leaderboard-table::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Animation for the current user's row */
+@keyframes highlight-pulse {
+    0% { background-color: #f0fdf4; }
+    50% { background-color: #dcfce7; }
+    100% { background-color: #f0fdf4; }
+}
+
+.leaderboard-row.current-user.new-entry {
+    animation: highlight-pulse 2s ease-in-out 1;
+}
+
+/* Connection status indicator */
+.connection-status {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border-radius: 0 0 0 4px;
+    background-color: rgba(0, 0, 0, 0.1);
+    color: #4b5563;
+}
+
+.connection-status.online {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+.connection-status.offline {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+/* Convert leaderboard title to button */
+.leaderboard-title-button {
+    text-align: center;
+    font-size: 1.2rem;
+    margin: 8px auto; /* Changed from 8px 0 to center horizontally */
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    letter-spacing: 0.05em;
+    background: transparent;
+    border: none;
+    width: 100%;
+    padding: 8px 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #1e293b;
+    position: relative;
+    display: block; /* Added to ensure proper centering */
+}
+
+.leaderboard-title-button:hover {
+    color: #16a34a;
+}
+
+.leaderboard-title-button:active {
+    transform: translateY(1px);
+}
+
+/* Add a subtle indicator to show it's clickable */
+.leaderboard-title-button::after {
+    content: '▼';
+    font-size: 0.8rem;
+    margin-left: 8px;
+    vertical-align: middle;
+    transition: transform 0.3s ease;
+}
+
+/* When leaderboard is visible, flip the arrow */
+.leaderboard-title-button.active::after {
+    transform: rotate(180deg);
+}
+
+/* Update the subtitle style */
+.leaderboard-subtitle {
+    text-align: center;
+    font-size: 0.8rem;
+    margin-top: -8px;
+    margin-bottom: 6px;
+    color: #374151; /* Darker gray */
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+}
+
+/* Touch device optimizations for leaderboard */
+.touch-device .leaderboard-title-button {
+    padding: 12px 0;
+    font-size: 1.3rem;
+}
+
+.touch-device #submit-username {
+    padding: 10px 16px;
+    min-height: 44px;
+}
+
+.touch-device #username-input {
+    padding: 10px;
+    min-height: 20px;
+    font-size: 16px; /* Prevent zoom on input focus in iOS */
+}
+
+.touch-device .leaderboard-row {
+    padding: 10px 12px;
+}
+
+/* Improve scrolling in leaderboard on touch devices */
+.touch-device .leaderboard-table {
+    -webkit-overflow-scrolling: touch;
+    overflow-y: scroll;
+}
+
+/* Add these styles to your existing leaderboard.css file */
+
+/* Welcome message styling */
+.welcome-message {
+    padding: 15px;
+    background-color: #ede9fe;
+    border: 2px solid #16a34a;
+    border-radius: 6px;
+    text-align: center;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    color: #166534;
+    line-height: 1.4;
+    margin: 10px auto;
+    max-width: 400px;
+    width: 100%;
+}
+
+.welcome-message strong {
+    font-weight: bold;
+    color: #1e40af;
+}
+
+/* Return buttons styling */
+#return-to-record-btn,
+#return-from-leaderboard-btn {
+    background: none;
+    border: none;
+    color: #3b82f6;
+    font-size: 24px;
+    cursor: pointer;
+    margin: 10px auto;
+    display: block;
+    text-align: center;
+    transition: color 0.2s ease;
+    padding: 5px;
+    width: 40px;
+    height: 40px;
+}
+
+#return-to-record-btn:hover,
+#return-from-leaderboard-btn:hover {
+    color: #1e40af;
+}
+
+/* Level selector title transition */
+.level-selector-title {
+    transition: opacity 0.5s ease-out;
+}
+
+/* Username in score area */
+#score-bonus {
+    transition: color 0.3s ease;
+}
+
+/* Highlight animation for bottom buttons */
+.bottom-btn.highlight {
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { background-color: #3b82f6; }
+    50% { background-color: #1d4ed8; }
+}
+
+/* Mobile optimizations */
+@media (max-width: 480px) {
+    .welcome-message {
+        font-size: 0.8rem;
+        padding: 10px;
+    }
+    
+    #return-to-record-btn,
+    #return-from-leaderboard-btn {
+        font-size: 20px;
+    }
+}
