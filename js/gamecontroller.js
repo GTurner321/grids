@@ -1,4 +1,4 @@
-// gamecontroller.js - First Click Fix
+// gamecontroller.js - Fixed Touch Handling
 import { generatePath } from './pathgenerator.js';
 import { generateSequence, sequenceToEntries } from './sequencegenerator.js';
 import { renderGrid, updateCell } from './gridrenderer.js';
@@ -20,7 +20,9 @@ class GameController {
             gridEntries: new Array(100).fill(null),
             removedCells: new Set(),
             gameActive: false,
-            lastClickTime: 0 // Track last click time to prevent double clicks
+            lastClickTime: 0, // Track last click time to prevent double clicks
+            touchStartTime: 0, // Track when a touch started
+            touchMoved: false // Track if touch moved (for distinguishing taps from swipes)
         };
         
         this.messageTimeout = null;
@@ -66,7 +68,7 @@ class GameController {
             console.error('Remove spare button not found');
         }
         
-        // Add reset path button handler - FIXED
+        // Add reset path button handler
         const resetButton = document.getElementById('reset-path');
         if (resetButton) {
             // Update the button text to "Reset" while preserving the SVG
@@ -200,6 +202,7 @@ class GameController {
         return cell && cell.classList.contains('start-cell');
     }
 
+    // Simplified handling of cell click - works for both touch and mouse
     handleCellClick(cell) {
         // Early exit if we don't have a valid cell or game is not active
         if (!cell || !this.state.gameActive) return;
@@ -213,6 +216,22 @@ class GameController {
         
         const cellIndex = parseInt(cell.dataset.index);
         if (isNaN(cellIndex)) return;
+
+        // Special handling for start cell when path is empty
+        if (this.isStartCell(cell) && this.state.userPath.length === 0) {
+            console.log('Start cell selected for new path');
+            this.state.userPath = [cellIndex];
+            this.updatePathHighlight();
+            
+            // Add a visual pulse effect
+            cell.classList.add('just-selected');
+            setTimeout(() => {
+                cell.classList.remove('just-selected');
+            }, 200);
+            
+            this.showMessage('Path started! Continue by selecting connected cells.');
+            return;
+        }
 
         // Handle deselection of last cell
         const lastCellIndex = this.state.userPath[this.state.userPath.length - 1];
@@ -263,6 +282,8 @@ class GameController {
     }
 
     isValidMove(newCellIndex) {
+        if (this.state.userPath.length === 0) return true; // Any cell is valid as first cell
+        
         const lastCellIndex = this.state.userPath[this.state.userPath.length - 1];
         
         // Convert indices to coordinates
@@ -278,153 +299,181 @@ class GameController {
 
     initializeGridInteractions() {
         const gridContainer = document.getElementById('grid-container');
+        if (!gridContainer) return;
         
-        // Track touch and drag state
-        let touchStartTime = 0;
-        let touchStartCell = null;
-        let lastTouchedCell = null;
-        let isDragging = false;
+        // IMPROVED: Direct and more reliable touch and click handlers
         
-        // Direct click handler for all cells (Fix #4: Single-click handling)
+        // 1. Mouse click handler (simple and direct)
         gridContainer.addEventListener('click', (e) => {
             if (!this.state.gameActive) return;
             
-            const cell = e.target.closest('.grid-cell');
-            if (!cell) return;
-            
-            // Handle first click on start cell specially to fix single-click issue
-            if (this.isStartCell(cell) && this.state.userPath.length === 0) {
-                console.log('Start cell clicked directly');
-                const cellIndex = parseInt(cell.dataset.index);
-                if (isNaN(cellIndex)) return;
-                
-                this.state.userPath = [cellIndex];
-                this.updatePathHighlight();
-                this.showMessage('Path started! Continue by selecting connected cells.');
+            // Only handle clicks if this wasn't part of a drag/swipe
+            if (this.state.touchMoved) {
+                this.state.touchMoved = false;
                 return;
             }
             
-            // For all other cells, use the regular handler
-            this.handleCellClick(cell);
-        });
-        
-        // Mouse down handler - prevent text selection
-        gridContainer.addEventListener('mousedown', (e) => {
-            if (!this.state.gameActive) return;
-            
             const cell = e.target.closest('.grid-cell');
             if (cell) {
-                e.preventDefault(); // Prevent text selection
+                this.handleCellClick(cell);
             }
         });
         
-        // Touch event handling - optimized for mobile
+        // 2. Touch handling (simplified and more reliable)
         gridContainer.addEventListener('touchstart', (e) => {
             if (!this.state.gameActive) return;
             
+            // Store touch start info
+            this.state.touchStartTime = Date.now();
+            this.state.touchMoved = false;
+            
+            // Prevent page scrolling on grid
+            e.preventDefault();
+            
+            // Get the initial touch target
             const touch = e.touches[0];
             const element = document.elementFromPoint(touch.clientX, touch.clientY);
-            if (!element) return;
+            const cell = element?.closest('.grid-cell');
             
-            const cell = element.closest('.grid-cell');
-            if (cell) {
-                e.preventDefault(); // Prevent scrolling
-                touchStartCell = cell;
-                lastTouchedCell = cell;
-                touchStartTime = Date.now();
-                isDragging = false;
-                
-                // If starting at the green cell and path is empty, add it to path immediately
-                // This makes the cell "selected" so drag can continue from it
-                if (this.isStartCell(cell) && this.state.userPath.length === 0) {
-                    const startCellIndex = parseInt(cell.dataset.index);
-                    this.state.userPath = [startCellIndex];
-                    this.updatePathHighlight();
-                    this.showMessage('Path started! Continue by selecting connected cells.');
-                }
+            // Store the cell reference for touchend
+            this.touchStartCell = cell;
+            
+            // CRITICAL FIX: For start cell, we need immediate visual feedback
+            if (cell && this.isStartCell(cell) && this.state.userPath.length === 0) {
+                cell.classList.add('touch-active');
             }
         }, { passive: false });
         
+        // Track movement for swipe detection
         gridContainer.addEventListener('touchmove', (e) => {
             if (!this.state.gameActive) return;
-            e.preventDefault(); // Prevent scrolling
             
-            // Mark that we're dragging
-            if (Date.now() - touchStartTime > 100) {
-                isDragging = true;
+            // Mark that we're dragging/swiping
+            this.state.touchMoved = true;
+            
+            // Remove immediate touch feedback if present
+            if (this.touchStartCell) {
+                this.touchStartCell.classList.remove('touch-active');
             }
             
+            // Continue with swipe path creation logic...
+            // (existing touch drag logic remains largely unchanged)
             const touch = e.touches[0];
             const element = document.elementFromPoint(touch.clientX, touch.clientY);
             if (!element) return;
             
             const cell = element.closest('.grid-cell');
-            if (!cell || cell === lastTouchedCell) return;
+            if (!cell || cell === this.lastTouchedCell) return;
             
-            // In drag mode, process cells
-            if (isDragging) {
-                // Start path if needed
-                if (this.state.userPath.length === 0) {
-                    // If we're dragging from start cell, automatically start the path
-                    if (this.isStartCell(touchStartCell)) {
-                        // Add start cell to path
-                        const startCellIndex = parseInt(touchStartCell.dataset.index);
-                        this.state.userPath = [startCellIndex];
-                        this.updatePathHighlight();
-                        lastTouchedCell = touchStartCell;
-                        this.showMessage('Path started! Continue by selecting connected cells.');
-                    } else {
-                        return; // Can't start drag from non-start cell
-                    }
+            // Handle path creation during swipe
+            if (this.state.userPath.length === 0) {
+                // If swiping from start cell, start path
+                if (this.isStartCell(this.touchStartCell)) {
+                    const startCellIndex = parseInt(this.touchStartCell.dataset.index);
+                    this.state.userPath = [startCellIndex];
+                    this.updatePathHighlight();
+                    this.lastTouchedCell = this.touchStartCell;
                 }
-                
-                // Validate the new cell
+            } else {
+                // Add new cells to path during swipe
                 const cellIndex = parseInt(cell.dataset.index);
                 const lastPathIndex = this.state.userPath[this.state.userPath.length - 1];
                 
-                // For deselection - if we drag back to previous cell
+                // Handle backtracking
                 if (this.state.userPath.length > 1 && 
                     cellIndex === this.state.userPath[this.state.userPath.length - 2]) {
-                    this.state.userPath.pop(); // Remove last cell
+                    this.state.userPath.pop();
                     this.updatePathHighlight();
-                    lastTouchedCell = cell;
+                    this.lastTouchedCell = cell;
                     return;
                 }
                 
-                // For new cell addition - must be valid move and not already in path
+                // Add new cell if valid
                 if (this.isValidMove(cellIndex) && !this.state.userPath.includes(cellIndex)) {
                     this.handleCellClick(cell);
-                    lastTouchedCell = cell;
+                    this.lastTouchedCell = cell;
                 }
             }
+            
+            e.preventDefault(); // Prevent scrolling during swipe
         }, { passive: false });
         
+        // Handle touch end for tap detection
         gridContainer.addEventListener('touchend', (e) => {
             if (!this.state.gameActive) return;
             
-            // If it was a short tap (not a drag), treat as click
-            if (!isDragging && touchStartCell && Date.now() - touchStartTime < 300) {
-                this.handleCellClick(touchStartCell);
+            // Remove touch feedback
+            if (this.touchStartCell) {
+                this.touchStartCell.classList.remove('touch-active');
+            }
+            
+            // If this was a short tap without much movement, handle as a click
+            const touchDuration = Date.now() - this.state.touchStartTime;
+            if (!this.state.touchMoved && touchDuration < 300 && this.touchStartCell) {
+                this.handleCellClick(this.touchStartCell);
             }
             
             // Reset touch tracking
-            touchStartCell = null;
-            lastTouchedCell = null;
-            isDragging = false;
+            this.touchStartCell = null;
+            this.lastTouchedCell = null;
+            
+            // Reset touchMoved after a short delay to not interfere with click event
+            setTimeout(() => {
+                this.state.touchMoved = false;
+            }, 50);
         });
         
-        // Clean up any hover states when touch/mouse interaction ends
-        const clearDragTargets = () => {
-            document.querySelectorAll('.drag-target').forEach(cell => {
-                cell.classList.remove('drag-target');
+        // 3. Add direct focus on the start cell (very important fix)
+        setTimeout(() => {
+            const startCells = document.querySelectorAll('.grid-cell.start-cell');
+            startCells.forEach(cell => {
+                // Enhance start cell for better touch detection
+                cell.style.zIndex = '30';
+                cell.style.position = 'relative';
+                cell.style.touchAction = 'none';
+                
+                // Add dedicated tap handling for start cell
+                cell.addEventListener('touchstart', (e) => {
+                    if (!this.state.gameActive) return;
+                    
+                    // Add visual feedback
+                    cell.classList.add('touch-active');
+                    
+                    // Prevent default to avoid any browser handling
+                    e.preventDefault();
+                    e.stopPropagation();
+                }, { passive: false });
+                
+                cell.addEventListener('touchend', (e) => {
+                    if (!this.state.gameActive) return;
+                    
+                    // Remove visual feedback
+                    cell.classList.remove('touch-active');
+                    
+                    // If path is empty, handle start cell selection
+                    if (this.state.userPath.length === 0) {
+                        const cellIndex = parseInt(cell.dataset.index);
+                        if (!isNaN(cellIndex)) {
+                            console.log('Start cell selected via direct handler');
+                            this.state.userPath = [cellIndex];
+                            this.updatePathHighlight();
+                            this.showMessage('Path started! Continue by selecting connected cells.');
+                            
+                            // Add visual feedback
+                            cell.classList.add('just-selected');
+                            setTimeout(() => {
+                                cell.classList.remove('just-selected');
+                            }, 200);
+                        }
+                    }
+                    
+                    e.preventDefault();
+                    e.stopPropagation();
+                }, { passive: false });
             });
-        };
+        }, 500);
         
-        gridContainer.addEventListener('mouseleave', clearDragTargets);
-        gridContainer.addEventListener('touchend', clearDragTargets);
-        gridContainer.addEventListener('touchcancel', clearDragTargets);
-        
-        // Add button animation (ADDITIONAL FIX #2: Pulse animation instead of color change)
+        // Add button animation
         const controlButtons = document.querySelectorAll('.game-controls button');
         controlButtons.forEach(button => {
             button.addEventListener('click', () => {
@@ -437,6 +486,21 @@ class GameController {
                 }, 500); // 0.5 seconds matching the CSS animation
             });
         });
+        
+        // Add CSS for touch active state
+        const style = document.createElement('style');
+        style.textContent = `
+            .grid-cell.touch-active {
+                transform: scale(1.1);
+                box-shadow: 0 0 10px rgba(59, 130, 246, 0.8);
+                z-index: 40;
+                transition: transform 0.1s ease-out, box-shadow 0.1s ease-out;
+            }
+            .grid-cell.start-cell.touch-active {
+                background-color: #15803d;
+            }
+        `;
+        document.head.appendChild(style);
     }
     
     removeAllSpareCells() {
@@ -657,7 +721,7 @@ class GameController {
                 messageElement.appendChild(penaltyMessage);
             } 
             else if (text === 'Path is mathematically correct! Continue to the end square.') {
-                // Changed message (ADDITIONAL FIX #1)
+                // Changed message
                 const mainMessage = document.createElement('div');
                 mainMessage.textContent = 'Path is mathematically correct!';
                 messageElement.appendChild(mainMessage);
@@ -689,91 +753,6 @@ class GameController {
 // Initialize game and store reference
 window.addEventListener('DOMContentLoaded', () => {
     window.gameController = new GameController();
-    
-    // Enhanced touch support for start cell
-    setTimeout(function() {
-        console.log('Enhancing touch support for cells...');
-        
-        // Add enhanced touch handling for start cell
-        const enhanceStartCell = function() {
-            const startCells = document.querySelectorAll('.grid-cell.start-cell');
-            if (startCells.length === 0) {
-                setTimeout(enhanceStartCell, 100);
-                return;
-            }
-            
-            startCells.forEach(cell => {
-                // Make start cell more noticeable with CSS
-                cell.style.zIndex = '30';
-                cell.style.touchAction = 'manipulation';
-                cell.style.webkitTapHighlightColor = 'rgba(0,0,0,0)';
-                
-                // Add specific tap handler just for start cell
-                cell.addEventListener('touchstart', function(e) {
-                    if (!window.gameController || 
-                        !window.gameController.state || 
-                        !window.gameController.state.gameActive) return;
-                    
-                    // Directly handle the start cell tap
-                    if (window.gameController.state.userPath.length === 0) {
-                        e.preventDefault(); // Prevent scrolling
-                        e.stopPropagation(); // Stop event bubbling
-                        
-                        const cellIndex = parseInt(cell.dataset.index);
-                        if (isNaN(cellIndex)) return;
-                        
-                        console.log('Start cell tapped directly via enhanced handler');
-                        
-                        // Add cell to path
-                        window.gameController.state.userPath = [cellIndex];
-                        window.gameController.updatePathHighlight();
-                        window.gameController.showMessage('Path started! Continue by selecting connected cells.');
-                        
-                        // Visual feedback
-                        cell.classList.add('start-cell-selected');
-                        
-                        // Add a brief pulse effect for feedback
-                        cell.classList.add('just-selected');
-                        setTimeout(() => {
-                            cell.classList.remove('just-selected');
-                        }, 300);
-                    }
-                }, { passive: false });
-                
-                // iOS fallback using touchend
-                if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-                    cell.addEventListener('touchend', function(e) {
-                        if (!window.gameController || 
-                            !window.gameController.state || 
-                            !window.gameController.state.gameActive) return;
-                            
-                        if (window.gameController.state.userPath.length === 0) {
-                            const cellIndex = parseInt(cell.dataset.index);
-                            if (isNaN(cellIndex)) return;
-                            
-                            console.log('iOS fallback: Start cell tapped via touchend');
-                            window.gameController.state.userPath = [cellIndex];
-                            window.gameController.updatePathHighlight();
-                            window.gameController.showMessage('Path started! Continue by selecting connected cells.');
-                        }
-                    });
-                }
-            });
-            
-            console.log('Start cell enhancement applied');
-        };
-        
-        enhanceStartCell();
-        
-        // Improve all grid cells for better touch response
-        const gridCells = document.querySelectorAll('.grid-cell');
-        gridCells.forEach(cell => {
-            cell.style.touchAction = 'manipulation';
-            cell.style.webkitUserSelect = 'none';
-            cell.style.userSelect = 'none';
-        });
-        
-    }, 500); // Wait for game to initialize
 });
 
 export default GameController;
