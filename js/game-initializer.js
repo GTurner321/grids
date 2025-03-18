@@ -1,4 +1,4 @@
-// game-initializer.js - updated to include rules module
+// game-initializer.js - updated to include rules module and button visibility fixes
 
 import GameController from './gamecontroller.js';
 import './rules.js'; // Import rules to ensure it loads properly
@@ -15,7 +15,41 @@ function initializeGame() {
     // Initialize the game controller
     window.gameController = new GameController();
     
+    // Apply additional fixes for bottom buttons visibility
+    fixBottomButtonsVisibility();
+    
+    // Set up periodic checks for button visibility
+    setInterval(fixBottomButtonsVisibility, 2000);
+    
     console.log('Game initialized successfully');
+}
+
+function fixBottomButtonsVisibility() {
+    console.log('Checking bottom buttons visibility');
+    
+    // Check if game is active (grid has content)
+    const gridContainer = document.getElementById('grid-container');
+    const gridHasContent = gridContainer && gridContainer.children.length > 0;
+    
+    // Get the game container
+    const gameContainer = document.querySelector('.game-container');
+    
+    // If grid has content, ensure game-active class is applied
+    if (gridHasContent && gameContainer) {
+        gameContainer.classList.add('game-active');
+        
+        // Force bottom buttons to be visible
+        const bottomButtons = document.getElementById('bottom-buttons');
+        if (bottomButtons) {
+            bottomButtons.style.display = 'flex';
+            bottomButtons.style.visibility = 'visible';
+            bottomButtons.style.opacity = '1';
+            bottomButtons.style.height = 'auto';
+            bottomButtons.style.margin = '15px auto';
+            bottomButtons.style.position = 'relative';
+            bottomButtons.style.zIndex = '100';
+        }
+    }
 }
 
 function detectDeviceCapabilities() {
@@ -79,6 +113,24 @@ function preventZoomOnDoubleTap(e) {
         }
     }
 }
+
+// Add event listeners for level buttons to ensure game state is properly activated
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.level-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            // Force the game-active class after level selection
+            const gameContainer = document.querySelector('.game-container');
+            if (gameContainer) {
+                gameContainer.classList.add('game-active');
+            }
+            
+            // Check button visibility multiple times with increasing delays
+            setTimeout(fixBottomButtonsVisibility, 100);
+            setTimeout(fixBottomButtonsVisibility, 500);
+            setTimeout(fixBottomButtonsVisibility, 1000);
+        });
+    });
+});
 
 // Initialize the game when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', initializeGame);
