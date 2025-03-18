@@ -47,17 +47,20 @@
     align-items: center;
   }
 
-  .game-header h1 {
+.game-header h1 {
     font-family: 'Black Ops One', cursive;
     font-size: 2.5rem; /* Adjusted for mobile */
     margin: 10px 0 0.3rem 0;
     text-shadow: 0 0 10px white, 0 0 15px white, 0 0 20px white;
-  }
+    text-align: center; /* Explicitly center the text */
+    font-weight: normal; /* Ensure it's not bold */
+}
 
-/* Rules Box Styling */
+@media (max-width: 768px) {
   .rules-box {
-    width: 90% !important;
-    margin: 8px auto 12px;
+    width: 90% !important; /* Force full width on mobile */
+    max-width: none !important; /* Remove max-width restriction */
+    margin: 8px auto 12px !important;
     padding: 10px 15px;
     border: 2px solid var(--light-blue-border) !important;
     background-color: var(--form-bg-color);
@@ -65,24 +68,18 @@
     box-sizing: border-box;
   }
 
-  .rules-box-title {
-    font-size: 1.3rem !important;
-    color: var(--text-blue);
-    margin-bottom: 10px;
-  }
-  
-  .rules-box-subtitle {
-    font-size: 1.2rem !important;
-    color: var(--text-blue);
-    margin: 8px 0;
-  }
-  
   .rules-box p {
-    font-size: 1.05rem !important;
+    font-size: 1rem !important;
     margin: 8px 0;
-    line-height: 1.4;
     text-transform: uppercase;
   }
+
+  .rules-box-title, 
+  .rules-box-subtitle {
+    text-align: center;
+    color: var(--text-blue);
+  }
+}
   
   /* Score Row Styling */
   .score-row {
