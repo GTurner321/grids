@@ -14,32 +14,56 @@ class GridInteractionManager {
         this.isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     }
     
-    init() {
-        console.log('Initializing grid interaction manager');
-        this.gridContainer = document.getElementById('grid-container');
-        
-        if (!this.gridContainer) {
-            console.error('Grid container not found, interaction manager initialization failed');
-            return;
-        }
-        
-        // Detect device capabilities
-        this.detectDeviceCapabilities();
-        
-        // Initialize mouse event handlers
-        this.initMouseHandlers();
-        
-        // Initialize touch handlers if on a touch device
-        if (this.isTouchDevice) {
-            this.touchHandler.init();
-        }
-        
-        // Initialize keyboard handlers (for accessibility)
-        this.initKeyboardHandlers();
-        
-        // Add CSS optimizations
-        this.addInteractionOptimizations();
+   // Replace or modify the init method in your GridInteractionManager class
+
+init() {
+    console.log('Initializing grid interaction manager');
+    this.gridContainer = document.getElementById('grid-container');
+    
+    if (!this.gridContainer) {
+        console.error('Grid container not found, interaction manager initialization failed');
+        return;
     }
+    
+    // Detect device capabilities
+    this.detectDeviceCapabilities();
+    
+    // Initialize mouse event handlers
+    this.initMouseHandlers();
+    
+    // Initialize touch handlers if on a touch device
+    if (this.isTouchDevice) {
+        this.touchHandler.init();
+    }
+    
+    // Initialize keyboard handlers (for accessibility)
+    this.initKeyboardHandlers();
+    
+    // Add CSS optimizations
+    this.addInteractionOptimizations();
+    
+    // Ensure bottom buttons are visible if game is active
+    this.ensureBottomButtonsVisible();
+    
+    console.log('Grid interaction manager initialized successfully');
+}
+
+// Add this new method to ensure bottom buttons are visible
+ensureBottomButtonsVisible() {
+    // Check if game is active
+    const gameContainer = document.querySelector('.game-container');
+    if (gameContainer && gameContainer.classList.contains('game-active')) {
+        const bottomButtons = document.getElementById('bottom-buttons');
+        if (bottomButtons) {
+            console.log('Ensuring bottom buttons visibility');
+            bottomButtons.style.display = 'flex';
+            bottomButtons.style.visibility = 'visible';
+            bottomButtons.style.opacity = '1';
+            bottomButtons.style.height = 'auto';
+            bottomButtons.style.margin = '15px auto';
+        }
+    }
+}
     
     detectDeviceCapabilities() {
         // Add classes to body for device-specific styling
@@ -57,6 +81,8 @@ class GridInteractionManager {
     // Update the initMouseHandlers method in grid-interaction-manager.js
 // Find the initMouseHandlers method and replace it with this version:
 
+// Replace the initMouseHandlers method in grid-interaction-manager.js with this version:
+
 initMouseHandlers() {
     // Direct click handler for grid cells
     this.gridContainer.addEventListener('click', (e) => {
@@ -73,6 +99,8 @@ initMouseHandlers() {
         const cell = e.target.closest('.grid-cell');
         if (!cell) return;
         
+        console.log('Cell clicked, index:', cell.dataset.index, 'classes:', cell.className);
+        
         // Special handling for first click on start cell
         const isStartCell = cell.classList.contains('start-cell');
         if (isStartCell && this.gameController.state.userPath.length === 0) {
@@ -80,7 +108,7 @@ initMouseHandlers() {
             const cellIndex = parseInt(cell.dataset.index);
             if (isNaN(cellIndex)) return;
             
-            // Directly modify the path - USING MORE VERBOSE DEBUGGING
+            // Directly modify the path with verbose debugging
             console.log('Adding start cell to path, index:', cellIndex);
             this.gameController.state.userPath = [cellIndex];
             
@@ -97,6 +125,11 @@ initMouseHandlers() {
             
             // Show message
             this.gameController.showMessage('Path started! Continue by selecting connected cells.');
+            
+            // Update UI (button states, etc)
+            if (typeof this.gameController.updateUI === 'function') {
+                this.gameController.updateUI();
+            }
             
             // Stop event propagation
             e.stopPropagation();
@@ -115,13 +148,27 @@ initMouseHandlers() {
         const cell = e.target.closest('.grid-cell');
         if (cell) {
             e.preventDefault(); // Prevent text selection
+            
+            // Add active state for visual feedback
+            cell.classList.add('active-cell');
         }
+    });
+    
+    // Remove active state on mouse up
+    this.gridContainer.addEventListener('mouseup', (e) => {
+        document.querySelectorAll('.active-cell').forEach(cell => {
+            cell.classList.remove('active-cell');
+        });
     });
     
     // Clean up hover states when mouse leaves
     this.gridContainer.addEventListener('mouseleave', () => {
         document.querySelectorAll('.drag-target').forEach(cell => {
             cell.classList.remove('drag-target');
+        });
+        
+        document.querySelectorAll('.active-cell').forEach(cell => {
+            cell.classList.remove('active-cell');
         });
     });
     
@@ -142,10 +189,16 @@ initMouseHandlers() {
         .grid-cell.start-cell {
             position: relative;
             z-index: 50;
+            cursor: pointer;
         }
         
         .grid-cell.start-cell.just-selected {
             animation: cell-pulse-stronger 0.3s ease-out;
+        }
+        
+        .grid-cell.active-cell {
+            transform: scale(0.95);
+            transition: transform 0.1s ease-out;
         }
         
         @keyframes cell-pulse-stronger {
@@ -155,6 +208,9 @@ initMouseHandlers() {
         }
     `;
     document.head.appendChild(style);
+    
+    // Add the enhanceStartCellHandling method to the end of init
+    this.enhanceStartCellHandling();
 }
         
     initKeyboardHandlers() {
@@ -219,6 +275,94 @@ initMouseHandlers() {
         
         document.head.appendChild(style);
     }
+
+    enhanceStartCellHandling() {
+    console.log('Enhancing start cell handling with direct event listeners');
+    
+    // Find all start cells
+    const startCells = document.querySelectorAll('.grid-cell.start-cell');
+    
+    startCells.forEach(cell => {
+        // Remove existing event listeners by cloning the cell
+        const newCell = cell.cloneNode(true);
+        cell.parentNode.replaceChild(newCell, cell);
+        
+        // Apply enhanced styles
+        newCell.style.zIndex = '100';
+        newCell.style.position = 'relative';
+        newCell.style.cursor = 'pointer';
+        
+        // Add direct click handler
+        newCell.addEventListener('click', (e) => {
+            console.log('Start cell clicked with direct event listener');
+            
+            if (!this.gameController.state.gameActive) return;
+            
+            // For first selection when path is empty
+            if (this.gameController.state.userPath.length === 0) {
+                const cellIndex = parseInt(newCell.dataset.index);
+                if (isNaN(cellIndex)) return;
+                
+                console.log('Adding start cell to path, index:', cellIndex);
+                
+                // Direct path manipulation
+                this.gameController.state.userPath = [cellIndex];
+                
+                // Update path highlight in multiple ways to ensure it works
+                this.gameController.updatePathHighlight();
+                
+                if (this.gameController.pathManager) {
+                    this.gameController.pathManager.updatePathHighlight();
+                }
+                
+                // Visual feedback
+                this.addVisualFeedback(newCell);
+                
+                // Show message
+                this.gameController.showMessage('Path started! Continue by selecting connected cells.');
+                
+                // Stop event propagation
+                e.stopPropagation();
+                e.preventDefault();
+            }
+        });
+        
+        // Add direct touch handler
+        newCell.addEventListener('touchstart', (e) => {
+            console.log('Start cell touched with direct event listener');
+            
+            if (!this.gameController.state.gameActive) return;
+            
+            // For first selection when path is empty
+            if (this.gameController.state.userPath.length === 0) {
+                const cellIndex = parseInt(newCell.dataset.index);
+                if (isNaN(cellIndex)) return;
+                
+                console.log('Adding start cell to path via touch, index:', cellIndex);
+                
+                // Direct path manipulation
+                this.gameController.state.userPath = [cellIndex];
+                
+                // Update path highlight in multiple ways
+                this.gameController.updatePathHighlight();
+                
+                if (this.gameController.pathManager) {
+                    this.gameController.pathManager.updatePathHighlight();
+                }
+                
+                // Visual feedback
+                this.addVisualFeedback(newCell);
+                
+                // Show message
+                this.gameController.showMessage('Path started! Continue by selecting connected cells.');
+                
+                // Stop event propagation
+                e.stopPropagation();
+                e.preventDefault();
+            }
+        }, { passive: false });
+    });
+}
     
     addVisualFeedback(cell) {
         // Add a visual pulse effect
