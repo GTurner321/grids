@@ -74,6 +74,7 @@ body {
     box-sizing: border-box;
     z-index: 50;
     position: relative;
+    max-width: 900px;
     width: 60%;
 }
 
@@ -83,16 +84,6 @@ body {
     background-image: none;
     padding: 0;
     border: none;
-    max-width: none;
-}
-
-.rules-box .rules-section {
-    width: 100%;
-    color: #1e293b;
-    margin: 5px 0;
-    text-align: center;
-    background-color: transparent;
-    padding: 0;
 }
 
 .rules-box p {
@@ -100,15 +91,10 @@ body {
     font-size: 0.85rem;
     text-transform: uppercase;
     line-height: 1.4;
-    color: #1e293b;
-    font-family: 'Trebuchet MS', Arial, sans-serif;
-    text-align: center;
-    font-weight: bold;
 }
 
 .rules-box-title, 
 .rules-box-subtitle {
-    font-family: 'Trebuchet MS', Arial, sans-serif;
     font-size: 1.1rem;
     font-weight: bold;
     margin: 5px 0;
@@ -116,11 +102,6 @@ body {
     color: #1e40af;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    background-color: transparent;
-    background-image: none;
-    border: none;
-    padding: 0;
-    text-shadow: none;
 }
 
 .rules-box-subtitle {
@@ -128,21 +109,11 @@ body {
     margin-top: 10px;
 }
 
-/* Hide old rules modal completely */
-.rules-modal {
+/* Game active state handling for rules box */
+.game-container.game-active .rules-box {
     display: none;
-    visibility: hidden;
     opacity: 0;
-    position: absolute;
-    z-index: -9999;
-    width: 0;
-    height: 0;
-    overflow: hidden;
-    pointer-events: none;
-}
-
-#rules-container {
-    display: none;
+    visibility: hidden;
 }
 
 /* Game active state handling for rules box */
