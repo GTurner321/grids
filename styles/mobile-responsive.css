@@ -28,19 +28,19 @@
   }
   
   .rules-box-title {
-    font-size: 1.3rem !important; /* 2 sizes larger */
+    font-size: 1.6rem !important; /* 2 sizes larger */
     color: var(--text-blue);
     margin-bottom: 10px;
   }
   
   .rules-box-subtitle {
-    font-size: 1.2rem !important; /* 2 sizes larger */
+    font-size: 1.4rem !important; /* 2 sizes larger */
     color: var(--text-blue);
     margin: 8px 0;
   }
   
   .rules-box p {
-    font-size: 1.05rem !important; /* 2 sizes larger */
+    font-size: 1.2rem !important; /* 2 sizes larger */
     margin: 8px 0;
     line-height: 1.4;
     text-transform: uppercase;
