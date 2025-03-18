@@ -74,8 +74,8 @@ body {
     box-sizing: border-box;
     z-index: 50;
     position: relative;
-    max-width: 900px;
-    width: 60%;
+    width: 60% !important;
+    max-width: 900px !important;
 }
 
 .rules-box .rules-content {
@@ -626,6 +626,22 @@ body {
   width: 100%;
   max-width: 400px;
   margin: 0 auto;
+}
+
+/* Hide bottom buttons until game is active */
+.bottom-buttons {
+    display: none;
+    visibility: hidden;
+    height: 0;
+    overflow: hidden;
+}
+
+/* Show bottom buttons when game is active */
+.game-container.game-active .bottom-buttons {
+    display: flex;
+    visibility: visible;
+    height: auto;
+    overflow: visible;
 }
 
 /* Bottom buttons - Desktop styles */
