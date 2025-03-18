@@ -3,8 +3,8 @@
 /* Mobile devices (width up to 768px) */
 @media (max-width: 768px) {
   :root {
-    /* Responsive width calculation with reduced margins */
-    --screen-padding: 10px; /* Reduced from 20px for wider container */
+    /* Responsive variables */
+    --screen-padding: 10px;
     --mobile-grid-cell-size: calc((100vw - (var(--screen-padding) * 2) - 11px) / 10);
     --container-width: calc(100vw - (var(--screen-padding) * 2));
     --border-width: 0px;
@@ -12,17 +12,53 @@
     --button-font-size: 1.1rem;
 
     /* Color variables */
-    --crimson-red: #dd717e;
-    --dark-crimson: #c13a49; /* For pulsing */
-    --light-red-border: #9c3c47;
-    /* #4: Lighter brighter blue for score bar border */
-    --light-blue-border: #60a5fa; /* Changed from #93c5fd to a brighter blue */
-    --button-blue: #3b82f6;
-    --green-border: #166534;
-    --form-bg-color: #e6f2ff;
-    /* #4: Dark blue for username */
-    --text-blue: #1e40af; /* Dark blue for total and username */
-    --score-red: #ef4444; /* Red for round scores */
+    --light-blue-border: #60a5fa;
+    --text-blue: #1e40af;
+  }
+  
+  /* Rules Box Specific Styling for Mobile */
+  .rules-box {
+    width: 90% !important; /* Take up 90% of screen width */
+    margin: 8px auto 12px;
+    padding: 10px 15px;
+    border: 2px solid var(--light-blue-border) !important; /* Blue border like level buttons */
+    background-color: #e6f2ff;
+    border-radius: 6px;
+    box-sizing: border-box;
+  }
+  
+  .rules-box-title {
+    font-size: 1.3rem !important; /* 2 sizes larger */
+    color: var(--text-blue);
+    margin-bottom: 10px;
+  }
+  
+  .rules-box-subtitle {
+    font-size: 1.2rem !important; /* 2 sizes larger */
+    color: var(--text-blue);
+    margin: 8px 0;
+  }
+  
+  .rules-box p {
+    font-size: 1.05rem !important; /* 2 sizes larger */
+    margin: 8px 0;
+    line-height: 1.4;
+    text-transform: uppercase;
+  }
+
+  /* Remove gray line under level buttons and related containers */
+  .level-selector-container,
+  .level-buttons,
+  .game-header,
+  .game-container > *:not(.game-board),
+  .level-selector-title,
+  .game-header::after,
+  .level-selector-container::after,
+  .level-buttons::after {
+    border-bottom: none !important;
+    box-shadow: none !important;
+    border-color: transparent !important;
+    margin-bottom: 10px;
   }
   
   /* Base body styles */
