@@ -4,8 +4,8 @@
     --primary-color: #3b82f6;
     --secondary-color: #60a5fa;
     --background-color: #f0f2f5;
-    --grid-cell-size: 48px; /* Reduced from 60px */
-    --app-height: 100%; /* Added for iOS height fix */
+    --grid-cell-size: 48px;
+    --app-height: 100%;
 }
 
 body {
@@ -17,9 +17,9 @@ body {
 }
 
 .game-container {
-    max-width: 640px; /* Reduced from 800px */
+    max-width: 640px;
     margin: 0 auto;
-    padding: 10px; /* Reduced from 20px */
+    padding: 10px;
     position: relative;
     display: flex;
     flex-direction: column;
@@ -43,22 +43,6 @@ body {
     text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.1);
 }
 
-@media (max-width: 480px) {
-    .game-header h1 {
-        font-size: 2rem;
-    }
-}
-
-.level-selector-title {
-    font-family: 'Courier New', monospace;
-    font-size: 1rem;
-    color: #4a5568; /* Dark gray */
-    text-align: center;
-    margin-bottom: 5px;
-    letter-spacing: 0.05em;
-    font-weight: bold;
-}
-
 /* Rules Box Styles */
 .rules-box {
     background-color: #e6f2ff;
@@ -74,8 +58,8 @@ body {
     box-sizing: border-box;
     z-index: 50;
     position: relative;
-    width: 60% !important;
-    max-width: 900px !important;
+    width: 60%; /* Wider rules box for large screens */
+    max-width: 900px;
 }
 
 .rules-box .rules-content {
@@ -121,6 +105,16 @@ body {
     display: none;
     opacity: 0;
     visibility: hidden;
+}
+
+.level-selector-title {
+    font-family: 'Courier New', monospace;
+    font-size: 1rem;
+    color: #4a5568;
+    text-align: center;
+    margin-bottom: 5px;
+    letter-spacing: 0.05em;
+    font-weight: bold;
 }
 
 /* Score Row */
