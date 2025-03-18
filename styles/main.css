@@ -74,7 +74,7 @@ body {
     box-sizing: border-box;
     z-index: 50;
     position: relative;
-    width: 60%; /* Wider rules box */
+    width: 50%;
 }
 
 /* Rules Box Styles */
