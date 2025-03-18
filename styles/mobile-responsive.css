@@ -118,6 +118,15 @@
     justify-content: flex-end;
     width: 40%;
   }
+
+.level-selector-title {
+    font-size: 1rem;
+    margin-bottom: 8px;
+    text-shadow: 0 0 8px white, 0 0 12px white, 0 0 15px white !important;
+    font-family: 'Trebuchet MS', Arial, sans-serif !important;
+    font-weight: bold !important;
+    text-align: center;
+}
   
   /* Level Buttons */
   .level-buttons {
