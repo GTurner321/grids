@@ -1,4 +1,4 @@
-// Updated scoremanager.js with new level point values
+// Combined scoremanager.js with patch functionality
 class ScoreManager {
     constructor() {
         // Persistent total score
@@ -22,7 +22,7 @@ class ScoreManager {
     
     startLevel(level) {
         this.currentLevel = level;
-        // Updated level point values as requested
+        // Updated level point values
         const levelPoints = {
             1: 2000,  // Changed from 1000
             2: 2750,  // Changed from 2000
@@ -92,6 +92,11 @@ class ScoreManager {
         
         // Dispatch an event when score is updated
         this.dispatchScoreUpdate();
+        
+        // From patch: Ensure score is updated in leaderboard if username is set
+        if (window.leaderboardManager && window.leaderboardManager.isUsernameSet) {
+            window.leaderboardManager.updateScore(this.totalScore);
+        }
     }
     
     dispatchScoreUpdate() {
@@ -136,9 +141,17 @@ class ScoreManager {
             }
         }
         
-        // Each time we update the display, dispatch the score update event
-        // This ensures the leaderboard always has the latest score
-        this.dispatchScoreUpdate();
+        // Dispatch score updated event (from patch)
+        const scoreUpdatedEvent = new CustomEvent('scoreUpdated', {
+            detail: {
+                score: this.totalScore,
+                level: this.currentLevel,
+                roundScore: this.roundScore,
+                roundComplete: this.roundComplete
+            }
+        });
+        
+        window.dispatchEvent(scoreUpdatedEvent);
     }
     
     getCurrentState() {
@@ -166,3 +179,19 @@ class ScoreManager {
 export const scoreManager = new ScoreManager();
 // Also make it available globally
 window.scoreManager = scoreManager;
+
+// Add functionality from scoremanager-patch.js
+(function() {
+    // Wait for the original scoreManager to be available
+    const checkForScoreManager = setInterval(() => {
+        if (window.scoreManager) {
+            clearInterval(checkForScoreManager);
+            
+            // Reset the total score when the page loads
+            window.scoreManager.totalScore = 0;
+            window.scoreManager.updateDisplay();
+            
+            console.log('ScoreManager initialized with reset scores');
+        }
+    }, 100);
+})();
