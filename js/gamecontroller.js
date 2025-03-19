@@ -88,44 +88,64 @@ class GameController {
     }
     
     async startLevel(level) {
-        // Reset state
-        this.state.currentLevel = level;
-        this.state.userPath = [];
-        this.state.gridEntries = new Array(100).fill(null);
-        this.state.removedCells.clear();
-        this.state.gameActive = true;
-        
-        document.querySelector('.game-container').classList.add('game-active');
-        
-        scoreManager.startLevel(level);
+    // Reset state
+    this.state.currentLevel = level;
+    this.state.userPath = [];
+    
+    // Get grid size from config
+    const config = getLevelConfig(level);
+    const gridSize = config.gridSize || 10;
+    
+    // Create appropriate sized grid entries array
+    this.state.gridEntries = new Array(gridSize * gridSize).fill(null);
+    this.state.removedCells.clear();
+    this.state.gameActive = true;
+    
+    document.querySelector('.game-container').classList.add('game-active');
+    
+    scoreManager.startLevel(level);
 
-        try {
-            // Generate path and sequence
-            this.state.path = await generatePath();
-            this.state.sequence = await generateSequence(level);
-            this.state.sequenceEntries = sequenceToEntries(this.state.sequence);
+    try {
+        // Generate path with appropriate grid size
+        this.state.path = await generatePath(gridSize);
+        this.state.sequence = await generateSequence(level);
+        this.state.sequenceEntries = sequenceToEntries(this.state.sequence);
 
-            // Place sequence on path
-            this.placeMathSequence();
-            
-            // Fill remaining cells
+        // Place sequence on path
+        this.placeMathSequence();
+        
+        // For level 1, remove all spare cells
+        if (level === 1) {
+            this.removeAllSpareCells(true); // true for remove ALL
+        } 
+        // Otherwise fill remaining cells
+        else {
             this.fillRemainingCells();
-
-            // Render grid
-            renderGrid(this.state.gridEntries, {
-                startCoord: this.state.path[0],
-                endCoord: this.state.path[this.state.path.length - 1]
-            });
-
-            // Update UI
-            this.updateUI();
-            this.showMessage('Find the path by following the mathematical sequence.');
-
-        } catch (error) {
-            console.error('Error starting level:', error);
-            this.showMessage('Error starting game. Please try again.', 'error');
         }
+
+        // For level 2, show suggestion to remove spare cells
+        if (level === 2) {
+            setTimeout(() => {
+                this.showMessage('Hint: Consider removing spare cells to make the puzzle easier!', 'info', 5000);
+            }, 1000);
+        }
+
+        // Render grid with appropriate size
+        renderGrid(this.state.gridEntries, {
+            startCoord: this.state.path[0],
+            endCoord: this.state.path[this.state.path.length - 1],
+            gridSize: gridSize
+        });
+
+        // Update UI
+        this.updateUI();
+        this.showMessage('Find the path by following the mathematical sequence.');
+
+    } catch (error) {
+        console.error('Error starting level:', error);
+        this.showMessage('Error starting game. Please try again.', 'error');
     }
+}
     
     placeMathSequence() {
         this.state.path.forEach((coord, index) => {
