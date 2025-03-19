@@ -26,6 +26,7 @@ function replaceButtonsWithScroller() {
     // Create the new scroll selector container
     const scrollSelectorContainer = document.createElement('div');
     scrollSelectorContainer.className = 'level-scroll-container';
+    scrollSelectorContainer.id = 'level-scroll-container';
     
     // Create the current level display
     const currentLevelDisplay = document.createElement('div');
@@ -70,8 +71,19 @@ function replaceButtonsWithScroller() {
     // Add the styles
     addScrollSelectorStyles();
     
+    // Also add level selector instruction
+    const selectorTitle = document.querySelector('.level-selector-title');
+    if (selectorTitle) {
+        selectorTitle.textContent = 'SLIDE TO SELECT LEVEL';
+    }
+    
     // Set up the event listeners and dragging behavior
     setupScrollBehavior(thumb, slider, currentLevelDisplay);
+    
+    // Make global function for updating thumb position
+    window.updateLevelSelectorThumb = function(level) {
+        updateThumbPosition(level);
+    };
 }
 
 function setupScrollBehavior(thumb, slider, levelDisplay) {
@@ -190,8 +202,17 @@ function setupScrollBehavior(thumb, slider, levelDisplay) {
         // Snap to the closest level
         setThumbPosition(level);
         
-        // Start the game with this level
-        startGameWithLevel(level);
+        // Check if we should switch levels
+        if (confirmLevelChange(level)) {
+            // Start the game with this level
+            startGameWithLevel(level);
+        } else {
+            // Reset thumb to previous position if user canceled
+            if (window.gameController) {
+                const currentLevel = window.gameController.state.currentLevel;
+                setThumbPosition(currentLevel);
+            }
+        }
     };
     
     // Add event listeners for thumb dragging
@@ -202,8 +223,12 @@ function setupScrollBehavior(thumb, slider, levelDisplay) {
     document.querySelectorAll('.level-marker').forEach(marker => {
         marker.addEventListener('click', () => {
             const level = parseInt(marker.dataset.level);
-            setThumbPosition(level);
-            startGameWithLevel(level);
+            
+            // Check if we should change levels
+            if (confirmLevelChange(level)) {
+                setThumbPosition(level);
+                startGameWithLevel(level);
+            }
         });
     });
     
@@ -249,6 +274,17 @@ function addScrollSelectorStyles() {
             margin: 0 auto 16px;
             padding: 0 20px;
             box-sizing: border-box;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            position: relative;
+            z-index: 100;
+        }
+        
+        /* Compact mode when game is active */
+        .level-scroll-container.game-active {
+            transform: scale(0.8);
+            max-width: 480px;
+            margin-bottom: 8px;
+            opacity: 0.9;
         }
         
         .current-level-display {
@@ -259,12 +295,23 @@ function addScrollSelectorStyles() {
             margin-bottom: 8px;
             font-weight: bold;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            transition: font-size 0.3s ease;
+        }
+        
+        .game-active .current-level-display {
+            font-size: 1.5rem;
+            margin-bottom: 4px;
         }
         
         .level-scroll-track {
             position: relative;
             height: 60px;
             width: 100%;
+            transition: height 0.3s ease;
+        }
+        
+        .game-active .level-scroll-track {
+            height: 50px;
         }
         
         .level-scroll-slider {
@@ -305,6 +352,11 @@ function addScrollSelectorStyles() {
             right: 0;
             display: flex;
             justify-content: space-between;
+            transition: top 0.3s ease;
+        }
+        
+        .game-active .level-scroll-markers {
+            top: 25px;
         }
         
         .level-marker {
@@ -325,6 +377,13 @@ function addScrollSelectorStyles() {
             transform: translateX(-12px);
         }
         
+        .game-active .level-marker {
+            width: 20px;
+            height: 20px;
+            font-size: 0.75rem;
+            transform: translateX(-10px);
+        }
+        
         .level-marker:hover {
             color: #3b82f6;
             border-color: #3b82f6;
@@ -338,6 +397,28 @@ function addScrollSelectorStyles() {
             transform: translateX(-12px) scale(1.1);
         }
         
+        .game-active .level-marker:hover {
+            transform: translateX(-10px) scale(1.1);
+        }
+        
+        .game-active .level-marker.active {
+            transform: translateX(-10px) scale(1.1);
+        }
+        
+        /* Add a soft background to make it more visible on in-game state */
+        .game-active.level-scroll-container::before {
+            content: "";
+            position: absolute;
+            top: -5px;
+            left: 0;
+            right: 0;
+            bottom: -5px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            z-index: -1;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
         /* Mobile responsive styles */
         @media (max-width: 768px) {
             .level-scroll-container {
@@ -348,8 +429,16 @@ function addScrollSelectorStyles() {
                 font-size: 1.6rem;
             }
             
+            .game-active .current-level-display {
+                font-size: 1.3rem;
+            }
+            
             .level-scroll-track {
                 height: 70px;
+            }
+            
+            .game-active .level-scroll-track {
+                height: 45px;
             }
             
             .level-scroll-thumb {
@@ -363,6 +452,12 @@ function addScrollSelectorStyles() {
                 height: 20px;
                 font-size: 0.75rem;
                 transform: translateX(-10px);
+            }
+            
+            .game-active .level-marker {
+                width: 18px;
+                height: 18px;
+                font-size: 0.7rem;
             }
             
             .level-marker:hover,
@@ -385,9 +480,20 @@ function addScrollSelectorStyles() {
                 transform: translateX(-14px);
             }
             
+            .game-active .level-marker {
+                width: 22px;
+                height: 22px;
+                transform: translateX(-11px);
+            }
+            
             .level-marker:hover,
             .level-marker.active {
                 transform: translateX(-14px) scale(1.1);
+            }
+            
+            .game-active .level-marker:hover,
+            .game-active .level-marker.active {
+                transform: translateX(-11px) scale(1.1);
             }
             
             .level-scroll-slider {
@@ -408,20 +514,16 @@ function observeGameState() {
                 if (mutation.attributeName === 'class') {
                     const isGameActive = gameContainer.classList.contains('game-active');
                     
-                    // Hide the level selector when game is active
+                    // Keep the level selector visible but update its appearance
                     const levelSelector = document.querySelector('.level-scroll-container');
                     if (levelSelector) {
-                        levelSelector.style.opacity = isGameActive ? '0' : '1';
-                        levelSelector.style.visibility = isGameActive ? 'hidden' : 'visible';
-                        
-                        // For better performance, remove from DOM after fade out
-                        if (isGameActive) {
-                            setTimeout(() => {
-                                levelSelector.style.display = 'none';
-                            }, 500);
-                        } else {
-                            levelSelector.style.display = '';
-                        }
+                        // Instead of hiding, update styling for active game state
+                        levelSelector.classList.toggle('game-active', isGameActive);
+                    }
+                    
+                    // Update the position of the thumb based on current level
+                    if (isGameActive && window.gameController) {
+                        updateThumbPosition(window.gameController.state.currentLevel);
                     }
                 }
             });
@@ -429,6 +531,33 @@ function observeGameState() {
         
         observer.observe(gameContainer, { attributes: true });
     }
+}
+
+// Helper function to update thumb position when game state changes
+function updateThumbPosition(level) {
+    const thumb = document.querySelector('.level-scroll-thumb');
+    const slider = document.querySelector('.level-scroll-slider');
+    const levelDisplay = document.querySelector('.current-level-display');
+    
+    if (!thumb || !slider || !levelDisplay) return;
+    
+    // Calculate the position for the current level
+    const sliderWidth = slider.clientWidth;
+    const thumbWidth = thumb.clientWidth;
+    const availableWidth = sliderWidth - thumbWidth;
+    const position = (level - 1) * (availableWidth / 9); // 9 is maxLevels-1
+    
+    // Update the thumb position
+    thumb.style.left = `${position}px`;
+    
+    // Update the level display
+    levelDisplay.textContent = `L${level}`;
+    
+    // Update marker highlighting
+    document.querySelectorAll('.level-marker').forEach(marker => {
+        const markerLevel = parseInt(marker.dataset.level);
+        marker.classList.toggle('active', markerLevel === level);
+    });
 }
 
 // Default export for module systems
