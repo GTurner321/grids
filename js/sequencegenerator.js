@@ -1,11 +1,16 @@
 // sequencegenerator.js
 
 const LEVEL_CONFIG = {
-    1: { maxNum: 30, allowFractions: false, maxDenominator: 12 },
-    2: { maxNum: 99, allowFractions: false, maxDenominator: 12 },
-    3: { maxNum: 30, allowFractions: true, maxDenominator: 5 },
-    4: { maxNum: 30, allowFractions: true, maxDenominator: 12 },
-    5: { maxNum: 99, allowFractions: true, maxDenominator: 12 }
+    1: { maxNum: 20, allowFractions: false, maxDenominator: 0, gridSize: 6 },
+    2: { maxNum: 20, allowFractions: false, maxDenominator: 0, gridSize: 6 },
+    3: { maxNum: 50, allowFractions: false, maxDenominator: 0, gridSize: 6, preferDivision: true },
+    4: { maxNum: 30, allowFractions: false, maxDenominator: 0, gridSize: 10 },  // Original level 1
+    5: { maxNum: 99, allowFractions: false, maxDenominator: 0, gridSize: 10 },  // Original level 2
+    6: { maxNum: 30, allowFractions: true, maxDenominator: 12, gridSize: 10, unitFractionsOnly: true },
+    7: { maxNum: 30, allowFractions: true, maxDenominator: 5, gridSize: 10 },   // Original level 3
+    8: { maxNum: 30, allowFractions: true, maxDenominator: 12, gridSize: 10 },  // Original level 4
+    9: { maxNum: 99, allowFractions: true, maxDenominator: 12, gridSize: 10 },  // Original level 5
+    10: { maxNum: 99, allowFractions: true, maxDenominator: 12, gridSize: 10, forceFractionOps: true }
 };
 
 class Fraction {
