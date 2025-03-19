@@ -436,8 +436,8 @@ body {
     padding: 6px;
     border-radius: 4px;
     font-weight: bold;
-    font-size: 0.55rem; /* 3 sizes smaller */
-    color: #1e40af; /* Dark blue */
+    font-size: 0.5rem !important;
+    color: #1e40af !important; /* Dark blue */
     font-family: 'Lucida Handwriting', 'Brush Script MT', cursive;
     width: 60%; /* Restricted to 60% of the page width */
     max-width: 640px;
