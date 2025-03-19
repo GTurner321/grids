@@ -61,12 +61,18 @@ function generateFraction(maxDenominator = 12, unitFractionOnly = false) {
     // Simplify regular fraction
     const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
     const divisor = gcd(numerator, denominator);
+
+return {
+    numerator: numerator / divisor,
+    denominator: denominator / divisor,
+    toString() {
+        return `${this.numerator}/${this.denominator}`;
+    },
+    toDecimal() {
+        return this.numerator / this.denominator;
+    }
+};
     
-    return {
-        numerator: numerator / divisor,
-        denominator: denominator / divisor,
-        // ...rest of the code
-    };
 }
 
 function isValidNumber(num, config) {
