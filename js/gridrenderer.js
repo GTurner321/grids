@@ -76,22 +76,28 @@ function createCell(entry, index) {
 }
 
 export function renderGrid(gridEntries, options = {}) {
-    const { startCoord, endCoord } = options;
+    const { startCoord, endCoord, gridSize = 10 } = options;
     const gridContainer = document.getElementById('grid-container');
     if (!gridContainer) return;
 
     // Clear existing grid
     gridContainer.innerHTML = '';
     
+    // Update grid template columns based on grid size
+    gridContainer.style.gridTemplateColumns = `repeat(${gridSize}, ${options.cellSize || '40px'})`;
+    
     // Create and append cells
     gridEntries.forEach((entry, index) => {
+        // Skip cells beyond the grid size
+        if (index >= gridSize * gridSize) return;
+        
         const cell = createCell(entry, index);
         
         // Mark start and end cells
-        if (startCoord && index === startCoord[1] * 10 + startCoord[0]) {
+        if (startCoord && index === startCoord[1] * gridSize + startCoord[0]) {
             cell.classList.add('start-cell');
         }
-        if (endCoord && index === endCoord[1] * 10 + endCoord[0]) {
+        if (endCoord && index === endCoord[1] * gridSize + endCoord[0]) {
             cell.classList.add('end-cell');
         }
         
