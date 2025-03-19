@@ -50,7 +50,7 @@ body {
     text-transform: uppercase;
     font-weight: normal;
     text-align: center; /* Ensure centered */
-    text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.1);
+    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);  /*this is white colour */
 }
 
 @media (max-width: 480px) {
