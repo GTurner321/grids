@@ -633,10 +633,36 @@ checkSolution() {
     const gridSize = config.gridSize || 10;
     
     // Validate mathematical correctness - pass current level explicitly
-    const validation = this.validatePath();
+    // Validate mathematical correctness - pass current level explicitly
+const validation = this.validatePath();
+
+if (validation.isValid) {
+    if (endsAtRedCell) {
+        // Path is valid and ends at the red cell - success!
+        scoreManager.handleCheck(true);
+        this.handlePuzzleSolved();
+    } else {
+        scoreManager.handleCheck(false);
+        this.showMessage('Path is mathematically correct! Continue to the end square.', 'info');
+    }
+} else {
+    scoreManager.handleCheck(false);
     
-    // Rest of method remains the same...
+    // Show error message with specific details
+    if (validation.error) {
+        this.showMessage(validation.error, 'error', 10000);
+    } else {
+        this.showMessage('Mathematical error in the path. Try again.', 'error', 10000);
+    }
+    
+    // Truncate the path to keep only valid calculations if we know where the error occurred
+    if (validation.failedAt !== undefined) {
+        this.state.userPath = this.state.userPath.slice(0, validation.failedAt);
+        this.updatePathHighlight();
+    }
 }
+
+this.updateUI();
 
 // Make getLevelConfig available directly on gameController for usage in patharrows.js
 getLevelConfig(level) {
