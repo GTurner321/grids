@@ -1,8 +1,10 @@
-// level-selector.js - Up/down arrow selector with select button
+// level-selector.js - Fixed to ensure game controller is available
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Replace the level buttons with an up/down level selector
-    replaceButtonsWithRotarySelector();
+    // Delay replacing buttons slightly to ensure game controller is initialized
+    setTimeout(() => {
+        replaceButtonsWithRotarySelector();
+    }, 100);
 });
 
 function replaceButtonsWithRotarySelector() {
@@ -85,20 +87,41 @@ function setupSelectorBehavior(levelDisplay, upArrow, downArrow, selectButton) {
         levelDisplay.setAttribute('data-level', currentLevel);
     };
     
-// Function to start the selected level
-const startSelectedLevel = () => {
-    // Find the game controller
-    const gameController = window.gameController;
-    
-    // Start the level without confirmation
-    // Progress from previous levels is preserved, only current puzzle progress is reset
-    if (gameController && typeof gameController.startLevel === 'function') {
-        gameController.startLevel(currentLevel);
-        console.log(`Starting level ${currentLevel}`);
-    } else {
-        console.error('Game controller not found or startLevel method not available');
-    }
-};
+    // Function to start the selected level - FIXED
+    const startSelectedLevel = () => {
+        console.log(`Attempting to start level ${currentLevel}`);
+        
+        // Add visual feedback to the select button
+        selectButton.classList.add('button-active');
+        setTimeout(() => {
+            selectButton.classList.remove('button-active');
+        }, 300);
+        
+        // Find the game controller with better error handling
+        if (typeof window.gameController === 'undefined') {
+            console.error('Game controller not found. Is the game fully loaded?');
+            // Try to find the level button and click it as a fallback
+            const levelBtn = document.querySelector(`.level-btn[data-level="${currentLevel}"]`);
+            if (levelBtn) {
+                console.log('Falling back to legacy level button click');
+                levelBtn.click();
+                return;
+            }
+            
+            // If all else fails, show an error message
+            alert(`Unable to start level ${currentLevel}. Please refresh the page and try again.`);
+            return;
+        }
+        
+        // Proceed with starting the level if the controller exists
+        try {
+            console.log(`Starting level ${currentLevel} via gameController`);
+            window.gameController.startLevel(currentLevel);
+        } catch (error) {
+            console.error('Error starting level:', error);
+            alert(`Error starting level ${currentLevel}. Please try again.`);
+        }
+    };
     
     // Add click listener for up arrow
     upArrow.addEventListener('click', () => {
@@ -291,9 +314,10 @@ function addLevelSelectorStyles() {
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
         }
         
-        .level-select-button:active {
+        .level-select-button:active, .level-select-button.button-active {
             transform: translateY(0);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            background-color: #1d4ed8;
         }
         
         /* Compact mode when game is active */
