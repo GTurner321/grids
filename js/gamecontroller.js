@@ -729,9 +729,6 @@ validatePath() {
     return validatePathMath(this.state.userPath, this.state.gridEntries);
 }
 
-    // Then validate the mathematical sequence
-    return validatePathMath(this.state.userPath, this.state.gridEntries);
-}
 
     resetPath() {
         console.log('resetPath method called');
