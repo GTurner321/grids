@@ -523,34 +523,37 @@ class GameController {
         document.head.appendChild(style);
     }
     
-    removeAllSpareCells() {
-        const spareCells = this.state.gridEntries
-            .map((entry, index) => (!entry?.isPartOfPath && !this.state.removedCells.has(index)) ? index : null)
-            .filter(index => index !== null);
+    removeAllSpareCells(removeAll = false) {
+    const spareCells = this.state.gridEntries
+        .map((entry, index) => (!entry?.isPartOfPath && !this.state.removedCells.has(index)) ? index : null)
+        .filter(index => index !== null);
 
-        if (spareCells.length === 0) {
-            this.showMessage('No spare cells to remove!', 'info');
-            return;
-        }
-
-        scoreManager.handleSpareRemoval();
-
-        // Remove 50% of spare cells
-        const numToRemove = Math.ceil(spareCells.length / 2);
-        const cellsToRemove = spareCells
-            .sort(() => Math.random() - 0.5)
-            .slice(0, numToRemove);
-
-        cellsToRemove.forEach(index => {
-            this.state.removedCells.add(index);
-            updateCell(index, null);
-        });
-
-        // Disable button after use
-        document.getElementById('remove-spare').disabled = true;
-        this.showMessage(`Removed ${numToRemove} spare cells.`, 'info');
+    if (spareCells.length === 0) {
+        this.showMessage('No spare cells to remove!', 'info');
+        return;
     }
 
+    scoreManager.handleSpareRemoval();
+
+    // Remove either all or 50% of spare cells
+    const numToRemove = removeAll ? spareCells.length : Math.ceil(spareCells.length / 2);
+    const cellsToRemove = spareCells
+        .sort(() => Math.random() - 0.5)
+        .slice(0, numToRemove);
+
+    cellsToRemove.forEach(index => {
+        this.state.removedCells.add(index);
+        updateCell(index, null);
+    });
+
+    // Disable button after use or if level 1 (where all cells are already removed)
+    document.getElementById('remove-spare').disabled = true;
+    
+    if (!removeAll) {
+        this.showMessage(`Removed ${numToRemove} spare cells.`, 'info');
+    }
+}
+    
     checkSolution() {
         // First, check if the path meets the required length formula (3n+1)
         if ((this.state.userPath.length - 1) % 3 !== 0) {
@@ -689,21 +692,27 @@ class GameController {
             this.showMessage('Error resetting path. Please try again.', 'error');
         }
     }
+
+updateUI() {
+    // Update button states
+    const checkButton = document.getElementById('check-solution');
+    const removeButton = document.getElementById('remove-spare');
+    const resetButton = document.getElementById('reset-path');
     
-    updateUI() {
-        // Update button states
-        const checkButton = document.getElementById('check-solution');
-        const removeButton = document.getElementById('remove-spare');
-        const resetButton = document.getElementById('reset-path');
-        
-        if (checkButton) {
-            checkButton.disabled = !this.state.gameActive || this.state.userPath.length === 0;
-        }
-        
-        if (removeButton) {
+    if (checkButton) {
+        checkButton.disabled = !this.state.gameActive || this.state.userPath.length === 0;
+    }
+    
+    if (removeButton) {
+        // Hide the button for level 1 where all cells are automatically removed
+        if (this.state.currentLevel === 1) {
+            removeButton.style.display = 'none';
+        } else {
+            removeButton.style.display = '';
             removeButton.disabled = !this.state.gameActive || this.state.removedCells.size > 0;
         }
-        
+    }
+            
         if (resetButton) {
             // Only disable when game is not active OR path is empty
             resetButton.disabled = !this.state.gameActive || this.state.userPath.length === 0;
