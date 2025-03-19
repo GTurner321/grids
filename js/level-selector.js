@@ -85,26 +85,20 @@ function setupSelectorBehavior(levelDisplay, upArrow, downArrow, selectButton) {
         levelDisplay.setAttribute('data-level', currentLevel);
     };
     
-    // Function to start the selected level
-    const startSelectedLevel = () => {
-        // Find the game controller
-        const gameController = window.gameController;
-        
-        // Check if there's an active game that would be replaced
-        if (gameController && gameController.state.gameActive && gameController.state.currentLevel !== currentLevel) {
-            if (!confirm(`Switch to Level ${currentLevel}? Your current progress will be lost.`)) {
-                return; // User canceled
-            }
-        }
-        
-        // Start the level
-        if (gameController && typeof gameController.startLevel === 'function') {
-            gameController.startLevel(currentLevel);
-            console.log(`Starting level ${currentLevel}`);
-        } else {
-            console.error('Game controller not found or startLevel method not available');
-        }
-    };
+// Function to start the selected level
+const startSelectedLevel = () => {
+    // Find the game controller
+    const gameController = window.gameController;
+    
+    // Start the level without confirmation
+    // Progress from previous levels is preserved, only current puzzle progress is reset
+    if (gameController && typeof gameController.startLevel === 'function') {
+        gameController.startLevel(currentLevel);
+        console.log(`Starting level ${currentLevel}`);
+    } else {
+        console.error('Game controller not found or startLevel method not available');
+    }
+};
     
     // Add click listener for up arrow
     upArrow.addEventListener('click', () => {
