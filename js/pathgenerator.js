@@ -1,8 +1,23 @@
 // pathgenerator.js
 
-const GRID_SIZE = 10;
-const MIN_PATH_LENGTH = 34;
-const MAX_PATH_LENGTH = 100;
+// Use variables instead of constants to support different grid sizes
+let GRID_SIZE = 10;
+let MIN_PATH_LENGTH = 34;
+let MAX_PATH_LENGTH = 100;
+
+// Add function to set grid size and adjust parameters
+export function setGridSize(size) {
+    GRID_SIZE = size;
+    
+    // Adjust path length requirements based on grid size
+    if (size === 6) {
+        MIN_PATH_LENGTH = 16; // 5 sums, including start and end cell
+        MAX_PATH_LENGTH = 34; // Cap at a reasonable length for smaller grid
+    } else {
+        MIN_PATH_LENGTH = 34; // Original minimum for 10x10 grid
+        MAX_PATH_LENGTH = 100; // Original maximum
+    }
+}
 
 function isCorner([x, y]) {
     return (x === 0 || x === GRID_SIZE - 1) && (y === 0 || y === GRID_SIZE - 1);
@@ -78,7 +93,10 @@ function findPath(start) {
     return null;
 }
 
-export async function generatePath() {
+export async function generatePath(gridSize = 10) {
+    // Set grid size before generating path
+    setGridSize(gridSize);
+    
     return new Promise((resolve, reject) => {
         let attempts = 0;
         const maxAttempts = 1000;
@@ -91,7 +109,7 @@ export async function generatePath() {
             if (path) {
                 resolve(path);
             } else if (attempts >= maxAttempts) {
-                reject(new Error('Failed to generate valid path after maximum attempts'));
+                reject(new Error(`Failed to generate valid path for grid size ${gridSize} after maximum attempts`));
             } else {
                 // Use setTimeout to prevent call stack overflow and allow UI updates
                 setTimeout(attempt, 0);
@@ -131,6 +149,7 @@ export function convertIndexToCoords(index) {
     return [index % GRID_SIZE, Math.floor(index / GRID_SIZE)];
 }
 
+// Getter functions that account for the current grid size
 export const getGridSize = () => GRID_SIZE;
 export const getMinPathLength = () => MIN_PATH_LENGTH;
 export const getMaxPathLength = () => MAX_PATH_LENGTH;
