@@ -134,9 +134,9 @@
   }
   
   .level-btn {
-    min-width: 42px;
-    padding: 0 12px !important;
-    font-size: 1.1rem;
+    min-width: 30px;
+    padding: 0 8px !important;
+    font-size: 0.8rem;
     font-family: 'Trebuchet MS', Arial, sans-serif !important;
     font-weight: bold;
     background-color: var(--button-blue);
@@ -243,6 +243,12 @@
       font-size: 0.9rem !important;
       padding: 6px 10px !important;
     }
+
+        .level-btn {
+            min-width: 28px;
+            padding: 6px 4px;
+            font-size: 0.75rem;
+        }
     
     .game-controls button {
       font-size: 0.8rem !important;
@@ -264,6 +270,16 @@
     border: none !important;
     border-radius: 5px !important;
   }
+
+      #grid-container.grid-size-6 {
+        width: calc(6 * (100vw - 20px) / 10) !important;
+        grid-template-columns: repeat(6, calc((100vw - 20px) / 10)) !important;
+    }
+    
+    /* Score row width for 6x6 grid */
+    .grid-size-6 + .score-row {
+        width: calc(6 * (100vw - 20px) / 10) !important;
+    }
   
   /* Grid Cells */
   .grid-cell {
