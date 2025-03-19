@@ -614,7 +614,7 @@ updatePathHighlight() {
                  gridSize);
 }
 
-// Modification for the checkSolution method (just the portion where validatePath is called)
+// Modification for the checkSolution method
 checkSolution() {
     // First, check if the path meets the required length formula (3n+1)
     if ((this.state.userPath.length - 1) % 3 !== 0) {
@@ -633,36 +633,36 @@ checkSolution() {
     const gridSize = config.gridSize || 10;
     
     // Validate mathematical correctness - pass current level explicitly
-    // Validate mathematical correctness - pass current level explicitly
-const validation = this.validatePath();
+    const validation = this.validatePath();
 
-if (validation.isValid) {
-    if (endsAtRedCell) {
-        // Path is valid and ends at the red cell - success!
-        scoreManager.handleCheck(true);
-        this.handlePuzzleSolved();
+    if (validation.isValid) {
+        if (endsAtRedCell) {
+            // Path is valid and ends at the red cell - success!
+            scoreManager.handleCheck(true);
+            this.handlePuzzleSolved();
+        } else {
+            scoreManager.handleCheck(false);
+            this.showMessage('Path is mathematically correct! Continue to the end square.', 'info');
+        }
     } else {
         scoreManager.handleCheck(false);
-        this.showMessage('Path is mathematically correct! Continue to the end square.', 'info');
+        
+        // Show error message with specific details
+        if (validation.error) {
+            this.showMessage(validation.error, 'error', 10000);
+        } else {
+            this.showMessage('Mathematical error in the path. Try again.', 'error', 10000);
+        }
+        
+        // Truncate the path to keep only valid calculations if we know where the error occurred
+        if (validation.failedAt !== undefined) {
+            this.state.userPath = this.state.userPath.slice(0, validation.failedAt);
+            this.updatePathHighlight();
+        }
     }
-} else {
-    scoreManager.handleCheck(false);
-    
-    // Show error message with specific details
-    if (validation.error) {
-        this.showMessage(validation.error, 'error', 10000);
-    } else {
-        this.showMessage('Mathematical error in the path. Try again.', 'error', 10000);
-    }
-    
-    // Truncate the path to keep only valid calculations if we know where the error occurred
-    if (validation.failedAt !== undefined) {
-        this.state.userPath = this.state.userPath.slice(0, validation.failedAt);
-        this.updatePathHighlight();
-    }
-}
 
-this.updateUI();
+    this.updateUI();
+}
 
 // Make getLevelConfig available directly on gameController for usage in patharrows.js
 getLevelConfig(level) {
@@ -684,135 +684,41 @@ validatePath() {
     return validatePathMath(this.state.userPath, this.state.gridEntries);
 }
 
-
-    resetPath() {
-        console.log('resetPath method called');
+resetPath() {
+    console.log('resetPath method called');
+    
+    try {
+        if (!this.state.gameActive) {
+            console.log('Game not active, reset path aborted');
+            return;
+        }
         
-        try {
-            if (!this.state.gameActive) {
-                console.log('Game not active, reset path aborted');
-                return;
-            }
-            
-            // Reset user path array
-            this.state.userPath = [];
-            console.log('User path reset to empty array');
-            
-            // Clear path highlighting from all cells
-            document.querySelectorAll('.grid-cell').forEach(cell => {
-                cell.classList.remove('selected', 'start-cell-selected', 'end-cell-selected', 'just-selected');
-            });
-            console.log('Cell highlighting cleared');
-            
-            // Remove any path arrows
-            const arrows = document.querySelectorAll('.path-arrow');
-            arrows.forEach(arrow => arrow.remove());
-            console.log(`${arrows.length} path arrows removed`);
-            
-            // Call updatePathHighlight to ensure consistent state
-            this.updatePathHighlight();
-            
-            // Update UI elements (button states, etc.)
-            this.updateUI(); // This will disable the button again since the path is now empty
-            
-            // Show feedback message
-            this.showMessage('Path reset. Start again from the green square.');
-            console.log('Path reset complete');
-        } catch (error) {
-            console.error('Error during path reset:', error);
-            this.showMessage('Error resetting path. Please try again.', 'error');
-        }
-    }
-
-updateUI() {
-    // Update button states
-    const checkButton = document.getElementById('check-solution');
-    const removeButton = document.getElementById('remove-spare');
-    const resetButton = document.getElementById('reset-path');
-    
-    if (checkButton) {
-        checkButton.disabled = !this.state.gameActive || this.state.userPath.length === 0;
-    }
-    
-    if (removeButton) {
-        // Hide the button for level 1 where all cells are automatically removed
-        if (this.state.currentLevel === 1) {
-            removeButton.style.display = 'none';
-        } else {
-            removeButton.style.display = '';
-            removeButton.disabled = !this.state.gameActive || this.state.removedCells.size > 0;
-        }
-    }
-            
-        if (resetButton) {
-            // Only disable when game is not active OR path is empty
-            resetButton.disabled = !this.state.gameActive || this.state.userPath.length === 0;
-        }
-
-        // Update level buttons
-        document.querySelectorAll('.level-btn').forEach(btn => {
-            btn.classList.toggle('active', parseInt(btn.dataset.level) === this.state.currentLevel);
+        // Reset user path array
+        this.state.userPath = [];
+        console.log('User path reset to empty array');
+        
+        // Clear path highlighting from all cells
+        document.querySelectorAll('.grid-cell').forEach(cell => {
+            cell.classList.remove('selected', 'start-cell-selected', 'end-cell-selected', 'just-selected');
         });
-    }
-   
-    showMessage(text, type = 'info', duration = null) {
-        const messageElement = document.getElementById('game-messages');
-        if (messageElement) {
-            // Clear any existing timeout
-            if (this.messageTimeout) {
-                clearTimeout(this.messageTimeout);
-                this.messageTimeout = null;
-            }
-            
-            // Clear previous content
-            messageElement.innerHTML = '';
-            
-            // Check if this is a message that needs a penalty line
-            if (text.includes('Removed')) {
-                // Main message
-                const mainMessage = document.createElement('div');
-                mainMessage.textContent = text;
-                messageElement.appendChild(mainMessage);
-                
-                // Penalty message
-                const penaltyMessage = document.createElement('div');
-                penaltyMessage.className = 'penalty-message';
-                penaltyMessage.textContent = '(-1/3 points)';
-                messageElement.appendChild(penaltyMessage);
-            } 
-            else if (text === 'Path is mathematically correct! Continue to the end square.') {
-                // Changed message
-                const mainMessage = document.createElement('div');
-                mainMessage.textContent = 'Path is mathematically correct!';
-                messageElement.appendChild(mainMessage);
-                
-                // Penalty message
-                const penaltyMessage = document.createElement('div');
-                penaltyMessage.className = 'penalty-message';
-                penaltyMessage.textContent = '(-1/4 points)';
-                messageElement.appendChild(penaltyMessage);
-            }
-            else {
-                // Regular message without penalty
-                messageElement.textContent = text;
-            }
-            
-            messageElement.className = type ? `message-box ${type}` : 'message-box';
-            
-            if (duration) {
-                this.messageTimeout = setTimeout(() => {
-                    messageElement.textContent = '';
-                    messageElement.className = 'message-box';
-                    this.messageTimeout = null;
-                }, duration);
-            }
-        }
+        console.log('Cell highlighting cleared');
+        
+        // Remove any path arrows
+        const arrows = document.querySelectorAll('.path-arrow');
+        arrows.forEach(arrow => arrow.remove());
+        console.log(`${arrows.length} path arrows removed`);
+        
+        // Call updatePathHighlight to ensure consistent state
+        this.updatePathHighlight();
+        
+        // Update UI elements (button states, etc.)
+        this.updateUI(); // This will disable the button again since the path is now empty
+        
+        // Show feedback message
+        this.showMessage('Path reset. Start again from the green square.');
+        console.log('Path reset complete');
+    } catch (error) {
+        console.error('Error during path reset:', error);
+        this.showMessage('Error resetting path. Please try again.', 'error');
     }
 }
-
-// Initialize game and store reference
-window.addEventListener('DOMContentLoaded', () => {
-    window.gameController = new GameController();
-});
-
-export default GameController;
