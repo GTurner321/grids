@@ -1,6 +1,6 @@
 // gamecontroller.js - Fixed Touch Handling
 import { generatePath } from './pathgenerator.js';
-import { generateSequence, sequenceToEntries } from './sequencegenerator.js';
+import { generateSequence, sequenceToEntries, getLevelConfig } from './sequencegenerator.js';
 import { renderGrid, updateCell } from './gridrenderer.js';
 import { validatePath as validatePathMath, isPathContinuous } from './pathvalidator.js';
 import { scoreManager } from './scoremanager.js';
@@ -148,17 +148,21 @@ class GameController {
 }
     
     placeMathSequence() {
-        this.state.path.forEach((coord, index) => {
-            if (index < this.state.sequenceEntries.length) {
-                const cellIndex = coord[1] * 10 + coord[0];
-                this.state.gridEntries[cellIndex] = {
-                    ...this.state.sequenceEntries[index],
-                    isPartOfPath: true,
-                    pathIndex: index
-                };
-            }
-        });
-    }
+    // Get the current grid size
+    const config = getLevelConfig(this.state.currentLevel);
+    const gridSize = config.gridSize || 10;
+    
+    this.state.path.forEach((coord, index) => {
+        if (index < this.state.sequenceEntries.length) {
+            const cellIndex = coord[1] * gridSize + coord[0];
+            this.state.gridEntries[cellIndex] = {
+                ...this.state.sequenceEntries[index],
+                isPartOfPath: true,
+                pathIndex: index
+            };
+        }
+    });
+}
 
     fillRemainingCells() {
         const remainingEntries = this.state.sequenceEntries.slice(this.state.path.length);
@@ -302,21 +306,25 @@ class GameController {
     }
 
     isValidMove(newCellIndex) {
-        if (this.state.userPath.length === 0) return true; // Any cell is valid as first cell
-        
-        const lastCellIndex = this.state.userPath[this.state.userPath.length - 1];
-        
-        // Convert indices to coordinates
-        const x1 = newCellIndex % 10;
-        const y1 = Math.floor(newCellIndex / 10);
-        const x2 = lastCellIndex % 10;
-        const y2 = Math.floor(lastCellIndex / 10);
+    if (this.state.userPath.length === 0) return true; // Any cell is valid as first cell
+    
+    const lastCellIndex = this.state.userPath[this.state.userPath.length - 1];
+    
+    // Get current grid size
+    const config = getLevelConfig(this.state.currentLevel);
+    const gridSize = config.gridSize || 10;
+    
+    // Convert indices to coordinates
+    const x1 = newCellIndex % gridSize;
+    const y1 = Math.floor(newCellIndex / gridSize);
+    const x2 = lastCellIndex % gridSize;
+    const y2 = Math.floor(lastCellIndex / gridSize);
 
-        // Check if cells are adjacent (horizontally or vertically)
-        return (Math.abs(x1 - x2) === 1 && y1 === y2) || 
-               (Math.abs(y1 - y2) === 1 && x1 === x2);
-    }
-
+    // Check if cells are adjacent (horizontally or vertically)
+    return (Math.abs(x1 - x2) === 1 && y1 === y2) || 
+           (Math.abs(y1 - y2) === 1 && x1 === x2);
+}
+    
     initializeGridInteractions() {
         const gridContainer = document.getElementById('grid-container');
         if (!gridContainer) return;
@@ -633,7 +641,7 @@ class GameController {
             this.updateUI();
             
             // Suggestion for next level if not at max level
-            if (this.state.currentLevel < 5) {
+            if (this.state.currentLevel < 10) {
                 this.showMessage(`Ready for level ${this.state.currentLevel + 1}?`, 'info');
             } else {
                 this.showMessage('You completed the highest level! Try again for a better score.', 'info');
