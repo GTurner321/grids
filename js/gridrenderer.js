@@ -83,8 +83,24 @@ export function renderGrid(gridEntries, options = {}) {
     // Clear existing grid
     gridContainer.innerHTML = '';
     
+    // Remove any existing grid size classes
+    gridContainer.classList.remove('grid-size-6', 'grid-size-10');
+    
+    // Add the appropriate grid size class
+    gridContainer.classList.add(`grid-size-${gridSize}`);
+    
     // Update grid template columns based on grid size
     gridContainer.style.gridTemplateColumns = `repeat(${gridSize}, ${options.cellSize || '40px'})`;
+    
+    // Adjust score row width to match grid width
+    const scoreRow = document.querySelector('.score-row');
+    if (scoreRow) {
+        if (gridSize === 6) {
+            scoreRow.style.width = `calc(6 * 40px + 6px)`;
+        } else {
+            scoreRow.style.width = `calc(10 * 40px + 10px)`;
+        }
+    }
     
     // Create and append cells
     gridEntries.forEach((entry, index) => {
