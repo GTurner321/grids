@@ -5,9 +5,13 @@
  * @param {string} direction - 'up', 'down', 'left', or 'right'
  * @returns {HTMLElement} - SVG arrow element
  */
+// Ensure arrows work properly for all directions
 function createArrowSVG(direction) {
     const arrowContainer = document.createElement('div');
     arrowContainer.className = `path-arrow ${direction}`;
+    
+    // Add a custom attribute for easier debugging
+    arrowContainer.setAttribute('data-direction', direction);
     
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('viewBox', '0 0 24 24');
@@ -33,6 +37,11 @@ function createArrowSVG(direction) {
         default:
             return null;
     }
+    
+    // Set extra styles to debug
+    path.setAttribute('stroke', 'currentColor');
+    path.setAttribute('stroke-width', '2');
+    path.setAttribute('fill', 'currentColor');
     
     svg.appendChild(path);
     arrowContainer.appendChild(svg);
