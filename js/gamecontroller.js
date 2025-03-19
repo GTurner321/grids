@@ -650,17 +650,17 @@ class GameController {
     }
     
     validatePath() {
-        // First check if the path is continuous
-        if (!isPathContinuous(this.state.userPath)) {
-            return {
-                isValid: false,
-                error: 'Path must be continuous - cells must be adjacent!'
-            };
-        }
-
-        // Then validate the mathematical sequence
-        return validatePathMath(this.state.userPath, this.state.gridEntries);
+    // Pass the current level to isPathContinuous
+    if (!isPathContinuous(this.state.userPath, this.state.currentLevel)) {
+        return {
+            isValid: false,
+            error: 'Path must be continuous - cells must be adjacent!'
+        };
     }
+
+    // Then validate the mathematical sequence
+    return validatePathMath(this.state.userPath, this.state.gridEntries);
+}
 
     resetPath() {
         console.log('resetPath method called');
