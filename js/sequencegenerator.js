@@ -40,23 +40,32 @@ class Fraction {
     }
 }
 
-function generateFraction(maxDenominator = 12) {
+function generateFraction(maxDenominator = 12, unitFractionOnly = false) {
     const denominator = Math.floor(Math.random() * (maxDenominator - 1)) + 2;
-    const numerator = Math.floor(Math.random() * (denominator - 1)) + 1;
+    const numerator = unitFractionOnly ? 1 : Math.floor(Math.random() * (denominator - 1)) + 1;
     
-    // Simplify fraction
+    // If unit fraction, no need to simplify
+    if (unitFractionOnly) {
+        return {
+            numerator: 1,
+            denominator: denominator,
+            toString() {
+                return `1/${this.denominator}`;
+            },
+            toDecimal() {
+                return 1 / this.denominator;
+            }
+        };
+    }
+    
+    // Simplify regular fraction
     const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
     const divisor = gcd(numerator, denominator);
     
     return {
         numerator: numerator / divisor,
         denominator: denominator / divisor,
-        toString() {
-            return `${this.numerator}/${this.denominator}`;
-        },
-        toDecimal() {
-            return this.numerator / this.denominator;
-        }
+        // ...rest of the code
     };
 }
 
@@ -107,60 +116,96 @@ function calculateResult(num1, operator, num2, config) {
 }
 
 function selectOperatorAndNum2(num1, level, config) {
-    const n1 = num1 instanceof Object ? num1.toDecimal() : num1;
-    
-    if (n1 > 16) {
-        if (Math.random() < 0.8) {
-            if (Math.random() < 0.4) {
-                const targetResult = Math.floor(Math.random() * 16) + 1;
-                const num2 = Math.floor(n1 - targetResult);
-                if (num2 > 1 && num2 <= config.maxNum) {
-                    return { operator: '-', num2 };
-                }
-            } else {
-                for (let divisor = 2; divisor <= Math.min(10, config.maxNum); divisor++) {
-                    if (n1 / divisor < 17 && n1 % divisor === 0) {
-                        return { operator: '/', num2: divisor };
-                    }
-                }
-            }
-        }
-    }
-    
-    const operatorBias = Math.random();
-    let operator;
-    
-    // Special case for Level 3 only - avoid division by fractions
-    if (level === 3) {
-        if (operatorBias < 0.33) operator = 'x';
-        else if (operatorBias < 0.66) operator = '+';
-        else operator = '-';
-    } else {
-        // For all other levels, use normal distribution of operators
-        if (operatorBias < 0.35) operator = 'x';
-        else if (operatorBias < 0.6) operator = '/';
-        else if (operatorBias < 0.8) operator = '+';
-        else operator = '-';
-    }
-    
-    let num2;
-    do {
-        if (typeof num1 === 'number') {
-            num2 = Math.random() < 0.7 ? 
-                Math.floor(Math.random() * (config.maxNum - 1)) + 2 : 
-                (config.allowFractions ? generateFraction(config.maxDenominator) : 
-                Math.floor(Math.random() * (config.maxNum - 1)) + 2);
-        } else {
-            num2 = Math.floor(Math.random() * (config.maxNum - 1)) + 2;
-        }
-    } while (num2 === 1);
-    
-    // If level 3 and division and num2 is a fraction, change to multiplication
-    if (level === 3 && operator === '/' && num2 instanceof Object) {
-        operator = 'x';
-    }
-    
-    return { operator, num2 };
+   const n1 = num1 instanceof Object ? num1.toDecimal() : num1;
+   
+   // Special handling for level 10 - force multiplication/division with fractions
+   if (level === 10 && n1 >= 2 && n1 <= 12 && config.forceFractionOps) {
+       if (Math.random() < 0.5) {
+           // Multiplication by fraction
+           return { 
+               operator: 'x', 
+               num2: generateFraction(config.maxDenominator) 
+           };
+       } else {
+           // Division by fraction
+           return { 
+               operator: '/', 
+               num2: generateFraction(config.maxDenominator) 
+           };
+       }
+   }
+   
+   // For large numbers, try to make them smaller with subtraction or division
+   if (n1 > 16) {
+       if (Math.random() < 0.8) {
+           if (Math.random() < 0.4) {
+               const targetResult = Math.floor(Math.random() * 16) + 1;
+               const num2 = Math.floor(n1 - targetResult);
+               if (num2 > 1 && num2 <= config.maxNum) {
+                   return { operator: '-', num2 };
+               }
+           } else {
+               for (let divisor = 2; divisor <= Math.min(10, config.maxNum); divisor++) {
+                   if (n1 / divisor < 17 && n1 % divisor === 0) {
+                       return { operator: '/', num2: divisor };
+                   }
+               }
+           }
+       }
+   }
+   
+   // For level 3, prefer division for large numbers (additional preference)
+   if (level === 3 && n1 > 30 && Math.random() < 0.6) {
+       for (let divisor = 2; divisor <= Math.min(10, config.maxNum); divisor++) {
+           if (n1 % divisor === 0) {
+               return { operator: '/', num2: divisor };
+           }
+       }
+   }
+   
+   const operatorBias = Math.random();
+   let operator;
+   
+   // Special case for Level 7 (original level 3) - avoid division by fractions
+   if (level === 7) {
+       if (operatorBias < 0.33) operator = 'x';
+       else if (operatorBias < 0.66) operator = '+';
+       else operator = '-';
+   } else {
+       // For all other levels, use normal distribution of operators
+       if (operatorBias < 0.35) operator = 'x';
+       else if (operatorBias < 0.6) operator = '/';
+       else if (operatorBias < 0.8) operator = '+';
+       else operator = '-';
+   }
+   
+   // Generate num2 based on level configuration
+   let num2;
+   
+   // For level 6, ensure fractions are unit fractions
+   if (level === 6 && config.allowFractions && config.unitFractionsOnly && 
+      (operator === 'x' || operator === '/') && Math.random() < 0.6) {
+       num2 = generateFraction(config.maxDenominator, true);
+   } else {
+       // Standard num2 generation for other cases
+       do {
+           if (typeof num1 === 'number') {
+               num2 = Math.random() < 0.7 ? 
+                   Math.floor(Math.random() * (config.maxNum - 1)) + 2 : 
+                   (config.allowFractions ? generateFraction(config.maxDenominator) : 
+                   Math.floor(Math.random() * (config.maxNum - 1)) + 2);
+           } else {
+               num2 = Math.floor(Math.random() * (config.maxNum - 1)) + 2;
+           }
+       } while (num2 === 1);
+   }
+   
+   // If level 7 (original level 3) and division and num2 is a fraction, change to multiplication
+   if (level === 7 && operator === '/' && num2 instanceof Object) {
+       operator = 'x';
+   }
+   
+   return { operator, num2 };
 }
 
 function generateNextSum(startNum, level) {
