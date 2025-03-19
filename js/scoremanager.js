@@ -19,18 +19,23 @@ class ScoreManager {
         // Make it available globally
         window.scoreManager = this;
     }
-    
-    startLevel(level) {
-        this.currentLevel = level;
-        // Updated level point values
-        const levelPoints = {
-            1: 2000,  // Changed from 1000
-            2: 2750,  // Changed from 2000
-            3: 3500,  // Changed from 3000
-            4: 4250,  // Changed from 4000
-            5: 5000   // Same as before
-        };
-        this.maxPoints = levelPoints[level] || 2000; // Default to 2000 if level not found
+
+startLevel(level) {
+    this.currentLevel = level;
+    // Updated level point values
+    const levelPoints = {
+        1: 500,
+        2: 1000,
+        3: 1500,
+        4: 2000,
+        5: 2500,
+        6: 3000,
+        7: 3500,
+        8: 4000,
+        9: 4500,
+        10: 5000
+    };
+    this.maxPoints = levelPoints[level] || 2000;
         this.checkCount = 0;
         this.removedSpares = false;
         this.startTime = new Date();
