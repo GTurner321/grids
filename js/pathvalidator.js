@@ -5,6 +5,8 @@
  * @param {Object} cell - The cell object containing value information
  * @returns {number|null} The extracted numerical value
  */
+import { getLevelConfig } from './sequencegenerator.js';
+
 function extractValue(cell) {
     if (!cell) return null;
 
@@ -188,11 +190,11 @@ export function validatePath(path, gridEntries) {
  * @returns {boolean} Whether cells are adjacent
  */
 
-export function areAdjacent(index1, index2) {
-    const x1 = index1 % 10;
-    const y1 = Math.floor(index1 / 10);
-    const x2 = index2 % 10;
-    const y2 = Math.floor(index2 / 10);
+export function areAdjacent(index1, index2, gridSize = 10) {
+    const x1 = index1 % gridSize;
+    const y1 = Math.floor(index1 / gridSize);
+    const x2 = index2 % gridSize;
+    const y2 = Math.floor(index2 / gridSize);
 
     return (Math.abs(x1 - x2) === 1 && y1 === y2) || 
            (Math.abs(y1 - y2) === 1 && x1 === x2);
@@ -203,9 +205,12 @@ export function areAdjacent(index1, index2) {
  * @param {Array} path - Array of cell indices
  * @returns {boolean} Whether path is continuous
  */
-export function isPathContinuous(path) {
+export function isPathContinuous(path, currentLevel) {
+    // Determine grid size based on level
+    const gridSize = currentLevel ? getLevelConfig(currentLevel).gridSize : 10;
+    
     for (let i = 1; i < path.length; i++) {
-        if (!areAdjacent(path[i-1], path[i])) {
+        if (!areAdjacent(path[i-1], path[i], gridSize)) {
             return false;
         }
     }
