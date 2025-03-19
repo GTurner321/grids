@@ -1,14 +1,18 @@
-// rules.js - Modified version
+// rules.js - Modified version (disabled but kept for reference)
 
+// Original functionality is commented out to disable it
 document.addEventListener('DOMContentLoaded', function() {
-    // Create the rules box directly in the DOM
-    createRulesBox();
+    // Disabled: Create the rules box directly in the DOM
+    // createRulesBox();
     
-    // Set up level button handlers
-    setupLevelButtonHandlers();
+    // Disabled: Set up level button handlers
+    // setupLevelButtonHandlers();
+    
+    // Log that rules are disabled
+    console.log('Rules box functionality is disabled as requested');
 });
 
-// Create the rules box element
+// Create the rules box element (kept for reference but not called)
 function createRulesBox() {
     // Create the rules box container
     const rulesBox = document.createElement('div');
@@ -41,14 +45,14 @@ function createRulesBox() {
     }
 }
 
-// Set up event handlers for level buttons
+// Set up event handlers for level buttons (kept for reference but not called)
 function setupLevelButtonHandlers() {
     document.querySelectorAll('.level-btn').forEach(btn => {
         btn.addEventListener('click', hideRulesBox);
     });
 }
 
-// Hide the rules box when a level is selected
+// Hide the rules box when a level is selected (kept for reference but not called)
 function hideRulesBox() {
     const rulesBox = document.getElementById('rules-box');
     if (rulesBox) {
