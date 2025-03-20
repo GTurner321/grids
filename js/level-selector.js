@@ -1,11 +1,32 @@
-// level-selector.js - Fixed to ensure game controller is available
+// level-selector.js - Enhanced to ensure proper game controller access and game state management
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Delay replacing buttons slightly to ensure game controller is initialized
-    setTimeout(() => {
-        replaceButtonsWithRotarySelector();
-    }, 100);
+    // Wait for GameController to be initialized
+    if (document.readyState === "complete") {
+        initializeLevelSelector();
+    } else {
+        window.addEventListener('load', initializeLevelSelector);
+    }
 });
+
+function initializeLevelSelector() {
+    console.log('Initializing level selector');
+    
+    // Check if GameController is available
+    // If not, wait a bit longer and try again
+    const checkGameController = () => {
+        if (typeof window.gameController === 'undefined') {
+            console.log('Game controller not yet available, waiting...');
+            setTimeout(checkGameController, 300);
+            return;
+        }
+        
+        console.log('Game controller found, proceeding with level selector setup');
+        replaceButtonsWithRotarySelector();
+    };
+    
+    checkGameController();
+}
 
 function replaceButtonsWithRotarySelector() {
     // Find the level buttons container
@@ -64,20 +85,23 @@ function replaceButtonsWithRotarySelector() {
     // Replace the buttons container with our new selector
     levelButtonsContainer.parentNode.replaceChild(selectorContainer, levelButtonsContainer);
     
-    // Update the selector title
-    const selectorTitle = document.querySelector('.level-selector-title');
-    if (selectorTitle) {
-        selectorTitle.textContent = 'CHOOSE YOUR LEVEL';
+    // Create or update the selector title
+    let selectorTitle = document.querySelector('.level-selector-title');
+    if (!selectorTitle) {
+        selectorTitle = document.createElement('div');
+        selectorTitle.className = 'level-selector-title';
+        selectorContainer.parentNode.insertBefore(selectorTitle, selectorContainer);
     }
+    selectorTitle.textContent = 'CHOOSE YOUR LEVEL';
     
     // Add the styles
     addLevelSelectorStyles();
     
     // Set up the event listeners
-    setupSelectorBehavior(levelDisplay, upArrow, downArrow, selectButton);
+    setupSelectorBehavior(levelDisplay, upArrow, downArrow, selectButton, selectorTitle);
 }
 
-function setupSelectorBehavior(levelDisplay, upArrow, downArrow, selectButton) {
+function setupSelectorBehavior(levelDisplay, upArrow, downArrow, selectButton, selectorTitle) {
     const maxLevel = 10;
     let currentLevel = 1;
     
@@ -97,9 +121,22 @@ function setupSelectorBehavior(levelDisplay, upArrow, downArrow, selectButton) {
             selectButton.classList.remove('button-active');
         }, 300);
         
-        // Find the game controller with better error handling
-        if (typeof window.gameController === 'undefined') {
-            console.error('Game controller not found. Is the game fully loaded?');
+        // Hide the "CHOOSE YOUR LEVEL" text after first game start
+        if (selectorTitle && selectorTitle.style.display !== 'none') {
+            selectorTitle.style.display = 'none';
+        }
+        
+        // Direct access to gameController
+        try {
+            if (typeof window.gameController === 'undefined') {
+                throw new Error('Game controller not available');
+            }
+            
+            console.log(`Starting level ${currentLevel} via gameController`);
+            window.gameController.startLevel(currentLevel);
+        } catch (error) {
+            console.error('Error starting level:', error);
+            
             // Try to find the level button and click it as a fallback
             const levelBtn = document.querySelector(`.level-btn[data-level="${currentLevel}"]`);
             if (levelBtn) {
@@ -108,18 +145,7 @@ function setupSelectorBehavior(levelDisplay, upArrow, downArrow, selectButton) {
                 return;
             }
             
-            // If all else fails, show an error message
-            alert(`Unable to start level ${currentLevel}. Please refresh the page and try again.`);
-            return;
-        }
-        
-        // Proceed with starting the level if the controller exists
-        try {
-            console.log(`Starting level ${currentLevel} via gameController`);
-            window.gameController.startLevel(currentLevel);
-        } catch (error) {
-            console.error('Error starting level:', error);
-            alert(`Error starting level ${currentLevel}. Please try again.`);
+            alert(`Error starting level ${currentLevel}. Please refresh the page and try again.`);
         }
     };
     
@@ -147,7 +173,12 @@ function setupSelectorBehavior(levelDisplay, upArrow, downArrow, selectButton) {
         }, 300);
     });
     
-    // Add click listener for select button
+    // Make level selection initiate the game - no select button needed
+    levelDisplay.addEventListener('click', () => {
+        startSelectedLevel();
+    });
+    
+    // Keep the select button as an additional option
     selectButton.addEventListener('click', () => {
         startSelectedLevel();
     });
@@ -165,11 +196,6 @@ function setupSelectorBehavior(levelDisplay, upArrow, downArrow, selectButton) {
         } else if (e.key === 'Enter') {
             selectButton.click();
         }
-    });
-    
-    // Allow level display to be clicked to select as well (convenience)
-    levelDisplay.addEventListener('click', () => {
-        startSelectedLevel();
     });
     
     // Add mousewheel/scroll support to cycle through levels
@@ -206,6 +232,12 @@ function observeGameState() {
                         // Update styling for active game state
                         levelSelector.classList.toggle('game-active', isGameActive);
                     }
+                    
+                    // Hide the selector title when game is active
+                    const selectorTitle = document.querySelector('.level-selector-title');
+                    if (selectorTitle && isGameActive) {
+                        selectorTitle.style.display = 'none';
+                    }
                 }
             });
         });
@@ -218,6 +250,15 @@ function addLevelSelectorStyles() {
     const styleElement = document.createElement('style');
     styleElement.textContent = `
         /* Level Selector Styles */
+        .level-selector-title {
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+            transition: opacity 0.3s ease;
+            color: #333;
+        }
+        
         .level-selector-control {
             display: flex;
             flex-direction: column;
@@ -264,6 +305,12 @@ function addLevelSelectorStyles() {
         .level-display:hover {
             background-color: #e0f2fe;
             box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .level-display:active {
+            transform: translateY(0);
+            background-color: #dbeafe;
         }
         
         .level-arrow {
@@ -437,6 +484,17 @@ function addLevelSelectorStyles() {
     `;
     
     document.head.appendChild(styleElement);
+}
+
+// Export a helper function for other modules to access the current level
+export function getCurrentSelectedLevel() {
+    const levelDisplay = document.querySelector('.level-display');
+    if (levelDisplay) {
+        const levelText = levelDisplay.textContent;
+        const match = levelText.match(/\d+/);
+        return match ? parseInt(match[0]) : 1;
+    }
+    return 1;
 }
 
 // Default export for module system
