@@ -1,100 +1,128 @@
-// level-selector.js - Complete rewrite with improved communication
-console.log('Enhanced level selector loading...');
+// direct-level-controller.js - Complete standalone solution that bypasses module issues
+// Place this as the VERY FIRST script in your HTML
 
-// Self-invoking function to avoid global scope pollution
 (function() {
-    // Debug function 
-    function debug(message) {
-        console.log(`[LevelSelector] ${message}`);
-    }
+    console.log('Direct level controller initializing...');
     
-    // Configuration - define available levels directly
-    const AVAILABLE_LEVELS = 10; // Total number of available levels
+    // Store the original function references to avoid conflicts
+    const originalModuleInit = {};
     
-    // Create a function to start a level that DOESN'T depend on window.gameController
-    function startLevel(level) {
-        debug(`Requesting start for level ${level}`);
-        
-        // Create a custom event with the level data
-        const event = new CustomEvent('startLevelRequest', { 
-            detail: { level: level },
-            bubbles: true 
-        });
-        
-        // Dispatch the event - this will be caught by gamecontroller.js
-        debug('Dispatching startLevelRequest event');
-        document.dispatchEvent(event);
-        
-        // Return true to indicate the event was dispatched
-        return true;
-    }
-    
-    // Wait for DOM to be fully loaded
-    window.addEventListener('DOMContentLoaded', () => {
-        debug('DOM loaded, initializing level selector');
-        initializeLevelSelector();
-    });
-    
-    // Also listen for window load as a fallback
-    window.addEventListener('load', () => {
-        debug('Window loaded, checking if level selector exists');
-        if (!document.querySelector('.level-selector-control')) {
-            debug('Level selector not found after load, initializing now');
-            initializeLevelSelector();
+    // Create a direct communication channel
+    window.gameBridge = {
+        levelToStart: null,
+        pendingLevelStart: false,
+        modules: {
+            gameControllerLoaded: false,
+            levelSelectorLoaded: false
+        },
+        // This function will be called directly by the level selector
+        startLevel: function(level) {
+            console.log(`[GameBridge] Request to start level ${level}`);
+            if (typeof level !== 'number' || level < 1 || level > 10) {
+                console.error(`[GameBridge] Invalid level number: ${level}`);
+                return false;
+            }
+            
+            this.levelToStart = level;
+            this.pendingLevelStart = true;
+            
+            // Try to start immediately if possible
+            this.attemptToStartLevel();
+            return true;
+        },
+        // This checks if we can start a level and does so if possible
+        attemptToStartLevel: function() {
+            if (!this.pendingLevelStart) return false;
+            
+            console.log(`[GameBridge] Attempting to start level ${this.levelToStart}`);
+            
+            // Try direct methods first
+            if (window.gameController && typeof window.gameController.startLevel === 'function') {
+                try {
+                    console.log('[GameBridge] Using gameController.startLevel directly');
+                    window.gameController.startLevel(this.levelToStart);
+                    this.pendingLevelStart = false;
+                    console.log(`[GameBridge] Successfully started level ${this.levelToStart}`);
+                    return true;
+                } catch (e) {
+                    console.error('[GameBridge] Error using direct method:', e);
+                }
+            } else {
+                console.log('[GameBridge] gameController not available, will keep trying');
+            }
+            
+            return false;
+        },
+        // Register a module as loaded
+        registerModule: function(moduleName) {
+            if (this.modules.hasOwnProperty(moduleName)) {
+                console.log(`[GameBridge] Module registered: ${moduleName}`);
+                this.modules[moduleName] = true;
+                
+                // Check if all required modules are loaded
+                const allLoaded = Object.values(this.modules).every(loaded => loaded);
+                if (allLoaded) {
+                    console.log('[GameBridge] All required modules loaded');
+                    
+                    // If we have a pending level start, attempt it again
+                    if (this.pendingLevelStart) {
+                        setTimeout(() => this.attemptToStartLevel(), 500);
+                    }
+                }
+            }
         }
+    };
+    
+    // When document is ready, create the level selector directly
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('[GameBridge] DOM content loaded');
+        createDirectLevelSelector();
     });
     
-    // Listen for gameControllerReady event
-    document.addEventListener('gameControllerReady', (event) => {
-        debug('Received gameControllerReady event');
-    });
-    
-    function initializeLevelSelector() {
-        debug('Creating standalone level selector');
+    function createDirectLevelSelector() {
+        console.log('[GameBridge] Creating direct level selector');
         
-        // Find the container where we'll add our selector
         const container = document.querySelector('.level-selector-container');
         if (!container) {
-            debug('ERROR: Could not find .level-selector-container');
+            console.error('[GameBridge] Could not find level-selector-container');
             return;
         }
         
-        // Clean out any existing content
+        // Remove any existing content
         container.innerHTML = '';
         
-        // Create the title
-        const selectorTitle = document.createElement('div');
-        selectorTitle.className = 'level-selector-title';
-        selectorTitle.textContent = 'CHOOSE YOUR LEVEL';
-        container.appendChild(selectorTitle);
+        // Create title
+        const title = document.createElement('div');
+        title.className = 'level-selector-title';
+        title.textContent = 'CHOOSE YOUR LEVEL';
+        container.appendChild(title);
         
-        // Create the main selector container
-        const selectorControl = document.createElement('div');
-        selectorControl.className = 'level-selector-control';
-        selectorControl.id = 'level-selector-control';
-        container.appendChild(selectorControl);
+        // Create main control container
+        const controlContainer = document.createElement('div');
+        controlContainer.className = 'level-selector-control';
+        container.appendChild(controlContainer);
         
-        // Create arrows and display (UI elements)
+        // Create arrow and display container
         const arrowsContainer = document.createElement('div');
         arrowsContainer.className = 'arrows-and-display';
-        selectorControl.appendChild(arrowsContainer);
+        controlContainer.appendChild(arrowsContainer);
         
-        // Up arrow
+        // Create up arrow
         const upArrow = document.createElement('button');
         upArrow.className = 'level-arrow up-arrow';
         upArrow.innerHTML = '▲';
         upArrow.setAttribute('aria-label', 'Previous level');
         arrowsContainer.appendChild(upArrow);
         
-        // Level display
+        // Create level display button
         const levelDisplay = document.createElement('button');
         levelDisplay.className = 'level-display';
         levelDisplay.textContent = 'LEVEL 1';
         levelDisplay.setAttribute('data-level', '1');
-        levelDisplay.setAttribute('aria-label', 'Select and start this level');
+        levelDisplay.setAttribute('aria-label', 'Select this level');
         arrowsContainer.appendChild(levelDisplay);
         
-        // Down arrow
+        // Create down arrow
         const downArrow = document.createElement('button');
         downArrow.className = 'level-arrow down-arrow';
         downArrow.innerHTML = '▼';
@@ -105,105 +133,73 @@ console.log('Enhanced level selector loading...');
         addLevelSelectorStyles();
         
         // Setup behavior
-        setupSelectorBehavior(levelDisplay, upArrow, downArrow, selectorTitle);
-        
-        debug('Level selector creation complete');
-        
-        // Remove any original level buttons that might still be in the DOM
-        const originalButtons = document.querySelectorAll('.level-btn');
-        originalButtons.forEach(btn => {
-            if (btn.parentNode) {
-                debug(`Removing original button for level ${btn.getAttribute('data-level')}`);
-                btn.parentNode.removeChild(btn);
-            }
-        });
-        
-        // Also remove the .level-buttons container if it exists
-        const oldButtonContainer = document.querySelector('.level-buttons');
-        if (oldButtonContainer && oldButtonContainer.parentNode) {
-            debug('Removing original level-buttons container');
-            oldButtonContainer.parentNode.removeChild(oldButtonContainer);
-        }
-    }
-
-    function setupSelectorBehavior(levelDisplay, upArrow, downArrow, selectorTitle) {
-        debug('Setting up selector behavior');
-        
         let currentLevel = 1;
+        const maxLevel = 10;
         
-        // Function to update the level display
-        const updateLevelDisplay = () => {
+        function updateLevelDisplay() {
             levelDisplay.textContent = `LEVEL ${currentLevel}`;
             levelDisplay.setAttribute('data-level', currentLevel);
-            debug(`Updated level display to: LEVEL ${currentLevel}`);
-        };
+        }
         
-        // Function to start the selected level - completely refactored to use startLevel function
-        const handleLevelSelection = () => {
-            debug(`User selected level ${currentLevel}`);
+        upArrow.addEventListener('click', function() {
+            currentLevel = currentLevel > 1 ? currentLevel - 1 : maxLevel;
+            updateLevelDisplay();
+            
+            levelDisplay.classList.add('pulse-animation');
+            setTimeout(() => {
+                levelDisplay.classList.remove('pulse-animation');
+            }, 300);
+        });
+        
+        downArrow.addEventListener('click', function() {
+            currentLevel = currentLevel < maxLevel ? currentLevel + 1 : 1;
+            updateLevelDisplay();
+            
+            levelDisplay.classList.add('pulse-animation');
+            setTimeout(() => {
+                levelDisplay.classList.remove('pulse-animation');
+            }, 300);
+        });
+        
+        levelDisplay.addEventListener('click', function() {
+            console.log(`[GameBridge] Level ${currentLevel} selected`);
             
             // Visual feedback
-            levelDisplay.classList.add('button-active');
+            this.classList.add('button-active');
             setTimeout(() => {
-                levelDisplay.classList.remove('button-active');
+                this.classList.remove('button-active');
             }, 300);
             
             // Hide selector title
-            if (selectorTitle) {
-                selectorTitle.style.display = 'none';
-            }
+            title.style.display = 'none';
             
-            // Start the level using our startLevel function that uses events
-            startLevel(currentLevel);
-        };
-        
-        // Add click listeners
-        upArrow.addEventListener('click', () => {
-            currentLevel = currentLevel > 1 ? currentLevel - 1 : AVAILABLE_LEVELS;
-            updateLevelDisplay();
-            levelDisplay.classList.add('pulse-animation');
-            setTimeout(() => {
-                levelDisplay.classList.remove('pulse-animation');
-            }, 300);
+            // Start the level using our bridge
+            window.gameBridge.startLevel(currentLevel);
         });
         
-        downArrow.addEventListener('click', () => {
-            currentLevel = currentLevel < AVAILABLE_LEVELS ? currentLevel + 1 : 1;
-            updateLevelDisplay();
-            levelDisplay.classList.add('pulse-animation');
-            setTimeout(() => {
-                levelDisplay.classList.remove('pulse-animation');
-            }, 300);
-        });
-        
-        levelDisplay.addEventListener('click', () => {
-            debug('Level display clicked');
-            handleLevelSelection();
-        });
-        
-        // Keyboard navigation
-        document.addEventListener('keydown', (e) => {
-            // Only respond if the level selector is visible and we're not in a game
+        // Add keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            // Only if game is not active
             const gameActive = document.querySelector('.game-container.game-active');
-            if (!gameActive && document.querySelector('.level-selector-control')) {
-                if (e.key === 'ArrowUp') {
-                    upArrow.click();
-                } else if (e.key === 'ArrowDown') {
-                    downArrow.click();
-                } else if (e.key === 'Enter') {
-                    levelDisplay.click();
-                }
+            if (gameActive) return;
+            
+            if (e.key === 'ArrowUp') {
+                upArrow.click();
+            } else if (e.key === 'ArrowDown') {
+                downArrow.click();
+            } else if (e.key === 'Enter') {
+                levelDisplay.click();
             }
         });
         
-        // Initialize with level 1
-        updateLevelDisplay();
+        // Register that we finished creating the level selector
+        window.gameBridge.registerModule('levelSelectorLoaded');
+        console.log('[GameBridge] Level selector created and registered');
     }
     
     function addLevelSelectorStyles() {
-        if (document.getElementById('level-selector-styles')) {
-            return; // Styles already added
-        }
+        // Skip if styles already exist
+        if (document.getElementById('level-selector-styles')) return;
         
         const styleElement = document.createElement('style');
         styleElement.id = 'level-selector-styles';
@@ -328,5 +324,96 @@ console.log('Enhanced level selector loading...');
         document.head.appendChild(styleElement);
     }
     
-    debug('Level selector module loaded and waiting for DOM ready');
+    // Create a MutationObserver to watch for gameController
+    const observer = new MutationObserver(function(mutations) {
+        if (window.gameController && typeof window.gameController.startLevel === 'function') {
+            console.log('[GameBridge] gameController detected via MutationObserver');
+            window.gameBridge.registerModule('gameControllerLoaded');
+            
+            // Check if we need to start a level
+            if (window.gameBridge.pendingLevelStart) {
+                setTimeout(() => window.gameBridge.attemptToStartLevel(), 100);
+            }
+            
+            // Disconnect the observer since we don't need it anymore
+            observer.disconnect();
+        }
+    });
+    
+    // Start observing
+    observer.observe(document, { childList: true, subtree: true });
+    
+    // Patch GameController constructor to hook into it
+    const originalGameController = window.GameController;
+    window.GameController = function() {
+        console.log('[GameBridge] GameController constructor intercepted');
+        
+        // Call the original constructor
+        const result = originalGameController ? new originalGameController(...arguments) : this;
+        
+        // Register the module as loaded
+        setTimeout(() => {
+            console.log('[GameBridge] Registering gameController from constructor hook');
+            window.gameBridge.registerModule('gameControllerLoaded');
+            
+            // Check if we need to start a level
+            if (window.gameBridge.pendingLevelStart) {
+                setTimeout(() => window.gameBridge.attemptToStartLevel(), 100);
+            }
+        }, 100);
+        
+        return result;
+    };
+    
+    // Add a continuous check for gameController as a fallback
+    let checkAttempts = 0;
+    const maxCheckAttempts = 50;
+    
+    function checkForGameController() {
+        checkAttempts++;
+        
+        if (window.gameController && typeof window.gameController.startLevel === 'function') {
+            console.log(`[GameBridge] gameController found on check attempt ${checkAttempts}`);
+            window.gameBridge.registerModule('gameControllerLoaded');
+            
+            // Check if we need to start a level
+            if (window.gameBridge.pendingLevelStart) {
+                setTimeout(() => window.gameBridge.attemptToStartLevel(), 100);
+            }
+            
+            // Stop checking
+            return;
+        }
+        
+        // Continue checking until max attempts reached
+        if (checkAttempts < maxCheckAttempts) {
+            setTimeout(checkForGameController, 100);
+        } else {
+            console.error('[GameBridge] Failed to find gameController after maximum check attempts');
+            
+            // Create a last resort method that will always be available
+            if (!window.startLevel) {
+                window.startLevel = function(level) {
+                    console.log(`[GameBridge] Last resort startLevel(${level}) called`);
+                    return window.gameBridge.startLevel(level);
+                };
+            }
+        }
+    }
+    
+    // Start checking for gameController
+    setTimeout(checkForGameController, 500);
+    
+    // Hook into gamecontroller.js module initialization
+    document.addEventListener('gameControllerReady', function(event) {
+        console.log('[GameBridge] Received gameControllerReady event');
+        window.gameBridge.registerModule('gameControllerLoaded');
+        
+        // Check if we need to start a level
+        if (window.gameBridge.pendingLevelStart) {
+            setTimeout(() => window.gameBridge.attemptToStartLevel(), 100);
+        }
+    });
+    
+    console.log('Direct level controller initialized');
 })();
