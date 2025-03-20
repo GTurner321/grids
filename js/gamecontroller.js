@@ -1,10 +1,41 @@
-// gamecontroller.js - Fixed Touch Handling
-import { generatePath } from './pathgenerator.js';
-import { generateSequence, sequenceToEntries, getLevelConfig } from './sequencegenerator.js';
-import { renderGrid, updateCell } from './gridrenderer.js';
-import { validatePath as validatePathMath, isPathContinuous } from './pathvalidator.js';
-import { scoreManager } from './scoremanager.js';
-import { addPathArrows } from './patharrows.js';
+// Add these lines at the BEGINNING of your gamecontroller.js file, 
+// right after your imports but before the GameController class
+
+console.log('GameController module loading...');
+
+// Add this global variable to explicitly track if gameController is ready
+window.gameControllerReady = false;
+
+// Debug function to expose key objects
+function debugControllerAccess() {
+    console.log('Debugging GameController access:');
+    console.log('  window.gameController exists:', window.gameController !== undefined);
+    if (window.gameController) {
+        console.log('  window.gameController type:', typeof window.gameController);
+        console.log('  window.gameController.startLevel exists:', typeof window.gameController.startLevel === 'function');
+    }
+    console.log('  window.gameControllerReady:', window.gameControllerReady);
+}
+
+// This will be called right after the GameController instance is created
+function notifyGameControllerReady() {
+    window.gameControllerReady = true;
+    console.log('GameController is fully initialized and ready');
+    debugControllerAccess();
+    
+    // Dispatch a global event that can be captured by other modules
+    try {
+        document.dispatchEvent(new CustomEvent('gameControllerReady', { 
+            detail: { controller: window.gameController },
+            bubbles: true
+        }));
+        console.log('gameControllerReady event dispatched');
+    } catch (e) {
+        console.error('Failed to dispatch gameControllerReady event:', e);
+    }
+}
+
+// Now your GameController class with the updated constructor:
 
 class GameController {
     constructor() {
@@ -32,17 +63,26 @@ class GameController {
         this.initializeEventListeners();
         this.initializeGridInteractions();
         
-        // Announce that game controller is ready
-        console.log('Game controller initialized and ready');
-        document.dispatchEvent(new CustomEvent('gameControllerReady'));
+        // Make absolutely sure the controller is globally available
+        window.gameController = this;
         
-        // Listen for level start requests from level-selector
+        // Create a more robust event listener for level selection
         document.addEventListener('startLevelRequest', (event) => {
+            console.log('GameController received startLevelRequest:', event.detail);
             if (event.detail && typeof event.detail.level === 'number') {
-                console.log(`Received startLevelRequest event for level ${event.detail.level}`);
-                this.startLevel(event.detail.level);
+                try {
+                    this.startLevel(event.detail.level);
+                    console.log(`Successfully started level ${event.detail.level}`);
+                } catch (error) {
+                    console.error(`Error starting level ${event.detail.level}:`, error);
+                }
             }
         });
+        
+        // Call the notification function to signal that initialization is complete
+        setTimeout(() => {
+            notifyGameControllerReady();
+        }, 100);
     }
 
     initializeEventListeners() {
@@ -100,62 +140,77 @@ class GameController {
     }
     
     async startLevel(level) {
-    // Reset state
-    this.state.currentLevel = level;
-    this.state.userPath = [];
-    
-    // Get grid size from config
-    const config = getLevelConfig(level);
-    const gridSize = config.gridSize || 10;
-    
-    // Create appropriate sized grid entries array
-    this.state.gridEntries = new Array(gridSize * gridSize).fill(null);
-    this.state.removedCells.clear();
-    this.state.gameActive = true;
-    
-    document.querySelector('.game-container').classList.add('game-active');
-    
-    scoreManager.startLevel(level);
-
-    try {
-        // Generate path with appropriate grid size
-        this.state.path = await generatePath(gridSize);
-        this.state.sequence = await generateSequence(level);
-        this.state.sequenceEntries = sequenceToEntries(this.state.sequence);
-
-        // Place sequence on path
-        this.placeMathSequence();
+        console.log(`GameController.startLevel(${level}) called`);
         
-        // For level 1, remove all spare cells
-        if (level === 1) {
-            this.removeAllSpareCells(true); // true for remove ALL
-        } 
-        // Otherwise fill remaining cells
-        else {
-            this.fillRemainingCells();
+        // Reset state
+        this.state.currentLevel = level;
+        this.state.userPath = [];
+        
+        // Get grid size from config
+        const config = getLevelConfig(level);
+        const gridSize = config.gridSize || 10;
+        console.log(`Starting level ${level} with grid size ${gridSize}`);
+        
+        // Create appropriate sized grid entries array
+        this.state.gridEntries = new Array(gridSize * gridSize).fill(null);
+        this.state.removedCells.clear();
+        this.state.gameActive = true;
+        
+        document.querySelector('.game-container').classList.add('game-active');
+        
+        // Notify score manager
+        try {
+            scoreManager.startLevel(level);
+        } catch (e) {
+            console.error('Error calling scoreManager.startLevel:', e);
         }
 
-        // For level 2, show suggestion to remove spare cells
-        if (level === 2) {
-            setTimeout(() => {
-                this.showMessage('Hint: Consider removing spare cells to make the puzzle easier!', 'info', 5000);
-            }, 1000);
+        try {
+            // Generate path with appropriate grid size
+            this.state.path = await generatePath(gridSize);
+            this.state.sequence = await generateSequence(level);
+            this.state.sequenceEntries = sequenceToEntries(this.state.sequence);
+
+            // Place sequence on path
+            this.placeMathSequence();
+            
+            // For level 1, remove all spare cells
+            if (level === 1) {
+                this.removeAllSpareCells(true); // true for remove ALL
+            } 
+            // Otherwise fill remaining cells
+            else {
+                this.fillRemainingCells();
+            }
+
+            // For level 2, show suggestion to remove spare cells
+            if (level === 2) {
+                setTimeout(() => {
+                    this.showMessage('Hint: Consider removing spare cells to make the puzzle easier!', 'info', 5000);
+                }, 1000);
+            }
+
+            // Render grid with appropriate size
+            renderGrid(this.state.gridEntries, {
+                startCoord: this.state.path[0],
+                endCoord: this.state.path[this.state.path.length - 1],
+                gridSize: gridSize
+            });
+
+            // Update UI
+            this.updateUI();
+            this.showMessage('Find the path by following the mathematical sequence.');
+            
+            // Announce that the level has started successfully
+            document.dispatchEvent(new CustomEvent('levelStarted', { 
+                detail: { level, gridSize },
+                bubbles: true
+            }));
+
+        } catch (error) {
+            console.error('Error starting level:', error);
+            this.showMessage('Error starting game. Please try again.', 'error');
         }
-
-        // Render grid with appropriate size
-        renderGrid(this.state.gridEntries, {
-            startCoord: this.state.path[0],
-            endCoord: this.state.path[this.state.path.length - 1],
-            gridSize: gridSize
-        });
-
-        // Update UI
-        this.updateUI();
-        this.showMessage('Find the path by following the mathematical sequence.');
-
-    } catch (error) {
-        console.error('Error starting level:', error);
-        this.showMessage('Error starting game. Please try again.', 'error');
     }
 }
     
