@@ -1,84 +1,67 @@
-// level-selector.js - Fixed version with improved game controller connection
+// standalone-level-selector.js - Complete rewrite with no button dependencies
+console.log('Standalone level selector loading...');
 
-console.log('Level selector script loading...');
-
-// Immediate self-invoking function to avoid global scope pollution
+// Self-invoking function to avoid global scope pollution
 (function() {
-    // Debug function to help troubleshoot
+    // Debug function 
     function debug(message) {
         console.log(`[LevelSelector] ${message}`);
     }
-
-    // Wait until window is fully loaded (including all resources)
-    window.addEventListener('load', function() {
-        debug('Window fully loaded, initializing level selector');
-        // Small delay to ensure everything is ready
-        setTimeout(initializeLevelSelector, 500); // Increased delay for better module loading
+    
+    // Configuration - define available levels directly
+    const AVAILABLE_LEVELS = 10; // Total number of available levels
+    
+    // Wait for DOM to be fully loaded
+    window.addEventListener('DOMContentLoaded', () => {
+        debug('DOM loaded, initializing level selector');
+        initializeLevelSelector();
     });
-
+    
+    // Also listen for window load as a fallback
+    window.addEventListener('load', () => {
+        debug('Window loaded, checking if level selector exists');
+        if (!document.querySelector('.level-selector-control')) {
+            debug('Level selector not found after load, initializing now');
+            initializeLevelSelector();
+        }
+    });
+    
     function initializeLevelSelector() {
-        debug('Starting level selector initialization');
+        debug('Creating standalone level selector');
         
-        // Check if level buttons exist in the first place
-        const levelButtons = document.querySelectorAll('.level-btn');
-        debug(`Found ${levelButtons.length} level buttons`);
-        
-        // If we can't find any level buttons, wait and try again
-        if (levelButtons.length === 0) {
-            debug('No level buttons found, will retry initialization in 500ms');
-            setTimeout(initializeLevelSelector, 500);
+        // Find the container where we'll add our selector
+        const container = document.querySelector('.level-selector-container');
+        if (!container) {
+            debug('ERROR: Could not find .level-selector-container');
             return;
         }
         
-        // Check for button container
-        const levelButtonsContainer = document.querySelector('.level-buttons');
-        if (!levelButtonsContainer) {
-            debug('WARNING: Level buttons found but container is missing. Attempting to find parent element.');
-            if (levelButtons.length > 0) {
-                const firstButton = levelButtons[0];
-                const parent = firstButton.parentElement;
-                debug(`Using parent of first button: ${parent.tagName} with class ${parent.className}`);
-                createRotarySelector(parent, levelButtons);
-            } else {
-                debug('ERROR: Cannot initialize level selector - no buttons and no container');
-            }
-            return;
-        }
+        // Clean out any existing content
+        container.innerHTML = '';
         
-        debug('Level buttons container found, proceeding with rotation selector creation');
-        createRotarySelector(levelButtonsContainer, levelButtons);
-    }
-
-    function createRotarySelector(container, levelButtons) {
-        debug('Creating rotary selector UI');
-        
-        // Get level data from existing buttons
-        const levels = Array.from(levelButtons).map(btn => ({
-            level: parseInt(btn.dataset.level || btn.getAttribute('data-level') || '1'),
-            text: btn.textContent.trim()
-        }));
-        
-        debug(`Found ${levels.length} levels from buttons`);
-        
-        // Create the main container
-        const selectorContainer = document.createElement('div');
-        selectorContainer.className = 'level-selector-control';
-        selectorContainer.id = 'level-selector-control';
-        
-        // Create title
+        // Create the title
         const selectorTitle = document.createElement('div');
         selectorTitle.className = 'level-selector-title';
         selectorTitle.textContent = 'CHOOSE YOUR LEVEL';
+        container.appendChild(selectorTitle);
         
-        // Create arrows and display
+        // Create the main selector container
+        const selectorControl = document.createElement('div');
+        selectorControl.className = 'level-selector-control';
+        selectorControl.id = 'level-selector-control';
+        container.appendChild(selectorControl);
+        
+        // Create arrows and display (UI elements)
         const arrowsContainer = document.createElement('div');
         arrowsContainer.className = 'arrows-and-display';
+        selectorControl.appendChild(arrowsContainer);
         
         // Up arrow
         const upArrow = document.createElement('button');
         upArrow.className = 'level-arrow up-arrow';
         upArrow.innerHTML = '▲';
         upArrow.setAttribute('aria-label', 'Previous level');
+        arrowsContainer.appendChild(upArrow);
         
         // Level display
         const levelDisplay = document.createElement('button');
@@ -86,63 +69,44 @@ console.log('Level selector script loading...');
         levelDisplay.textContent = 'LEVEL 1';
         levelDisplay.setAttribute('data-level', '1');
         levelDisplay.setAttribute('aria-label', 'Select and start this level');
+        arrowsContainer.appendChild(levelDisplay);
         
         // Down arrow
         const downArrow = document.createElement('button');
         downArrow.className = 'level-arrow down-arrow';
         downArrow.innerHTML = '▼';
         downArrow.setAttribute('aria-label', 'Next level');
-        
-        // Assemble the elements
-        arrowsContainer.appendChild(upArrow);
-        arrowsContainer.appendChild(levelDisplay);
         arrowsContainer.appendChild(downArrow);
-        
-        selectorContainer.appendChild(arrowsContainer);
-        
-        // Completely remove the original buttons to prevent them from showing on any screen size
-        debug('Removing original level buttons');
-        levelButtons.forEach(btn => {
-            if (btn.parentNode) {
-                btn.parentNode.removeChild(btn);
-            }
-        });
-        
-        // Clear the container to ensure no original buttons remain
-        container.innerHTML = '';
-        
-        // Insert our new elements
-        const parentElement = container.parentElement;
-        if (parentElement) {
-            debug('Inserting title and selector into DOM');
-            parentElement.insertBefore(selectorTitle, container);
-            parentElement.insertBefore(selectorContainer, container);
-            
-            // Optionally remove the original container if it's now empty
-            if (container.children.length === 0) {
-                parentElement.removeChild(container);
-            }
-        } else {
-            debug('ERROR: Cannot find parent element for level buttons container');
-            return;
-        }
         
         // Add styles
         addLevelSelectorStyles();
         
         // Setup behavior
-        setupSelectorBehavior(levelDisplay, upArrow, downArrow, selectorTitle, levels);
+        setupSelectorBehavior(levelDisplay, upArrow, downArrow, selectorTitle);
         
-        debug('Rotary selector creation complete');
+        debug('Level selector creation complete');
+        
+        // Remove any original level buttons that might still be in the DOM
+        const originalButtons = document.querySelectorAll('.level-btn');
+        originalButtons.forEach(btn => {
+            if (btn.parentNode) {
+                debug(`Removing original button for level ${btn.getAttribute('data-level')}`);
+                btn.parentNode.removeChild(btn);
+            }
+        });
+        
+        // Also remove the .level-buttons container if it exists
+        const oldButtonContainer = document.querySelector('.level-buttons');
+        if (oldButtonContainer && oldButtonContainer.parentNode) {
+            debug('Removing original level-buttons container');
+            oldButtonContainer.parentNode.removeChild(oldButtonContainer);
+        }
     }
 
-    function setupSelectorBehavior(levelDisplay, upArrow, downArrow, selectorTitle, levels) {
+    function setupSelectorBehavior(levelDisplay, upArrow, downArrow, selectorTitle) {
         debug('Setting up selector behavior');
         
-        const maxLevel = levels.length || 10;
         let currentLevel = 1;
-        
-        debug(`Max level: ${maxLevel}, Starting level: ${currentLevel}`);
         
         // Function to update the level display
         const updateLevelDisplay = () => {
@@ -151,102 +115,93 @@ console.log('Level selector script loading...');
             debug(`Updated level display to: LEVEL ${currentLevel}`);
         };
         
-        // Function to start the selected level
+        // Function to start the selected level - with multiple strategies
         const startSelectedLevel = () => {
-            debug(`Starting level ${currentLevel}`);
+            debug(`Attempting to start level ${currentLevel}`);
             
-            // Add visual feedback
+            // Visual feedback
             levelDisplay.classList.add('button-active');
             setTimeout(() => {
                 levelDisplay.classList.remove('button-active');
             }, 300);
             
-            // Hide the title
+            // Hide selector title
             if (selectorTitle) {
                 selectorTitle.style.display = 'none';
-                debug('Hid level selector title');
             }
             
-            // IMPROVED: More robust game controller handling
-            const startLevel = () => {
-                // First try direct gameController access
-                if (typeof window.gameController !== 'undefined' && window.gameController) {
-                    debug('Found game controller, calling startLevel directly');
-                    try {
-                        // Call the method directly
-                        window.gameController.startLevel(currentLevel);
-                        debug('StartLevel method called successfully');
-                        return true;
-                    } catch (error) {
-                        debug(`Error calling gameController.startLevel: ${error.message}`);
-                    }
-                }
-                
-                // Second method: Try to find gameController through import
-                debug('Trying alternative method to start level');
-                
-                // Check if we can find a module with GameController
-                const gameControllerScript = document.querySelector('script[src*="gamecontroller.js"]');
-                if (gameControllerScript) {
-                    debug('Found gamecontroller.js script tag');
-                    
-                    // Create a custom event that gamecontroller.js can listen for
-                    const startLevelEvent = new CustomEvent('startLevelRequest', {
-                        detail: { level: currentLevel }
-                    });
-                    document.dispatchEvent(startLevelEvent);
-                    debug('Dispatched startLevelRequest event');
+            // Strategy 1: Direct call to window.gameController
+            if (window.gameController && typeof window.gameController.startLevel === 'function') {
+                debug('Using window.gameController.startLevel()');
+                try {
+                    window.gameController.startLevel(currentLevel);
                     return true;
+                } catch (e) {
+                    debug(`Error with direct gameController: ${e.message}`);
                 }
-                
-                // Last resort: Try to find and click the original level button
-                debug('Trying to find original level button as last resort');
-                const originalButton = document.querySelector(`.level-btn[data-level="${currentLevel}"]`);
-                if (originalButton) {
-                    debug('Found original level button, clicking it');
-                    originalButton.click();
-                    return true;
-                }
-                
-                debug('WARNING: All methods to start level failed');
-                return false;
-            };
+            } else {
+                debug('gameController not found or startLevel not a function');
+            }
             
-            // Try to start the level with a small delay to ensure gameController is ready
-            setTimeout(() => {
-                const success = startLevel();
-                if (!success) {
-                    debug('Could not start level, trying one more time after delay');
-                    // Try one more time after a longer delay
-                    setTimeout(() => {
-                        if (!startLevel()) {
-                            debug('ERROR: Failed to start level after multiple attempts');
-                            alert(`Unable to start level ${currentLevel}. Please refresh the page and try again.`);
-                        }
-                    }, 1000);
+            // Strategy 2: Custom event
+            debug('Dispatching startLevelRequest event');
+            const event = new CustomEvent('startLevelRequest', { 
+                detail: { level: currentLevel },
+                bubbles: true 
+            });
+            document.dispatchEvent(event);
+            
+            // Strategy 3: Look for global gameController variable using different access methods
+            debug('Trying alternative gameController access methods');
+            try {
+                // Try as property of window
+                if (window['gameController'] && typeof window['gameController'].startLevel === 'function') {
+                    window['gameController'].startLevel(currentLevel);
+                    return true;
                 }
-            }, 200);
+            } catch (e) {
+                debug(`Error with window['gameController']: ${e.message}`);
+            }
+            
+            // If we get here, we couldn't find a way to start the level
+            debug('WARNING: Could not find a reliable method to start the level');
+            
+            // Last resort - try to find the script and reassess
+            const gameControllerScript = document.querySelector('script[src*="gamecontroller.js"]');
+            if (gameControllerScript) {
+                debug('Found gamecontroller.js script tag, waiting 500ms for it to initialize');
+                setTimeout(() => {
+                    if (window.gameController && typeof window.gameController.startLevel === 'function') {
+                        debug('gameController now available, starting level');
+                        window.gameController.startLevel(currentLevel);
+                    } else {
+                        debug('ERROR: gameController still not available after waiting');
+                        alert(`Unable to start level ${currentLevel}. Please refresh the page and try again.`);
+                    }
+                }, 500);
+            } else {
+                debug('ERROR: Cannot find gamecontroller.js script');
+                alert(`Unable to start level ${currentLevel}. Please refresh the page and try again.`);
+            }
         };
         
         // Add click listeners
         upArrow.addEventListener('click', () => {
-            currentLevel = currentLevel > 1 ? currentLevel - 1 : maxLevel;
+            currentLevel = currentLevel > 1 ? currentLevel - 1 : AVAILABLE_LEVELS;
             updateLevelDisplay();
             levelDisplay.classList.add('pulse-animation');
             setTimeout(() => {
                 levelDisplay.classList.remove('pulse-animation');
             }, 300);
-            debug(`Up arrow clicked, new level: ${currentLevel}`);
         });
         
         downArrow.addEventListener('click', () => {
-            currentLevel = currentLevel < maxLevel ? currentLevel + 1 : 1;
+            currentLevel = currentLevel < AVAILABLE_LEVELS ? currentLevel + 1 : 1;
             updateLevelDisplay();
             levelDisplay.classList.add('pulse-animation');
             setTimeout(() => {
                 levelDisplay.classList.remove('pulse-animation');
             }, 300);
-            debug(`Down arrow clicked, new level: ${currentLevel}`);
         });
         
         levelDisplay.addEventListener('click', () => {
@@ -256,7 +211,9 @@ console.log('Level selector script loading...');
         
         // Keyboard navigation
         document.addEventListener('keydown', (e) => {
-            if (document.querySelector('.level-selector-control')) {
+            // Only respond if the level selector is visible and we're not in a game
+            const gameActive = document.querySelector('.game-container.game-active');
+            if (!gameActive && document.querySelector('.level-selector-control')) {
                 if (e.key === 'ArrowUp') {
                     upArrow.click();
                 } else if (e.key === 'ArrowDown') {
@@ -269,34 +226,32 @@ console.log('Level selector script loading...');
         
         // Initialize with level 1
         updateLevelDisplay();
-        debug('Selector behavior setup complete');
         
-        // ADDED: Set up event listener for gameController when it becomes available
+        // Set up continuous monitoring for gameController
+        let checkAttempts = 0;
+        const maxAttempts = 50; // 5 seconds of checking
+        
         const checkForGameController = () => {
-            if (typeof window.gameController !== 'undefined' && window.gameController) {
-                debug('Game controller is now available');
-                // Stop checking once found
+            checkAttempts++;
+            
+            if (window.gameController && typeof window.gameController.startLevel === 'function') {
+                debug(`Found gameController after ${checkAttempts} attempts`);
+                clearInterval(checkInterval);
+                return;
+            }
+            
+            if (checkAttempts >= maxAttempts) {
+                debug('Gave up looking for gameController after max attempts');
                 clearInterval(checkInterval);
             }
         };
         
-        // Check every 100ms for gameController to become available
         const checkInterval = setInterval(checkForGameController, 100);
-        
-        // Also add a listener for the gamecontroller module being loaded
-        document.addEventListener('gameControllerReady', () => {
-            debug('Received gameControllerReady event');
-            clearInterval(checkInterval);
-        });
     }
     
     function addLevelSelectorStyles() {
-        debug('Adding level selector styles');
-        
-        // Check if styles already exist
         if (document.getElementById('level-selector-styles')) {
-            debug('Level selector styles already exist, skipping');
-            return;
+            return; // Styles already added
         }
         
         const styleElement = document.createElement('style');
@@ -404,19 +359,6 @@ console.log('Level selector script loading...');
                 display: none !important;
             }
             
-            /* Add important flags to ensure our selector is visible */
-            .level-selector-control,
-            .arrows-and-display,
-            .level-display,
-            .level-arrow {
-                display: flex !important;
-            }
-            
-            /* Ensure proper spacing in container */
-            .level-buttons {
-                display: none !important;
-            }
-            
             /* Responsive styles that work across all devices */
             @media (max-width: 768px) {
                 .level-display {
@@ -433,8 +375,7 @@ console.log('Level selector script loading...');
         `;
         
         document.head.appendChild(styleElement);
-        debug('Level selector styles added');
     }
     
-    debug('Level selector script fully loaded');
+    debug('Level selector module loaded and waiting for DOM ready');
 })();
