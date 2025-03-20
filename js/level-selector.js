@@ -1,4 +1,4 @@
-// level-selector.js - Fixed version for all screen sizes
+// level-selector.js - Fixed version with improved game controller connection
 
 console.log('Level selector script loading...');
 
@@ -13,7 +13,7 @@ console.log('Level selector script loading...');
     window.addEventListener('load', function() {
         debug('Window fully loaded, initializing level selector');
         // Small delay to ensure everything is ready
-        setTimeout(initializeLevelSelector, 200);
+        setTimeout(initializeLevelSelector, 500); // Increased delay for better module loading
     });
 
     function initializeLevelSelector() {
@@ -167,26 +167,65 @@ console.log('Level selector script loading...');
                 debug('Hid level selector title');
             }
             
-            // Direct game controller access (preferred method)
-            if (typeof window.gameController !== 'undefined' && window.gameController) {
-                debug('Found game controller, calling startLevel directly');
-                try {
-                    // Debug the game controller state
-                    debug(`Game controller state: ${window.gameController.state ? 'has state' : 'no state'}`);
-                    debug(`Game controller startLevel: ${typeof window.gameController.startLevel === 'function' ? 'is function' : 'NOT FOUND'}`);
-                    
-                    // Call the method directly
-                    window.gameController.startLevel(currentLevel);
-                    debug('StartLevel method called successfully');
-                } catch (error) {
-                    debug(`Error calling gameController.startLevel: ${error.message}`);
-                    alert(`Error starting level ${currentLevel}. Please refresh the page and try again.`);
+            // IMPROVED: More robust game controller handling
+            const startLevel = () => {
+                // First try direct gameController access
+                if (typeof window.gameController !== 'undefined' && window.gameController) {
+                    debug('Found game controller, calling startLevel directly');
+                    try {
+                        // Call the method directly
+                        window.gameController.startLevel(currentLevel);
+                        debug('StartLevel method called successfully');
+                        return true;
+                    } catch (error) {
+                        debug(`Error calling gameController.startLevel: ${error.message}`);
+                    }
                 }
-                return;
-            }
+                
+                // Second method: Try to find gameController through import
+                debug('Trying alternative method to start level');
+                
+                // Check if we can find a module with GameController
+                const gameControllerScript = document.querySelector('script[src*="gamecontroller.js"]');
+                if (gameControllerScript) {
+                    debug('Found gamecontroller.js script tag');
+                    
+                    // Create a custom event that gamecontroller.js can listen for
+                    const startLevelEvent = new CustomEvent('startLevelRequest', {
+                        detail: { level: currentLevel }
+                    });
+                    document.dispatchEvent(startLevelEvent);
+                    debug('Dispatched startLevelRequest event');
+                    return true;
+                }
+                
+                // Last resort: Try to find and click the original level button
+                debug('Trying to find original level button as last resort');
+                const originalButton = document.querySelector(`.level-btn[data-level="${currentLevel}"]`);
+                if (originalButton) {
+                    debug('Found original level button, clicking it');
+                    originalButton.click();
+                    return true;
+                }
+                
+                debug('WARNING: All methods to start level failed');
+                return false;
+            };
             
-            debug('WARNING: Could not find game controller');
-            alert(`Unable to start level ${currentLevel}. Please refresh the page and try again.`);
+            // Try to start the level with a small delay to ensure gameController is ready
+            setTimeout(() => {
+                const success = startLevel();
+                if (!success) {
+                    debug('Could not start level, trying one more time after delay');
+                    // Try one more time after a longer delay
+                    setTimeout(() => {
+                        if (!startLevel()) {
+                            debug('ERROR: Failed to start level after multiple attempts');
+                            alert(`Unable to start level ${currentLevel}. Please refresh the page and try again.`);
+                        }
+                    }, 1000);
+                }
+            }, 200);
         };
         
         // Add click listeners
@@ -231,6 +270,24 @@ console.log('Level selector script loading...');
         // Initialize with level 1
         updateLevelDisplay();
         debug('Selector behavior setup complete');
+        
+        // ADDED: Set up event listener for gameController when it becomes available
+        const checkForGameController = () => {
+            if (typeof window.gameController !== 'undefined' && window.gameController) {
+                debug('Game controller is now available');
+                // Stop checking once found
+                clearInterval(checkInterval);
+            }
+        };
+        
+        // Check every 100ms for gameController to become available
+        const checkInterval = setInterval(checkForGameController, 100);
+        
+        // Also add a listener for the gamecontroller module being loaded
+        document.addEventListener('gameControllerReady', () => {
+            debug('Received gameControllerReady event');
+            clearInterval(checkInterval);
+        });
     }
     
     function addLevelSelectorStyles() {
