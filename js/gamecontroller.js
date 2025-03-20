@@ -20,9 +20,9 @@ class GameController {
             gridEntries: new Array(100).fill(null),
             removedCells: new Set(),
             gameActive: false,
-            lastClickTime: 0, // Track last click time to prevent double clicks
-            touchStartTime: 0, // Track when a touch started
-            touchMoved: false // Track if touch moved (for distinguishing taps from swipes)
+            lastClickTime: 0,
+            touchStartTime: 0,
+            touchMoved: false
         };
         
         this.messageTimeout = null;
@@ -31,6 +31,18 @@ class GameController {
 
         this.initializeEventListeners();
         this.initializeGridInteractions();
+        
+        // Announce that game controller is ready
+        console.log('Game controller initialized and ready');
+        document.dispatchEvent(new CustomEvent('gameControllerReady'));
+        
+        // Listen for level start requests from level-selector
+        document.addEventListener('startLevelRequest', (event) => {
+            if (event.detail && typeof event.detail.level === 'number') {
+                console.log(`Received startLevelRequest event for level ${event.detail.level}`);
+                this.startLevel(event.detail.level);
+            }
+        });
     }
 
     initializeEventListeners() {
