@@ -1,5 +1,5 @@
-// standalone-level-selector.js - Complete rewrite with no button dependencies
-console.log('Standalone level selector loading...');
+// level-selector.js - Complete rewrite with improved communication
+console.log('Enhanced level selector loading...');
 
 // Self-invoking function to avoid global scope pollution
 (function() {
@@ -10,6 +10,24 @@ console.log('Standalone level selector loading...');
     
     // Configuration - define available levels directly
     const AVAILABLE_LEVELS = 10; // Total number of available levels
+    
+    // Create a function to start a level that DOESN'T depend on window.gameController
+    function startLevel(level) {
+        debug(`Requesting start for level ${level}`);
+        
+        // Create a custom event with the level data
+        const event = new CustomEvent('startLevelRequest', { 
+            detail: { level: level },
+            bubbles: true 
+        });
+        
+        // Dispatch the event - this will be caught by gamecontroller.js
+        debug('Dispatching startLevelRequest event');
+        document.dispatchEvent(event);
+        
+        // Return true to indicate the event was dispatched
+        return true;
+    }
     
     // Wait for DOM to be fully loaded
     window.addEventListener('DOMContentLoaded', () => {
@@ -24,6 +42,11 @@ console.log('Standalone level selector loading...');
             debug('Level selector not found after load, initializing now');
             initializeLevelSelector();
         }
+    });
+    
+    // Listen for gameControllerReady event
+    document.addEventListener('gameControllerReady', (event) => {
+        debug('Received gameControllerReady event');
     });
     
     function initializeLevelSelector() {
@@ -115,9 +138,9 @@ console.log('Standalone level selector loading...');
             debug(`Updated level display to: LEVEL ${currentLevel}`);
         };
         
-        // Function to start the selected level - with multiple strategies
-        const startSelectedLevel = () => {
-            debug(`Attempting to start level ${currentLevel}`);
+        // Function to start the selected level - completely refactored to use startLevel function
+        const handleLevelSelection = () => {
+            debug(`User selected level ${currentLevel}`);
             
             // Visual feedback
             levelDisplay.classList.add('button-active');
@@ -130,59 +153,8 @@ console.log('Standalone level selector loading...');
                 selectorTitle.style.display = 'none';
             }
             
-            // Strategy 1: Direct call to window.gameController
-            if (window.gameController && typeof window.gameController.startLevel === 'function') {
-                debug('Using window.gameController.startLevel()');
-                try {
-                    window.gameController.startLevel(currentLevel);
-                    return true;
-                } catch (e) {
-                    debug(`Error with direct gameController: ${e.message}`);
-                }
-            } else {
-                debug('gameController not found or startLevel not a function');
-            }
-            
-            // Strategy 2: Custom event
-            debug('Dispatching startLevelRequest event');
-            const event = new CustomEvent('startLevelRequest', { 
-                detail: { level: currentLevel },
-                bubbles: true 
-            });
-            document.dispatchEvent(event);
-            
-            // Strategy 3: Look for global gameController variable using different access methods
-            debug('Trying alternative gameController access methods');
-            try {
-                // Try as property of window
-                if (window['gameController'] && typeof window['gameController'].startLevel === 'function') {
-                    window['gameController'].startLevel(currentLevel);
-                    return true;
-                }
-            } catch (e) {
-                debug(`Error with window['gameController']: ${e.message}`);
-            }
-            
-            // If we get here, we couldn't find a way to start the level
-            debug('WARNING: Could not find a reliable method to start the level');
-            
-            // Last resort - try to find the script and reassess
-            const gameControllerScript = document.querySelector('script[src*="gamecontroller.js"]');
-            if (gameControllerScript) {
-                debug('Found gamecontroller.js script tag, waiting 500ms for it to initialize');
-                setTimeout(() => {
-                    if (window.gameController && typeof window.gameController.startLevel === 'function') {
-                        debug('gameController now available, starting level');
-                        window.gameController.startLevel(currentLevel);
-                    } else {
-                        debug('ERROR: gameController still not available after waiting');
-                        alert(`Unable to start level ${currentLevel}. Please refresh the page and try again.`);
-                    }
-                }, 500);
-            } else {
-                debug('ERROR: Cannot find gamecontroller.js script');
-                alert(`Unable to start level ${currentLevel}. Please refresh the page and try again.`);
-            }
+            // Start the level using our startLevel function that uses events
+            startLevel(currentLevel);
         };
         
         // Add click listeners
@@ -206,7 +178,7 @@ console.log('Standalone level selector loading...');
         
         levelDisplay.addEventListener('click', () => {
             debug('Level display clicked');
-            startSelectedLevel();
+            handleLevelSelection();
         });
         
         // Keyboard navigation
@@ -226,27 +198,6 @@ console.log('Standalone level selector loading...');
         
         // Initialize with level 1
         updateLevelDisplay();
-        
-        // Set up continuous monitoring for gameController
-        let checkAttempts = 0;
-        const maxAttempts = 50; // 5 seconds of checking
-        
-        const checkForGameController = () => {
-            checkAttempts++;
-            
-            if (window.gameController && typeof window.gameController.startLevel === 'function') {
-                debug(`Found gameController after ${checkAttempts} attempts`);
-                clearInterval(checkInterval);
-                return;
-            }
-            
-            if (checkAttempts >= maxAttempts) {
-                debug('Gave up looking for gameController after max attempts');
-                clearInterval(checkInterval);
-            }
-        };
-        
-        const checkInterval = setInterval(checkForGameController, 100);
     }
     
     function addLevelSelectorStyles() {
