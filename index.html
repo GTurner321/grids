@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="A mathematical path puzzle game">
+    <title>PATH PUZZLE</title>
+    
+    <!-- Load React -->
+    <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@18.2.0",
+        "react-dom": "https://esm.sh/react-dom@18.2.0"
+      }
+    }
+    </script>
+    <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$']]
+      }
+    };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/mobile-responsive.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">    
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap" rel="stylesheet">
+</head>
+<body>
+    <noscript>You need to enable JavaScript to run this game.</noscript>
+    <!-- Rules Container -->
+    <div id="rules-container"></div>
+    <div class="game-container">
+        <!-- Header Section -->
+        <header class="game-header">
+            <h1>PATH PUZZLE</h1>
+        </header>
+        <!-- Level Selection -->
+        <section class="level-selector-container">
+            <p class="level-selector-title">CHOOSE YOUR LEVEL</p>
+            <div class="level-buttons">
+                <button type="button" class="level-btn" data-level="1">L1</button>
+                <button type="button" class="level-btn" data-level="2">L2</button>
+                <button type="button" class="level-btn" data-level="3">L3</button>
+                <button type="button" class="level-btn" data-level="4">L4</button>
+                <button type="button" class="level-btn" data-level="5">L5</button>
+                <button type="button" class="level-btn" data-level="6">L6</button>
+                <button type="button" class="level-btn" data-level="7">L7</button>
+                <button type="button" class="level-btn" data-level="8">L8</button>
+                <button type="button" class="level-btn" data-level="9">L9</button>
+                <button type="button" class="level-btn" data-level="10">L10</button>
+            </div>
+        </section>
+        
+        <!-- Main Game Area -->
+        <main class="game-board">
+            <!-- Score Row (Will appear above the grid) -->
+            <div class="score-row">
+                <div class="score-left" id="score-bonus"></div>
+                <div class="score-right" id="score-total">TOTAL: 0</div>
+            </div>
+            
+            <!-- Grid Container -->
+            <div id="grid-container"></div>
+            
+            <!-- Game Controls -->
+            <div class="game-controls">
+                <button id="check-solution">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Check
+                </button>
+                <button id="remove-spare">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                    Remove Spares
+                </button>
+                <button id="reset-path">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                        <path d="M3 3v5h5"></path>
+                    </svg>
+                    Reset Path
+                </button>
+            </div>
+            
+            <!-- Game Messages -->
+            <div id="game-messages"></div>
+        </main>
+    </div>
+    
+    <!-- Game Scripts -->
+    <script type="module" src="js/rules.js"></script>
+    <script type="module" src="js/scoremanager.js"></script>
+    <script type="module" src="js/gamecontroller.js"></script>
+    <script type="module" src="js/leaderboard-integration.js"></script>
+</body>
+</html>
