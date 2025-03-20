@@ -75,27 +75,57 @@ class GameController {
         // Make absolutely sure the controller is globally available
         window.gameController = this;
         
-        // Create a robust event listener for level selection
-        document.addEventListener('startLevelRequest', (event) => {
-            console.log('GameController received startLevelRequest:', event.detail);
-            if (event.detail && typeof event.detail.level === 'number') {
-                try {
-                    this.startLevel(event.detail.level);
-                    console.log(`Successfully started level ${event.detail.level}`);
-                } catch (error) {
-                    console.error(`Error starting level ${event.detail.level}:`, error);
-                }
-            }
-        });
+document.addEventListener('startLevelRequest', (event) => {
+    console.log('GameController received startLevelRequest event:', event.detail);
+    if (event.detail && typeof event.detail.level === 'number') {
+        try {
+            // Use setTimeout to ensure this runs after all other scripts have initialized
+            setTimeout(() => {
+                this.startLevel(event.detail.level);
+                console.log(`Successfully started level ${event.detail.level}`);
+            }, 50);
+        } catch (error) {
+            console.error(`Error starting level ${event.detail.level}:`, error);
+        }
+    }
+});
         
         // Call the notification function to signal that initialization is complete
         setTimeout(() => {
             notifyGameControllerReady();
         }, 100);
-        
-        console.log('GameController constructor completed');
-    }
 
+window.startLevel = (level) => {
+        console.log(`Global startLevel(${level}) called`);
+        if (this && typeof this.startLevel === 'function') {
+            try {
+                this.startLevel(level);
+                return true;
+            } catch (error) {
+                console.error(`Error in global startLevel(${level}):`, error);
+                
+                // Dispatch event as fallback
+                const event = new CustomEvent('startLevelRequest', { 
+                    detail: { level: level },
+                    bubbles: true
+                });
+                document.dispatchEvent(event);
+            }
+        } else {
+            console.error('Global startLevel called but this.startLevel not available');
+            
+            // Create a custom event as fallback
+            const event = new CustomEvent('startLevelRequest', { 
+                detail: { level: level },
+                bubbles: true
+            });
+            document.dispatchEvent(event);
+        }
+    };
+    
+    console.log('GameController constructor completed');
+}
+        
     initializeEventListeners() {
         console.log('Initializing game event listeners');
         
