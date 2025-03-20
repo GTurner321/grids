@@ -899,32 +899,6 @@ export { gameController };
 // For convenience, export the getLevelConfig function directly
 export const getLevelConfig = gameController.getLevelConfig;
 
-// Also ensure a direct global startLevel function is available
-// This provides an additional way for other scripts to start levels
-if (!window.startLevel) {
-    window.startLevel = function(level) {
-        console.log(`Global startLevel(${level}) called`);
-        if (window.gameController && typeof window.gameController.startLevel === 'function') {
-            try {
-                window.gameController.startLevel(level);
-                return true;
-            } catch (error) {
-                console.error(`Error in global startLevel(${level}):`, error);
-                return false;
-            }
-        } else {
-            console.error('Global startLevel called but gameController not available');
-            
-            // Create a custom event as fallback
-            const event = new CustomEvent('startLevelRequest', { 
-                detail: { level: level },
-                bubbles: true
-            });
-            document.dispatchEvent(event);
-            return false;
-        }
-    };
-}
 
 // Log when the module is fully loaded
 console.log('GameController module fully loaded and exported');
