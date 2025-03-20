@@ -1,4 +1,4 @@
-// level-selector.js - Enhanced to ensure proper game controller access and game state management
+// level-selector.js - Enhanced with clickable level display (no SELECT button)
 
 document.addEventListener('DOMContentLoaded', function() {
     // Wait for GameController to be initialized
@@ -48,9 +48,10 @@ function replaceButtonsWithRotarySelector() {
     selectorContainer.className = 'level-selector-control';
     
     // Create the selector parts
-    const levelDisplay = document.createElement('div');
+    const levelDisplay = document.createElement('button'); // Changed to button for better semantics
     levelDisplay.className = 'level-display';
     levelDisplay.textContent = 'LEVEL 1';
+    levelDisplay.setAttribute('aria-label', 'Select and start this level');
     
     // Create a container for the arrows and the display
     const arrowsAndDisplayContainer = document.createElement('div');
@@ -68,19 +69,12 @@ function replaceButtonsWithRotarySelector() {
     downArrow.innerHTML = '▼';
     downArrow.setAttribute('aria-label', 'Next level');
     
-    // Create select button
-    const selectButton = document.createElement('button');
-    selectButton.className = 'level-select-button';
-    selectButton.textContent = 'SELECT';
-    selectButton.setAttribute('aria-label', 'Start selected level');
-    
     // Add everything to the container
     arrowsAndDisplayContainer.appendChild(upArrow);
     arrowsAndDisplayContainer.appendChild(levelDisplay);
     arrowsAndDisplayContainer.appendChild(downArrow);
     
     selectorContainer.appendChild(arrowsAndDisplayContainer);
-    selectorContainer.appendChild(selectButton);
     
     // Replace the buttons container with our new selector
     levelButtonsContainer.parentNode.replaceChild(selectorContainer, levelButtonsContainer);
@@ -98,10 +92,10 @@ function replaceButtonsWithRotarySelector() {
     addLevelSelectorStyles();
     
     // Set up the event listeners
-    setupSelectorBehavior(levelDisplay, upArrow, downArrow, selectButton, selectorTitle);
+    setupSelectorBehavior(levelDisplay, upArrow, downArrow, selectorTitle);
 }
 
-function setupSelectorBehavior(levelDisplay, upArrow, downArrow, selectButton, selectorTitle) {
+function setupSelectorBehavior(levelDisplay, upArrow, downArrow, selectorTitle) {
     const maxLevel = 10;
     let currentLevel = 1;
     
@@ -111,14 +105,14 @@ function setupSelectorBehavior(levelDisplay, upArrow, downArrow, selectButton, s
         levelDisplay.setAttribute('data-level', currentLevel);
     };
     
-    // Function to start the selected level - FIXED
+    // Function to start the selected level
     const startSelectedLevel = () => {
         console.log(`Attempting to start level ${currentLevel}`);
         
-        // Add visual feedback to the select button
-        selectButton.classList.add('button-active');
+        // Add visual feedback to the level display
+        levelDisplay.classList.add('button-active');
         setTimeout(() => {
-            selectButton.classList.remove('button-active');
+            levelDisplay.classList.remove('button-active');
         }, 300);
         
         // Hide the "CHOOSE YOUR LEVEL" text after first game start
@@ -173,13 +167,8 @@ function setupSelectorBehavior(levelDisplay, upArrow, downArrow, selectButton, s
         }, 300);
     });
     
-    // Make level selection initiate the game - no select button needed
+    // Make level selection initiate the game
     levelDisplay.addEventListener('click', () => {
-        startSelectedLevel();
-    });
-    
-    // Keep the select button as an additional option
-    selectButton.addEventListener('click', () => {
         startSelectedLevel();
     });
     
@@ -194,7 +183,7 @@ function setupSelectorBehavior(levelDisplay, upArrow, downArrow, selectButton, s
         } else if (e.key === 'ArrowDown') {
             downArrow.click();
         } else if (e.key === 'Enter') {
-            selectButton.click();
+            levelDisplay.click(); // Now clicks the level display directly
         }
     });
     
@@ -263,7 +252,6 @@ function addLevelSelectorStyles() {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 12px;
             margin: 0 auto 16px;
             position: relative;
             transition: transform 0.3s ease, opacity 0.3s ease;
@@ -300,6 +288,8 @@ function addLevelSelectorStyles() {
             transition: all 0.2s ease;
             user-select: none;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: relative;
+            outline: none;
         }
         
         .level-display:hover {
@@ -308,9 +298,31 @@ function addLevelSelectorStyles() {
             transform: translateY(-2px);
         }
         
-        .level-display:active {
+        .level-display:active, .level-display.button-active {
             transform: translateY(0);
             background-color: #dbeafe;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Add a subtle "Select" hint to the level display */
+        .level-display::after {
+            content: "⏎";
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            opacity: 0.7;
+            color: #3b82f6;
+            transition: opacity 0.2s ease;
+        }
+        
+        .level-display:hover::after {
+            opacity: 1;
+        }
+        
+        .game-active .level-display::after {
+            display: none;
         }
         
         .level-arrow {
@@ -340,33 +352,6 @@ function addLevelSelectorStyles() {
             transform: scale(0.95);
         }
         
-        .level-select-button {
-            padding: 10px 30px;
-            background-color: #3b82f6;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-family: 'Trebuchet MS', Arial, sans-serif;
-            letter-spacing: 0.05em;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        }
-        
-        .level-select-button:hover {
-            background-color: #2563eb;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
-        }
-        
-        .level-select-button:active, .level-select-button.button-active {
-            transform: translateY(0);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            background-color: #1d4ed8;
-        }
-        
         /* Compact mode when game is active */
         .level-selector-control.game-active::before {
             content: "";
@@ -392,11 +377,6 @@ function addLevelSelectorStyles() {
             font-size: 14px;
         }
         
-        .game-active .level-select-button {
-            padding: 8px 24px;
-            font-size: 0.9rem;
-        }
-        
         /* Animation for level change */
         @keyframes pulse {
             0% { transform: scale(1); }
@@ -412,7 +392,6 @@ function addLevelSelectorStyles() {
         @media (max-width: 768px) {
             .level-selector-control {
                 max-width: 280px;
-                gap: 8px;
             }
             
             .level-display {
@@ -427,11 +406,6 @@ function addLevelSelectorStyles() {
                 font-size: 14px;
             }
             
-            .level-select-button {
-                padding: 8px 24px;
-                font-size: 0.9rem;
-            }
-            
             .game-active .level-display {
                 font-size: 1.3rem;
                 padding: 5px 12px;
@@ -443,17 +417,11 @@ function addLevelSelectorStyles() {
                 height: 28px;
                 font-size: 12px;
             }
-            
-            .game-active .level-select-button {
-                padding: 6px 18px;
-                font-size: 0.85rem;
-            }
         }
         
         /* Touch device optimizations */
         @media (pointer: coarse) {
             .level-arrow, 
-            .level-select-button,
             .level-display {
                 cursor: pointer;
                 -webkit-tap-highlight-color: transparent;
@@ -465,20 +433,15 @@ function addLevelSelectorStyles() {
                 font-size: 18px;
             }
             
-            .level-select-button {
-                padding: 12px 32px;
-                font-size: 1.1rem;
-            }
-            
             .game-active .level-arrow {
                 width: 36px;
                 height: 36px;
                 font-size: 16px;
             }
             
-            .game-active .level-select-button {
-                padding: 10px 28px;
-                font-size: 1rem;
+            /* Hide the select hint on touch devices */
+            .level-display::after {
+                display: none;
             }
         }
     `;
