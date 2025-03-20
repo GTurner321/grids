@@ -127,35 +127,83 @@
     font-weight: bold !important;
     text-align: center;
 }
+
+/* Level Selector Styles for mobile-responsive.css */
+
+@media (max-width: 768px) {
+  /* Level Selector Title */
+  .level-selector-title {
+    font-size: 1rem;
+    margin-bottom: 8px;
+    text-shadow: 0 0 8px white, 0 0 12px white, 0 0 15px white;
+    font-family: 'Trebuchet MS', Arial, sans-serif;
+    font-weight: bold;
+    text-align: center;
+    color: #333;
+    text-transform: uppercase;
+  }
+  
+  /* Level Buttons Container */
+  .level-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin: 0 auto 16px;
+    width: 90%;
+    max-width: 320px;
+  }
   
   /* Level Buttons */
-  .level-buttons {
-    gap: 5px;
-  }
-  
   .level-btn {
-    min-width: 30px;
-    padding: 0 8px !important;
-    font-size: 0.8rem;
-    font-family: 'Trebuchet MS', Arial, sans-serif !important;
+    min-width: 36px;
+    height: 40px;
+    padding: 0 10px;
+    font-size: 1rem;
+    font-family: 'Trebuchet MS', Arial, sans-serif;
     font-weight: bold;
-    background-color: var(--button-blue);
+    background-color: #3b82f6;
     color: white;
-    border: 2px solid var(--light-blue-border);
+    border: 2px solid #60a5fa;
     border-bottom-width: 3px;
     border-radius: 5px;
-    height: 40px !important;
-    display: flex !important;
-    align-items: center !important; 
-    justify-content: center !important;
-    line-height: normal !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: normal;
+    cursor: pointer;
+    transition: all 0.2s ease;
   }
   
-  .level-btn:active {
+  .level-btn:hover {
+    background-color: #2563eb;
+  }
+  
+  .level-btn:active, .level-btn.active {
     transform: translateY(2px);
     border-bottom-width: 1px;
-    height: 38px;
+    background-color: #1d4ed8;
   }
+  
+  /* For very small screens */
+  @media (max-width: 375px) {
+    .level-buttons {
+      gap: 5px;
+    }
+    
+    .level-btn {
+      min-width: 32px;
+      padding: 0 5px;
+      font-size: 0.9rem;
+    }
+  }
+}
+
+/* Force hide level selector when game is active */
+.game-container.game-active .level-selector-container {
+  display: none;
+}
+  
   
   /* Game Controls Buttons */
   .game-controls {
