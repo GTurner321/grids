@@ -1,9 +1,15 @@
-// Add these lines at the BEGINNING of your gamecontroller.js file, 
-// right after your imports but before the GameController class
+// gamecontroller.js - Complete rewrite with improved module communication
+import { generatePath } from './pathgenerator.js';
+import { generateSequence, sequenceToEntries, getLevelConfig } from './sequencegenerator.js';
+import { renderGrid, updateCell } from './gridrenderer.js';
+import { validatePath as validatePathMath, isPathContinuous } from './pathvalidator.js';
+import { scoreManager } from './scoremanager.js';
+import { addPathArrows } from './patharrows.js';
 
+// Debug and monitoring functionality
 console.log('GameController module loading...');
 
-// Add this global variable to explicitly track if gameController is ready
+// Global tracking variable
 window.gameControllerReady = false;
 
 // Debug function to expose key objects
@@ -17,7 +23,7 @@ function debugControllerAccess() {
     console.log('  window.gameControllerReady:', window.gameControllerReady);
 }
 
-// This will be called right after the GameController instance is created
+// This will be called after the GameController instance is created
 function notifyGameControllerReady() {
     window.gameControllerReady = true;
     console.log('GameController is fully initialized and ready');
@@ -35,10 +41,11 @@ function notifyGameControllerReady() {
     }
 }
 
-// Now your GameController class with the updated constructor:
-
+// The main GameController class
 class GameController {
     constructor() {
+        console.log('GameController constructor executing...');
+        
         // Store a global reference for easy access
         window.gameController = this;
         
@@ -58,15 +65,17 @@ class GameController {
         
         this.messageTimeout = null;
         
+        // Reset game container state
         document.querySelector('.game-container')?.classList.remove('game-active');
 
+        // Initialize event listeners and grid interactions
         this.initializeEventListeners();
         this.initializeGridInteractions();
         
         // Make absolutely sure the controller is globally available
         window.gameController = this;
         
-        // Create a more robust event listener for level selection
+        // Create a robust event listener for level selection
         document.addEventListener('startLevelRequest', (event) => {
             console.log('GameController received startLevelRequest:', event.detail);
             if (event.detail && typeof event.detail.level === 'number') {
@@ -83,12 +92,14 @@ class GameController {
         setTimeout(() => {
             notifyGameControllerReady();
         }, 100);
+        
+        console.log('GameController constructor completed');
     }
 
     initializeEventListeners() {
         console.log('Initializing game event listeners');
         
-        // Level selection
+        // Level selection (for backward compatibility)
         document.querySelectorAll('.level-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const level = parseInt(btn.dataset.level);
@@ -129,8 +140,8 @@ class GameController {
             
             resetButton.addEventListener('click', (e) => {
                 console.log('Reset button clicked');
-                e.preventDefault(); // Prevent any default behavior
-                this.resetPath(); // Call the resetPath method
+                e.preventDefault();
+                this.resetPath();
             });
         } else {
             console.error('Reset path button not found');
@@ -156,6 +167,7 @@ class GameController {
         this.state.removedCells.clear();
         this.state.gameActive = true;
         
+        // Update UI to show game is active
         document.querySelector('.game-container').classList.add('game-active');
         
         // Notify score manager
@@ -206,30 +218,31 @@ class GameController {
                 detail: { level, gridSize },
                 bubbles: true
             }));
+            
+            console.log(`Level ${level} successfully started`);
 
         } catch (error) {
             console.error('Error starting level:', error);
             this.showMessage('Error starting game. Please try again.', 'error');
         }
     }
-}
     
     placeMathSequence() {
-    // Get the current grid size
-    const config = getLevelConfig(this.state.currentLevel);
-    const gridSize = config.gridSize || 10;
-    
-    this.state.path.forEach((coord, index) => {
-        if (index < this.state.sequenceEntries.length) {
-            const cellIndex = coord[1] * gridSize + coord[0];
-            this.state.gridEntries[cellIndex] = {
-                ...this.state.sequenceEntries[index],
-                isPartOfPath: true,
-                pathIndex: index
-            };
-        }
-    });
-}
+        // Get the current grid size
+        const config = getLevelConfig(this.state.currentLevel);
+        const gridSize = config.gridSize || 10;
+        
+        this.state.path.forEach((coord, index) => {
+            if (index < this.state.sequenceEntries.length) {
+                const cellIndex = coord[1] * gridSize + coord[0];
+                this.state.gridEntries[cellIndex] = {
+                    ...this.state.sequenceEntries[index],
+                    isPartOfPath: true,
+                    pathIndex: index
+                };
+            }
+        });
+    }
 
     fillRemainingCells() {
         const remainingEntries = this.state.sequenceEntries.slice(this.state.path.length);
@@ -338,7 +351,10 @@ class GameController {
         }
 
         // Enable check solution button
-        document.getElementById('check-solution').disabled = false;
+        const checkButton = document.getElementById('check-solution');
+        if (checkButton) {
+            checkButton.disabled = false;
+        }
 
         // If end cell is selected, automatically check the solution
         if (this.isEndCell(cell)) {
@@ -347,32 +363,35 @@ class GameController {
     }
 
     isValidMove(newCellIndex) {
-    if (this.state.userPath.length === 0) return true; // Any cell is valid as first cell
-    
-    const lastCellIndex = this.state.userPath[this.state.userPath.length - 1];
-    
-    // Get current grid size
-    const config = getLevelConfig(this.state.currentLevel);
-    const gridSize = config.gridSize || 10;
-    
-    // Convert indices to coordinates
-    const x1 = newCellIndex % gridSize;
-    const y1 = Math.floor(newCellIndex / gridSize);
-    const x2 = lastCellIndex % gridSize;
-    const y2 = Math.floor(lastCellIndex / gridSize);
+        if (this.state.userPath.length === 0) return true; // Any cell is valid as first cell
+        
+        const lastCellIndex = this.state.userPath[this.state.userPath.length - 1];
+        
+        // Get current grid size
+        const config = getLevelConfig(this.state.currentLevel);
+        const gridSize = config.gridSize || 10;
+        
+        // Convert indices to coordinates
+        const x1 = newCellIndex % gridSize;
+        const y1 = Math.floor(newCellIndex / gridSize);
+        const x2 = lastCellIndex % gridSize;
+        const y2 = Math.floor(lastCellIndex / gridSize);
 
-    // Check if cells are adjacent (horizontally or vertically)
-    return (Math.abs(x1 - x2) === 1 && y1 === y2) || 
-           (Math.abs(y1 - y2) === 1 && x1 === x2);
-}
+        // Check if cells are adjacent (horizontally or vertically)
+        return (Math.abs(x1 - x2) === 1 && y1 === y2) || 
+               (Math.abs(y1 - y2) === 1 && x1 === x2);
+    }
     
     initializeGridInteractions() {
         const gridContainer = document.getElementById('grid-container');
-        if (!gridContainer) return;
+        if (!gridContainer) {
+            console.error('Grid container not found');
+            return;
+        }
         
-        // IMPROVED: Direct and more reliable touch and click handlers
+        console.log('Setting up grid interactions');
         
-        // 1. Mouse click handler (simple and direct)
+        // Mouse click handler (simple and direct)
         gridContainer.addEventListener('click', (e) => {
             if (!this.state.gameActive) return;
             
@@ -388,7 +407,7 @@ class GameController {
             }
         });
         
-        // 2. Touch handling (simplified and more reliable)
+        // Touch handling (simplified and more reliable)
         gridContainer.addEventListener('touchstart', (e) => {
             if (!this.state.gameActive) return;
             
@@ -407,7 +426,7 @@ class GameController {
             // Store the cell reference for touchend
             this.touchStartCell = cell;
             
-            // CRITICAL FIX: For start cell, we need immediate visual feedback
+            // For start cell, we need immediate visual feedback
             if (cell && this.isStartCell(cell) && this.state.userPath.length === 0) {
                 cell.classList.add('touch-active');
             }
@@ -425,8 +444,6 @@ class GameController {
                 this.touchStartCell.classList.remove('touch-active');
             }
             
-            // Continue with swipe path creation logic...
-            // (existing touch drag logic remains largely unchanged)
             const touch = e.touches[0];
             const element = document.elementFromPoint(touch.clientX, touch.clientY);
             if (!element) return;
@@ -446,7 +463,6 @@ class GameController {
             } else {
                 // Add new cells to path during swipe
                 const cellIndex = parseInt(cell.dataset.index);
-                const lastPathIndex = this.state.userPath[this.state.userPath.length - 1];
                 
                 // Handle backtracking
                 if (this.state.userPath.length > 1 && 
@@ -492,7 +508,7 @@ class GameController {
             }, 50);
         });
         
-        // 3. Add direct focus on the start cell (very important fix)
+        // Add direct focus on the start cell (very important fix)
         setTimeout(() => {
             const startCells = document.querySelectorAll('.grid-cell.start-cell');
             startCells.forEach(cell => {
@@ -570,38 +586,43 @@ class GameController {
             }
         `;
         document.head.appendChild(style);
+        
+        console.log('Grid interactions set up successfully');
     }
     
     removeAllSpareCells(removeAll = false) {
-    const spareCells = this.state.gridEntries
-        .map((entry, index) => (!entry?.isPartOfPath && !this.state.removedCells.has(index)) ? index : null)
-        .filter(index => index !== null);
+        const spareCells = this.state.gridEntries
+            .map((entry, index) => (!entry?.isPartOfPath && !this.state.removedCells.has(index)) ? index : null)
+            .filter(index => index !== null);
 
-    if (spareCells.length === 0) {
-        this.showMessage('No spare cells to remove!', 'info');
-        return;
+        if (spareCells.length === 0) {
+            this.showMessage('No spare cells to remove!', 'info');
+            return;
+        }
+
+        scoreManager.handleSpareRemoval();
+
+        // Remove either all or 50% of spare cells
+        const numToRemove = removeAll ? spareCells.length : Math.ceil(spareCells.length / 2);
+        const cellsToRemove = spareCells
+            .sort(() => Math.random() - 0.5)
+            .slice(0, numToRemove);
+
+        cellsToRemove.forEach(index => {
+            this.state.removedCells.add(index);
+            updateCell(index, null);
+        });
+
+        // Disable button after use or if level 1 (where all cells are already removed)
+        const removeButton = document.getElementById('remove-spare');
+        if (removeButton) {
+            removeButton.disabled = true;
+        }
+        
+        if (!removeAll) {
+            this.showMessage(`Removed ${numToRemove} spare cells.`, 'info');
+        }
     }
-
-    scoreManager.handleSpareRemoval();
-
-    // Remove either all or 50% of spare cells
-    const numToRemove = removeAll ? spareCells.length : Math.ceil(spareCells.length / 2);
-    const cellsToRemove = spareCells
-        .sort(() => Math.random() - 0.5)
-        .slice(0, numToRemove);
-
-    cellsToRemove.forEach(index => {
-        this.state.removedCells.add(index);
-        updateCell(index, null);
-    });
-
-    // Disable button after use or if level 1 (where all cells are already removed)
-    document.getElementById('remove-spare').disabled = true;
-    
-    if (!removeAll) {
-        this.showMessage(`Removed ${numToRemove} spare cells.`, 'info');
-    }
-}
     
     handlePuzzleSolved() {
         // Display success message
@@ -645,147 +666,235 @@ class GameController {
         }, 1500);
     }
     
-    // Note: This is not the entire gamecontroller.js file, just the modifications needed
-// to ensure grid size is properly handled for all grid operations in 6x6 grid levels.
+    updatePathHighlight() {
+        // Clear existing highlights and arrows
+        document.querySelectorAll('.grid-cell').forEach(cell => {
+            cell.classList.remove('selected', 'start-cell-selected', 'end-cell-selected');
+        });
+        
+        document.querySelectorAll('.path-arrow').forEach(arrow => arrow.remove());
 
-// Modifications for the updatePathHighlight method
-updatePathHighlight() {
-    // Clear existing highlights and arrows
-    document.querySelectorAll('.grid-cell').forEach(cell => {
-        cell.classList.remove('selected', 'start-cell-selected', 'end-cell-selected');
-    });
-    
-    document.querySelectorAll('.path-arrow').forEach(arrow => arrow.remove());
+        // Highlight path cells
+        this.state.userPath.forEach((index, position) => {
+            const cell = document.querySelector(`[data-index="${index}"]`);
+            if (!cell) return;
 
-    // Highlight path cells
-    this.state.userPath.forEach((index, position) => {
-        const cell = document.querySelector(`[data-index="${index}"]`);
-        if (!cell) return;
-
-        if (cell.classList.contains('start-cell')) {
-            cell.classList.add('start-cell-selected');
-        } else if (cell.classList.contains('end-cell')) {
-            cell.classList.add('end-cell-selected');
-        } else {
-            cell.classList.add('selected');
-        }
-    });
-    
-    // Get current grid size for proper arrow placement
-    const config = getLevelConfig(this.state.currentLevel);
-    const gridSize = config.gridSize || 10;
-    
-    // Add path direction arrows with the current grid size
-    addPathArrows(this.state.userPath, 
-                 (index) => document.querySelector(`[data-index="${index}"]`), 
-                 gridSize);
-}
-
-// Modification for the checkSolution method
-checkSolution() {
-    // First, check if the path meets the required length formula (3n+1)
-    if ((this.state.userPath.length - 1) % 3 !== 0) {
-        scoreManager.handleCheck(false);
-        this.showMessage('Path length must be 4, 7, 10, 13, etc. (3n+1) to represent complete calculations.', 'error', 10000);
-        return;
+            if (cell.classList.contains('start-cell')) {
+                cell.classList.add('start-cell-selected');
+            } else if (cell.classList.contains('end-cell')) {
+                cell.classList.add('end-cell-selected');
+            } else {
+                cell.classList.add('selected');
+            }
+        });
+        
+        // Get current grid size for proper arrow placement
+        const config = getLevelConfig(this.state.currentLevel);
+        const gridSize = config.gridSize || 10;
+        
+        // Add path direction arrows with the current grid size
+        addPathArrows(this.state.userPath, 
+                     (index) => document.querySelector(`[data-index="${index}"]`), 
+                     gridSize);
     }
-    
-    // Check if path ends at the red cell
-    const lastCellIndex = this.state.userPath[this.state.userPath.length - 1];
-    const lastCell = document.querySelector(`[data-index="${lastCellIndex}"]`);
-    const endsAtRedCell = this.isEndCell(lastCell);
-    
-    // Get current grid size
-    const config = getLevelConfig(this.state.currentLevel);
-    const gridSize = config.gridSize || 10;
-    
-    // Validate mathematical correctness - pass current level explicitly
-    const validation = this.validatePath();
 
-    if (validation.isValid) {
-        if (endsAtRedCell) {
-            // Path is valid and ends at the red cell - success!
-            scoreManager.handleCheck(true);
-            this.handlePuzzleSolved();
-        } else {
+    checkSolution() {
+        // First, check if the path meets the required length formula (3n+1)
+        if ((this.state.userPath.length - 1) % 3 !== 0) {
             scoreManager.handleCheck(false);
-            this.showMessage('Path is mathematically correct! Continue to the end square.', 'info');
-        }
-    } else {
-        scoreManager.handleCheck(false);
-        
-        // Show error message with specific details
-        if (validation.error) {
-            this.showMessage(validation.error, 'error', 10000);
-        } else {
-            this.showMessage('Mathematical error in the path. Try again.', 'error', 10000);
-        }
-        
-        // Truncate the path to keep only valid calculations if we know where the error occurred
-        if (validation.failedAt !== undefined) {
-            this.state.userPath = this.state.userPath.slice(0, validation.failedAt);
-            this.updatePathHighlight();
-        }
-    }
-
-    this.updateUI();
-}
-
-// Make getLevelConfig available directly on gameController for usage in patharrows.js
-getLevelConfig(level) {
-    // Re-export the function from sequencegenerator.js
-    return getLevelConfig(level);
-}
-
-// Make validatePath method properly pass the current level
-validatePath() {
-    // Pass the current level to isPathContinuous
-    if (!isPathContinuous(this.state.userPath, this.state.currentLevel)) {
-        return {
-            isValid: false,
-            error: 'Path must be continuous - cells must be adjacent!'
-        };
-    }
-
-    // Then validate the mathematical sequence
-    return validatePathMath(this.state.userPath, this.state.gridEntries);
-}
-
-resetPath() {
-    console.log('resetPath method called');
-    
-    try {
-        if (!this.state.gameActive) {
-            console.log('Game not active, reset path aborted');
+            this.showMessage('Path length must be 4, 7, 10, 13, etc. (3n+1) to represent complete calculations.', 'error', 10000);
             return;
         }
         
-        // Reset user path array
-        this.state.userPath = [];
-        console.log('User path reset to empty array');
+        // Check if path ends at the red cell
+        const lastCellIndex = this.state.userPath[this.state.userPath.length - 1];
+        const lastCell = document.querySelector(`[data-index="${lastCellIndex}"]`);
+        const endsAtRedCell = this.isEndCell(lastCell);
         
-        // Clear path highlighting from all cells
-        document.querySelectorAll('.grid-cell').forEach(cell => {
-            cell.classList.remove('selected', 'start-cell-selected', 'end-cell-selected', 'just-selected');
-        });
-        console.log('Cell highlighting cleared');
+        // Get current grid size
+        const config = getLevelConfig(this.state.currentLevel);
+        const gridSize = config.gridSize || 10;
         
-        // Remove any path arrows
-        const arrows = document.querySelectorAll('.path-arrow');
-        arrows.forEach(arrow => arrow.remove());
-        console.log(`${arrows.length} path arrows removed`);
+        // Validate mathematical correctness
+        const validation = this.validatePath();
+
+        if (validation.isValid) {
+            if (endsAtRedCell) {
+                // Path is valid and ends at the red cell - success!
+                scoreManager.handleCheck(true);
+                this.handlePuzzleSolved();
+            } else {
+                scoreManager.handleCheck(false);
+                this.showMessage('Path is mathematically correct! Continue to the end square.', 'info');
+            }
+        } else {
+            scoreManager.handleCheck(false);
+            
+            // Show error message with specific details
+            if (validation.error) {
+                this.showMessage(validation.error, 'error', 10000);
+            } else {
+                this.showMessage('Mathematical error in the path. Try again.', 'error', 10000);
+            }
+            
+            // Truncate the path to keep only valid calculations if we know where the error occurred
+            if (validation.failedAt !== undefined) {
+                this.state.userPath = this.state.userPath.slice(0, validation.failedAt);
+                this.updatePathHighlight();
+            }
+        }
+
+        this.updateUI();
+    }
+
+    // Make getLevelConfig available directly on gameController
+    getLevelConfig(level) {
+        // Re-export the function from sequencegenerator.js
+        return getLevelConfig(level);
+    }
+
+    // Make validatePath method properly pass the current level
+    validatePath() {
+        // Pass the current level to isPathContinuous
+        if (!isPathContinuous(this.state.userPath, this.state.currentLevel)) {
+            return {
+                isValid: false,
+                error: 'Path must be continuous - cells must be adjacent!'
+            };
+        }
+
+        // Then validate the mathematical sequence
+        return validatePathMath(this.state.userPath, this.state.gridEntries);
+    }
+
+    resetPath() {
+        console.log('resetPath method called');
         
-        // Call updatePathHighlight to ensure consistent state
-        this.updatePathHighlight();
+        try {
+            if (!this.state.gameActive) {
+                console.log('Game not active, reset path aborted');
+                return;
+            }
+            
+            // Reset user path array
+            this.state.userPath = [];
+            console.log('User path reset to empty array');
+            
+            // Clear path highlighting from all cells
+            document.querySelectorAll('.grid-cell').forEach(cell => {
+                cell.classList.remove('selected', 'start-cell-selected', 'end-cell-selected', 'just-selected');
+            });
+            console.log('Cell highlighting cleared');
+            
+            // Remove any path arrows
+            const arrows = document.querySelectorAll('.path-arrow');
+            arrows.forEach(arrow => arrow.remove());
+            console.log(`${arrows.length} path arrows removed`);
+            
+            // Call updatePathHighlight to ensure consistent state
+            this.updatePathHighlight();
+            
+            // Update UI elements (button states, etc.)
+            this.updateUI(); // This will disable the button again since the path is now empty
+            
+            // Show feedback message
+            this.showMessage('Path reset. Start again from the green square.');
+            console.log('Path reset complete');
+        } catch (error) {
+            console.error('Error during path reset:', error);
+            this.showMessage('Error resetting path. Please try again.', 'error');
+        }
+    }
+    
+    updateUI() {
+        // Update control button states based on game state
+        const checkButton = document.getElementById('check-solution');
+        if (checkButton) {
+            checkButton.disabled = this.state.userPath.length === 0;
+        }
         
-        // Update UI elements (button states, etc.)
-        this.updateUI(); // This will disable the button again since the path is now empty
+        const resetButton = document.getElementById('reset-path');
+        if (resetButton) {
+            resetButton.disabled = this.state.userPath.length === 0;
+        }
         
-        // Show feedback message
-        this.showMessage('Path reset. Start again from the green square.');
-        console.log('Path reset complete');
-    } catch (error) {
-        console.error('Error during path reset:', error);
-        this.showMessage('Error resetting path. Please try again.', 'error');
+        // You can add more UI updates here
+    }
+    
+    showMessage(message, type = 'info', duration = 3000) {
+        const messagesElement = document.getElementById('game-messages');
+        if (!messagesElement) return;
+        
+        // Clear any existing message timeout
+        if (this.messageTimeout) {
+            clearTimeout(this.messageTimeout);
+        }
+        
+        // Create message element
+        const messageElement = document.createElement('div');
+        messageElement.className = `game-message ${type}`;
+        messageElement.textContent = message;
+        
+        // Clear previous messages
+        messagesElement.innerHTML = '';
+        messagesElement.appendChild(messageElement);
+        
+        // Animate message appearance
+        messageElement.style.opacity = '0';
+        setTimeout(() => {
+            messageElement.style.opacity = '1';
+        }, 10);
+        
+        // Set timeout to clear the message
+        this.messageTimeout = setTimeout(() => {
+            messageElement.style.opacity = '0';
+            setTimeout(() => {
+                if (messagesElement.contains(messageElement)) {
+                    messagesElement.removeChild(messageElement);
+                }
+            }, 300);
+        }, duration);
     }
 }
+
+// Create and export a single instance
+const gameController = new GameController();
+
+// Make it available globally
+window.gameController = gameController;
+
+// Expose it for ES6 module imports 
+export { gameController };
+
+// For convenience, export the getLevelConfig function directly
+export const getLevelConfig = gameController.getLevelConfig;
+
+// Also ensure a direct global startLevel function is available
+// This provides an additional way for other scripts to start levels
+if (!window.startLevel) {
+    window.startLevel = function(level) {
+        console.log(`Global startLevel(${level}) called`);
+        if (window.gameController && typeof window.gameController.startLevel === 'function') {
+            try {
+                window.gameController.startLevel(level);
+                return true;
+            } catch (error) {
+                console.error(`Error in global startLevel(${level}):`, error);
+                return false;
+            }
+        } else {
+            console.error('Global startLevel called but gameController not available');
+            
+            // Create a custom event as fallback
+            const event = new CustomEvent('startLevelRequest', { 
+                detail: { level: level },
+                bubbles: true
+            });
+            document.dispatchEvent(event);
+            return false;
+        }
+    };
+}
+
+// Log when the module is fully loaded
+console.log('GameController module fully loaded and exported');
