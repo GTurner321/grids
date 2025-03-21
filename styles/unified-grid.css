@@ -346,8 +346,7 @@
   }
   
   /* Mobile path arrows */
-  @media (max-width: 768px) {
-  .path-arrow {
+    .path-arrow {
     width: 28px !important;
     height: 28px !important;
   }
@@ -382,7 +381,7 @@
   .path-arrow.down::after {
     width: 12px !important;
   }
-}
+
 
 /* Smaller arrows on very small screens, but maintain thickness */
 @media (max-width: 375px) {
