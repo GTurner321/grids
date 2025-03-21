@@ -1,0 +1,113 @@
+/* unified-grid.css - Consistent grid sizes and level tracker */
+
+/* ===== Unified Grid Sizes for 6x6 and 10x10 ===== */
+
+/* Make score row consistent width for all grid sizes */
+.score-row {
+    display: grid;
+    grid-template-columns: 60% 40%;
+    width: calc(10 * 40px + 9 * 1px + 2px); /* Always 10 columns width */
+    height: 70px;
+    background-color: #e6f2ff;
+    border-radius: 0;
+    margin: 0 auto 0 auto;
+    border: 1px solid #94a3b8;
+    border-bottom: none;
+    box-sizing: border-box;
+    position: relative; /* For level indicator positioning */
+}
+
+/* Make score text appear above level indicators */
+.score-left, .score-right {
+    position: relative;
+    z-index: 2;
+}
+
+/* Ensure 6x6 grid uses the same total width as 10x10 grid */
+#grid-container.grid-size-6 {
+    grid-template-columns: repeat(6, 67px);
+    width: calc(10 * 40px + 9 * 1px + 2px); /* Match score row width */
+}
+
+/* Larger text for 6x6 grid */
+#grid-container.grid-size-6 .grid-cell {
+    font-size: 1.1rem;
+    width: 67px;
+    height: 67px;
+}
+
+#grid-container.grid-size-6 .grid-cell.operator {
+    font-size: 1.3rem;
+}
+
+/* ===== Level Tracker Integration ===== */
+
+/* Level indicators container */
+.level-indicators-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* Individual level indicators */
+.level-indicator {
+    height: 100%;
+    background-color: transparent;
+    border-right: 1px solid rgba(148, 163, 184, 0.3);
+    transition: background-color 0.3s ease;
+}
+
+.level-indicator:last-child {
+    border-right: none;
+}
+
+/* Completed level style */
+.level-indicator.completed {
+    background-color: rgba(34, 197, 94, 0.3); /* Semi-transparent green */
+}
+
+/* Celebration animation */
+.level-indicator.celebrate {
+    animation: pulse-green 2s infinite alternate;
+}
+
+@keyframes pulse-green {
+    0% { background-color: rgba(34, 197, 94, 0.3); }
+    100% { background-color: rgba(21, 128, 61, 0.4); }
+}
+
+/* ===== Mobile Responsive Adjustments ===== */
+@media (max-width: 768px) {
+    /* Score row always uses full width for consistency */
+    .score-row {
+        width: var(--container-width) !important;
+        height: 60px;
+    }
+    
+    /* Both 6x6 and 10x10 grids should use full width */
+    #grid-container {
+        width: var(--container-width) !important;
+    }
+    
+    /* 6x6 grid cells should be proportionally larger */
+    #grid-container.grid-size-6 {
+        width: var(--container-width) !important;
+        grid-template-columns: repeat(6, calc(var(--container-width) / 6 - 1px)) !important;
+    }
+    
+    #grid-container.grid-size-6 .grid-cell {
+        width: calc(var(--container-width) / 6 - 1px);
+        height: calc(var(--container-width) / 6 - 1px);
+        font-size: 1.5rem !important;
+    }
+    
+    #grid-container.grid-size-6 .grid-cell.operator {
+        font-size: 1.8rem !important;
+    }
+}
