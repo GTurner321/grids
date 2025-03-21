@@ -1,5 +1,5 @@
 // patharrows.js - Module for handling path direction arrows
-// FIXED VERSION - Added gridSize support for different grid dimensions
+// FIXED VERSION - Added gridSize support and enhanced arrow sizing
 
 /**
  * Creates an SVG arrow element pointing in the specified direction
@@ -15,8 +15,10 @@ function createArrowSVG(direction) {
     
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('viewBox', '0 0 24 24');
-    svg.setAttribute('width', '16');
-    svg.setAttribute('height', '16');
+    
+    // Set larger size for the SVG arrows
+    svg.setAttribute('width', window.innerWidth <= 768 ? '28' : '32');
+    svg.setAttribute('height', window.innerWidth <= 768 ? '28' : '32');
     
     const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     
@@ -38,13 +40,16 @@ function createArrowSVG(direction) {
             return null;
     }
     
-    // Set extra styles to debug
+    // Set enhanced styles for better visibility
     path.setAttribute('stroke', 'currentColor');
-    path.setAttribute('stroke-width', '2');
-    path.setAttribute('fill', 'currentColor');
+    path.setAttribute('stroke-width', '3');  // Thicker stroke
+    path.setAttribute('fill', '#3b82f6');    // Blue fill
     
     svg.appendChild(path);
     arrowContainer.appendChild(svg);
+    
+    // Set container style
+    arrowContainer.style.zIndex = '30';  // Ensure arrows appear above cells
     
     return arrowContainer;
 }
@@ -123,9 +128,43 @@ function addPathArrows(path, getCellElement, gridSize = 10) {
             }
         }
     });
+    
+    // After adding arrows, enhance them
+    enhanceArrows();
+}
+
+/**
+ * Enhances existing arrows to improve visibility
+ * Call this after arrows are added to the DOM
+ */
+function enhanceArrows() {
+    // Make arrows larger and more visible
+    document.querySelectorAll('.path-arrow').forEach(arrow => {
+        // Set size based on screen size
+        const size = window.innerWidth <= 768 ? '28px' : '32px';
+        
+        arrow.style.width = size;
+        arrow.style.height = size;
+        arrow.style.zIndex = '30';
+        
+        // Enhance the SVG inside
+        const svg = arrow.querySelector('svg');
+        if (svg) {
+            svg.style.width = '100%';
+            svg.style.height = '100%';
+            
+            // Make path more visible
+            const path = svg.querySelector('path');
+            if (path) {
+                path.setAttribute('stroke-width', '3');
+                path.style.fill = '#3b82f6'; // Blue fill
+            }
+        }
+    });
 }
 
 export {
     addPathArrows,
-    getDirection
+    getDirection,
+    enhanceArrows  // Export the new helper function
 };
