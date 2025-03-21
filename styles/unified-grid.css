@@ -297,6 +297,7 @@
 }
 
 /* ===== RESPONSIVE DESIGN ===== */
+/* ===== RESPONSIVE DESIGN ===== */
 @media (max-width: 768px) {
   :root {
     /* Mobile sizing variables */
@@ -346,7 +347,7 @@
   }
   
   /* Mobile path arrows */
-    .path-arrow {
+  .path-arrow {
     width: 28px !important;
     height: 28px !important;
   }
@@ -381,31 +382,6 @@
   .path-arrow.down::after {
     width: 12px !important;
   }
-
-
-/* Smaller arrows on very small screens, but maintain thickness */
-@media (max-width: 375px) {
-  .path-arrow {
-    width: 24px !important;
-    height: 24px !important;
-  }
-  
-  .path-arrow::before,
-  .path-arrow::after {
-    width: 10px !important;
-    height: 5px !important;
-  }
-  
-  .path-arrow.right::before,
-  .path-arrow.left::before {
-    top: 6px !important;
-  }
-  
-  .path-arrow.right::after,
-  .path-arrow.left::after {
-    bottom: 6px !important;
-  }
-}}
   
   /* Enhance touch target sizes */
   .grid-cell {
@@ -442,6 +418,22 @@
   .path-arrow {
     width: 24px !important;
     height: 24px !important;
+  }
+  
+  .path-arrow::before,
+  .path-arrow::after {
+    width: 10px !important;
+    height: 5px !important;
+  }
+  
+  .path-arrow.right::before,
+  .path-arrow.left::before {
+    top: 6px !important;
+  }
+  
+  .path-arrow.right::after,
+  .path-arrow.left::after {
+    bottom: 6px !important;
   }
 }
 
