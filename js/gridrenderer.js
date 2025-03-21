@@ -1,4 +1,5 @@
-// gridrenderer.js
+// Complete fix for gridrenderer.js
+
 import PuzzleSymbols from './puzzlesymbols.js';
 import { addPathArrows } from './patharrows.js';
 
@@ -75,8 +76,6 @@ function createCell(entry, index) {
     return cell;
 }
 
-// Modifications for gridrenderer.js to work with unified-grid.css
-
 export function renderGrid(gridEntries, options = {}) {
     const { startCoord, endCoord, gridSize = 10 } = options;
     const gridContainer = document.getElementById('grid-container');
@@ -91,11 +90,29 @@ export function renderGrid(gridEntries, options = {}) {
     // Add the appropriate grid size class
     gridContainer.classList.add(`grid-size-${gridSize}`);
     
-    // Calculate cell size based on grid size
-    const cellSize = gridSize === 6 ? '67.5px' : '40px';
+    // Determine appropriate cell size
+    let cellSize;
+    if (gridSize === 6) {
+        // For 6x6 grid, use larger cells
+        cellSize = window.innerWidth <= 768 ? 'calc((100vw - 20px) / 6 - 1px)' : '67.5px';
+    } else {
+        // For 10x10 grid, use standard cells
+        cellSize = window.innerWidth <= 768 ? 'calc((100vw - 20px) / 10 - 1px)' : '40px';
+    }
     
-    // Set grid template columns - IMPORTANT for layout
+    // Set grid template columns
+    gridContainer.style.display = 'grid';
+    gridContainer.style.gap = '1px';
+    gridContainer.style.backgroundColor = '#94a3b8';
+    gridContainer.style.padding = '1px';
+    gridContainer.style.margin = '0 auto';
     gridContainer.style.gridTemplateColumns = `repeat(${gridSize}, ${options.cellSize || cellSize})`;
+    
+    if (window.innerWidth > 768) {
+        gridContainer.style.width = gridSize === 6 ? 'calc(6 * 67.5px + 7px)' : 'calc(10 * 40px + 11px)';
+    } else {
+        gridContainer.style.width = 'calc(100vw - 20px)';
+    }
     
     // Create and append cells
     gridEntries.forEach((entry, index) => {
@@ -104,9 +121,18 @@ export function renderGrid(gridEntries, options = {}) {
         
         const cell = createCell(entry, index);
         
-        // Set cell dimensions explicitly
+        // Set explicit cell dimensions
         cell.style.width = options.cellSize || cellSize;
         cell.style.height = options.cellSize || cellSize;
+        cell.style.backgroundColor = 'white';
+        cell.style.display = 'flex';
+        cell.style.alignItems = 'center';
+        cell.style.justifyContent = 'center';
+        cell.style.cursor = 'pointer';
+        cell.style.border = '1px solid #e5e7eb';
+        cell.style.position = 'relative';
+        cell.style.overflow = 'hidden';
+        cell.style.boxSizing = 'border-box';
         
         // Mark start and end cells
         if (startCoord && index === startCoord[1] * gridSize + startCoord[0]) {
@@ -118,6 +144,12 @@ export function renderGrid(gridEntries, options = {}) {
         
         gridContainer.appendChild(cell);
     });
+
+    // Set score row width to match grid width
+    const scoreRow = document.querySelector('.score-row');
+    if (scoreRow) {
+        scoreRow.style.width = gridContainer.style.width;
+    }
 
     // Trigger MathJax to process any new content
     if (window.MathJax) {
@@ -175,11 +207,13 @@ export function highlightPath(path) {
         
         // Restore original colors
         if (cell.classList.contains('start-cell')) {
-            cell.style.backgroundColor = '';  // Let CSS handle it
+            cell.style.backgroundColor = '#22c55e';  // Green for start cell
+            cell.style.color = 'white';
         } else if (cell.classList.contains('end-cell')) {
-            cell.style.backgroundColor = '';  // Let CSS handle it
+            cell.style.backgroundColor = '#ef4444';  // Red for end cell
+            cell.style.color = 'white';
         } else {
-            cell.style.backgroundColor = '';  // Clear inline style
+            cell.style.backgroundColor = 'white';  // Standard cell color
         }
     });
 
@@ -190,10 +224,13 @@ export function highlightPath(path) {
 
         if (cell.classList.contains('start-cell')) {
             cell.classList.add('start-cell-selected');
+            cell.style.backgroundColor = '#15803d'; // Dark green for selected start cell
         } else if (cell.classList.contains('end-cell')) {
             cell.classList.add('end-cell-selected');
+            cell.style.backgroundColor = '#b91c1c'; // Dark red for selected end cell
         } else {
             cell.classList.add('selected');
+            cell.style.backgroundColor = '#bfdbfe'; // Light blue for selected cells
         }
     });
     
