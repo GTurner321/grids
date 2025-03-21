@@ -204,18 +204,96 @@
 }
 
 /* ===== PATH ARROWS ===== */
-/* Make arrows between cells 4 sizes larger */
 .path-arrow {
   width: 32px !important; /* 4 sizes larger */
   height: 32px !important; /* 4 sizes larger */
   z-index: 30 !important; /* Ensure arrows appear on top */
-  position: absolute;
+  position: absolute !important;
 }
 
+/* Position arrows so they're fully visible within the cell */
+.path-arrow.right {
+  right: 4px !important; /* Pulled in from edge to show full point */
+}
+
+.path-arrow.left {
+  left: 4px !important; /* Pulled in from edge to show full point */
+}
+
+.path-arrow.up {
+  top: 4px !important; /* Pulled in from edge to show full point */
+}
+
+.path-arrow.down {
+  bottom: 4px !important; /* Pulled in from edge to show full point */
+}
+
+/* Hide the default SVG and create custom stemless arrows */
 .path-arrow svg {
-  width: 100% !important;
-  height: 100% !important;
-  stroke-width: 3px !important;
+  display: none !important; /* Hide the default SVG with stem */
+}
+
+/* Create custom stemless arrow pointers using pseudo-elements */
+.path-arrow::before,
+.path-arrow::after {
+  content: '' !important;
+  position: absolute !important;
+  background-color: #3b82f6 !important; /* Blue color */
+  width: 14px !important; /* Longer lines for desktop */
+  height: 4px !important; /* Thicker lines for better visibility */
+  border-radius: 2px !important; /* Slightly rounded edges */
+}
+
+/* Right arrow */
+.path-arrow.right::before {
+  top: 8px !important;
+  right: 0 !important;
+  transform: rotate(45deg) !important;
+}
+
+.path-arrow.right::after {
+  bottom: 8px !important;
+  right: 0 !important;
+  transform: rotate(-45deg) !important;
+}
+
+/* Left arrow */
+.path-arrow.left::before {
+  top: 8px !important;
+  left: 0 !important;
+  transform: rotate(-45deg) !important;
+}
+
+.path-arrow.left::after {
+  bottom: 8px !important;
+  left: 0 !important;
+  transform: rotate(45deg) !important;
+}
+
+/* Up arrow */
+.path-arrow.up::before {
+  top: 0 !important;
+  left: 8px !important;
+  transform: rotate(-45deg) !important;
+}
+
+.path-arrow.up::after {
+  top: 0 !important;
+  right: 8px !important;
+  transform: rotate(45deg) !important;
+}
+
+/* Down arrow */
+.path-arrow.down::before {
+  bottom: 0 !important;
+  left: 8px !important;
+  transform: rotate(45deg) !important;
+}
+
+.path-arrow.down::after {
+  bottom: 0 !important;
+  right: 8px !important;
+  transform: rotate(-45deg) !important;
 }
 
 /* ===== RESPONSIVE DESIGN ===== */
@@ -268,10 +346,67 @@
   }
   
   /* Mobile path arrows */
+  @media (max-width: 768px) {
   .path-arrow {
-    width: 28px !important; /* Slightly smaller on mobile but still larger than original */
+    width: 28px !important;
     height: 28px !important;
   }
+  
+  /* Thicker lines for mobile */
+  .path-arrow::before,
+  .path-arrow::after {
+    width: 12px !important;
+    height: 5px !important; /* Even thicker on mobile for better visibility */
+  }
+  
+  /* Adjust positioning for mobile */
+  .path-arrow.right::before {
+    top: 7px !important;
+  }
+  
+  .path-arrow.right::after {
+    bottom: 7px !important;
+  }
+  
+  .path-arrow.left::before {
+    top: 7px !important;
+  }
+  
+  .path-arrow.left::after {
+    bottom: 7px !important;
+  }
+  
+  .path-arrow.up::before,
+  .path-arrow.up::after,
+  .path-arrow.down::before,
+  .path-arrow.down::after {
+    width: 12px !important;
+  }
+}
+
+/* Smaller arrows on very small screens, but maintain thickness */
+@media (max-width: 375px) {
+  .path-arrow {
+    width: 24px !important;
+    height: 24px !important;
+  }
+  
+  .path-arrow::before,
+  .path-arrow::after {
+    width: 10px !important;
+    height: 5px !important;
+  }
+  
+  .path-arrow.right::before,
+  .path-arrow.left::before {
+    top: 6px !important;
+  }
+  
+  .path-arrow.right::after,
+  .path-arrow.left::after {
+    bottom: 6px !important;
+  }
+}}
   
   /* Enhance touch target sizes */
   .grid-cell {
