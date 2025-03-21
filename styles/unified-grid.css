@@ -1,4 +1,4 @@
-/* ===== UNIFIED GRID CSS ===== */
+/* ===== UNIFIED GRID CSS - FIXED FOR JS COMPATIBILITY ===== */
 /* Handles both 6x6 and 10x10 grids with consistent sizing */
 
 :root {
@@ -62,12 +62,12 @@
 
 /* 10x10 Grid Configuration */
 #grid-container.grid-size-10 {
-  grid-template-columns: repeat(10, var(--grid-base-cell-size));
+  /* DO NOT set grid-template-columns here as it's set by JS */
 }
 
 /* 6x6 Grid Configuration - larger cells but same total width */
 #grid-container.grid-size-6 {
-  grid-template-columns: repeat(6, var(--grid-6x6-cell-size));
+  /* DO NOT set grid-template-columns here as it's set by JS */
 }
 
 /* ===== GRID CELLS ===== */
@@ -85,12 +85,11 @@
   overflow: hidden;
   box-sizing: border-box;
   touch-action: none;
+  /* Width and height will be set inline by JS */
 }
 
-/* 10x10 grid cells */
+/* 10x10 grid cells - enhanced text sizes only */
 #grid-container.grid-size-10 .grid-cell {
-  width: var(--grid-base-cell-size);
-  height: var(--grid-base-cell-size);
   font-size: 0.75rem;
 }
 
@@ -98,10 +97,8 @@
   font-size: 1rem;
 }
 
-/* 6x6 grid cells - larger with bigger text */
+/* 6x6 grid cells - enhanced text sizes only */
 #grid-container.grid-size-6 .grid-cell {
-  width: var(--grid-6x6-cell-size);
-  height: var(--grid-6x6-cell-size);
   font-size: 1.1rem; /* Larger text for 6x6 grid */
 }
 
@@ -174,29 +171,21 @@
     /* Mobile sizing variables */
     --mobile-padding: 10px;
     --mobile-container-width: calc(100vw - 2 * var(--mobile-padding));
-    --mobile-grid-cell-size: calc((var(--mobile-container-width) - 9 * var(--grid-cell-gap) - 2 * var(--grid-border-width)) / 10);
-    --mobile-grid-6x6-cell-size: calc((var(--mobile-container-width) - 5 * var(--grid-cell-gap) - 2 * var(--grid-border-width)) / 6);
+    /* DO NOT set mobile size formulas as JS does this */
   }
   
-  /* Mobile score row */
+  /* Mobile score row - apply basic styling but let JS set the width */
   .score-row {
-    width: var(--mobile-container-width);
     height: 60px;
   }
   
-  /* Mobile grid container */
+  /* Mobile grid container - don't set specific width properties */
   #grid-container {
-    width: var(--mobile-container-width);
+    /* Width will be set by JS */
   }
   
-  /* Mobile 10x10 grid */
-  #grid-container.grid-size-10 {
-    grid-template-columns: repeat(10, var(--mobile-grid-cell-size));
-  }
-  
+  /* Mobile grid cells - improved fonts but don't set dimensions */
   #grid-container.grid-size-10 .grid-cell {
-    width: var(--mobile-grid-cell-size);
-    height: var(--mobile-grid-cell-size);
     font-size: 0.9rem;
   }
   
@@ -204,14 +193,7 @@
     font-size: 1.1rem;
   }
   
-  /* Mobile 6x6 grid */
-  #grid-container.grid-size-6 {
-    grid-template-columns: repeat(6, var(--mobile-grid-6x6-cell-size));
-  }
-  
   #grid-container.grid-size-6 .grid-cell {
-    width: var(--mobile-grid-6x6-cell-size);
-    height: var(--mobile-grid-6x6-cell-size);
     font-size: 1.3rem;
   }
   
