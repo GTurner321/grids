@@ -70,6 +70,7 @@ function createCell(entry, index) {
         } else if (entry.type === 'operator') {
             cell.innerHTML = formatForMathJax(entry.value);
             cell.classList.add('operator');
+            cell.style.color = '#ef4444'; // Ensure operators are red
         }
     }
 
@@ -230,12 +231,26 @@ export function highlightPath(path) {
             cell.style.backgroundColor = '#b91c1c'; // Dark red for selected end cell
         } else {
             cell.classList.add('selected');
-            cell.style.backgroundColor = '#bfdbfe'; // Light blue for selected cells
+            cell.style.backgroundColor = '#d1d5db'; // Gray for selected cells
         }
     });
     
     // Add path direction arrows using the separate module
     addPathArrows(path, (index) => document.querySelector(`[data-index="${index}"]`));
+    
+    // Make arrows larger
+    document.querySelectorAll('.path-arrow').forEach(arrow => {
+        arrow.style.width = '32px';
+        arrow.style.height = '32px';
+        arrow.style.zIndex = '30';
+        
+        const svg = arrow.querySelector('svg');
+        if (svg) {
+            svg.style.width = '100%';
+            svg.style.height = '100%';
+            svg.style.strokeWidth = '3px';
+        }
+    });
 }
 
 export function getGridCell(index) {
