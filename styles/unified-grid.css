@@ -1,113 +1,291 @@
-/* unified-grid.css - Consistent grid sizes and level tracker */
+/* ===== UNIFIED GRID CSS ===== */
+/* Handles both 6x6 and 10x10 grids with consistent sizing */
 
-/* ===== Unified Grid Sizes for 6x6 and 10x10 ===== */
+:root {
+  /* Grid sizes and calculations */
+  --grid-base-cell-size: 40px;
+  --grid-cell-gap: 1px;
+  --grid-border-width: 1px;
+  --grid-total-width: calc(10 * var(--grid-base-cell-size) + 9 * var(--grid-cell-gap) + 2 * var(--grid-border-width));
+  
+  /* 6x6 grid cell size - scaled to match total width of 10x10 grid */
+  --grid-6x6-cell-size: calc((var(--grid-total-width) - 5 * var(--grid-cell-gap) - 2 * var(--grid-border-width)) / 6);
+}
 
-/* Make score row consistent width for all grid sizes */
+/* ===== SCORE ROW - CONSISTENT SIZE ===== */
+/* Always maintains the same width regardless of grid size */
 .score-row {
-    display: grid;
-    grid-template-columns: 60% 40%;
-    width: calc(10 * 40px + 9 * 1px + 2px); /* Always 10 columns width */
-    height: 70px;
-    background-color: #e6f2ff;
-    border-radius: 0;
-    margin: 0 auto 0 auto;
-    border: 1px solid #94a3b8;
-    border-bottom: none;
-    box-sizing: border-box;
-    position: relative; /* For level indicator positioning */
+  display: flex;
+  width: var(--grid-total-width);
+  height: 70px;
+  background-color: #e6f2ff;
+  border: 1px solid #94a3b8;
+  border-bottom: none;
+  margin: 0 auto;
+  border-radius: 0;
+  box-sizing: border-box;
+  position: relative; /* For level indicators */
 }
 
-/* Make score text appear above level indicators */
-.score-left, .score-right {
-    position: relative;
-    z-index: 2;
+/* Split score row into left (60%) and right (40%) */
+.score-left {
+  width: 60%;
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+  position: relative;
+  z-index: 2; /* Above level indicators */
 }
 
-/* Ensure 6x6 grid uses the same total width as 10x10 grid */
+.score-right {
+  width: 40%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 10px;
+  position: relative;
+  z-index: 2; /* Above level indicators */
+}
+
+/* ===== GRID CONTAINER ===== */
+#grid-container {
+  display: grid;
+  gap: var(--grid-cell-gap);
+  background-color: #94a3b8;
+  padding: var(--grid-border-width);
+  border: var(--grid-border-width) solid #94a3b8;
+  margin: 0 auto;
+  width: var(--grid-total-width);
+  box-sizing: content-box;
+  border-radius: 0;
+}
+
+/* 10x10 Grid Configuration */
+#grid-container.grid-size-10 {
+  grid-template-columns: repeat(10, var(--grid-base-cell-size));
+}
+
+/* 6x6 Grid Configuration - larger cells but same total width */
 #grid-container.grid-size-6 {
-    grid-template-columns: repeat(6, 67px);
-    width: calc(10 * 40px + 9 * 1px + 2px); /* Match score row width */
+  grid-template-columns: repeat(6, var(--grid-6x6-cell-size));
 }
 
-/* Larger text for 6x6 grid */
+/* ===== GRID CELLS ===== */
+/* Base grid cell styles */
+.grid-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  user-select: none;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  touch-action: none;
+}
+
+/* 10x10 grid cells */
+#grid-container.grid-size-10 .grid-cell {
+  width: var(--grid-base-cell-size);
+  height: var(--grid-base-cell-size);
+  font-size: 0.75rem;
+}
+
+#grid-container.grid-size-10 .grid-cell.operator {
+  font-size: 1rem;
+}
+
+/* 6x6 grid cells - larger with bigger text */
 #grid-container.grid-size-6 .grid-cell {
-    font-size: 1.1rem;
-    width: 67px;
-    height: 67px;
+  width: var(--grid-6x6-cell-size);
+  height: var(--grid-6x6-cell-size);
+  font-size: 1.1rem; /* Larger text for 6x6 grid */
 }
 
 #grid-container.grid-size-6 .grid-cell.operator {
+  font-size: 1.3rem; /* Larger operator text for 6x6 grid */
+}
+
+/* Cell state variations */
+.grid-cell.selected,
+.grid-cell.selected:hover {
+  background-color: #bfdbfe;
+  z-index: 10;
+}
+
+.grid-cell.start-cell {
+  background-color: #22c55e;
+  color: white;
+}
+
+.grid-cell.end-cell {
+  background-color: #ef4444;
+  color: white;
+}
+
+.grid-cell.start-cell-selected {
+  background-color: #15803d;
+  color: white;
+}
+
+.grid-cell.end-cell-selected {
+  background-color: #b91c1c;
+  color: white;
+}
+
+.grid-cell.user-solved-path {
+  background-color: #f0e68c;
+  z-index: 15;
+}
+
+.grid-cell.removed {
+  background-color: #f3f4f6;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== SYMBOL CONTAINER ===== */
+.symbol-container {
+  width: 80%;
+  height: 80%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+}
+
+.symbol-container svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  margin: auto;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+  :root {
+    /* Mobile sizing variables */
+    --mobile-padding: 10px;
+    --mobile-container-width: calc(100vw - 2 * var(--mobile-padding));
+    --mobile-grid-cell-size: calc((var(--mobile-container-width) - 9 * var(--grid-cell-gap) - 2 * var(--grid-border-width)) / 10);
+    --mobile-grid-6x6-cell-size: calc((var(--mobile-container-width) - 5 * var(--grid-cell-gap) - 2 * var(--grid-border-width)) / 6);
+  }
+  
+  /* Mobile score row */
+  .score-row {
+    width: var(--mobile-container-width);
+    height: 60px;
+  }
+  
+  /* Mobile grid container */
+  #grid-container {
+    width: var(--mobile-container-width);
+  }
+  
+  /* Mobile 10x10 grid */
+  #grid-container.grid-size-10 {
+    grid-template-columns: repeat(10, var(--mobile-grid-cell-size));
+  }
+  
+  #grid-container.grid-size-10 .grid-cell {
+    width: var(--mobile-grid-cell-size);
+    height: var(--mobile-grid-cell-size);
+    font-size: 0.9rem;
+  }
+  
+  #grid-container.grid-size-10 .grid-cell.operator {
+    font-size: 1.1rem;
+  }
+  
+  /* Mobile 6x6 grid */
+  #grid-container.grid-size-6 {
+    grid-template-columns: repeat(6, var(--mobile-grid-6x6-cell-size));
+  }
+  
+  #grid-container.grid-size-6 .grid-cell {
+    width: var(--mobile-grid-6x6-cell-size);
+    height: var(--mobile-grid-6x6-cell-size);
     font-size: 1.3rem;
+  }
+  
+  #grid-container.grid-size-6 .grid-cell.operator {
+    font-size: 1.5rem;
+  }
+  
+  /* Enhance touch target sizes */
+  .grid-cell {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Make symbols larger on mobile */
+  .symbol-container {
+    width: 85%;
+    height: 85%;
+  }
 }
 
-/* ===== Level Tracker Integration ===== */
+/* Specific adjustments for very small screens */
+@media (max-width: 375px) {
+  #grid-container.grid-size-6 .grid-cell {
+    font-size: 1.2rem;
+  }
+  
+  #grid-container.grid-size-6 .grid-cell.operator {
+    font-size: 1.4rem;
+  }
+  
+  #grid-container.grid-size-10 .grid-cell {
+    font-size: 0.8rem;
+  }
+  
+  #grid-container.grid-size-10 .grid-cell.operator {
+    font-size: 1rem;
+  }
+}
 
-/* Level indicators container */
+/* ===== LEVEL TRACKER INTEGRATION ===== */
+/* Level indicators in score bar */
 .level-indicators-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: grid;
-    grid-template-columns: repeat(10, 1fr);
-    z-index: 0;
-    pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  z-index: 0;
+  pointer-events: none;
 }
 
-/* Individual level indicators */
 .level-indicator {
-    height: 100%;
-    background-color: transparent;
-    border-right: 1px solid rgba(148, 163, 184, 0.3);
-    transition: background-color 0.3s ease;
+  height: 100%;
+  background-color: transparent;
+  border-right: 1px solid rgba(148, 163, 184, 0.3);
+  transition: background-color 0.3s ease;
 }
 
 .level-indicator:last-child {
-    border-right: none;
+  border-right: none;
 }
 
-/* Completed level style */
 .level-indicator.completed {
-    background-color: rgba(34, 197, 94, 0.3); /* Semi-transparent green */
+  background-color: rgba(34, 197, 94, 0.3);
 }
 
-/* Celebration animation */
-.level-indicator.celebrate {
-    animation: pulse-green 2s infinite alternate;
-}
-
+/* Animation for level completion */
 @keyframes pulse-green {
-    0% { background-color: rgba(34, 197, 94, 0.3); }
-    100% { background-color: rgba(21, 128, 61, 0.4); }
+  0% { background-color: rgba(34, 197, 94, 0.3); }
+  100% { background-color: rgba(21, 128, 61, 0.4); }
 }
 
-/* ===== Mobile Responsive Adjustments ===== */
-@media (max-width: 768px) {
-    /* Score row always uses full width for consistency */
-    .score-row {
-        width: var(--container-width) !important;
-        height: 60px;
-    }
-    
-    /* Both 6x6 and 10x10 grids should use full width */
-    #grid-container {
-        width: var(--container-width) !important;
-    }
-    
-    /* 6x6 grid cells should be proportionally larger */
-    #grid-container.grid-size-6 {
-        width: var(--container-width) !important;
-        grid-template-columns: repeat(6, calc(var(--container-width) / 6 - 1px)) !important;
-    }
-    
-    #grid-container.grid-size-6 .grid-cell {
-        width: calc(var(--container-width) / 6 - 1px);
-        height: calc(var(--container-width) / 6 - 1px);
-        font-size: 1.5rem !important;
-    }
-    
-    #grid-container.grid-size-6 .grid-cell.operator {
-        font-size: 1.8rem !important;
-    }
+.level-indicator.celebrate {
+  animation: pulse-green 2s infinite alternate;
 }
