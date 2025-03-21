@@ -17,9 +17,16 @@ function createRulesBox() {
     // Set the content of the rules box
     rulesBox.innerHTML = `
         <div class="rules-content">
-            <div class="rules-image-container" style="width: 85%; margin: 0 auto; display: block;">
+            <div class="rules-image-container" style="width: 95%; margin: 0 auto; display: block;">
                 <img src="images/gridgameexample1.png" alt="Grid Game Example" style="width: 100%; height: auto;">
             </div>
+            <style>
+                @media (min-width: 768px) {
+                    .rules-image-container {
+                        width: 60% !important;
+                    }
+                }
+            </style>
             <h2 class="rules-box-title">RULES</h2>
             <div class="rules-section">
                 <p>FIND THE PATH OF SUMS - GREEN TO RED</p>
@@ -31,8 +38,19 @@ function createRulesBox() {
             <div class="rules-section">
                 <p>THE RIGHT MATHS DOESN'T ALWAYS MEAN YOU'RE ON THE RIGHT PATH!</p>
             </div>
+            <div class="close-button-container" style="text-align: center; margin-top: 20px;">
+                <button id="rules-close-button" style="background-color: #1e88e5; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer;">CLOSE</button>
+            </div>
         </div>
     `;
+    
+    // Add event listener for the close button
+    setTimeout(() => {
+        const closeButton = document.getElementById('rules-close-button');
+        if (closeButton) {
+            closeButton.addEventListener('click', hideRulesBox);
+        }
+    }, 0);
     
     // Find the right place to insert it
     const gameHeader = document.querySelector('.game-header');
