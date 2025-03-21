@@ -127,14 +127,23 @@ function validateSequence(sequence) {
  * @returns {Object} Validation result with details
  */
 export function validatePath(path, gridEntries) {
-    // Get the current level from the game controller
+    // Get the current level from game controller
     let currentLevel = null;
     if (window.gameController && window.gameController.state) {
         currentLevel = window.gameController.state.currentLevel;
     }
     
-    // First check if the path is continuous - pass the current level to use correct grid size
-    if (!isPathContinuous(path, currentLevel)) {
+    // Get the grid size for the current level
+    let gridSize = 10; // Default
+    if (currentLevel) {
+        const config = getLevelConfig(currentLevel);
+        if (config && config.gridSize) {
+            gridSize = config.gridSize;
+        }
+    }
+    
+    // First check if the path is continuous using the correct grid size
+    if (!isPathContinuous(path, gridSize)) {
         return {
             isValid: false,
             error: 'Path must be continuous - cells must be adjacent!'
@@ -173,7 +182,7 @@ export function validatePath(path, gridEntries) {
             return {
                 isValid: false,
                 error: errorMsg,
-                failedAt: i + 1, // Keep the first square of current sequence since it's the valid result of the previous calculation
+                failedAt: i + 1,
                 cellIndices: cellIndices
             };
         }
@@ -198,14 +207,6 @@ export function areAdjacent(index1, index2, gridSize = 10) {
     const x2 = index2 % gridSize;
     const y2 = Math.floor(index2 / gridSize);
 
-    // Debug console for troubleshooting adjacency checks
-    /*
-    console.log(`Checking adjacency with gridSize=${gridSize}:`);
-    console.log(`Cell ${index1} at (${x1},${y1})`);
-    console.log(`Cell ${index2} at (${x2},${y2})`);
-    console.log(`Adjacent: ${(Math.abs(x1 - x2) === 1 && y1 === y2) || (Math.abs(y1 - y2) === 1 && x1 === x2)}`);
-    */
-
     return (Math.abs(x1 - x2) === 1 && y1 === y2) || 
            (Math.abs(y1 - y2) === 1 && x1 === x2);
 }
@@ -216,19 +217,9 @@ export function areAdjacent(index1, index2, gridSize = 10) {
  * @param {number|null} currentLevel - Current game level (used to get grid size)
  * @returns {boolean} Whether path is continuous
  */
-export function isPathContinuous(path, currentLevel) {
+export function isPathContinuous(path, gridSize = 10) {
     // Empty or single-cell paths are considered continuous
     if (path.length <= 1) return true;
-    
-    // Determine grid size based on level
-    let gridSize = 10; // Default to 10x10 grid
-    
-    if (currentLevel) {
-        const config = getLevelConfig(currentLevel);
-        if (config && config.gridSize) {
-            gridSize = config.gridSize;
-        }
-    }
     
     // Check if each consecutive pair of cells is adjacent
     for (let i = 1; i < path.length; i++) {
