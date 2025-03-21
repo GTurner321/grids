@@ -25,6 +25,8 @@
   border-radius: 0;
   box-sizing: border-box;
   position: relative; /* For level indicators */
+  font-family: 'Trebuchet MS', Arial, sans-serif !important;
+  font-weight: bold !important;
 }
 
 /* Split score row into left (60%) and right (40%) */
@@ -35,6 +37,8 @@
   padding-left: 10px;
   position: relative;
   z-index: 2; /* Above level indicators */
+  color: #ef4444 !important; /* Red for score text */
+  text-align: left !important;
 }
 
 .score-right {
@@ -45,6 +49,12 @@
   padding-right: 10px;
   position: relative;
   z-index: 2; /* Above level indicators */
+  text-align: right !important;
+}
+
+/* Target MathJax elements to ensure they're colored correctly */
+.grid-cell.operator .MathJax {
+  color: #ef4444 !important; /* Ensure MathJax operators are red */
 }
 
 /* ===== GRID CONTAINER ===== */
@@ -88,49 +98,53 @@
   /* Width and height will be set inline by JS */
 }
 
-/* 10x10 grid cells - enhanced text sizes only */
-#grid-container.grid-size-10 .grid-cell {
-  font-size: 0.75rem;
+/* 10x10 grid cells - enhanced text sizes */
+#grid-container.grid-size-10 .grid-cell:not(.symbol-container) {
+  font-size: 1.2rem !important; /* 2 sizes larger */
 }
 
 #grid-container.grid-size-10 .grid-cell.operator {
-  font-size: 1rem;
+  font-size: 1.4rem !important; /* 2 sizes larger for operators */
+  color: #ef4444 !important; /* Red color for operators */
+  font-weight: bold !important;
 }
 
-/* 6x6 grid cells - enhanced text sizes only */
-#grid-container.grid-size-6 .grid-cell {
-  font-size: 1.1rem; /* Larger text for 6x6 grid */
+/* 6x6 grid cells - enhanced text sizes */
+#grid-container.grid-size-6 .grid-cell:not(.symbol-container) {
+  font-size: 1.5rem !important; /* 2 sizes larger */
 }
 
 #grid-container.grid-size-6 .grid-cell.operator {
-  font-size: 1.3rem; /* Larger operator text for 6x6 grid */
+  font-size: 1.7rem !important; /* 2 sizes larger for operators */
+  color: #ef4444 !important; /* Red color for operators */
+  font-weight: bold !important;
 }
 
 /* Cell state variations */
 .grid-cell.selected,
 .grid-cell.selected:hover {
-  background-color: #bfdbfe;
+  background-color: #d1d5db !important; /* Gray for selected cells */
   z-index: 10;
 }
 
 .grid-cell.start-cell {
-  background-color: #22c55e;
-  color: white;
+  background-color: #22c55e !important; /* Green for start cell */
+  color: white !important;
 }
 
 .grid-cell.end-cell {
-  background-color: #ef4444;
-  color: white;
+  background-color: #ef4444 !important; /* Red for end cell */
+  color: white !important;
 }
 
 .grid-cell.start-cell-selected {
-  background-color: #15803d;
-  color: white;
+  background-color: #15803d !important; /* Darker green for selected start cell */
+  color: white !important;
 }
 
 .grid-cell.end-cell-selected {
-  background-color: #b91c1c;
-  color: white;
+  background-color: #b91c1c !important; /* Darker red for selected end cell */
+  color: white !important;
 }
 
 .grid-cell.user-solved-path {
@@ -165,6 +179,21 @@
   margin: auto;
 }
 
+/* ===== PATH ARROWS ===== */
+/* Make arrows between cells 4 sizes larger */
+.path-arrow {
+  width: 32px !important; /* 4 sizes larger */
+  height: 32px !important; /* 4 sizes larger */
+  z-index: 30 !important; /* Ensure arrows appear on top */
+  position: absolute;
+}
+
+.path-arrow svg {
+  width: 100% !important;
+  height: 100% !important;
+  stroke-width: 3px !important;
+}
+
 /* ===== RESPONSIVE DESIGN ===== */
 @media (max-width: 768px) {
   :root {
@@ -185,20 +214,26 @@
   }
   
   /* Mobile grid cells - improved fonts but don't set dimensions */
-  #grid-container.grid-size-10 .grid-cell {
-    font-size: 0.9rem;
+  #grid-container.grid-size-10 .grid-cell:not(.symbol-container) {
+    font-size: 1.1rem !important;
   }
   
   #grid-container.grid-size-10 .grid-cell.operator {
-    font-size: 1.1rem;
+    font-size: 1.3rem !important;
   }
   
-  #grid-container.grid-size-6 .grid-cell {
-    font-size: 1.3rem;
+  #grid-container.grid-size-6 .grid-cell:not(.symbol-container) {
+    font-size: 1.4rem !important;
   }
   
   #grid-container.grid-size-6 .grid-cell.operator {
-    font-size: 1.5rem;
+    font-size: 1.6rem !important;
+  }
+  
+  /* Mobile path arrows */
+  .path-arrow {
+    width: 28px !important; /* Slightly smaller on mobile but still larger than original */
+    height: 28px !important;
   }
   
   /* Enhance touch target sizes */
@@ -217,19 +252,25 @@
 /* Specific adjustments for very small screens */
 @media (max-width: 375px) {
   #grid-container.grid-size-6 .grid-cell {
-    font-size: 1.2rem;
+    font-size: 1.3rem !important;
   }
   
   #grid-container.grid-size-6 .grid-cell.operator {
-    font-size: 1.4rem;
+    font-size: 1.5rem !important;
   }
   
   #grid-container.grid-size-10 .grid-cell {
-    font-size: 0.8rem;
+    font-size: 1.0rem !important;
   }
   
   #grid-container.grid-size-10 .grid-cell.operator {
-    font-size: 1rem;
+    font-size: 1.2rem !important;
+  }
+  
+  /* Smaller arrows on very small screens */
+  .path-arrow {
+    width: 24px !important;
+    height: 24px !important;
   }
 }
 
