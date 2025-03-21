@@ -24,9 +24,9 @@ startLevel(level) {
     this.currentLevel = level;
     // Updated level point values
     const levelPoints = {
-        1: 500,
-        2: 1000,
-        3: 1500,
+        1: 250,
+        2: 500,
+        3: 750,
         4: 2000,
         5: 2500,
         6: 3000,
