@@ -75,6 +75,8 @@ function createCell(entry, index) {
     return cell;
 }
 
+// Modifications for gridrenderer.js to work with unified-grid.css
+
 export function renderGrid(gridEntries, options = {}) {
     const { startCoord, endCoord, gridSize = 10 } = options;
     const gridContainer = document.getElementById('grid-container');
@@ -89,18 +91,11 @@ export function renderGrid(gridEntries, options = {}) {
     // Add the appropriate grid size class
     gridContainer.classList.add(`grid-size-${gridSize}`);
     
-    // Update grid template columns based on grid size
-    gridContainer.style.gridTemplateColumns = `repeat(${gridSize}, ${options.cellSize || '40px'})`;
+    // Calculate cell size based on grid size
+    const cellSize = gridSize === 6 ? '67.5px' : '40px';
     
-    // Adjust score row width to match grid width
-    const scoreRow = document.querySelector('.score-row');
-    if (scoreRow) {
-        if (gridSize === 6) {
-            scoreRow.style.width = `calc(6 * 40px + 6px)`;
-        } else {
-            scoreRow.style.width = `calc(10 * 40px + 10px)`;
-        }
-    }
+    // Set grid template columns - IMPORTANT for layout
+    gridContainer.style.gridTemplateColumns = `repeat(${gridSize}, ${options.cellSize || cellSize})`;
     
     // Create and append cells
     gridEntries.forEach((entry, index) => {
@@ -108,6 +103,10 @@ export function renderGrid(gridEntries, options = {}) {
         if (index >= gridSize * gridSize) return;
         
         const cell = createCell(entry, index);
+        
+        // Set cell dimensions explicitly
+        cell.style.width = options.cellSize || cellSize;
+        cell.style.height = options.cellSize || cellSize;
         
         // Mark start and end cells
         if (startCoord && index === startCoord[1] * gridSize + startCoord[0]) {
