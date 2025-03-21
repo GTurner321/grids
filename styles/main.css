@@ -1,656 +1,597 @@
-/* main.css */
+/* ===========================================================================
+   COMBINED STYLES (Merged from main.css and mobile-responsive.css)
+   Organized by feature with desktop and mobile styles grouped together
+   =========================================================================== */
+
+/* ==========================================================================
+   1. CSS VARIABLES & ROOT SETTINGS
+   ========================================================================== */
 
 :root {
-    --primary-color: #3b82f6;
-    --secondary-color: #60a5fa;
-    --background-color: #f0f2f5;
-    --grid-cell-size: 48px;
-    --app-height: 100%;
+  /* Color variables */
+  --primary-color: #3b82f6;      /* Blue */
+  --secondary-color: #60a5fa;    /* Light blue */
+  --success-color: #22c55e;      /* Green */
+  --dark-green: #15803d;         /* Dark green */
+  --danger-color: #ef4444;       /* Red */
+  --dark-red: #b91c1c;           /* Dark red */
+  --light-gray: #f3f4f6;         /* Light gray */
+  --medium-gray: #94a3b8;        /* Medium gray */
+  --dark-gray: #4a5568;          /* Dark gray */
+  --very-dark-gray: #1e293b;     /* Very dark gray */
+  --text-blue: #1e40af;          /* Dark blue for text */
+  --yellow: #f0e68c;             /* Soft yellow for solved path */
+  --form-bg-color: #e6f2ff;      /* Light blue background */
+  
+  /* Sizing variables */
+  --app-height: 100%;
+  --screen-padding: 15px;
+  
+  /* All grid-related variables have been moved to unified-grid.css */
 }
+
+/* ==========================================================================
+   2. BASE STYLES
+   ========================================================================== */
 
 body {
-    margin: 0;
-    padding: 15px;
-    font-family: system-ui, -apple-system, sans-serif;
-    background-color: #f1f9f1;
-    background-image: url("data:image/svg+xml,%3Csvg width='32' height='64' viewBox='0 0 32 64' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 28h20V16h-4v8H4V4h28v28h-4V8H8v12h4v-8h12v20H0v-4zm12 8h20v4H16v24H0v-4h12V36zm16 12h-4v12h8v4H20V44h12v12h-4v-8zM0 36h8v20H0v-4h4V40H0v-4z' fill='%23c6e2c8' fill-opacity='0.51' fill-rule='evenodd'/%3E%3C/svg%3E");
+  margin: 0;
+  padding: var(--screen-padding);
+  font-family: system-ui, -apple-system, sans-serif;
+  background-color: #f1f9f1;
+  background-image: url("data:image/svg+xml,%3Csvg width='32' height='64' viewBox='0 0 32 64' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 28h20V16h-4v8H4V4h28v28h-4V8H8v12h4v-8h12v20H0v-4zm12 8h20v4H16v24H0v-4h12V36zm16 12h-4v12h8v4H20V44h12v12h-4v-8zM0 36h8v20H0v-4h4V40H0v-4z' fill='%23c6e2c8' fill-opacity='0.51' fill-rule='evenodd'/%3E%3C/svg%3E");
+  min-height: 100vh;
+  height: var(--app-height);
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
+/* Mobile specific body background */
+@media (max-width: 768px) {
+  body {
+    padding: 0;
+    background-color: #b0d8b6;
+    background-image: url("data:image/svg+xml,%3Csvg width='32' height='64' viewBox='0 0 32 64' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 28h20V16h-4v8H4V4h28v28h-4V8H8v12h4v-8h12v20H0v-4zm12 8h20v4H16v24H0v-4h12V36zm16 12h-4v12h8v4H20V44h12v12h-4v-8zM0 36h8v20H0v-4h4V40H0v-4z' fill='%238fc096' fill-opacity='0.73' fill-rule='evenodd'/%3E%3C/svg%3E");
+  }
+}
+
+/* ==========================================================================
+   3. GAME CONTAINER
+   ========================================================================== */
+
 .game-container {
-    max-width: 100%; /* Increased from 640px */
-    width: 100%;
-    margin: 0 auto;
-    padding: 10px;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  max-width: 100%;
+  width: 100%;
+  margin: 0 auto;
+  padding: 10px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 /* Constrain specific elements to 640px */
 .game-header,
 .level-selector-container,
 .level-buttons,
-.score-row,
-#grid-container,
 .game-controls,
 .bottom-buttons {
-    width: 100%;
-    max-width: 640px;
-    margin-left: auto;
-    margin-right: auto;
+  width: 100%;
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
 }
+
+/* Mobile specific adjustments */
+@media (max-width: 768px) {
+  .game-container {
+    padding: 0;
+    margin: 0 auto;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+/* Hide/show elements based on game active state */
+.score-row,
+.game-controls,
+#game-messages {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  height: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+.game-board {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.game-container.game-active .score-row,
+.game-container.game-active .game-controls,
+.game-container.game-active #game-messages {
+  opacity: 1;
+  visibility: visible;
+  height: auto;
+  margin: initial; /* Restore original margins */
+  overflow: visible;
+}
+
+/* Specific margin restoration */
+.game-container.game-active .score-row {
+  margin-bottom: 1px !important;
+}
+
+.game-container.game-active .game-controls {
+  margin-top: 8px !important;
+}
+
+.game-container.game-active #game-messages {
+  margin: 5px 0 !important;
+}
+
+/* ==========================================================================
+   4. GAME HEADER & TITLE
+   ========================================================================== */
 
 .game-header h1 {
-    font-family: 'Black Ops One', cursive;
-    font-size: 3rem;
-    letter-spacing: 0.02em;
-    margin: 0 0 0.2rem 0;
-    color: #1e293b;
-    text-transform: uppercase;
-    font-weight: normal;
-    text-align: center; /* Ensure centered */
+  font-family: 'Black Ops One', cursive;
+  font-size: 3rem;
+  letter-spacing: 0.02em;
+  margin: 0 0 0.2rem 0;
+  color: var(--very-dark-gray);
+  text-transform: uppercase;
+  font-weight: normal;
+  text-align: center;
+  text-shadow: 0 0 10px white, 0 0 15px white, 0 0 20px white;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .game-header h1 {
+    font-size: 2.5rem;
+    margin: 10px 0 0.3rem 0;
     text-shadow: 0 0 10px white, 0 0 15px white, 0 0 20px white;
+    text-align: center;
+    font-weight: normal;
+  }
 }
 
+/* Even smaller screens */
 @media (max-width: 480px) {
-    .game-header h1 {
-        font-size: 2rem;
-    }
+  .game-header h1 {
+    font-size: 2rem;
+  }
 }
 
-/* Rules Box Styles */
-.rules-box {
-    background-color: #e6f2ff;
-    border: 2px solid #60a5fa;
-    border-radius: 6px;
-    padding: 10px 15px;
-    margin: 10px auto 15px;
-    text-align: center;
-    font-family: 'Trebuchet MS', Arial, sans-serif;
-    font-weight: bold;
-    color: #1e293b;
-    transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
-    box-sizing: border-box;
-    z-index: 50;
-    position: relative;
-    width: 50%;
-}
+/* ==========================================================================
+   5. RULES BOX
+   ========================================================================== */
 
-/* Rules Box Styles */
 .rules-box {
-    background-color: #e6f2ff;
-    border: 2px solid #60a5fa;
-    border-radius: 6px;
-    padding: 10px 15px;
-    margin: 10px auto 15px;
-    text-align: center;
-    font-family: 'Trebuchet MS', Arial, sans-serif;
-    font-weight: bold;
-    color: #1e293b;
-    transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
-    box-sizing: border-box;
-    z-index: 50;
-    position: relative;
-    width: 60%; /* Wider rules box for large screens */
-    max-width: 900px;
+  background-color: var(--form-bg-color);
+  border: 2px solid var(--secondary-color);
+  border-radius: 6px;
+  padding: 10px 15px;
+  margin: 10px auto 15px;
+  text-align: center;
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  font-weight: bold;
+  color: var(--very-dark-gray);
+  transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+  box-sizing: border-box;
+  z-index: 50;
+  position: relative;
+  width: 60%;
+  max-width: 900px;
 }
 
 .rules-box .rules-content {
-    width: 100%;
-    background-color: transparent;
-    background-image: none;
-    padding: 0;
-    border: none;
+  width: 100%;
+  background-color: transparent;
+  background-image: none;
+  padding: 0;
+  border: none;
 }
 
 .rules-box p {
-    margin: 8px 0;
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    line-height: 1.4;
+  margin: 8px 0;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  line-height: 1.4;
 }
 
 .rules-box-title, 
 .rules-box-subtitle {
-    font-size: 1.1rem;
-    font-weight: bold;
-    margin: 5px 0;
-    text-align: center;
-    color: #1e40af;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin: 5px 0;
+  text-align: center;
+  color: var(--text-blue);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .rules-box-subtitle {
-    font-size: 1rem;
-    margin-top: 10px;
+  font-size: 1rem;
+  margin-top: 10px;
 }
 
 /* Game active state handling for rules box */
 .game-container.game-active .rules-box {
-    display: none;
-    opacity: 0;
-    visibility: hidden;
+  display: none;
+  opacity: 0;
+  visibility: hidden;
 }
 
-/* Game active state handling for rules box */
-.game-container.game-active .rules-box {
-    display: none;
-    opacity: 0;
-    visibility: hidden;
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .rules-box {
+    width: 90% !important;
+    max-width: none !important;
+    margin: 8px auto 12px !important;
+    padding: 10px 15px;
+    border: 2px solid var(--secondary-color) !important;
+    background-color: var(--form-bg-color);
+    border-radius: 6px;
+    box-sizing: border-box;
+  }
+
+  .rules-box p {
+    font-size: 1rem !important;
+    margin: 8px 0;
+    text-transform: uppercase;
+  }
+
+  .rules-box-title, 
+  .rules-box-subtitle {
+    text-align: center;
+    color: var(--text-blue);
+  }
+}
+
+/* ==========================================================================
+   6. LEVEL SELECTOR
+   ========================================================================== */
+
+.level-selector-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 16px;
 }
 
 .level-selector-title {
-    font-family: 'Courier New', monospace;
-    font-size: 1rem;
-    color: #4a5568;
-    text-align: center;
-    margin-bottom: 5px;
-    letter-spacing: 0.05em;
-    font-weight: bold;
-}
-
-/* Score Row */
-.score-row {
-    display: grid;
-    grid-template-columns: 60% 40%; /* 60/40 split as requested */
-    width: calc(10 * 40px + 9 * 1px + 2px); /* 10 columns × 40px + 9 gaps × 1px + 2px border */
-    height: 70px;
-    background-color: #e6f2ff; /* Pale blue background */
-    border-radius: 0; /* Remove rounded corners */
-    margin: 0 auto 0 auto; /* Removed bottom margin to connect with grid */
-    border: 1px solid #94a3b8; /* Darker gray border */
-    border-bottom: none; /* Remove bottom border as it will connect with grid */
-    box-sizing: border-box;
-}
-
-.score-right {
-    text-align: right;
-    padding-right: 10px;
-    font-family: 'Courier New', monospace;
-    font-size: 0.85rem;
-    font-weight: bold;
-    color: #1e40af; /* Dark blue */
-    display: flex;
-    align-items: center;
-    justify-content: flex-end; /* Keep text right-aligned */
-}
-
-.score-left {
-    text-align: left;
-    padding-left: 10px;
-    font-family: 'Courier New', monospace;
-    font-size: 0.85rem;
-    color: #1e40af; /* Changed to dark blue to match total */
-    display: flex;
-    align-items: center;
-    font-weight: bold;
-}
-
-/* Media query adjustments */
-@media (max-width: 480px) {
-    .score-row {
-        width: 100%;
-        max-width: 401px;
-        margin: 0 auto;
-        border-radius: 0; /* Explicitly remove all rounded corners */
-    }
-    
-    .score-left, .score-right {
-        font-size: 0.75rem; /* Slightly smaller font on mobile */
-    }
-    
-        #grid-container {
-        width: 100%;
-        max-width: 401px;
-        margin: 0 auto;
-        border-radius: 0; /* Explicitly remove all rounded corners */
-    }
-}
-
-.level-selector-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 16px;
+  font-family: 'Courier New', monospace;
+  font-size: 1rem;
+  color: var(--dark-gray);
+  text-align: center;
+  margin-bottom: 5px;
+  letter-spacing: 0.05em;
+  font-weight: bold;
+  transition: opacity 0.5s ease-out;
 }
 
 .level-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 5px;
-    margin: 5px 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 5px;
+  margin: 5px 0;
 }
 
 .level-btn {
-    padding: 8px 10px;
-    font-size: 0.85rem;
-    background-color: #3b82f6;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-weight: bold;
-    min-width: 40px;
+  padding: 8px 10px;
+  font-size: 0.85rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: bold;
+  min-width: 40px;
 }
 
 .level-btn:hover {
-    background-color: #2563eb; /* Darker blue on hover */
+  background-color: #2563eb; /* Darker blue on hover */
 }
 
 .level-btn.active {
-    background-color: #1d4ed8; /* Even darker blue when active */
-    transform: translateY(1px);
+  background-color: #1d4ed8; /* Even darker blue when active */
+  transform: translateY(1px);
 }
 
-/* Update grid container */
-#grid-container {
-    display: grid;
-    gap: 1px;
-    background-color: #94a3b8;
-    padding: 1px;
-    border-radius: 0;
-    margin: 0 auto;
-    width: fit-content;
-}
-
-/* Dynamically sized grid - will be set by JS */
-#grid-container.grid-size-6 {
-    grid-template-columns: repeat(6, 40px);
-}
-
-#grid-container.grid-size-10 {
-    grid-template-columns: repeat(10, 40px);
-}
-
-#grid-container:empty {
-    display: none;
-}
-
-.grid-cell {
-    width: 40px; /* Fixed width */
-    height: 40px; /* Fixed height to match width */
-    background-color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.75rem;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    user-select: none;
-    -webkit-user-select: none;
-    border: 1px solid #e5e7eb; /* Keep the original cell borders */
-    overflow: hidden;
-    position: relative;
-    touch-action: none; /* Disable browser handling of touch actions */
-    -webkit-tap-highlight-color: transparent; /* Remove tap highlight on iOS */
-    box-sizing: border-box; /* Include border in size calculation */
-}
-
-.grid-cell.selected,
-.grid-cell.selected:hover {
-    background-color: #bfdbfe; /* Lighter blue */
-    border: 1px solid #e5e7eb;
-    color: inherit;
-    transition: background-color 0.15s ease;
-    z-index: 10;
-}
-
-.grid-cell.start-cell {
-    background-color: #22c55e;
-    color: white;
-}
-
-.grid-cell.end-cell {
-    background-color: #ef4444;
-    color: white;
-}
-
-.grid-cell.start-cell-selected {
-    background-color: #15803d; /* Dark green */
-    color: white;
-    border: 1px solid #e5e7eb;
-}
-
-.grid-cell.end-cell-selected {
-    background-color: #b91c1c; /* Dark red */
-    color: white;
-    border: 1px solid #e5e7eb;
-}
-
-.grid-cell.number {
-    font-weight: bold;
-}
-
-.grid-cell.operator {
-    color: #dc2626;
-    font-weight: bold;
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .level-selector-title {
     font-size: 1rem;
-}
-
-/* Ensure operator is vertically centered */
-.grid-cell.operator .MathJax {
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-}
-
-.grid-cell.removed {
-    background-color: #f3f4f6;
-    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
-}
-
-.grid-cell.user-solved-path {
-    background-color: #f0e68c; /* Replace #fef08a with this softer yellow */
-    border: 1px solid #e5e7eb;
-    z-index: 15;
-}
-
-/* Visual feedback for invalid moves */
-.grid-cell.invalid-move {
-    animation: shake 0.3s ease-in-out;
-}
-
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-3px); }
-    75% { transform: translateX(3px); }
-}
-
-/* Visual feedback for cell selection */
-.grid-cell.just-selected {
-    animation: pulse 0.2s ease-in-out;
-}
-
-@keyframes pulse {
-    0% { background-color: #bfdbfe; }
-    50% { background-color: #93c5fd; }
-    100% { background-color: #bfdbfe; }
-}
-
-/* Drag target style for hover indication */
-.grid-cell.drag-target {
-    background-color: rgba(59, 130, 246, 0.2);
-    transition: background-color 0.1s ease;
-}
-
-/* Touch device specific adjustments */
-.touch-device .grid-cell.selected,
-.touch-device .grid-cell.start-cell-selected,
-.touch-device .grid-cell.end-cell-selected {
-    width: 40px;
-    height: 40px;
-    transform: none;
-    box-shadow: none;
-}
-
-/* iOS specific optimizations */
-.ios-device .grid-cell {
-    width: 40px;
-    height: 40px;
-}
-
-.symbol-container {
-    width: 80%; /* Adjusted from 85% to ensure better centering */
-    height: 80%; /* Adjusted from 85% to ensure better centering */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0; /* Removed padding to allow proper flex centering */
-    margin: auto; /* Center the container itself */
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-}
-
-.symbol-container svg {
-    width: 100%;
-    height: 100%;
-    display: block;
-    margin: auto; /* Center the SVG */
-}
-
-/* Game Controls */
-.game-controls {
-    margin-top: 8px; /* Reduced from 12px */
-    display: flex;
-    justify-content: center;
-    gap: 8px; /* Reduced from 10px */
-    width: 100%;
-}
-
-.game-controls button {
-    display: flex;
-    align-items: center;
-    gap: 4px; /* Reduced from 6px */
-    padding: 6px 12px; /* Reduced from 8px 16px */
-    font-size: 0.8rem; /* Reduced from 0.9rem */
-}
-
-.game-controls button svg {
-    width: 14px; /* Reduced from 16px */
-    height: 14px; /* Reduced from 16px */
-}
-
-/* Messages */
-#game-messages {
+    margin-bottom: 8px;
+    text-shadow: 0 0 8px white, 0 0 12px white, 0 0 15px white !important;
+    font-family: 'Trebuchet MS', Arial, sans-serif !important;
+    font-weight: bold !important;
     text-align: center;
-    margin: 5px auto;
-    padding: 6px;
-    border-radius: 4px;
-    font-weight: bold;
-    font-size: 0.25rem !important; /* Made even smaller */
-    color: #1e40af !important; /* Dark blue */
-    font-family: 'Lucida Handwriting', 'Brush Script MT', cursive;
-    width: 60%; /* Restricted to 60% of the page width */
-    max-width: 640px;
-    text-shadow: none !important; /* Explicitly remove any text shadow */
-}
-
-/* Helpful indicator for current dragging direction on mobile */
-.grid-cell.drag-target {
-    background-color: rgba(59, 130, 246, 0.2); /* Light blue highlight */
-    transition: background-color 0.1s ease;
-}
-
-/* Path Arrow Indicators */
-.path-arrow {
-    position: absolute;
-    width: 18px; /* Increased from 16px */
-    height: 18px; /* Increased from 16px */
-    z-index: 20;
-    opacity: 0.95; /* Increased from 0.8 */
-    pointer-events: none; /* Make sure arrows don't interfere with clicks */
-    filter: drop-shadow(0 0 2px white); /* Added drop shadow for visibility */
-}
-
-/* Position arrows based on direction */
-.path-arrow.right {
-    top: 50%;
-    right: 2px;
-    transform: translateY(-50%);
-}
-
-.path-arrow.left {
-    top: 50%;
-    left: 2px;
-    transform: translateY(-50%);
-}
-
-.path-arrow.up {
-    top: 2px;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-.path-arrow.down {
-    bottom: 2px;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-.path-arrow svg {
-    width: 100%;
-    height: 100%;
-    fill: #3b82f6; /* Blue color */
-    filter: drop-shadow(0 0 1px white); /* Add a subtle white outline */
-}
-
-/* --------- TOUCH DEVICE SPECIFIC STYLES --------- */
-/* These will be applied when the JS adds the .touch-device class to the body */
-
-/* Make buttons more tappable on touch devices */
-.touch-device button {
-    min-height: 44px;
-    padding: 10px 15px;
-}
-
-/* Enhance visibility of selection on touch devices */
-.touch-device .grid-cell.selected {
-    transform: scale(1.05);
-    box-shadow: 0 0 8px rgba(59, 130, 246, 0.7) !important;
-}
-
-/* Avoid text selection issues on touch devices */
-.touch-device {
-    -webkit-user-select: none;
-    user-select: none;
-}
-
-/* Make arrows more visible on smaller touch screens */
-.touch-device .path-arrow {
-    width: 20px;
-    height: 20px;
-}
-
-/* --------- iOS SPECIFIC STYLES --------- */
-/* These will be applied when the JS adds the .ios-device class to the body */
-
-/* iOS-specific optimizations */
-.ios-device .grid-cell {
-    /* Increase touch target size even more on iOS */
-    min-height: 44px;
-    min-width: 44px;
-}
-
-.ios-device .game-container {
-    height: var(--app-height);
-    max-height: var(--app-height);
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-}
-
-/* Game Controls */
-.game-controls {
-    margin-top: 8px;
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    width: 100%;
-}
-
-.game-controls button {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 6px 12px;
+  }
+  
+  .level-buttons {
+    gap: 5px;
+  }
+  
+  .level-btn {
+    min-width: 30px;
+    padding: 0 8px !important;
     font-size: 0.8rem;
-    background-color: #ede9fe; /* Light lilac */
-    color: #4a5568;
-    border: 2px solid #16a34a; /* Dark green border */
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-family: 'Courier New', monospace;
-    text-transform: uppercase;
+    font-family: 'Trebuchet MS', Arial, sans-serif !important;
     font-weight: bold;
-    letter-spacing: 0.05em;
+    background-color: var(--primary-color);
+    color: white;
+    border: 2px solid var(--secondary-color);
+    border-bottom-width: 3px;
+    border-radius: 5px;
+    height: 40px !important;
+    display: flex !important;
+    align-items: center !important; 
+    justify-content: center !important;
+    line-height: normal !important;
+  }
+  
+  .level-btn:active {
+    transform: translateY(2px);
+    border-bottom-width: 1px;
+    height: 38px;
+  }
+  
+  /* No border/shadow under level buttons */
+  .level-selector-container, 
+  .level-buttons,
+  .game-header {
+    border-bottom: none !important;
+    box-shadow: none !important;
+    border-color: transparent !important;
+  }
 }
 
-.game-controls button:hover {
-    background-color: #ddd6fe; /* Slightly darker on hover */
+/* Even smaller screens */
+@media (max-width: 375px) {
+  .level-btn {
+    min-width: 28px;
+    padding: 6px 4px;
+    font-size: 0.75rem;
+  }
 }
 
-.game-controls button svg {
-    width: 14px;
-    height: 14px;
-}
+/* ==========================================================================
+   7. GAME MESSAGES
+   ========================================================================== */
 
-/* Responsive design for small screens */
-@media (max-width: 480px) {
-    .game-controls {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .game-controls button {
-        margin-bottom: 4px;
-    }
-    
-    .level-buttons {
-        flex-wrap: wrap;
-    }
-}
-
-/* Add these styles to hide controls until game starts */
-.score-row,
-.game-controls,
 #game-messages {
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-    height: 0;
-    margin: 0;
-    overflow: hidden;
+  text-align: center;
+  margin: 5px auto;
+  padding: 6px;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 0.85rem;
+  color: var(--text-blue) !important;
+  font-family: 'Lucida Handwriting', 'Brush Script MT', cursive;
+  width: 60%;
+  max-width: 640px;
 }
 
-.game-board {
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  #game-messages {
+    width: calc(100vw - 20px) !important;
+    margin: 2px auto 2px !important;
+    padding: 6px 0;
+    font-size: 1.6rem !important;
+    min-height: 45px !important;
+    text-align: center;
+    line-height: 1.3;
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 100%;
+    justify-content: center;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    color: var(--text-blue);
+    font-weight: bold;
+    text-shadow: 0 0 15px white, 0 0 25px white, 0 0 35px white, 0 0 40px white, 0 0 45px white !important;
+  }
+
+  /* Penalty Messages */
+  #game-messages .penalty-message {
+    font-size: 1.2rem !important;
+    margin-top: 5px;
+    color: var(--text-blue);
+    font-weight: bold;
+    text-shadow: 0 0 15px white, 0 0 25px white, 0 0 35px white, 0 0 40px white !important;
+  }
 }
 
-/* Show controls when game is active */
-.game-active .score-row,
-.game-active .game-controls,
-.game-active #game-messages {
-    opacity: 1;
-    visibility: visible;
-    height: auto;
-    margin: initial; /* Restore original margins */
-    overflow: visible;
+/* ==========================================================================
+   8. GAME CONTROLS
+   ========================================================================== */
+
+.game-controls {
+  margin-top: 8px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
 }
 
-/* Specific margin restoration */
-.game-active .score-row {
-    margin-bottom: 1px;
+.game-controls button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  background-color: var(--form-bg-color);
+  color: var(--dark-gray);
+  border: 2px solid var(--dark-green);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  font-weight: bold;
+  letter-spacing: 0.05em;
 }
 
-.game-active .game-controls {
-    margin-top: 8px;
+.game-controls button:hover {
+  background-color: #ddd6fe; /* Slightly darker on hover */
 }
 
-.game-active #game-messages {
-    margin: 5px 0;
+.game-controls button svg {
+  width: 14px;
+  height: 14px;
 }
 
-/* Make bottom buttons visible when game is active */
-.game-active .bottom-buttons {
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .game-controls {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    width: calc(100vw - 20px) !important;
+    margin: 12px auto 0 !important;
+    gap: 5px !important;
+  }
+  
+  .game-controls button {
+    padding: 8px 6px;
+    font-size: 0.9rem;
+    font-family: 'Trebuchet MS', Arial, sans-serif;
+    font-weight: bold;
+    background-color: #dd717e !important; /* Crimson red */
+    color: white !important;
+    border: 2px solid #9c3c47; /* Dark red border */
+    border-bottom-width: 3px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    cursor: pointer;
+  }
+  
+  .game-controls button:active {
+    transform: translateY(2px);
+    border-bottom-width: 1px;
+  }
+  
+  .game-controls button svg {
+    width: 14px;
+    height: 14px;
+    margin-right: 4px;
+    stroke: white;
+  }
+  
+  /* Button layout for specific controls */
+  #check-solution {
+    width: 20%;
+  }
+  
+  #remove-spare {
+    width: 50%;
+  }
+  
+  #reset-path {
+    width: 25%;
+  }
+  
+  /* Button animation */
+  @keyframes buttonPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+  
+  .game-controls button.clicked {
+    animation: buttonPulse 0.3s ease-in-out;
+    background-color: #c13a49 !important; /* Darker red while pulsing */
+  }
+  
+  .game-controls button:active, 
+  .game-controls button:focus,
+  .game-controls button.active,
+  .game-controls button.selected {
+    background-color: #dd717e !important; /* Maintain crimson color */
+    color: white !important;
+  }
+}
+
+/* Smaller screen adjustments */
+@media (max-width: 480px) {
+  .game-controls {
+    flex-direction: row;
+    align-items: center;
+  }
+  
+  .game-controls button {
+    font-size: 0.8rem !important;
+    padding: 6px 10px !important;
+  }
+}
+
+/* ==========================================================================
+   9. BOTTOM BUTTONS (RECORD NAME & LEADERBOARD)
+   ========================================================================== */
+
+/* Bottom buttons - container */
+.bottom-buttons {
+  display: none; /* Hidden by default */
+  visibility: hidden;
+  height: 0;
+  overflow: hidden;
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* When game is active - Show buttons */
+.game-container.game-active .bottom-buttons {
   display: flex !important;
   visibility: visible !important;
-  opacity: 1 !important;
   height: auto !important;
+  overflow: visible !important;
+  justify-content: center;
+  gap: 10px;
   margin: 15px auto !important;
 }
 
-/* Ensure single button is centered properly */
+/* Bottom buttons - button styles */
+#record-score-btn, 
+#leaderboard-btn {
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  font-size: 1rem;
+  font-weight: bold;
+  padding: 8px 12px;
+  background-color: var(--primary-color);
+  color: white;
+  border: 2px solid var(--secondary-color);
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 140px;
+}
+
+#record-score-btn svg,
+#leaderboard-btn svg {
+  margin-right: 6px;
+}
+
+/* Single button mode (after username set) */
 .bottom-buttons.single-button {
   justify-content: center !important;
 }
@@ -659,68 +600,982 @@ body {
   margin: 0 auto !important;
 }
 
-/* General bottom buttons styling */
-.bottom-buttons {
-  position: relative;
-  z-index: 10;
-  width: 100%;
-  max-width: 400px;
-  margin: 0 auto;
-}
-
-/* Hide bottom buttons until game is active */
-.bottom-buttons {
-    display: none;
-    visibility: hidden;
-    height: 0;
-    overflow: hidden;
-}
-
-/* When game is active - Show buttons */
-.game-container.game-active .bottom-buttons {
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .bottom-buttons {
     display: flex !important;
-    visibility: visible !important;
-    height: auto !important;
-    overflow: visible !important;
-}
-
-/* Bottom buttons - Desktop styles */
-.bottom-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    width: 100%;
-    max-width: 400px;
-    margin: 15px auto;
-}
-
-#record-score-btn, 
-#leaderboard-btn {
-    font-family: 'Trebuchet MS', Arial, sans-serif;
-    font-size: 1rem;
-    font-weight: bold;
-    padding: 8px 12px;
-    background-color: #3b82f6;
-    color: white;
-    border: 2px solid #60a5fa;
-    border-radius: 5px;
+    flex-direction: row !important;
+    justify-content: center !important;
+    gap: 10px !important;
+    width: calc(100vw - 20px) !important;
+    margin: 0px auto !important;
+  }
+  
+  .bottom-btn {
+    font-family: 'Trebuchet MS', Arial, sans-serif !important;
+    font-size: 1rem !important;
+    font-weight: bold !important;
+    height: 42px !important;
+    padding: 8px 12px !important;
+    background-color: var(--primary-color) !important;
+    color: white !important;
+    border: 2px solid var(--secondary-color) !important;
+    border-bottom-width: 3px !important;
+    border-radius: 5px !important;
     cursor: pointer;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  
+  .bottom-btn:active {
+    transform: translateY(2px) !important;
+    border-bottom-width: 1px !important;
+  }
+
+  /* Single button mode adjustments */
+  .bottom-buttons.single-button {
+    justify-content: center !important;
+  }
+  
+  .bottom-buttons.single-button #leaderboard-btn {
+    margin: 0 auto !important;
+    min-width: 200px !important;
+  }
+  
+  /* Button highlighting animation */
+  .bottom-btn.highlight {
+    animation: pulse 1s infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% { background-color: var(--primary-color); }
+    50% { background-color: #1d4ed8; }
+  }
+  
+  /* Specific button styling for record & leaderboard */
+  #record-score-btn, 
+  #leaderboard-btn {
+    width: calc((100vw - 20px) * 0.45 - 5px);
+    max-width: 140px;
+    border: 2px solid var(--secondary-color);
+    border-bottom-width: 3px;
+  }
+  
+  #record-score-btn svg,
+  #leaderboard-btn svg {
+    margin-right: 6px;
+  }
+}
+
+/* Even smaller screens */
+@media (max-width: 375px) {
+  .bottom-btn {
+    font-size: 0.9rem !important;
+    padding: 6px 10px !important;
+  }
+}
+
+/* ==========================================================================
+   10. PATH ARROWS
+   ========================================================================== */
+
+/* Path Arrow Indicators */
+.path-arrow {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  z-index: 20;
+  opacity: 0.95;
+  pointer-events: none;
+  filter: drop-shadow(0 0 2px white);
+}
+
+/* Position arrows based on direction */
+.path-arrow.right {
+  top: 50%;
+  right: 2px;
+  transform: translateY(-50%);
+}
+
+.path-arrow.left {
+  top: 50%;
+  left: 2px;
+  transform: translateY(-50%);
+}
+
+.path-arrow.up {
+  top: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.path-arrow.down {
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.path-arrow svg {
+  width: 100%;
+  height: 100%;
+  fill: var(--primary-color);
+  filter: drop-shadow(0 0 1px white);
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .path-arrow {
+    position: absolute;
+    width: 14px !important;
+    height: 14px !important;
+    z-index: 25;
+    pointer-events: none;
+  }
+
+  /* Position arrows precisely at the center of each edge */
+  .path-arrow.right {
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+  }
+
+  .path-arrow.left {
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+  }
+
+  .path-arrow.up {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .path-arrow.down {
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  /* Create cleaner, tail-less arrows with correct directions */
+  .path-arrow svg {
+    display: none !important;
+  }
+
+  .path-arrow::before,
+  .path-arrow::after {
+    content: '';
+    position: absolute;
+    background-color: #374ee3;
+    width: 8px;
+    height: 2px;
+  }
+
+  /* Right arrow - pointing right from right edge */
+  .path-arrow.right::before {
+    top: 4px;
+    right: 3px;
+    transform: rotate(45deg);
+  }
+
+  .path-arrow.right::after {
+    bottom: 4px;
+    right: 3px;
+    transform: rotate(-45deg);
+  }
+
+  /* Left arrow - pointing left from left edge */
+  .path-arrow.left::before {
+    top: 4px;
+    left: 3px;
+    transform: rotate(-45deg);
+  }
+
+  .path-arrow.left::after {
+    bottom: 4px;
+    left: 3px;
+    transform: rotate(45deg);
+  }
+
+  /* Up arrow - pointing up from top edge */
+  .path-arrow.up::before {
+    top: 3px;
+    left: 2px;
+    transform: rotate(-45deg);
+  }
+
+  .path-arrow.up::after {
+    top: 3px;
+    right: 2px;
+    transform: rotate(45deg);
+  }
+
+  /* Down arrow - pointing down from bottom edge */
+  .path-arrow.down::before {
+    bottom: 3px;
+    left: 2px;
+    transform: rotate(45deg);
+  }
+
+  .path-arrow.down::after {
+    bottom: 3px;
+    right: 2px;
+    transform: rotate(-45deg);
+  }
+}
+
+/* ==========================================================================
+   11. ANIMATIONS & VISUAL FEEDBACK
+   ========================================================================== */
+
+/* Visual feedback for invalid moves */
+.grid-cell.invalid-move {
+  animation: shake 0.3s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  75% { transform: translateX(3px); }
+}
+
+/* Visual feedback for cell selection */
+.grid-cell.just-selected {
+  animation: pulse 0.2s ease-in-out;
+}
+
+@keyframes pulse {
+  0% { background-color: #bfdbfe; }
+  50% { background-color: #93c5fd; }
+  100% { background-color: #bfdbfe; }
+}
+
+/* ==========================================================================
+   12. MOBILE-SPECIFIC STYLES
+   ========================================================================== */
+
+/* Orientation Warning */
+@media (max-width: 768px) {
+  .orientation-warning {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 2000;
+    color: white;
+    text-align: center;
+    font-size: 1.2rem;
+    padding: 20px;
+    box-sizing: border-box;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  
+  .orientation-warning svg {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 20px;
+    animation: rotate 2s ease-in-out infinite;
+  }
+  
+  @keyframes rotate {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(90deg); }
+    50% { transform: rotate(90deg); }
+    75% { transform: rotate(0deg); }
+    100% { transform: rotate(0deg); }
+  }
+  
+  @media (orientation: landscape) {
+    .orientation-warning {
+      display: flex;
+    }
+  }
+}
+
+/* Touch device optimizations */
+.touch-device {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.touch-device button {
+  min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.touch-device .grid-cell {
+  touch-action: manipulation;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
+  -webkit-tap-highlight-color: rgba(0,0,0,0) !important;
+}
+
+.touch-device .symbol-container {
+  transform: scale(1.3) !important;
+}
+
+/* iOS specific optimizations */
+.ios-device .grid-cell {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.ios-device .game-container {
+  height: var(--app-height);
+  max-height: var(--app-height);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ==========================================================================
+   13. USERNAME & LEADERBOARD MODAL STYLING
+   ========================================================================== */
+
+/* Modal Containers */
+#username-area-container,
+#leaderboard-table-container {
+  display: none;
+}
+
+#username-area-container.visible,
+#leaderboard-table-container.visible {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Username Area Styling */
+.username-area {
+  background-color: var(--form-bg-color);
+  border: 2px solid var(--dark-green);
+  border-radius: 6px;
+  padding: 4px 8px 4px;
+  margin-bottom: 10px;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.username-form {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 100%;
+  align-items: center;
+  text-align: center;
+}
+
+.username-prompt {
+  margin: 0;
+  font-weight: bold;
+  font-size: 0.9rem;
+  color: var(--dark-gray);
+}
+
+.input-wrapper {
+  display: flex;
+  gap: 8px;
+  max-width: 300px;
+  width: 100%;
+  justify-content: center;
+}
+
+#username-input {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  max-width: 200px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+}
+
+#username-input:focus {
+  outline: 1px solid #cbd5e1;
+  box-shadow: 0 0 2px #e2e8f0;
+}
+
+#submit-username {
+  padding: 6px 12px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+#submit-username:hover {
+  background-color: #2563eb;
+}
+
+.status-message {
+  font-size: 0.8rem;
+  padding: 2px 0;
+  min-height: 0.5rem;
+}
+
+.status-message.error {
+  color: var(--danger-color);
+}
+
+.status-message.checking {
+  color: var(--primary-color);
+}
+
+.status-message.success {
+  color: var(--success-color);
+}
+
+.welcome-message {
+  padding: 8px 0;
+  font-weight: bold;
+  color: var(--dark-green);
+  font-size: 0.9rem;
+}
+
+.hidden {
+  display: none;
+}
+
+/* Mobile adjustments for username area */
+@media (max-width: 768px) {
+  .username-area {
+    width: 92% !important;
+    max-width: 340px !important;
+    background-color: var(--form-bg-color) !important;
+    border: 2px solid var(--secondary-color) !important;
+    border-radius: 6px;
+    padding: 15px;
+    margin: 0 auto;
+    position: relative;
+  }
+  
+  /* Username Form Styling */
+  .username-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    text-align: center;
+  }
+  
+  /* Username Prompt */
+  .username-prompt {
+    font-size: 1rem !important;
+    font-family: 'Trebuchet MS', Arial, sans-serif;
+    font-weight: bold;
+    margin-bottom: 12px;
+    text-align: center;
+    text-transform: uppercase;
+  }
+  
+  /* Input Wrapper */
+  .input-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 90%;
+    max-width: 280px;
+    margin: 0 auto;
+    gap: 12px;
+  }
+  
+  /* Username Input */
+  #username-input {
+    width: 90% !important;
+    padding: 12px;
+    font-size: 1.1rem !important;
+    text-align: center;
+    border: 2px solid #cbd5e1;
+    border-radius: 6px;
+    max-width: 90% !important;
+    margin: 0 auto !important;
+    display: block !important;
+    font-family: 'Trebuchet MS', Arial, sans-serif;
+    font-weight: bold;
+  }
+  
+  /* Submit Username Button */
+  #submit-username {
+    width: 50% !important;
+    padding: 12px;
+    font-size: 1.2rem !important;
+    font-weight: bold;
+    background-color: var(--primary-color);
+    color: white;
+    border: 2px solid var(--secondary-color) !important;
+    border-bottom-width: 3px !important;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: center;
+    margin: 0 auto !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-family: 'Trebuchet MS', Arial, sans-serif;
+    text-transform: uppercase;
+  }
+
+  /* Rocket icon after Submit */
+  #submit-username::after {
+    content: " 🚀";
+    margin-left: 5px;
+    font-size: 1.2rem;
+  }
+
+  /* Welcome Message */
+  .welcome-message {
+    display: none !important;
+  }
+  
+  /* Return Button Positioning */
+  #return-to-record-btn {
+    position: absolute !important;
+    bottom: 10px !important;
+    right: 10px !important;
+    top: auto !important;
+    left: auto !important;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 140px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 10000;
+    border: none;
+    color: var(--primary-color);
+    font-size: 24px;
+    cursor: pointer;
+  }
 }
 
-#record-score-btn svg,
-#leaderboard-btn svg {
-    margin-right: 6px;
+/* ==========================================================================
+   14. LEADERBOARD STYLING
+   ========================================================================== */
+
+/* Leaderboard title */
+.leaderboard-title {
+  text-align: center;
+  font-size: 1.2rem;
+  margin: 8px 0;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  letter-spacing: 0.05em;
 }
 
-/* Make sure single button mode is centered */
-.bottom-buttons.single-button {
-    justify-content: center;
+/* Status message for updates */
+.leaderboard-status {
+  text-align: center;
+  padding: 8px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  font-size: 0.85rem;
+  font-weight: bold;
 }
 
-.bottom-buttons.single-button #leaderboard-btn {
+.leaderboard-status.info {
+  background-color: #dbeafe;
+  color: var(--text-blue);
+}
+
+.leaderboard-status.success {
+  background-color: #dcfce7;
+  color: var(--dark-green);
+}
+
+.leaderboard-status.error {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+/* Leaderboard table */
+.leaderboard-table {
+  background-color: #ede9fe;
+  border: 2px solid var(--dark-green);
+  border-radius: 6px;
+  overflow: hidden;
+  max-height: 400px;
+  overflow-y: auto;
+  max-width: 368px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 92%;
+}
+
+.leaderboard-row {
+  display: grid;
+  grid-template-columns: 40px minmax(80px, 1fr) 70px 80px;
+  column-gap: 10px;
+  padding: 6px 8px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.leaderboard-row:last-child {
+  border-bottom: none;
+}
+
+.leaderboard-row.header {
+  background-color: #f3f4f6;
+  font-weight: bold;
+  font-size: 0.8rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.leaderboard-row.header .leaderboard-cell.rank {
+  text-align: center;
+}
+
+.leaderboard-row.header .leaderboard-cell.name {
+  text-align: left;
+  padding-left: 5px;
+}
+
+.leaderboard-row.current-user {
+  background-color: #f0fdf4;
+  font-weight: bold;
+}
+
+.leaderboard-cell {
+  font-size: 0.85rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.leaderboard-cell.name {
+  max-width: 120px;
+  min-width: 100px;
+}
+
+.leaderboard-cell.rank {
+  text-align: center;
+}
+
+.leaderboard-cell.score {
+  text-align: right;
+  padding-right: 10px;
+}
+
+.leaderboard-cell.date {
+  text-align: right;
+  padding-right: 5px;
+}
+
+.leaderboard-row.empty {
+  text-align: center;
+  padding: 20px;
+  color: #6b7280;
+  grid-column: 1 / -1;
+}
+
+/* Animation for new entries */
+@keyframes highlight-pulse {
+  0% { background-color: #f0fdf4; }
+  50% { background-color: #dcfce7; }
+  100% { background-color: #f0fdf4; }
+}
+
+.leaderboard-row.current-user.new-entry {
+  animation: highlight-pulse 2s ease-in-out 1;
+}
+
+/* Mobile adjustments for leaderboard */
+@media (max-width: 768px) {
+  .leaderboard-title {
+    font-size: 1.4rem !important;
+    margin: 15px 0;
+    font-weight: bold;
+    font-family: 'Trebuchet MS', Arial, sans-serif !important;
+    color: white;
+  }
+  
+  /* Leaderboard Table Styling */
+  .leaderboard-table {
+    width: 100% !important;
+    max-width: 385px !important;
+    background-color: var(--form-bg-color) !important;
+    border: 2px solid var(--secondary-color) !important;
+    border-radius: 6px;
+    overflow: hidden;
+    max-height: 70vh;
+    overflow-y: auto;
     margin: 0 auto;
+    position: relative;
+  }
+  
+  /* Leaderboard Row Styling */
+  .leaderboard-row {
+    display: grid;
+    grid-template-columns: 45px minmax(80px, 1fr) 70px 70px !important;
+    column-gap: 8px !important;
+    padding: 8px 12px !important;
+  }
+  
+  /* Leaderboard Cell Styling */
+  .leaderboard-cell {
+    font-size: 0.9rem !important;
+    font-family: 'Trebuchet MS', Arial, sans-serif;
+  }
+
+  /* Rank Column */
+  .leaderboard-cell.rank {
+    width: 45px !important;
+    text-align: center;
+  }
+
+  /* Header Row */
+  .leaderboard-row.header {
+    background-color: #f3f4f6;
+    font-weight: bold;
+    font-size: 0.9rem !important;
+    padding: 8px;
+  }
+  
+  /* Current User Highlight */
+  .leaderboard-row.current-user {
+    background-color: #dbeafe;
+    font-weight: bold;
+  }
+  
+  /* Date Column */
+  .leaderboard-cell.date {
+    text-align: right;
+    padding-right: 10px !important;
+  }
+  
+  /* Empty Leaderboard State */
+  .leaderboard-row.empty {
+    text-align: center;
+    padding: 20px;
+    color: #6b7280;
+    grid-column: 1 / -1;
+    font-family: 'Trebuchet MS', Arial, sans-serif;
+  }
+  
+  /* Close button */
+  #close-leaderboard-btn {
+    margin-top: 15px;
+    padding: 8px 15px;
+    background-color: var(--primary-color);
+    color: white;
+    border: 2px solid var(--secondary-color);
+    border-radius: 4px;
+    font-family: 'Trebuchet MS', Arial, sans-serif;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+  }
 }
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 480px) {
+  .leaderboard-row {
+    grid-template-columns: 35px minmax(70px, 1fr) 60px 70px;
+    column-gap: 8px;
+    font-size: 0.8rem;
+    padding: 6px;
+  }
+  
+  .leaderboard-cell {
+    font-size: 0.75rem;
+  }
+  
+  /* Adjust input wrapper for smaller screens */
+  .input-wrapper {
+    flex-direction: column;
+  }
+  
+  #submit-username {
+    width: 100%;
+  }
+}
+
+/* Leaderboard scrollbar styling */
+.leaderboard-table::-webkit-scrollbar {
+  width: 8px;
+}
+
+.leaderboard-table::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 0 6px 6px 0;
+}
+
+.leaderboard-table::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.leaderboard-table::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ==========================================================================
+   15. RETURN BUTTONS & ADDITIONAL UI ELEMENTS
+   ========================================================================== */
+
+/* Return buttons */
+#return-to-record-btn,
+#return-from-leaderboard-btn {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  font-size: 24px;
+  cursor: pointer;
+  margin: 10px auto;
+  transition: color 0.2s ease;
+}
+
+#return-to-record-btn:hover,
+#return-from-leaderboard-btn:hover {
+  color: var(--text-blue);
+}
+
+@media (max-width: 768px) {
+  #return-to-record-btn {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Hide Return Button on mobile if not needed */
+  #return-from-leaderboard-btn {
+    display: none !important;
+  }
+}
+
+/* ==========================================================================
+   16. MISCELLANEOUS RESPONSIVE ADJUSTMENTS
+   ========================================================================== */
+
+/* Touch device optimizations beyond basic styles */
+.touch-device #submit-username {
+  padding: 10px 16px;
+  min-height: 44px;
+}
+
+.touch-device #username-input {
+  padding: 10px;
+  min-height: 20px;
+  font-size: 16px; /* Prevent zoom on input focus in iOS */
+}
+
+.touch-device .leaderboard-row {
+  padding: 10px 12px;
+}
+
+.touch-device .leaderboard-table {
+  -webkit-overflow-scrolling: touch;
+  overflow-y: scroll;
+}
+
+/* Welcome message styling for both desktop and mobile */
+.welcome-message {
+  padding: 15px;
+  background-color: #ede9fe;
+  border: 2px solid var(--dark-green);
+  border-radius: 6px;
+  text-align: center;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  color: var(--dark-green);
+  line-height: 1.4;
+  margin: 10px auto;
+  max-width: 400px;
+  width: 100%;
+}
+
+.welcome-message strong {
+  font-weight: bold;
+  color: var(--text-blue);
+}
+
+/* Mobile specific welcome message adjustments */
+@media (max-width: 480px) {
+  .welcome-message {
+    font-size: 0.8rem;
+    padding: 10px;
+  }
+}
+
+/* ==========================================================================
+   17. UTILITY CLASSES & ANIMATIONS
+   ========================================================================== */
+
+/* Hide/Show utilities */
+.hidden {
+  display: none !important;
+}
+
+.visible {
+  display: block !important;
+}
+
+/* Animation utilities */
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ==========================================================================
+   18. MEDIA QUERY CONSISTENCY CHECK
+   ========================================================================== */
+
+/*
+This section doesn't contain actual styles but serves as a reminder 
+of all the breakpoints used in this CSS to ensure consistency:
+
+- Primary mobile breakpoint: @media (max-width: 768px)
+- Secondary mobile breakpoint: @media (max-width: 480px)
+- Small mobile breakpoint: @media (max-width: 375px)
+- Orientation checking: @media (orientation: landscape)
+
+All media queries have been structured to maintain a consistent 
+approach throughout this consolidated stylesheet.
+*/
