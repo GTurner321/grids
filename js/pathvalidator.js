@@ -120,8 +120,6 @@ function validateSequence(sequence) {
     };
 }
 
-// Update in pathvalidator.js
-
 /**
  * Validates the entire path
  * @param {Array} path - Array of cell indices
@@ -129,8 +127,14 @@ function validateSequence(sequence) {
  * @returns {Object} Validation result with details
  */
 export function validatePath(path, gridEntries) {
-    // First check if the path is continuous
-    if (!isPathContinuous(path)) {
+    // Get the current level from the game controller
+    let currentLevel = null;
+    if (window.gameController && window.gameController.state) {
+        currentLevel = window.gameController.state.currentLevel;
+    }
+    
+    // First check if the path is continuous - pass the current level to use correct grid size
+    if (!isPathContinuous(path, currentLevel)) {
         return {
             isValid: false,
             error: 'Path must be continuous - cells must be adjacent!'
@@ -166,8 +170,6 @@ export function validatePath(path, gridEntries) {
                 }
             }
             
-            // KEY FIX: Set failedAt to i+1 (keep the first square which is valid from previous calculation)
-            // Instead of completely removing all 4 squares of the failed calculation
             return {
                 isValid: false,
                 error: errorMsg,
@@ -187,14 +189,22 @@ export function validatePath(path, gridEntries) {
  * Checks if cells are adjacent on the grid
  * @param {number} index1 - First cell index
  * @param {number} index2 - Second cell index
+ * @param {number} gridSize - Size of the grid (width/height)
  * @returns {boolean} Whether cells are adjacent
  */
-
 export function areAdjacent(index1, index2, gridSize = 10) {
     const x1 = index1 % gridSize;
     const y1 = Math.floor(index1 / gridSize);
     const x2 = index2 % gridSize;
     const y2 = Math.floor(index2 / gridSize);
+
+    // Debug console for troubleshooting adjacency checks
+    /*
+    console.log(`Checking adjacency with gridSize=${gridSize}:`);
+    console.log(`Cell ${index1} at (${x1},${y1})`);
+    console.log(`Cell ${index2} at (${x2},${y2})`);
+    console.log(`Adjacent: ${(Math.abs(x1 - x2) === 1 && y1 === y2) || (Math.abs(y1 - y2) === 1 && x1 === x2)}`);
+    */
 
     return (Math.abs(x1 - x2) === 1 && y1 === y2) || 
            (Math.abs(y1 - y2) === 1 && x1 === x2);
@@ -203,12 +213,24 @@ export function areAdjacent(index1, index2, gridSize = 10) {
 /**
  * Checks if all cells in path are adjacent
  * @param {Array} path - Array of cell indices
+ * @param {number|null} currentLevel - Current game level (used to get grid size)
  * @returns {boolean} Whether path is continuous
  */
 export function isPathContinuous(path, currentLevel) {
-    // Determine grid size based on level
-    const gridSize = currentLevel ? getLevelConfig(currentLevel).gridSize : 10;
+    // Empty or single-cell paths are considered continuous
+    if (path.length <= 1) return true;
     
+    // Determine grid size based on level
+    let gridSize = 10; // Default to 10x10 grid
+    
+    if (currentLevel) {
+        const config = getLevelConfig(currentLevel);
+        if (config && config.gridSize) {
+            gridSize = config.gridSize;
+        }
+    }
+    
+    // Check if each consecutive pair of cells is adjacent
     for (let i = 1; i < path.length; i++) {
         if (!areAdjacent(path[i-1], path[i], gridSize)) {
             return false;
