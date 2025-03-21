@@ -191,31 +191,37 @@ class GameController {
     }
 
     updatePathHighlight() {
-        // Clear existing highlights and arrows
-        document.querySelectorAll('.grid-cell').forEach(cell => {
-            cell.classList.remove('selected', 'start-cell-selected', 'end-cell-selected');
-        });
-        
-        document.querySelectorAll('.path-arrow').forEach(arrow => arrow.remove());
+    // Clear existing highlights and arrows
+    document.querySelectorAll('.grid-cell').forEach(cell => {
+        cell.classList.remove('selected', 'start-cell-selected', 'end-cell-selected');
+    });
+    
+    document.querySelectorAll('.path-arrow').forEach(arrow => arrow.remove());
 
-        // Highlight path cells
-        this.state.userPath.forEach((index, position) => {
-            const cell = document.querySelector(`[data-index="${index}"]`);
-            if (!cell) return;
+    // Highlight path cells
+    this.state.userPath.forEach((index, position) => {
+        const cell = document.querySelector(`[data-index="${index}"]`);
+        if (!cell) return;
 
-            if (cell.classList.contains('start-cell')) {
-                cell.classList.add('start-cell-selected');
-            } else if (cell.classList.contains('end-cell')) {
-                cell.classList.add('end-cell-selected');
-            } else {
-                cell.classList.add('selected');
-            }
-        });
-        
-        // Add path direction arrows
-        addPathArrows(this.state.userPath, (index) => document.querySelector(`[data-index="${index}"]`));
-    }
-
+        if (cell.classList.contains('start-cell')) {
+            cell.classList.add('start-cell-selected');
+        } else if (cell.classList.contains('end-cell')) {
+            cell.classList.add('end-cell-selected');
+        } else {
+            cell.classList.add('selected');
+        }
+    });
+    
+    // Get current grid size for proper arrow placement
+    const config = getLevelConfig(this.state.currentLevel);
+    const gridSize = config.gridSize || 10;
+    
+    // Add path direction arrows with the current grid size
+    addPathArrows(this.state.userPath, 
+                 (index) => document.querySelector(`[data-index="${index}"]`), 
+                 gridSize);
+}
+    
     // Helper method to check if a cell is the end cell
     isEndCell(cell) {
         return cell && cell.classList.contains('end-cell');
@@ -563,20 +569,24 @@ class GameController {
 }
     
     checkSolution() {
-        // First, check if the path meets the required length formula (3n+1)
-        if ((this.state.userPath.length - 1) % 3 !== 0) {
-            scoreManager.handleCheck(false);
-            this.showMessage('Path length must be 4, 7, 10, 13, etc. (3n+1) to represent complete calculations.', 'error', 10000);
-            return;
-        }
-        
-        // Check if path ends at the red cell
-        const lastCellIndex = this.state.userPath[this.state.userPath.length - 1];
-        const lastCell = document.querySelector(`[data-index="${lastCellIndex}"]`);
-        const endsAtRedCell = this.isEndCell(lastCell);
-        
-        // Validate mathematical correctness
-        const validation = this.validatePath();
+    // First, check if the path meets the required length formula (3n+1)
+    if ((this.state.userPath.length - 1) % 3 !== 0) {
+        scoreManager.handleCheck(false);
+        this.showMessage('Path length must be 4, 7, 10, 13, etc. (3n+1) to represent complete calculations.', 'error', 10000);
+        return;
+    }
+    
+    // Check if path ends at the red cell
+    const lastCellIndex = this.state.userPath[this.state.userPath.length - 1];
+    const lastCell = document.querySelector(`[data-index="${lastCellIndex}"]`);
+    const endsAtRedCell = this.isEndCell(lastCell);
+    
+    // Get current grid size
+    const config = getLevelConfig(this.state.currentLevel);
+    const gridSize = config.gridSize || 10;
+    
+    // Validate mathematical correctness - pass current level explicitly
+    const validation = this.validatePath();
         
         if (validation.isValid) {
             if (endsAtRedCell) {
@@ -648,6 +658,11 @@ class GameController {
             }
         }, 1500);
     }
+
+getLevelConfig(level) {
+    // Re-export the function from sequencegenerator.js
+    return getLevelConfig(level);
+}
     
     validatePath() {
     // Pass the current level to isPathContinuous
