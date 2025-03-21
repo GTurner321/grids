@@ -216,11 +216,12 @@ class GameController {
     const config = getLevelConfig(this.state.currentLevel);
     const gridSize = config.gridSize || 10;
     
-    // Add path direction arrows with the current grid size
+    // Add path direction arrows with the current grid size EXPLICITLY
     addPathArrows(this.state.userPath, 
                  (index) => document.querySelector(`[data-index="${index}"]`), 
                  gridSize);
 }
+
     
     // Helper method to check if a cell is the end cell
     isEndCell(cell) {
@@ -618,46 +619,48 @@ class GameController {
     }
 
     handlePuzzleSolved() {
-        // Display success message
-        this.showMessage('Congratulations! Puzzle solved!', 'success');
+    console.log("PUZZLE SOLVED! Congratulations message and score updates coming next...");
+    
+    // Display success message
+    this.showMessage('Congratulations! Puzzle solved!', 'success');
+    
+    // Update score
+    scoreManager.completePuzzle();
+    
+    // Mark cells in the path as solved, but preserve start and end cell colors
+    this.state.userPath.forEach((index, position) => {
+        const cell = document.querySelector(`[data-index="${index}"]`);
+        if (!cell) return;
         
-        // Update score
-        scoreManager.completePuzzle();
+        // Keep start cell dark green and end cell dark red
+        if (position === 0) {
+            // Start cell - keep it green/dark green
+            cell.classList.add('start-cell-selected');
+        } else if (position === this.state.userPath.length - 1) {
+            // End cell - keep it red/dark red
+            cell.classList.add('end-cell-selected');
+        } else {
+            // Middle cells - add solved path class for yellow
+            cell.classList.add('user-solved-path');
+        }
+    });
+    
+    // Delay before enabling next level
+    setTimeout(() => {
+        // Disable game to prevent further interaction with this puzzle
+        this.state.gameActive = false;
         
-        // Mark cells in the path as solved, but preserve start and end cell colors
-        this.state.userPath.forEach((index, position) => {
-            const cell = document.querySelector(`[data-index="${index}"]`);
-            if (!cell) return;
-            
-            // Keep start cell dark green and end cell dark red
-            if (position === 0) {
-                // Start cell - keep it green/dark green
-                cell.classList.add('start-cell-selected');
-            } else if (position === this.state.userPath.length - 1) {
-                // End cell - keep it red/dark red
-                cell.classList.add('end-cell-selected');
-            } else {
-                // Middle cells - add solved path class for yellow
-                cell.classList.add('user-solved-path');
-            }
-        });
+        // Update UI to reflect completion
+        this.updateUI();
         
-        // Delay before enabling next level
-        setTimeout(() => {
-            // Disable game to prevent further interaction with this puzzle
-            this.state.gameActive = false;
-            
-            // Update UI to reflect completion
-            this.updateUI();
-            
-            // Suggestion for next level if not at max level
-            if (this.state.currentLevel < 10) {
-                this.showMessage(`Ready for level ${this.state.currentLevel + 1}?`, 'info');
-            } else {
-                this.showMessage('You completed the highest level! Try again for a better score.', 'info');
-            }
-        }, 1500);
-    }
+        // Suggestion for next level if not at max level
+        if (this.state.currentLevel < 10) {
+            this.showMessage(`Ready for level ${this.state.currentLevel + 1}?`, 'info');
+        } else {
+            this.showMessage('You completed the highest level! Try again for a better score.', 'info');
+        }
+    }, 1500);
+}
 
 getLevelConfig(level) {
     // Re-export the function from sequencegenerator.js
@@ -665,14 +668,31 @@ getLevelConfig(level) {
 }
     
     validatePath() {
-    // Pass the current level to isPathContinuous
-    if (!isPathContinuous(this.state.userPath, this.state.currentLevel)) {
-        return {
-            isValid: false,
-            error: 'Path must be continuous - cells must be adjacent!'
-        };
+    // Get the current grid size from the level config
+    const config = getLevelConfig(this.state.currentLevel);
+    const gridSize = config.gridSize || 10;
+    
+    // First manually check path continuity with the correct grid size
+    for (let i = 1; i < this.state.userPath.length; i++) {
+        const prevIndex = this.state.userPath[i-1];
+        const currIndex = this.state.userPath[i];
+        
+        const prevX = prevIndex % gridSize;
+        const prevY = Math.floor(prevIndex / gridSize);
+        const currX = currIndex % gridSize;
+        const currY = Math.floor(currIndex / gridSize);
+        
+        const isAdjacent = (Math.abs(prevX - currX) === 1 && prevY === currY) || 
+                        (Math.abs(prevY - currY) === 1 && prevX === currX);
+        
+        if (!isAdjacent) {
+            return {
+                isValid: false,
+                error: 'Path must be continuous - cells must be adjacent!'
+            };
+        }
     }
-
+    
     // Then validate the mathematical sequence
     return validatePathMath(this.state.userPath, this.state.gridEntries);
 }
