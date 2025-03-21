@@ -1,287 +1,4 @@
-validatePath() {
-        // Get the current grid size from the level config
-        const config = getLevelConfig(this.state.currentLevel);
-        const gridSize = config.gridSize || 10;
-        
-        // First manually check path continuity with the correct grid size
-        for (let i = 1; i < this.state.userPath.length; i++) {
-            const prevIndex = this.state.userPath[i-1];
-            const currIndex = this.state.userPath[i];
-            
-            const prevX = prevIndex % gridSize;
-            const prevY = Math.floor(prevIndex / gridSize);
-            const currX = currIndex % gridSize;
-            const currY = Math.floor(currIndex / gridSize);
-            
-            const isAdjacent = (Math.abs(prevX - currX) === 1 && prevY === currY) || 
-                        (Math.abs(prevY - currY) === 1 && prevX === currX);
-            
-            if (!isAdjacent) {
-                return {
-                    isValid: false,
-                    error: 'Path must be continuous - cells must be adjacent!'
-                };
-            }
-        }
-        
-        // Then validate the mathematical sequence
-        return validatePathMath(this.state.userPath, this.state.gridEntries);
-    }
-
-    resetPath() {
-        console.log('resetPath method called');
-        
-        try {
-            if (!this.state.gameActive) {
-                console.log('Game not active, reset path aborted');
-                return;
-            }
-            
-            // Reset user path array
-            this.state.userPath = [];
-            console.log('User path reset to empty array');
-            
-            // Clear path highlighting from all cells
-            document.querySelectorAll('.grid-cell').forEach(cell => {
-                cell.classList.remove('selected', 'start-cell-selected', 'end-cell-selected', 'just-selected');
-            });
-            console.log('Cell highlighting cleared');
-            
-            // Remove all path borders
-            removeAllPathBorders();
-            console.log('Path borders removed');
-            
-            // Update UI elements (button states, etc.)
-            this.updateUI(); // This will disable the button again since the path is now empty
-            
-            // Show feedback message
-            this.showMessage('Path reset. Start again from the green square.');
-            console.log('Path reset complete');
-        } catch (error) {
-            console.error('Error during path reset:', error);
-            this.showMessage('Error resetting path. Please try again.', 'error');
-        }
-    }
-
-    updateUI() {
-        // Update button states
-        const checkButton = document.getElementById('check-solution');
-        const removeButton = document.getElementById('remove-spare');
-        const resetButton = document.getElementById('reset-path');
-        
-        if (checkButton) {
-            checkButton.disabled = !this.state.gameActive || this.state.userPath.length === 0;
-        }
-        
-        if (removeButton) {
-            // Hide the button for level 1 where all cells are automatically removed
-            if (this.state.currentLevel === 1) {
-                removeButton.style.display = 'none';
-            } else {
-                removeButton.style.display = '';
-                removeButton.disabled = !this.state.gameActive || this.state.removedCells.size > 0;
-            }
-        }
-                
-        if (resetButton) {
-            // Only disable when game is not active OR path is empty
-            resetButton.disabled = !this.state.gameActive || this.state.userPath.length === 0;
-        }
-
-        // Update level buttons
-        document.querySelectorAll('.level-btn').forEach(btn => {
-            btn.classList.toggle('active', parseInt(btn.dataset.level) === this.state.currentLevel);
-        });
-    }
-   
-    showMessage(text, type = 'info', duration = null) {
-        const messageElement = document.getElementById('game-messages');
-        if (messageElement) {
-            // Clear any existing timeout
-            if (this.messageTimeout) {
-                clearTimeout(this.messageTimeout);
-                this.messageTimeout = null;
-            }
-            
-            // Clear previous content
-            messageElement.innerHTML = '';
-            
-            // Check if this is a message that needs a penalty line
-            if (text.includes('Removed')) {
-                // Main message
-                const mainMessage = document.createElement('div');
-                mainMessage.textContent = text;
-                messageElement.appendChild(mainMessage);
-                
-                // Penalty message
-                const penaltyMessage = document.createElement('div');
-                penaltyMessage.className = 'penalty-message';
-                penaltyMessage.textContent = '(-1/3 points)';
-                messageElement.appendChild(penaltyMessage);
-            } 
-            else if (text === 'Path is mathematically correct! Continue to the end square.') {
-                // Changed message
-                const mainMessage = document.createElement('div');
-                mainMessage.textContent = 'Path is mathematically correct!';
-                messageElement.appendChild(mainMessage);
-                
-                // Penalty message
-                const penaltyMessage = document.createElement('div');
-                penaltyMessage.className = 'penalty-message';
-                penaltyMessage.textContent = '(-1/4 points)';
-                messageElement.appendChild(penaltyMessage);
-            }
-            else {
-                // Regular message without penalty
-                messageElement.textContent = text;
-            }
-            
-            messageElement.className = type ? `message-box ${type}` : 'message-box';
-            
-            if (duration) {
-                this.messageTimeout = setTimeout(() => {
-                    messageElement.textContent = '';
-                    messageElement.className = 'message-box';
-                    this.messageTimeout = null;
-                }, duration);
-            }
-        }
-    }
-}
-
-// Initialize game and store reference
-window.addEventListener('DOMContentLoaded', () => {
-    window.gameController = new GameController();
-});
-
-export default GameController;    removeAllSpareCells(removeAll = false) {
-        const spareCells = this.state.gridEntries
-            .map((entry, index) => (!entry?.isPartOfPath && !this.state.removedCells.has(index)) ? index : null)
-            .filter(index => index !== null);
-
-        if (spareCells.length === 0) {
-            this.showMessage('No spare cells to remove!', 'info');
-            return;
-        }
-
-        scoreManager.handleSpareRemoval();
-
-        // Remove either all or 50% of spare cells
-        const numToRemove = removeAll ? spareCells.length : Math.ceil(spareCells.length / 2);
-        const cellsToRemove = spareCells
-            .sort(() => Math.random() - 0.5)
-            .slice(0, numToRemove);
-
-        cellsToRemove.forEach(index => {
-            this.state.removedCells.add(index);
-            updateCell(index, null);
-        });
-
-        // Disable button after use or if level 1 (where all cells are already removed)
-        document.getElementById('remove-spare').disabled = true;
-        
-        if (!removeAll) {
-            this.showMessage(`Removed ${numToRemove} spare cells.`, 'info');
-        }
-    }
-    
-    checkSolution() {
-        // First, check if the path meets the required length formula (3n+1)
-        if ((this.state.userPath.length - 1) % 3 !== 0) {
-            scoreManager.handleCheck(false);
-            this.showMessage('Path length must be 4, 7, 10, 13, etc. (3n+1) to represent complete calculations.', 'error', 10000);
-            return;
-        }
-        
-        // Check if path ends at the red cell
-        const lastCellIndex = this.state.userPath[this.state.userPath.length - 1];
-        const lastCell = document.querySelector(`[data-index="${lastCellIndex}"]`);
-        const endsAtRedCell = this.isEndCell(lastCell);
-        
-        // Get current grid size
-        const config = getLevelConfig(this.state.currentLevel);
-        const gridSize = config.gridSize || 10;
-        
-        // Validate mathematical correctness - pass current level explicitly
-        const validation = this.validatePath();
-            
-        if (validation.isValid) {
-            if (endsAtRedCell) {
-                // Path is valid and ends at the red cell - success!
-                scoreManager.handleCheck(true);
-                this.handlePuzzleSolved();
-            } else {
-                scoreManager.handleCheck(false);
-                this.showMessage('Path is mathematically correct! Continue to the end square.', 'info');
-            }
-        } else {
-            scoreManager.handleCheck(false);
-            
-            // Show error message with specific details
-            if (validation.error) {
-                this.showMessage(validation.error, 'error', 10000);
-            } else {
-                this.showMessage('Mathematical error in the path. Try again.', 'error', 10000);
-            }
-            
-            // Truncate the path to keep only valid calculations if we know where the error occurred
-            if (validation.failedAt !== undefined) {
-                this.state.userPath = this.state.userPath.slice(0, validation.failedAt);
-                this.updatePathHighlight();
-            }
-        }
-        
-        this.updateUI();
-    }
-
-    handlePuzzleSolved() {
-        console.log("PUZZLE SOLVED! Congratulations message and score updates coming next...");
-        
-        // Display success message
-        this.showMessage('Congratulations! Puzzle solved!', 'success');
-        
-        // Update score
-        scoreManager.completePuzzle();
-        
-        // Mark cells in the path as solved, but preserve start and end cell colors
-        this.state.userPath.forEach((index, position) => {
-            const cell = document.querySelector(`[data-index="${index}"]`);
-            if (!cell) return;
-            
-            // Keep start cell dark green and end cell dark red
-            if (position === 0) {
-                // Start cell - keep it green/dark green
-                cell.classList.add('start-cell-selected');
-            } else if (position === this.state.userPath.length - 1) {
-                // End cell - keep it red/dark red
-                cell.classList.add('end-cell-selected');
-            } else {
-                // Middle cells - add solved path class for yellow
-                cell.classList.add('user-solved-path');
-            }
-        });
-        
-        // Delay before enabling next level
-        setTimeout(() => {
-            // Disable game to prevent further interaction with this puzzle
-            this.state.gameActive = false;
-            
-            // Update UI to reflect completion
-            this.updateUI();
-            
-            // Suggestion for next level if not at max level
-            if (this.state.currentLevel < 10) {
-                this.showMessage(`Ready for level ${this.state.currentLevel + 1}?`, 'info');
-            } else {
-                this.showMessage('You completed the highest level! Try again for a better score.', 'info');
-            }
-        }, 1500);
-    }
-
-    getLevelConfig(level) {
-        // Re-export the function from sequencegenerator.js
-        return getLevelConfig(level);
-    }// gamecontroller.js - Updated for border-based path visualization
+// gamecontroller.js - Updated for border-based path visualization
 import { generatePath } from './pathgenerator.js';
 import { generateSequence, sequenceToEntries, getLevelConfig } from './sequencegenerator.js';
 import { renderGrid, updateCell } from './gridrenderer.js';
@@ -820,3 +537,290 @@ class GameController {
         `;
         document.head.appendChild(style);
     }
+    
+    removeAllSpareCells(removeAll = false) {
+        const spareCells = this.state.gridEntries
+            .map((entry, index) => (!entry?.isPartOfPath && !this.state.removedCells.has(index)) ? index : null)
+            .filter(index => index !== null);
+
+        if (spareCells.length === 0) {
+            this.showMessage('No spare cells to remove!', 'info');
+            return;
+        }
+
+        scoreManager.handleSpareRemoval();
+
+        // Remove either all or 50% of spare cells
+        const numToRemove = removeAll ? spareCells.length : Math.ceil(spareCells.length / 2);
+        const cellsToRemove = spareCells
+            .sort(() => Math.random() - 0.5)
+            .slice(0, numToRemove);
+
+        cellsToRemove.forEach(index => {
+            this.state.removedCells.add(index);
+            updateCell(index, null);
+        });
+
+        // Disable button after use or if level 1 (where all cells are already removed)
+        document.getElementById('remove-spare').disabled = true;
+        
+        if (!removeAll) {
+            this.showMessage(`Removed ${numToRemove} spare cells.`, 'info');
+        }
+    }
+    
+    checkSolution() {
+        // First, check if the path meets the required length formula (3n+1)
+        if ((this.state.userPath.length - 1) % 3 !== 0) {
+            scoreManager.handleCheck(false);
+            this.showMessage('Path length must be 4, 7, 10, 13, etc. (3n+1) to represent complete calculations.', 'error', 10000);
+            return;
+        }
+        
+        // Check if path ends at the red cell
+        const lastCellIndex = this.state.userPath[this.state.userPath.length - 1];
+        const lastCell = document.querySelector(`[data-index="${lastCellIndex}"]`);
+        const endsAtRedCell = this.isEndCell(lastCell);
+        
+        // Get current grid size
+        const config = getLevelConfig(this.state.currentLevel);
+        const gridSize = config.gridSize || 10;
+        
+        // Validate mathematical correctness - pass current level explicitly
+        const validation = this.validatePath();
+            
+        if (validation.isValid) {
+            if (endsAtRedCell) {
+                // Path is valid and ends at the red cell - success!
+                scoreManager.handleCheck(true);
+                this.handlePuzzleSolved();
+            } else {
+                scoreManager.handleCheck(false);
+                this.showMessage('Path is mathematically correct! Continue to the end square.', 'info');
+            }
+        } else {
+            scoreManager.handleCheck(false);
+            
+            // Show error message with specific details
+            if (validation.error) {
+                this.showMessage(validation.error, 'error', 10000);
+            } else {
+                this.showMessage('Mathematical error in the path. Try again.', 'error', 10000);
+            }
+            
+            // Truncate the path to keep only valid calculations if we know where the error occurred
+            if (validation.failedAt !== undefined) {
+                this.state.userPath = this.state.userPath.slice(0, validation.failedAt);
+                this.updatePathHighlight();
+            }
+        }
+        
+        this.updateUI();
+    }
+
+    handlePuzzleSolved() {
+        console.log("PUZZLE SOLVED! Congratulations message and score updates coming next...");
+        
+        // Display success message
+        this.showMessage('Congratulations! Puzzle solved!', 'success');
+        
+        // Update score
+        scoreManager.completePuzzle();
+        
+        // Mark cells in the path as solved, but preserve start and end cell colors
+        this.state.userPath.forEach((index, position) => {
+            const cell = document.querySelector(`[data-index="${index}"]`);
+            if (!cell) return;
+            
+            // Keep start cell dark green and end cell dark red
+            if (position === 0) {
+                // Start cell - keep it green/dark green
+                cell.classList.add('start-cell-selected');
+            } else if (position === this.state.userPath.length - 1) {
+                // End cell - keep it red/dark red
+                cell.classList.add('end-cell-selected');
+            } else {
+                // Middle cells - add solved path class for yellow
+                cell.classList.add('user-solved-path');
+            }
+        });
+        
+        // Delay before enabling next level
+        setTimeout(() => {
+            // Disable game to prevent further interaction with this puzzle
+            this.state.gameActive = false;
+            
+            // Update UI to reflect completion
+            this.updateUI();
+            
+            // Suggestion for next level if not at max level
+            if (this.state.currentLevel < 10) {
+                this.showMessage(`Ready for level ${this.state.currentLevel + 1}?`, 'info');
+            } else {
+                this.showMessage('You completed the highest level! Try again for a better score.', 'info');
+            }
+        }, 1500);
+    }
+
+    getLevelConfig(level) {
+        // Re-export the function from sequencegenerator.js
+        return getLevelConfig(level);
+    }
+    
+    validatePath() {
+        // Get the current grid size from the level config
+        const config = getLevelConfig(this.state.currentLevel);
+        const gridSize = config.gridSize || 10;
+        
+        // First manually check path continuity with the correct grid size
+        for (let i = 1; i < this.state.userPath.length; i++) {
+            const prevIndex = this.state.userPath[i-1];
+            const currIndex = this.state.userPath[i];
+            
+            const prevX = prevIndex % gridSize;
+            const prevY = Math.floor(prevIndex / gridSize);
+            const currX = currIndex % gridSize;
+            const currY = Math.floor(currIndex / gridSize);
+            
+            const isAdjacent = (Math.abs(prevX - currX) === 1 && prevY === currY) || 
+                        (Math.abs(prevY - currY) === 1 && prevX === currX);
+            
+            if (!isAdjacent) {
+                return {
+                    isValid: false,
+                    error: 'Path must be continuous - cells must be adjacent!'
+                };
+            }
+        }
+        
+        // Then validate the mathematical sequence
+        return validatePathMath(this.state.userPath, this.state.gridEntries);
+    }
+
+    resetPath() {
+        console.log('resetPath method called');
+        
+        try {
+            if (!this.state.gameActive) {
+                console.log('Game not active, reset path aborted');
+                return;
+            }
+            
+            // Reset user path array
+            this.state.userPath = [];
+            console.log('User path reset to empty array');
+            
+            // Clear path highlighting from all cells
+            document.querySelectorAll('.grid-cell').forEach(cell => {
+                cell.classList.remove('selected', 'start-cell-selected', 'end-cell-selected', 'just-selected');
+            });
+            console.log('Cell highlighting cleared');
+            
+            // Remove all path borders
+            removeAllPathBorders();
+            console.log('Path borders removed');
+            
+            // Update UI elements (button states, etc.)
+            this.updateUI(); // This will disable the button again since the path is now empty
+            
+            // Show feedback message
+            this.showMessage('Path reset. Start again from the green square.');
+            console.log('Path reset complete');
+        } catch (error) {
+            console.error('Error during path reset:', error);
+            this.showMessage('Error resetting path. Please try again.', 'error');
+        }
+    }
+
+    updateUI() {
+        // Update button states
+        const checkButton = document.getElementById('check-solution');
+        const removeButton = document.getElementById('remove-spare');
+        const resetButton = document.getElementById('reset-path');
+        
+        if (checkButton) {
+            checkButton.disabled = !this.state.gameActive || this.state.userPath.length === 0;
+        }
+        
+        if (removeButton) {
+            // Hide the button for level 1 where all cells are automatically removed
+            if (this.state.currentLevel === 1) {
+                removeButton.style.display = 'none';
+            } else {
+                removeButton.style.display = '';
+                removeButton.disabled = !this.state.gameActive || this.state.removedCells.size > 0;
+            }
+        }
+                
+        if (resetButton) {
+            // Only disable when game is not active OR path is empty
+            resetButton.disabled = !this.state.gameActive || this.state.userPath.length === 0;
+        }
+
+        // Update level buttons
+        document.querySelectorAll('.level-btn').forEach(btn => {
+            btn.classList.toggle('active', parseInt(btn.dataset.level) === this.state.currentLevel);
+        });
+    }
+   
+    showMessage(text, type = 'info', duration = null) {
+        const messageElement = document.getElementById('game-messages');
+        if (messageElement) {
+            // Clear any existing timeout
+            if (this.messageTimeout) {
+                clearTimeout(this.messageTimeout);
+                this.messageTimeout = null;
+            }
+            
+            // Clear previous content
+            messageElement.innerHTML = '';
+            
+            // Check if this is a message that needs a penalty line
+            if (text.includes('Removed')) {
+                // Main message
+                const mainMessage = document.createElement('div');
+                mainMessage.textContent = text;
+                messageElement.appendChild(mainMessage);
+                
+                // Penalty message
+                const penaltyMessage = document.createElement('div');
+                penaltyMessage.className = 'penalty-message';
+                penaltyMessage.textContent = '(-1/3 points)';
+                messageElement.appendChild(penaltyMessage);
+            } 
+            else if (text === 'Path is mathematically correct! Continue to the end square.') {
+                // Changed message
+                const mainMessage = document.createElement('div');
+                mainMessage.textContent = 'Path is mathematically correct!';
+                messageElement.appendChild(mainMessage);
+                
+                // Penalty message
+                const penaltyMessage = document.createElement('div');
+                penaltyMessage.className = 'penalty-message';
+                penaltyMessage.textContent = '(-1/4 points)';
+                messageElement.appendChild(penaltyMessage);
+            }
+            else {
+                // Regular message without penalty
+                messageElement.textContent = text;
+            }
+            
+            messageElement.className = type ? `message-box ${type}` : 'message-box';
+            
+            if (duration) {
+                this.messageTimeout = setTimeout(() => {
+                    messageElement.textContent = '';
+                    messageElement.className = 'message-box';
+                    this.messageTimeout = null;
+                }, duration);
+            }
+        }
+    }
+}
+
+// Initialize game and store reference
+window.addEventListener('DOMContentLoaded', () => {
+    window.gameController = new GameController();
+});
+
+export default GameController;
