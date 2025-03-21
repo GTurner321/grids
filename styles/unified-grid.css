@@ -15,12 +15,13 @@
 /* ===== SCORE ROW - CONSISTENT SIZE ===== */
 /* Always maintains the same width regardless of grid size */
 .score-row {
-  display: flex;
+  display: flex !important;
+  align-items: center !important;
   width: var(--grid-total-width);
-  height: 70px;
-  background-color: #e6f2ff;
-  border: 1px solid #94a3b8;
-  border-bottom: none;
+  height: 70px !important;
+  background-color: #e6f2ff !important;
+  border: 1px solid #94a3b8 !important;
+  border-bottom: none !important;
   margin: 0 auto;
   border-radius: 0;
   box-sizing: border-box;
@@ -29,32 +30,50 @@
   font-weight: bold !important;
 }
 
-/* Split score row into left (60%) and right (40%) */
+/* Score left (name and score in red) */
 .score-left {
-  width: 60%;
-  display: flex;
-  align-items: center;
-  padding-left: 10px;
-  position: relative;
-  z-index: 2; /* Above level indicators */
-  color: #ef4444 !important; /* Red for score text */
+  width: 60% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  padding-left: 15px !important;
+  color: #ef4444 !important; /* Red for score */
   text-align: left !important;
-}
-
-.score-right {
-  width: 40%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding-right: 10px;
   position: relative;
   z-index: 2; /* Above level indicators */
-  text-align: right !important;
 }
 
-/* Target MathJax elements to ensure they're colored correctly */
-.grid-cell.operator .MathJax {
-  color: #ef4444 !important; /* Ensure MathJax operators are red */
+/* Score right (total justified right) */
+.score-right {
+  width: 40% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  padding-right: 15px !important;
+  text-align: right !important;
+  position: relative;
+  z-index: 2; /* Above level indicators */
+}
+
+/* Total label */
+#score-total {
+  text-align: right !important;
+  justify-content: flex-end !important;
+  width: 100% !important;
+  font-weight: bold !important;
+}
+
+/* Bonus score info */
+#score-bonus {
+  visibility: visible !important;
+  color: #ef4444 !important; /* Red for round score */
+}
+
+/* Username in score bar should also be bold */
+#score-bonus:not(:empty) {
+  visibility: visible !important;
+  font-weight: bold !important;
+  font-family: 'Trebuchet MS', Arial, sans-serif !important;
 }
 
 /* ===== GRID CONTAINER ===== */
@@ -118,6 +137,11 @@
   font-size: 1.7rem !important; /* 2 sizes larger for operators */
   color: #ef4444 !important; /* Red color for operators */
   font-weight: bold !important;
+}
+
+/* Target MathJax elements to ensure they're colored correctly */
+.grid-cell.operator .MathJax {
+  color: #ef4444 !important; /* Ensure MathJax operators are red */
 }
 
 /* Cell state variations */
@@ -205,7 +229,20 @@
   
   /* Mobile score row - apply basic styling but let JS set the width */
   .score-row {
-    height: 60px;
+    height: 60px !important;
+  }
+  
+  .score-left, .score-right {
+    font-size: 0.9rem !important;
+  }
+  
+  /* Fix spacing for mobile */
+  .score-left {
+    padding-left: 10px !important;
+  }
+  
+  .score-right {
+    padding-right: 10px !important;
   }
   
   /* Mobile grid container - don't set specific width properties */
