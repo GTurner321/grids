@@ -445,11 +445,12 @@ body {
     padding: 6px;
     border-radius: 4px;
     font-weight: bold;
-    font-size: 0.3rem !important;
+    font-size: 0.25rem !important; /* Made even smaller */
     color: #1e40af !important; /* Dark blue */
     font-family: 'Lucida Handwriting', 'Brush Script MT', cursive;
     width: 60%; /* Restricted to 60% of the page width */
     max-width: 640px;
+    text-shadow: none !important; /* Explicitly remove any text shadow */
 }
 
 /* Helpful indicator for current dragging direction on mobile */
