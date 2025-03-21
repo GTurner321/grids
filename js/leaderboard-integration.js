@@ -1114,24 +1114,24 @@ class LeaderboardManager {
     
     // Force check of button visibility
     checkButtonVisibility() {
-        const gameContainer = document.querySelector('.game-container');
-        const bottomButtons = document.getElementById('bottom-buttons');
+    const gameContainer = document.querySelector('.game-container');
+    const bottomButtons = document.getElementById('bottom-buttons');
+    
+    if (gameContainer && bottomButtons) {
+        console.log('Checking buttons visibility:', 
+            gameContainer.classList.contains('game-active') ? 'game active' : 'game not active');
         
-        if (gameContainer && bottomButtons) {
-            console.log('Checking buttons visibility:', 
-                gameContainer.classList.contains('game-active') ? 'game active' : 'game not active');
+        // Just ensure the display property is set correctly
+        if (gameContainer.classList.contains('game-active')) {
+            bottomButtons.style.display = 'flex';
             
-            // Just ensure the display property is set correctly
-            if (gameContainer.classList.contains('game-active')) {
-                bottomButtons.style.display = 'flex';
-                
-                // If username is set, apply the proper button layout
-                if (this.isUsernameSet) {
-                    this.handleButtonsAfterSubmission();
-                }
+            // If username is set, apply the proper button layout
+            if (this.isUsernameSet) {
+                this.handleButtonsAfterSubmission();
             }
         }
     }
+}
 }
 
 // Initialize the leaderboard manager when DOM content is loaded
