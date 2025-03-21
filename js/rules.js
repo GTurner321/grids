@@ -1,5 +1,4 @@
 // rules.js - Modified version
-
 document.addEventListener('DOMContentLoaded', function() {
     // Create the rules box directly in the DOM
     createRulesBox();
@@ -18,6 +17,9 @@ function createRulesBox() {
     // Set the content of the rules box
     rulesBox.innerHTML = `
         <div class="rules-content">
+            <div class="rules-image-container" style="width: 85%; margin: 0 auto; display: block;">
+                <img src="images/gridgameexample1.png" alt="Grid Game Example" style="width: 100%; height: auto;">
+            </div>
             <h2 class="rules-box-title">RULES</h2>
             <div class="rules-section">
                 <p>FIND THE PATH OF SUMS - GREEN TO RED</p>
