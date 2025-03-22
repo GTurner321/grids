@@ -25,7 +25,7 @@ export function addPathBorders(path, getCellElement, gridSize = 10) {
         const nextIndex = position < path.length - 1 ? path[position + 1] : null;
         
         // Add border classes based on connected cells
-        addCellBorders(cell, cellIndex, prevIndex, nextIndex, gridSize);
+        addCellBordersWithDelay(cell, cellIndex, prevIndex, nextIndex, gridSize, position, path.length - 1);
     });
 }
 
@@ -42,13 +42,16 @@ export function removeAllPathBorders() {
 
 /**
  * Add appropriate border classes to a cell based on its connections
+ * With delayed rendering: only shows borders when the next cell has been selected
  * @param {HTMLElement} cell - The cell element
  * @param {number} cellIndex - Index of the current cell
  * @param {number|null} prevIndex - Index of the previous cell in path (or null)
  * @param {number|null} nextIndex - Index of the next cell in path (or null)
  * @param {number} gridSize - Size of the grid
+ * @param {number} position - Position of this cell in the path
+ * @param {number} lastPosition - Position of the last cell in the path
  */
-function addCellBorders(cell, cellIndex, prevIndex, nextIndex, gridSize) {
+function addCellBordersWithDelay(cell, cellIndex, prevIndex, nextIndex, gridSize, position, lastPosition) {
     // Get coordinates for current cell
     const x = cellIndex % gridSize;
     const y = Math.floor(cellIndex / gridSize);
@@ -84,10 +87,36 @@ function addCellBorders(cell, cellIndex, prevIndex, nextIndex, gridSize) {
     }
     
     // Add borders to sides that are not connected to the path
-    if (!connections.top) cell.classList.add('border-top');
-    if (!connections.right) cell.classList.add('border-right');
-    if (!connections.bottom) cell.classList.add('border-bottom');
-    if (!connections.left) cell.classList.add('border-left');
+    // Only add borders if:
+    // 1. It's the first cell and there's a next cell (show border opposite to next cell)
+    // 2. It's the last cell (show all borders except where it connects to previous cell)
+    // 3. It's a middle cell and it has both previous and next cells (show borders except at connections)
+    
+    if (position === 0 && nextIndex !== null) {
+        // First cell: Only add borders on sides that aren't connected to the next cell
+        // This creates an "opening" toward the next cell
+        if (!connections.top) cell.classList.add('border-top');
+        if (!connections.right) cell.classList.add('border-right');
+        if (!connections.bottom) cell.classList.add('border-bottom');
+        if (!connections.left) cell.classList.add('border-left');
+    } 
+    else if (position === lastPosition) {
+        // Last cell: Add all borders except where it connects to the previous cell
+        // This "closes" the path at the end
+        if (!connections.top) cell.classList.add('border-top');
+        if (!connections.right) cell.classList.add('border-right');
+        if (!connections.bottom) cell.classList.add('border-bottom');
+        if (!connections.left) cell.classList.add('border-left');
+    } 
+    else if (prevIndex !== null && nextIndex !== null) {
+        // Middle cell: Only add borders on sides that don't connect to other path cells
+        if (!connections.top) cell.classList.add('border-top');
+        if (!connections.right) cell.classList.add('border-right');
+        if (!connections.bottom) cell.classList.add('border-bottom');
+        if (!connections.left) cell.classList.add('border-left');
+    }
+    // For cells that have a previous but no next (current end of an incomplete path),
+    // we don't add any borders to show it's still open for continuation
 }
 
 /**
@@ -149,6 +178,11 @@ export function addBorderStyles() {
         .end-cell-selected.border-bottom,
         .end-cell-selected.border-left {
             z-index: 5;
+        }
+        
+        /* Reduce score bar height */
+        .score-row {
+            height: 35px !important;
         }
     `;
     
