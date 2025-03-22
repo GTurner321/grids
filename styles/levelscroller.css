@@ -1,0 +1,167 @@
+/* level-scroller.css - Styling for the level selection scroller */
+
+/* Level Scroller Container */
+.level-scroller-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+    padding: 5px 0;
+    height: 50px;
+}
+
+/* Level Display Container (holds the buttons) */
+.level-display-container {
+    position: relative;
+    width: 180px;
+    height: 48px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 10px;
+}
+
+/* Scrollable Level Buttons */
+.level-btn-scrollable {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 8px;
+    background-color: #3b82f6;
+    color: white;
+    font-family: 'Black Ops One', cursive;
+    font-size: 1.2rem;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    border: 2px solid #60a5fa;
+    border-bottom-width: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Visible Button */
+.level-btn-scrollable.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+/* Active Button */
+.level-btn-scrollable.active {
+    background-color: #1d4ed8;
+}
+
+/* Arrow Buttons */
+.level-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    -webkit-tap-highlight-color: transparent;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 2px solid #60a5fa;
+    z-index: 10;
+}
+
+.level-arrow svg {
+    width: 24px;
+    height: 24px;
+}
+
+.level-arrow:hover {
+    background-color: #2563eb;
+}
+
+.level-arrow:active {
+    transform: scale(0.95);
+    background-color: #1d4ed8;
+}
+
+/* Position Indicator (Dots) */
+.level-position-indicator {
+    position: absolute;
+    bottom: -15px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+}
+
+.level-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #d1d5db;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.level-dot.active {
+    background-color: #3b82f6;
+    transform: scale(1.3);
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+    .level-scroller-container {
+        height: 55px;
+    }
+    
+    .level-btn-scrollable {
+        font-size: 1.1rem;
+    }
+    
+    .level-arrow {
+        width: 48px;
+        height: 48px;
+    }
+    
+    .level-arrow svg {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .level-position-indicator {
+        bottom: -20px;
+    }
+    
+    /* Add space below indicators */
+    .level-selector-container {
+        margin-bottom: 30px;
+    }
+}
+
+/* Touch device optimizations */
+.touch-device .level-arrow {
+    min-height: 48px;
+    min-width: 48px;
+}
+
+/* Animation for level change */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.level-btn-scrollable.visible.changing {
+    animation: pulse 0.3s ease-in-out;
+}
