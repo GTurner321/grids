@@ -43,18 +43,8 @@
         <!-- Level Selection -->
         <section class="level-selector-container">
             <p class="level-selector-title">CHOOSE YOUR LEVEL</p>
-            <div class="level-buttons">
-                <button type="button" class="level-btn" data-level="1">L1</button>
-                <button type="button" class="level-btn" data-level="2">L2</button>
-                <button type="button" class="level-btn" data-level="3">L3</button>
-                <button type="button" class="level-btn" data-level="4">L4</button>
-                <button type="button" class="level-btn" data-level="5">L5</button>
-                <button type="button" class="level-btn" data-level="6">L6</button>
-                <button type="button" class="level-btn" data-level="7">L7</button>
-                <button type="button" class="level-btn" data-level="8">L8</button>
-                <button type="button" class="level-btn" data-level="9">L9</button>
-                <button type="button" class="level-btn" data-level="10">L10</button>
-            </div>
+            <!-- The .level-buttons container will be populated by levelscroller.js -->
+            <div class="level-buttons"></div>
         </section>
         
         <!-- Main Game Area -->
@@ -99,6 +89,7 @@
     
     <!-- Game Scripts -->
     <script type="module" src="js/rules.js"></script>
+    <script type="module" src="js/levelscroller.js"></script>
     <script type="module" src="js/scoremanager.js"></script>
     <script type="module" src="js/gamecontroller.js"></script>
     <script type="module" src="js/leaderboard-integration.js"></script>
