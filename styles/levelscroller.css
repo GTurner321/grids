@@ -34,7 +34,7 @@
     border-radius: 8px;
     background-color: #3b82f6;
     color: white;
-    font-family: 'Black Ops One', cursive;
+    font-family: 'Black Ops One', cursive !important; /* BLACK OPS FONT */
     font-size: 1.2rem;
     cursor: pointer;
     opacity: 0;
@@ -48,13 +48,20 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-weight: normal !important; /* NOT BOLD */
+    text-shadow: none !important; /* NO SHADOW */
 }
 
-/* Visible Button */
+/* Visible Button - add hover effect */
 .level-btn-scrollable.visible {
     opacity: 1;
     pointer-events: auto;
     transform: translateY(0);
+}
+
+.level-btn-scrollable.visible:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
 }
 
 /* Active Button */
@@ -95,8 +102,6 @@
     background-color: #1d4ed8;
 }
 
-/* Position Indicator (Dots) removed as per request */
-
 /* Mobile Optimizations */
 @media (max-width: 768px) {
     .level-scroller-container {
@@ -105,6 +110,9 @@
     
     .level-btn-scrollable {
         font-size: 1.1rem;
+        font-family: 'Black Ops One', cursive !important; /* BLACK OPS FONT */
+        font-weight: normal !important; /* NOT BOLD */
+        text-shadow: none !important; /* NO SHADOW */
     }
     
     .level-arrow {
