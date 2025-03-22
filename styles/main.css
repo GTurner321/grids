@@ -418,125 +418,102 @@ body {
    8. GAME CONTROLS
    ========================================================================== */
 
+/* ==========================================================================
+   8. GAME CONTROLS - UNIFIED STYLING
+   ========================================================================== */
+
 .game-controls {
-  margin-top: 8px;
+  margin-top: 12px;
   display: flex;
+  flex-direction: row;
   justify-content: center;
   gap: 8px;
   width: 100%;
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
+/* Base button styling for all screen sizes */
 .game-controls button {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 6px 12px;
-  font-size: 0.8rem;
-  background-color: var(--form-bg-color);
-  color: var(--dark-gray);
-  border: 2px solid var(--dark-green);
-  border-radius: 4px;
+  justify-content: center;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  font-weight: bold;
+  background-color: #dd717e; /* Crimson red */
+  color: white;
+  border: 2px solid #9c3c47; /* Dark red border */
+  border-bottom-width: 3px;
+  border-radius: 5px;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-family: 'Courier New', monospace;
-  text-transform: uppercase;
-  font-weight: bold;
-  letter-spacing: 0.05em;
+  height: 40px;
 }
 
 .game-controls button:hover {
-  background-color: #ddd6fe; /* Slightly darker on hover */
+  background-color: #c13a49; /* Darker red on hover */
+}
+
+.game-controls button:active {
+  transform: translateY(2px);
+  border-bottom-width: 1px;
 }
 
 .game-controls button svg {
   width: 14px;
   height: 14px;
+  margin-right: 6px;
+  stroke: white;
 }
 
-/* Mobile adjustments */
+/* Button layout for specific controls */
+#check-solution {
+  width: 25%;
+}
+
+#remove-spare {
+  width: 50%;
+}
+
+#reset-path {
+  width: 25%;
+}
+
+/* Button animation */
+@keyframes buttonPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.game-controls button.clicked {
+  animation: buttonPulse 0.3s ease-in-out;
+  background-color: #c13a49; /* Darker red while pulsing */
+}
+
+.game-controls button:active, 
+.game-controls button:focus,
+.game-controls button.active,
+.game-controls button.selected {
+  background-color: #dd717e; /* Maintain crimson color */
+  color: white;
+}
+
+/* Specific adjustments for smaller screens */
 @media (max-width: 768px) {
   .game-controls {
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: center !important;
-    width: calc(100vw - 20px) !important;
-    margin: 12px auto 0 !important;
-    gap: 5px !important;
-  }
-  
-  .game-controls button {
-    padding: 8px 6px;
-    font-size: 0.9rem;
-    font-family: 'Trebuchet MS', Arial, sans-serif;
-    font-weight: bold;
-    background-color: #dd717e !important; /* Crimson red */
-    color: white !important;
-    border: 2px solid #9c3c47; /* Dark red border */
-    border-bottom-width: 3px;
-    border-radius: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 40px;
-    cursor: pointer;
-  }
-  
-  .game-controls button:active {
-    transform: translateY(2px);
-    border-bottom-width: 1px;
-  }
-  
-  .game-controls button svg {
-    width: 14px;
-    height: 14px;
-    margin-right: 4px;
-    stroke: white;
-  }
-  
-  /* Button layout for specific controls */
-  #check-solution {
-    width: 20%;
-  }
-  
-  #remove-spare {
-    width: 50%;
-  }
-  
-  #reset-path {
-    width: 25%;
-  }
-  
-  /* Button animation */
-  @keyframes buttonPulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
-  }
-  
-  .game-controls button.clicked {
-    animation: buttonPulse 0.3s ease-in-out;
-    background-color: #c13a49 !important; /* Darker red while pulsing */
-  }
-  
-  .game-controls button:active, 
-  .game-controls button:focus,
-  .game-controls button.active,
-  .game-controls button.selected {
-    background-color: #dd717e !important; /* Maintain crimson color */
-    color: white !important;
+    width: calc(100vw - 20px);
+    gap: 5px;
   }
 }
 
-/* Smaller screen adjustments */
 @media (max-width: 480px) {
-  .game-controls {
-    flex-direction: row;
-    align-items: center;
-  }
-  
   .game-controls button {
-    font-size: 0.8rem !important;
-    padding: 6px 10px !important;
+    font-size: 0.8rem;
+    padding: 6px 10px;
   }
 }
 
