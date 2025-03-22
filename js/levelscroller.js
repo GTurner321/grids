@@ -116,34 +116,6 @@ class LevelScroller {
                 currentButton.classList.add('active');
             }
         }
-        
-        // Add visual indicator of position in sequence
-        this.updatePositionIndicator();
-    }
-    
-    updatePositionIndicator() {
-        // Get or create position indicator
-        let indicator = document.querySelector('.level-position-indicator');
-        
-        if (!indicator) {
-            indicator = document.createElement('div');
-            indicator.className = 'level-position-indicator';
-            
-            const container = document.querySelector('.level-scroller-container');
-            if (container) {
-                container.appendChild(indicator);
-            }
-        }
-        
-        if (indicator) {
-            // Create dots for each level
-            let dotsHtml = '';
-            for (let i = 1; i <= this.maxLevels; i++) {
-                dotsHtml += `<span class="level-dot ${i === this.currentLevel ? 'active' : ''}"></span>`;
-            }
-            
-            indicator.innerHTML = dotsHtml;
-        }
     }
     
     handleLevelSelection(level) {
@@ -267,28 +239,7 @@ class LevelScroller {
                 background-color: #1d4ed8;
             }
             
-            .level-position-indicator {
-                position: absolute;
-                bottom: -15px;
-                left: 0;
-                right: 0;
-                display: flex;
-                justify-content: center;
-                gap: 6px;
-            }
-            
-            .level-dot {
-                width: 6px;
-                height: 6px;
-                border-radius: 50%;
-                background-color: #d1d5db;
-                transition: background-color 0.3s ease, transform 0.3s ease;
-            }
-            
-            .level-dot.active {
-                background-color: #3b82f6;
-                transform: scale(1.3);
-            }
+            /* Position indicator dots removed as per request */
             
             /* Adjust level selector title margin */
             .level-selector-title {
@@ -315,13 +266,9 @@ class LevelScroller {
                     height: 28px;
                 }
                 
-                .level-position-indicator {
-                    bottom: -20px;
-                }
-                
-                /* Add space below indicators */
+                /* Position indicator removed - no need for spacing adjustments */
                 .level-selector-container {
-                    margin-bottom: 30px;
+                    margin-bottom: 15px;
                 }
             }
             
