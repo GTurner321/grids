@@ -4,6 +4,7 @@
 
 /**
  * Adds path borders to cells based on the path
+ * With delayed rendering: borders only appear once the player has moved past a cell
  * @param {Array} path - Array of cell indices representing the path
  * @param {Function} getCellElement - Function to get cell element by index
  * @param {number} gridSize - Size of the grid (width/height)
@@ -15,7 +16,7 @@ export function addPathBorders(path, getCellElement, gridSize = 10) {
     // If path is empty, nothing to do
     if (!path || path.length === 0) return;
     
-    // Add appropriate borders to each cell in the path
+    // For each cell in the path, determine which borders to show
     path.forEach((cellIndex, position) => {
         const cell = getCellElement(cellIndex);
         if (!cell) return;
@@ -24,8 +25,17 @@ export function addPathBorders(path, getCellElement, gridSize = 10) {
         const prevIndex = position > 0 ? path[position - 1] : null;
         const nextIndex = position < path.length - 1 ? path[position + 1] : null;
         
-        // Add border classes based on connected cells
-        addCellBordersWithDelay(cell, cellIndex, prevIndex, nextIndex, gridSize, position, path.length - 1);
+        // Implement delayed border rendering logic:
+        // 1. For first cell (green), always show borders
+        // 2. For middle cells, only show borders if nextIndex exists (player has moved past this cell)
+        // 3. For last cell in current path (red if final, or current end of selection), always show borders
+        const isFirstCell = position === 0;
+        const isLastSelectedCell = position === path.length - 1;
+        
+        // Only add borders in these cases:
+        if (isFirstCell || nextIndex !== null || isLastSelectedCell) {
+            addCellBordersWithDelay(cell, cellIndex, prevIndex, nextIndex, gridSize, position, path.length - 1);
+        }
     });
 }
 
@@ -42,7 +52,6 @@ export function removeAllPathBorders() {
 
 /**
  * Add appropriate border classes to a cell based on its connections
- * With delayed rendering: only shows borders when the next cell has been selected
  * @param {HTMLElement} cell - The cell element
  * @param {number} cellIndex - Index of the current cell
  * @param {number|null} prevIndex - Index of the previous cell in path (or null)
@@ -87,12 +96,7 @@ function addCellBordersWithDelay(cell, cellIndex, prevIndex, nextIndex, gridSize
     }
     
     // Add borders to sides that are not connected to the path
-    // Only add borders if:
-    // 1. It's the first cell and there's a next cell (show border opposite to next cell)
-    // 2. It's the last cell (show all borders except where it connects to previous cell)
-    // 3. It's a middle cell and it has both previous and next cells (show borders except at connections)
-    
-    if (position === 0 && nextIndex !== null) {
+    if (position === 0) {
         // First cell: Only add borders on sides that aren't connected to the next cell
         // This creates an "opening" toward the next cell
         if (!connections.top) cell.classList.add('border-top');
@@ -116,7 +120,7 @@ function addCellBordersWithDelay(cell, cellIndex, prevIndex, nextIndex, gridSize
         if (!connections.left) cell.classList.add('border-left');
     }
     // For cells that have a previous but no next (current end of an incomplete path),
-    // we don't add any borders to show it's still open for continuation
+    // we don't add any borders to show it's still open for continuation (if not the last cell)
 }
 
 /**
