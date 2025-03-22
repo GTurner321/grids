@@ -154,8 +154,8 @@ body {
 /* Mobile adjustments */
 @media (max-width: 768px) {
   .game-header h1 {
-    font-size: 2.5rem;
-    margin: 10px 0 0.3rem 0;
+    font-size: 3.2rem; /* LARGER TITLE ON MOBILE */
+    margin: 10px 0 0.5rem 0;
     text-shadow: 0 0 10px white, 0 0 15px white, 0 0 20px white;
     text-align: center;
     font-weight: normal;
@@ -165,7 +165,7 @@ body {
 /* Even smaller screens */
 @media (max-width: 480px) {
   .game-header h1 {
-    font-size: 2rem;
+    font-size: 2.8rem;
   }
 }
 
@@ -275,6 +275,7 @@ body {
   letter-spacing: 0.05em;
   font-weight: bold;
   transition: opacity 0.5s ease-out;
+  text-shadow: none; /* NO SHADOW */
 }
 
 .level-buttons {
@@ -312,7 +313,7 @@ body {
   .level-selector-title {
     font-size: 1rem;
     margin-bottom: 8px;
-    text-shadow: 0 0 8px white, 0 0 12px white, 0 0 15px white !important;
+    text-shadow: none !important; /* NO SHADOW */
     font-family: 'Trebuchet MS', Arial, sans-serif !important;
     font-weight: bold !important;
     text-align: center;
@@ -325,9 +326,9 @@ body {
   .level-btn {
     min-width: 30px;
     padding: 0 8px !important;
-    font-size: 0.8rem;
-    font-family: 'Trebuchet MS', Arial, sans-serif !important;
-    font-weight: bold;
+    font-size: 0.9rem; /* LARGER TEXT */
+    font-family: 'Black Ops One', cursive !important; /* BLACK OPS FONT */
+    font-weight: normal !important; /* NOT BOLD */
     background-color: var(--primary-color);
     color: white;
     border: 2px solid var(--secondary-color);
@@ -338,6 +339,7 @@ body {
     align-items: center !important; 
     justify-content: center !important;
     line-height: normal !important;
+    text-shadow: none !important; /* NO SHADOW */
   }
   
   .level-btn:active {
@@ -375,7 +377,7 @@ body {
   padding: 6px;
   border-radius: 4px;
   font-weight: bold;
-  font-size: 0.85rem;
+  font-size: 1.4rem; /* Increased font size */
   color: var(--text-blue) !important;
   font-family: 'Lucida Handwriting', 'Brush Script MT', cursive;
   width: 60%;
@@ -386,9 +388,9 @@ body {
 @media (max-width: 768px) {
   #game-messages {
     width: calc(100vw - 20px) !important;
-    margin: 2px auto 2px !important;
+    margin: 2px auto 2px !important; /* Reduced space underneath */
     padding: 6px 0;
-    font-size: 1.6rem !important;
+    font-size: 1.6rem !important; /* Even larger on mobile */
     min-height: 45px !important;
     text-align: center;
     line-height: 1.3;
@@ -416,10 +418,6 @@ body {
 
 /* ==========================================================================
    8. GAME CONTROLS
-   ========================================================================== */
-
-/* ==========================================================================
-   8. GAME CONTROLS - UNIFIED STYLING
    ========================================================================== */
 
 .game-controls {
@@ -451,6 +449,8 @@ body {
   cursor: pointer;
   transition: all 0.2s ease;
   height: 40px;
+  text-transform: uppercase; /* UPPERCASE TEXT */
+  letter-spacing: 0.03em; /* Better letter spacing */
 }
 
 .game-controls button:hover {
@@ -482,7 +482,7 @@ body {
   width: 25%;
 }
 
-/* Button animation */
+/* Button animation - PULSE INSTEAD OF COLOR CHANGE */
 @keyframes buttonPulse {
   0% { transform: scale(1); }
   50% { transform: scale(1.05); }
@@ -561,6 +561,7 @@ body {
   align-items: center;
   justify-content: center;
   min-width: 140px;
+  text-transform: uppercase; /* UPPERCASE TEXT */
 }
 
 #record-score-btn svg,
@@ -633,8 +634,8 @@ body {
   /* Specific button styling for record & leaderboard */
   #record-score-btn, 
   #leaderboard-btn {
-    width: calc((100vw - 20px) * 0.45 - 5px);
-    max-width: 140px;
+    width: calc((100vw - 20px) * 0.48 - 5px); /* WIDER BUTTONS */
+    max-width: 160px;
     border: 2px solid var(--secondary-color);
     border-bottom-width: 3px;
   }
@@ -654,153 +655,10 @@ body {
 }
 
 /* ==========================================================================
-   10. PATH ARROWS
+   10. PATH BORDERS
    ========================================================================== */
 
-/* Path Arrow Indicators */
-.path-arrow {
-  position: absolute;
-  width: 18px;
-  height: 18px;
-  z-index: 20;
-  opacity: 0.95;
-  pointer-events: none;
-  filter: drop-shadow(0 0 2px white);
-}
-
-/* Position arrows based on direction */
-.path-arrow.right {
-  top: 50%;
-  right: 2px;
-  transform: translateY(-50%);
-}
-
-.path-arrow.left {
-  top: 50%;
-  left: 2px;
-  transform: translateY(-50%);
-}
-
-.path-arrow.up {
-  top: 2px;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.path-arrow.down {
-  bottom: 2px;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.path-arrow svg {
-  width: 100%;
-  height: 100%;
-  fill: var(--primary-color);
-  filter: drop-shadow(0 0 1px white);
-}
-
-/* Mobile adjustments */
-@media (max-width: 768px) {
-  .path-arrow {
-    position: absolute;
-    width: 14px !important;
-    height: 14px !important;
-    z-index: 25;
-    pointer-events: none;
-  }
-
-  /* Position arrows precisely at the center of each edge */
-  .path-arrow.right {
-    top: 50%;
-    right: 0;
-    transform: translateY(-50%);
-  }
-
-  .path-arrow.left {
-    top: 50%;
-    left: 0;
-    transform: translateY(-50%);
-  }
-
-  .path-arrow.up {
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-
-  .path-arrow.down {
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-  
-  /* Create cleaner, tail-less arrows with correct directions */
-  .path-arrow svg {
-    display: none !important;
-  }
-
-  .path-arrow::before,
-  .path-arrow::after {
-    content: '';
-    position: absolute;
-    background-color: #374ee3;
-    width: 8px;
-    height: 2px;
-  }
-
-  /* Right arrow - pointing right from right edge */
-  .path-arrow.right::before {
-    top: 4px;
-    right: 3px;
-    transform: rotate(45deg);
-  }
-
-  .path-arrow.right::after {
-    bottom: 4px;
-    right: 3px;
-    transform: rotate(-45deg);
-  }
-
-  /* Left arrow - pointing left from left edge */
-  .path-arrow.left::before {
-    top: 4px;
-    left: 3px;
-    transform: rotate(-45deg);
-  }
-
-  .path-arrow.left::after {
-    bottom: 4px;
-    left: 3px;
-    transform: rotate(45deg);
-  }
-
-  /* Up arrow - pointing up from top edge */
-  .path-arrow.up::before {
-    top: 3px;
-    left: 2px;
-    transform: rotate(-45deg);
-  }
-
-  .path-arrow.up::after {
-    top: 3px;
-    right: 2px;
-    transform: rotate(45deg);
-  }
-
-  /* Down arrow - pointing down from bottom edge */
-  .path-arrow.down::before {
-    bottom: 3px;
-    left: 2px;
-    transform: rotate(45deg);
-  }
-
-  .path-arrow.down::after {
-    bottom: 3px;
-    right: 2px;
-    transform: rotate(-45deg);
-  }
-}
+/* Path border styles are now handled in cell-borders.js */
 
 /* ==========================================================================
    11. ANIMATIONS & VISUAL FEEDBACK
@@ -1460,56 +1318,82 @@ body {
 }
 
 /* ==========================================================================
-   16. MISCELLANEOUS RESPONSIVE ADJUSTMENTS
+   16. SCORE BAR
    ========================================================================== */
 
-/* Touch device optimizations beyond basic styles */
-.touch-device #submit-username {
-  padding: 10px 16px;
-  min-height: 44px;
+/* Score row */
+.score-row {
+  display: flex !important;
+  align-items: center !important;
+  width: var(--grid-total-width);
+  height: 35px !important;
+  background-color: #e6f2ff !important;
+  border: 1px solid #94a3b8 !important;
+  border-bottom: none !important;
+  margin: 0 auto;
+  border-radius: 0;
+  box-sizing: border-box;
+  position: relative; /* For level indicators */
+  font-family: 'Trebuchet MS', Arial, sans-serif !important;
+  font-weight: bold !important;
 }
 
-.touch-device #username-input {
-  padding: 10px;
-  min-height: 20px;
-  font-size: 16px; /* Prevent zoom on input focus in iOS */
+/* Score left (name and score in red) */
+.score-left {
+  width: 60% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  padding-left: 15px !important;
+  color: #ef4444 !important; /* Red for score */
+  text-align: left !important;
+  position: relative;
+  z-index: 2; /* Above level indicators */
 }
 
-.touch-device .leaderboard-row {
-  padding: 10px 12px;
+/* Score right (total justified right - DARK BLUE) */
+.score-right {
+  width: 40% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  padding-right: 15px !important;
+  text-align: right !important;
+  position: relative;
+  z-index: 2; /* Above level indicators */
+  color: #1e40af !important; /* DARK BLUE for total */
 }
 
-.touch-device .leaderboard-table {
-  -webkit-overflow-scrolling: touch;
-  overflow-y: scroll;
+/* Total label */
+#score-total {
+  text-align: right !important;
+  justify-content: flex-end !important;
+  width: 100% !important;
+  font-weight: bold !important;
+  color: #1e40af !important; /* DARK BLUE for total */
 }
 
-/* Welcome message styling for both desktop and mobile */
-.welcome-message {
-  padding: 15px;
-  background-color: #ede9fe;
-  border: 2px solid var(--dark-green);
-  border-radius: 6px;
-  text-align: center;
-  font-family: 'Courier New', monospace;
-  font-size: 0.9rem;
-  color: var(--dark-green);
-  line-height: 1.4;
-  margin: 10px auto;
-  max-width: 400px;
-  width: 100%;
+/* Bonus score info */
+#score-bonus {
+  visibility: visible !important;
+  color: #ef4444 !important; /* Red for round score */
 }
 
-.welcome-message strong {
-  font-weight: bold;
-  color: var(--text-blue);
+/* Username in score bar should also be bold */
+#score-bonus:not(:empty) {
+  visibility: visible !important;
+  font-weight: bold !important;
+  font-family: 'Trebuchet MS', Arial, sans-serif !important;
 }
 
-/* Mobile specific welcome message adjustments */
-@media (max-width: 480px) {
-  .welcome-message {
-    font-size: 0.8rem;
-    padding: 10px;
+/* MOBILE: Larger text for score bar */
+@media (max-width: 768px) {
+  .score-row {
+    height: 50px !important; /* TALLER */
+  }
+  
+  .score-left, .score-right {
+    font-size: 1.1rem !important; /* LARGER TEXT */
   }
 }
 
@@ -1556,3 +1440,17 @@ of all the breakpoints used in this CSS to ensure consistency:
 All media queries have been structured to maintain a consistent 
 approach throughout this consolidated stylesheet.
 */
+
+/* ==========================================================================
+   19. REMOVE GRAY LINE UNDER LEVEL SELECTOR
+   ========================================================================== */
+
+/* Remove all border/line styles from these containers */
+.level-selector-container, 
+.level-buttons,
+.game-header,
+.game-container > *:not(.game-board) {
+  border-bottom: none !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+}
