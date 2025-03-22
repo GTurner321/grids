@@ -53,6 +53,7 @@
   text-align: right !important;
   position: relative;
   z-index: 2; /* Above level indicators */
+  color: #1e40af !important; /* DARK BLUE for total */
 }
 
 /* Total label */
@@ -61,6 +62,7 @@
   justify-content: flex-end !important;
   width: 100% !important;
   font-weight: bold !important;
+  color: #1e40af !important; /* DARK BLUE for total */
 }
 
 /* Bonus score info */
@@ -130,11 +132,11 @@
 
 /* 6x6 grid cells - enhanced text sizes */
 #grid-container.grid-size-6 .grid-cell:not(.symbol-container) {
-  font-size: 1.5rem !important; /* 2 sizes larger */
+  font-size: 1.5rem !important; /* LARGER TEXT */
 }
 
 #grid-container.grid-size-6 .grid-cell.operator {
-  font-size: 1.7rem !important; /* 2 sizes larger for operators */
+  font-size: 1.7rem !important; /* LARGER OPERATORS */
   color: #ef4444 !important; /* Red color for operators */
   font-weight: bold !important;
 }
@@ -203,240 +205,6 @@
   margin: auto;
 }
 
-/* ===== PATH ARROWS ===== */
-.path-arrow {
-  width: 32px !important; /* 4 sizes larger */
-  height: 32px !important; /* 4 sizes larger */
-  z-index: 30 !important; /* Ensure arrows appear on top */
-  position: absolute !important;
-}
-
-/* Position arrows so they're fully visible within the cell */
-.path-arrow.right {
-  right: 4px !important; /* Pulled in from edge to show full point */
-}
-
-.path-arrow.left {
-  left: 4px !important; /* Pulled in from edge to show full point */
-}
-
-.path-arrow.up {
-  top: 4px !important; /* Pulled in from edge to show full point */
-}
-
-.path-arrow.down {
-  bottom: 4px !important; /* Pulled in from edge to show full point */
-}
-
-/* Hide the default SVG and create custom stemless arrows */
-.path-arrow svg {
-  display: none !important; /* Hide the default SVG with stem */
-}
-
-/* Create custom stemless arrow pointers using pseudo-elements */
-.path-arrow::before,
-.path-arrow::after {
-  content: '' !important;
-  position: absolute !important;
-  background-color: #3b82f6 !important; /* Blue color */
-  width: 14px !important; /* Longer lines for desktop */
-  height: 4px !important; /* Thicker lines for better visibility */
-  border-radius: 2px !important; /* Slightly rounded edges */
-}
-
-/* Right arrow */
-.path-arrow.right::before {
-  top: 8px !important;
-  right: 0 !important;
-  transform: rotate(45deg) !important;
-}
-
-.path-arrow.right::after {
-  bottom: 8px !important;
-  right: 0 !important;
-  transform: rotate(-45deg) !important;
-}
-
-/* Left arrow */
-.path-arrow.left::before {
-  top: 8px !important;
-  left: 0 !important;
-  transform: rotate(-45deg) !important;
-}
-
-.path-arrow.left::after {
-  bottom: 8px !important;
-  left: 0 !important;
-  transform: rotate(45deg) !important;
-}
-
-/* Up arrow */
-.path-arrow.up::before {
-  top: 0 !important;
-  left: 8px !important;
-  transform: rotate(-45deg) !important;
-}
-
-.path-arrow.up::after {
-  top: 0 !important;
-  right: 8px !important;
-  transform: rotate(45deg) !important;
-}
-
-/* Down arrow */
-.path-arrow.down::before {
-  bottom: 0 !important;
-  left: 8px !important;
-  transform: rotate(45deg) !important;
-}
-
-.path-arrow.down::after {
-  bottom: 0 !important;
-  right: 8px !important;
-  transform: rotate(-45deg) !important;
-}
-
-/* ===== RESPONSIVE DESIGN ===== */
-/* ===== RESPONSIVE DESIGN ===== */
-@media (max-width: 768px) {
-  :root {
-    /* Mobile sizing variables */
-    --mobile-padding: 10px;
-    --mobile-container-width: calc(100vw - 2 * var(--mobile-padding));
-    /* DO NOT set mobile size formulas as JS does this */
-  }
-  
-  /* Mobile score row - apply basic styling but let JS set the width */
-  .score-row {
-    height: 60px !important;
-  }
-  
-  .score-left, .score-right {
-    font-size: 0.9rem !important;
-  }
-  
-  /* Fix spacing for mobile */
-  .score-left {
-    padding-left: 10px !important;
-  }
-  
-  .score-right {
-    padding-right: 10px !important;
-  }
-  
-  /* Mobile grid container - don't set specific width properties */
-  #grid-container {
-    /* Width will be set by JS */
-  }
-  
-  /* Mobile grid cells - improved fonts but don't set dimensions */
-  #grid-container.grid-size-10 .grid-cell:not(.symbol-container) {
-    font-size: 1.1rem !important;
-  }
-  
-  #grid-container.grid-size-10 .grid-cell.operator {
-    font-size: 1.3rem !important;
-  }
-  
-  #grid-container.grid-size-6 .grid-cell:not(.symbol-container) {
-    font-size: 1.4rem !important;
-  }
-  
-  #grid-container.grid-size-6 .grid-cell.operator {
-    font-size: 1.6rem !important;
-  }
-  
-  /* Mobile path arrows */
-  .path-arrow {
-    width: 28px !important;
-    height: 28px !important;
-  }
-  
-  /* Thicker lines for mobile */
-  .path-arrow::before,
-  .path-arrow::after {
-    width: 12px !important;
-    height: 5px !important; /* Even thicker on mobile for better visibility */
-  }
-  
-  /* Adjust positioning for mobile */
-  .path-arrow.right::before {
-    top: 7px !important;
-  }
-  
-  .path-arrow.right::after {
-    bottom: 7px !important;
-  }
-  
-  .path-arrow.left::before {
-    top: 7px !important;
-  }
-  
-  .path-arrow.left::after {
-    bottom: 7px !important;
-  }
-  
-  .path-arrow.up::before,
-  .path-arrow.up::after,
-  .path-arrow.down::before,
-  .path-arrow.down::after {
-    width: 12px !important;
-  }
-  
-  /* Enhance touch target sizes */
-  .grid-cell {
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-  }
-  
-  /* Make symbols larger on mobile */
-  .symbol-container {
-    width: 85%;
-    height: 85%;
-  }
-}
-
-/* Specific adjustments for very small screens */
-@media (max-width: 375px) {
-  #grid-container.grid-size-6 .grid-cell {
-    font-size: 1.3rem !important;
-  }
-  
-  #grid-container.grid-size-6 .grid-cell.operator {
-    font-size: 1.5rem !important;
-  }
-  
-  #grid-container.grid-size-10 .grid-cell {
-    font-size: 1.0rem !important;
-  }
-  
-  #grid-container.grid-size-10 .grid-cell.operator {
-    font-size: 1.2rem !important;
-  }
-  
-  /* Smaller arrows on very small screens */
-  .path-arrow {
-    width: 24px !important;
-    height: 24px !important;
-  }
-  
-  .path-arrow::before,
-  .path-arrow::after {
-    width: 10px !important;
-    height: 5px !important;
-  }
-  
-  .path-arrow.right::before,
-  .path-arrow.left::before {
-    top: 6px !important;
-  }
-  
-  .path-arrow.right::after,
-  .path-arrow.left::after {
-    bottom: 6px !important;
-  }
-}
-
 /* ===== LEVEL TRACKER INTEGRATION ===== */
 /* Level indicators in score bar */
 .level-indicators-container {
@@ -474,4 +242,82 @@
 
 .level-indicator.celebrate {
   animation: pulse-green 2s infinite alternate;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+  :root {
+    /* Mobile sizing variables */
+    --mobile-padding: 10px;
+    --mobile-container-width: calc(100vw - 2 * var(--mobile-padding));
+    /* DO NOT set mobile size formulas as JS does this */
+  }
+  
+  /* Mobile score row - apply basic styling but let JS set the width */
+  .score-row {
+    height: 50px !important; /* TALLER */
+  }
+  
+  .score-left, .score-right {
+    font-size: 1.1rem !important; /* LARGER TEXT */
+  }
+  
+  /* Fix spacing for mobile */
+  .score-left {
+    padding-left: 10px !important;
+  }
+  
+  .score-right {
+    padding-right: 10px !important;
+  }
+  
+  /* Mobile grid container - don't set specific width properties */
+  #grid-container {
+    /* Width will be set by JS */
+  }
+  
+  /* Mobile grid cells - improved fonts but don't set dimensions */
+  #grid-container.grid-size-10 .grid-cell:not(.symbol-container) {
+    font-size: 1.1rem !important;
+  }
+  
+  #grid-container.grid-size-10 .grid-cell.operator {
+    font-size: 1.3rem !important;
+  }
+  
+  /* Level 1-3 specific sizes (6x6 grid) - LARGER NUMBERS & OPERATORS */
+  #grid-container.grid-size-6 .grid-cell:not(.symbol-container) {
+    font-size: 1.6rem !important; /* EVEN LARGER ON MOBILE */
+  }
+  
+  #grid-container.grid-size-6 .grid-cell.operator {
+    font-size: 1.8rem !important; /* EVEN LARGER OPERATORS ON MOBILE */
+    color: #ef4444 !important; /* Red color for operators */
+    font-weight: bold !important;
+  }
+  
+  /* Make symbols larger on mobile */
+  .symbol-container {
+    width: 85%;
+    height: 85%;
+  }
+}
+
+/* Specific adjustments for very small screens */
+@media (max-width: 375px) {
+  #grid-container.grid-size-6 .grid-cell {
+    font-size: 1.3rem !important;
+  }
+  
+  #grid-container.grid-size-6 .grid-cell.operator {
+    font-size: 1.5rem !important;
+  }
+  
+  #grid-container.grid-size-10 .grid-cell {
+    font-size: 1.0rem !important;
+  }
+  
+  #grid-container.grid-size-10 .grid-cell.operator {
+    font-size: 1.2rem !important;
+  }
 }
