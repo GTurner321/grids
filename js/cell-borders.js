@@ -1,5 +1,5 @@
 // cell-borders.js - Handles cell border visualization for paths
-// With simplified logic for delayed border rendering
+// With delayed border rendering until next cell is selected
 
 /**
  * Adds path borders to cells based on the path
@@ -12,12 +12,9 @@ export function addPathBorders(path, getCellElement, gridSize = 10) {
     removeAllPathBorders();
     
     // If path is empty, nothing to do
-    if (!path || path.length === 0) return;
+    if (!path || path.length <= 1) return;
     
-    // SIMPLIFIED APPROACH:
-    // 1. Only add borders to cells that have a next cell selected (position < path.length - 1)
-    // 2. Always add borders to the last cell in the path (position === path.length - 1)
-    
+    // Process each cell in the path
     for (let position = 0; position < path.length; position++) {
         const cellIndex = path[position];
         const cell = getCellElement(cellIndex);
@@ -27,20 +24,67 @@ export function addPathBorders(path, getCellElement, gridSize = 10) {
         const prevIndex = position > 0 ? path[position - 1] : null;
         const nextIndex = position < path.length - 1 ? path[position + 1] : null;
         
-        // THIS IS THE KEY CHANGE:
-        // Only add borders if:
-        // - This is NOT the last cell in the path AND there's a next cell selected, OR
-        // - This IS the last cell in the path
+        // DELAYED BORDER RENDERING LOGIC:
+        // 1. Only render complete borders for cells that have a NEXT cell selected
+        // 2. For the most recently selected cell (last in path), only add borders
+        //    on sides that aren't in the direction of potential continuation
         
-        const isLastCell = position === path.length - 1;
+        // Determine cell connections
+        const connections = determineConnections(cellIndex, prevIndex, nextIndex, gridSize);
         
-        if ((nextIndex !== null) || isLastCell) {
-            // Determine cell connections
-            const connections = determineConnections(cellIndex, prevIndex, nextIndex, gridSize);
-            
-            // Apply borders based on connections
+        if (nextIndex !== null) {
+            // This cell has a next cell, so render all borders except where connected
             applyBorders(cell, connections);
+        } else if (position === path.length - 1) {
+            // This is the last cell in the path
+            // For the last cell, complete all borders if it's the end cell (red)
+            if (cell.classList.contains('end-cell') || cell.classList.contains('end-cell-selected')) {
+                applyBorders(cell, connections);
+            } else {
+                // For non-end cells, still show previous connection but keep other sides open
+                // to indicate path can continue
+                const partialConnections = {
+                    top: connections.top,
+                    right: connections.right,
+                    bottom: connections.bottom,
+                    left: connections.left
+                };
+                
+                // Apply only the border connecting to the previous cell
+                if (prevIndex !== null) {
+                    const prevCell = getCellElement(prevIndex);
+                    if (prevCell) {
+                        applyPartialBorders(cell, partialConnections, prevIndex, cellIndex, gridSize);
+                    }
+                }
+            }
         }
+    }
+}
+
+/**
+ * Apply only the borders connecting to the previous cell
+ */
+function applyPartialBorders(cell, connections, prevIndex, currentIndex, gridSize) {
+    // Convert indices to grid coordinates
+    const prevX = prevIndex % gridSize;
+    const prevY = Math.floor(prevIndex / gridSize);
+    const currX = currentIndex % gridSize;
+    const currY = Math.floor(currentIndex / gridSize);
+    
+    // Determine which side connects to the previous cell
+    if (prevX < currX) {
+        // Previous cell is to the left
+        cell.classList.add('border-top', 'border-bottom', 'border-right');
+    } else if (prevX > currX) {
+        // Previous cell is to the right
+        cell.classList.add('border-top', 'border-bottom', 'border-left');
+    } else if (prevY < currY) {
+        // Previous cell is above
+        cell.classList.add('border-left', 'border-right', 'border-bottom');
+    } else if (prevY > currY) {
+        // Previous cell is below
+        cell.classList.add('border-left', 'border-right', 'border-top');
     }
 }
 
@@ -162,6 +206,12 @@ export function addBorderStyles() {
         .end-cell-selected.border-bottom,
         .end-cell-selected.border-left {
             z-index: 5;
+        }
+        
+        /* Add style for solved path cells (yellow) */
+        .grid-cell.user-solved-path {
+            background-color: #f0e68c !important;
+            z-index: 15;
         }
         
         /* Reduce score bar height */
