@@ -427,7 +427,7 @@ body {
   justify-content: center;
   gap: 8px;
   width: 100%;
-  max-width: 640px;
+  max-width: var(--grid-total-width); /* Match the grid width instead of fixed 640px */
   margin-left: auto;
   margin-right: auto;
 }
@@ -469,17 +469,28 @@ body {
   stroke: white;
 }
 
-/* Button layout for specific controls */
+/* Button layout for specific controls - adjusted proportions */
 #check-solution {
-  width: 25%;
+  width: 30%; /* Increased from 25% */
 }
 
 #remove-spare {
-  width: 50%;
+  width: 40%; /* Reduced from 50% */
 }
 
 #reset-path {
-  width: 25%;
+  width: 30%; /* Increased from 25% */
+}
+
+/* Hide Remove Spares button when used */
+.game-controls button#remove-spare.used {
+  display: none;
+}
+
+/* Two-button layout when Remove Spares is hidden */
+.game-controls.two-buttons #check-solution,
+.game-controls.two-buttons #reset-path {
+  width: 45%;
 }
 
 /* Button animation - PULSE INSTEAD OF COLOR CHANGE */
@@ -494,12 +505,13 @@ body {
   background-color: #c13a49; /* Darker red while pulsing */
 }
 
+/* Force buttons to maintain original color */
 .game-controls button:active, 
 .game-controls button:focus,
 .game-controls button.active,
 .game-controls button.selected {
-  background-color: #dd717e; /* Maintain crimson color */
-  color: white;
+  background-color: #dd717e !important; /* Maintain crimson color */
+  color: white !important;
 }
 
 /* Specific adjustments for smaller screens */
@@ -508,12 +520,22 @@ body {
     width: calc(100vw - 20px);
     gap: 5px;
   }
+  
+  .game-controls button {
+    font-size: 1rem; /* Larger text for mobile */
+  }
+  
+  /* Mobile-specific button layout */
+  .game-controls.two-buttons #check-solution,
+  .game-controls.two-buttons #reset-path {
+    width: 49%;
+  }
 }
 
 @media (max-width: 480px) {
   .game-controls button {
-    font-size: 0.8rem;
-    padding: 6px 10px;
+    font-size: 0.9rem; /* Slightly larger than original */
+    padding: 6px 8px;
   }
 }
 
