@@ -618,49 +618,61 @@ class GameController {
         this.updateUI();
     }
 
-    handlePuzzleSolved() {
-        console.log("PUZZLE SOLVED! Congratulations message and score updates coming next...");
+// Updated handlePuzzleSolved method for gamecontroller.js
+
+handlePuzzleSolved() {
+    console.log("PUZZLE SOLVED! Congratulations message and score updates coming next...");
+    
+    // Display success message
+    this.showMessage('Congratulations! Puzzle solved!', 'success');
+    
+    // Update score
+    scoreManager.completePuzzle();
+    
+    // Mark cells in the path as solved
+    this.state.userPath.forEach((index, position) => {
+        const cell = document.querySelector(`[data-index="${index}"]`);
+        if (!cell) return;
         
-        // Display success message
-        this.showMessage('Congratulations! Puzzle solved!', 'success');
-        
-        // Update score
-        scoreManager.completePuzzle();
-        
-        // Mark cells in the path as solved, but preserve start and end cell colors
-        this.state.userPath.forEach((index, position) => {
-            const cell = document.querySelector(`[data-index="${index}"]`);
-            if (!cell) return;
+        // Don't change the start and end cell colors
+        if (position === 0) {
+            // Start cell - keep it green/dark green
+            cell.classList.add('start-cell-selected');
+        } else if (position === this.state.userPath.length - 1) {
+            // End cell - keep it red/dark red
+            cell.classList.add('end-cell-selected');
+        } else {
+            // Middle cells - add solved path class for yellow
+            cell.classList.add('user-solved-path');
             
-            // Keep start cell dark green and end cell dark red
-            if (position === 0) {
-                // Start cell - keep it green/dark green
-                cell.classList.add('start-cell-selected');
-            } else if (position === this.state.userPath.length - 1) {
-                // End cell - keep it red/dark red
-                cell.classList.add('end-cell-selected');
-            } else {
-                // Middle cells - add solved path class for yellow
-                cell.classList.add('user-solved-path');
-            }
-        });
+            // Remove 'selected' class to ensure the yellow color shows
+            cell.classList.remove('selected');
+        }
+    });
+    
+    // Ensure borders are fully drawn on the completed path
+    const config = getLevelConfig(this.state.currentLevel);
+    const gridSize = config.gridSize || 10;
+    addPathBorders(this.state.userPath, 
+                 (index) => document.querySelector(`[data-index="${index}"]`), 
+                 gridSize);
+    
+    // Delay before enabling next level
+    setTimeout(() => {
+        // Disable game to prevent further interaction with this puzzle
+        this.state.gameActive = false;
         
-        // Delay before enabling next level
-        setTimeout(() => {
-            // Disable game to prevent further interaction with this puzzle
-            this.state.gameActive = false;
-            
-            // Update UI to reflect completion
-            this.updateUI();
-            
-            // Suggestion for next level if not at max level
-            if (this.state.currentLevel < 10) {
-                this.showMessage(`Ready for level ${this.state.currentLevel + 1}?`, 'info');
-            } else {
-                this.showMessage('You completed the highest level! Try again for a better score.', 'info');
-            }
-        }, 1500);
-    }
+        // Update UI to reflect completion
+        this.updateUI();
+        
+        // Suggestion for next level if not at max level
+        if (this.state.currentLevel < 10) {
+            this.showMessage(`Ready for level ${this.state.currentLevel + 1}?`, 'info');
+        } else {
+            this.showMessage('You completed the highest level! Try again for a better score.', 'info');
+        }
+    }, 1500);
+}
 
     getLevelConfig(level) {
         // Re-export the function from sequencegenerator.js
