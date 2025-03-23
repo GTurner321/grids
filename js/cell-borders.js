@@ -1,7 +1,9 @@
-// cell-borders.js - Fixed to ensure no borders between adjacent path cells
+// cell-borders.js - Complete rewrite with delayed border rendering
 
 /**
- * Adds path borders to cells based on the path
+ * Calculate the borders for all cells in the path, but only render borders
+ * for cells that have a next cell selected.
+ * 
  * @param {Array} path - Array of cell indices representing the path
  * @param {Function} getCellElement - Function to get cell element by index
  * @param {number} gridSize - Size of the grid (width/height)
@@ -10,66 +12,121 @@ export function addPathBorders(path, getCellElement, gridSize = 10) {
     // Clear all existing borders first
     removeAllPathBorders();
     
-    // If path is empty, nothing to do
-    if (!path || path.length === 0) return;
+    // If path is empty or just one cell, nothing to do
+    if (!path || path.length <= 1) return;
     
-    // Process each cell in the path
-    for (let position = 0; position < path.length; position++) {
-        const cellIndex = path[position];
+    // Pre-calculate all borders for all cells
+    const cellBorders = calculateAllBorders(path, gridSize);
+    
+    // Now apply the borders, but only for cells that have a next cell
+    // (i.e., all cells except the last one)
+    for (let i = 0; i < path.length - 1; i++) {
+        const cellIndex = path[i];
         const cell = getCellElement(cellIndex);
         if (!cell) continue;
         
-        // Determine this cell's coordinates
-        const x = cellIndex % gridSize;
-        const y = Math.floor(cellIndex / gridSize);
+        // Apply the pre-calculated borders for this cell
+        const borders = cellBorders[cellIndex];
+        if (borders.top) cell.classList.add('border-top');
+        if (borders.right) cell.classList.add('border-right');
+        if (borders.bottom) cell.classList.add('border-bottom');
+        if (borders.left) cell.classList.add('border-left');
+    }
+    
+    // Special handling for the last cell - only add borders if it's an end cell
+    const lastCellIndex = path[path.length - 1];
+    const lastCell = getCellElement(lastCellIndex);
+    
+    if (lastCell && (lastCell.classList.contains('end-cell') || 
+                    lastCell.classList.contains('end-cell-selected'))) {
+        // Apply pre-calculated borders for the end cell
+        const borders = cellBorders[lastCellIndex];
+        if (borders.top) lastCell.classList.add('border-top');
+        if (borders.right) lastCell.classList.add('border-right');
+        if (borders.bottom) lastCell.classList.add('border-bottom');
+        if (borders.left) lastCell.classList.add('border-left');
+    }
+}
+
+/**
+ * Calculate which borders each cell in the path should have
+ * 
+ * @param {Array} path - Array of cell indices representing the path
+ * @param {number} gridSize - Size of the grid
+ * @returns {Object} Object mapping cell indices to border configurations
+ */
+function calculateAllBorders(path, gridSize) {
+    const cellBorders = {};
+    
+    // Initialize all cells with all borders
+    for (const cellIndex of path) {
+        cellBorders[cellIndex] = {
+            top: true,
+            right: true,
+            bottom: true,
+            left: true
+        };
+    }
+    
+    // Remove borders between adjacent cells in the path
+    for (let i = 0; i < path.length - 1; i++) {
+        const currentIndex = path[i];
+        const nextIndex = path[i + 1];
         
-        // Get previous and next cells in path (if they exist)
-        const prevIndex = position > 0 ? path[position - 1] : null;
-        const nextIndex = position < path.length - 1 ? path[position + 1] : null;
+        const currentX = currentIndex % gridSize;
+        const currentY = Math.floor(currentIndex / gridSize);
+        const nextX = nextIndex % gridSize;
+        const nextY = Math.floor(nextIndex / gridSize);
         
-        // Initialize all borders as needed
-        let needsTopBorder = true;
-        let needsRightBorder = true;
-        let needsBottomBorder = true;
-        let needsLeftBorder = true;
-        
-        // Remove borders where cell connects to previous cell
-        if (prevIndex !== null) {
-            const prevX = prevIndex % gridSize;
-            const prevY = Math.floor(prevIndex / gridSize);
-            
-            if (prevX === x && prevY === y - 1) needsTopBorder = false;
-            if (prevX === x + 1 && prevY === y) needsRightBorder = false;
-            if (prevX === x && prevY === y + 1) needsBottomBorder = false;
-            if (prevX === x - 1 && prevY === y) needsLeftBorder = false;
+        // Remove borders between these adjacent cells
+        if (nextX > currentX) {
+            // Next cell is to the right
+            cellBorders[currentIndex].right = false;
+            cellBorders[nextIndex].left = false;
+        } else if (nextX < currentX) {
+            // Next cell is to the left
+            cellBorders[currentIndex].left = false;
+            cellBorders[nextIndex].right = false;
+        } else if (nextY > currentY) {
+            // Next cell is below
+            cellBorders[currentIndex].bottom = false;
+            cellBorders[nextIndex].top = false;
+        } else if (nextY < currentY) {
+            // Next cell is above
+            cellBorders[currentIndex].top = false;
+            cellBorders[nextIndex].bottom = false;
         }
+    }
+    
+    return cellBorders;
+}
+
+/**
+ * Complete the borders for the entire path at once
+ * Used after the puzzle is solved
+ * 
+ * @param {Array} path - Array of cell indices representing the path
+ * @param {Function} getCellElement - Function to get cell element by index
+ * @param {number} gridSize - Size of the grid (width/height)
+ */
+export function drawCompleteBorders(path, getCellElement, gridSize = 10) {
+    // Clear all existing borders first
+    removeAllPathBorders();
+    
+    // Pre-calculate borders for all cells
+    const cellBorders = calculateAllBorders(path, gridSize);
+    
+    // Apply borders to ALL cells in the path
+    for (const cellIndex of path) {
+        const cell = getCellElement(cellIndex);
+        if (!cell) continue;
         
-        // Remove borders where cell connects to next cell
-        if (nextIndex !== null) {
-            const nextX = nextIndex % gridSize;
-            const nextY = Math.floor(nextIndex / gridSize);
-            
-            if (nextX === x && nextY === y - 1) needsTopBorder = false;
-            if (nextX === x + 1 && nextY === y) needsRightBorder = false;
-            if (nextX === x && nextY === y + 1) needsBottomBorder = false;
-            if (nextX === x - 1 && nextY === y) needsLeftBorder = false;
-        }
-        
-        // DELAYED BORDER RENDERING LOGIC:
-        // Only apply borders if:
-        // 1. This is NOT the last cell in the path AND there's a next cell, OR
-        // 2. This IS the last cell in the path AND it's an end cell
-        
-        const isLastCell = position === path.length - 1;
-        const isEndCell = cell.classList.contains('end-cell') || cell.classList.contains('end-cell-selected');
-        
-        if (!isLastCell || (isLastCell && isEndCell)) {
-            // Apply needed borders
-            if (needsTopBorder) cell.classList.add('border-top');
-            if (needsRightBorder) cell.classList.add('border-right');
-            if (needsBottomBorder) cell.classList.add('border-bottom');
-            if (needsLeftBorder) cell.classList.add('border-left');
-        }
+        // Apply the pre-calculated borders
+        const borders = cellBorders[cellIndex];
+        if (borders.top) cell.classList.add('border-top');
+        if (borders.right) cell.classList.add('border-right');
+        if (borders.bottom) cell.classList.add('border-bottom');
+        if (borders.left) cell.classList.add('border-left');
     }
 }
 
@@ -91,67 +148,6 @@ export function removeAllPathBorders() {
  */
 export function updatePathBorders(path, getCellElement, gridSize = 10) {
     addPathBorders(path, getCellElement, gridSize);
-}
-
-/**
- * Function to draw complete borders for the solved path
- * Used when the puzzle is solved
- * @param {Array} path - The completed path
- * @param {Function} getCellElement - Function to get cell element by index
- * @param {number} gridSize - Size of the grid
- */
-export function drawCompleteBorders(path, getCellElement, gridSize = 10) {
-    // Clear existing borders
-    removeAllPathBorders();
-    
-    if (!path || path.length <= 1) return;
-    
-    // For each cell in the path, add borders except where connected to adjacent path cells
-    for (let position = 0; position < path.length; position++) {
-        const cellIndex = path[position];
-        const cell = getCellElement(cellIndex);
-        if (!cell) continue;
-        
-        // Determine this cell's coordinates
-        const x = cellIndex % gridSize;
-        const y = Math.floor(cellIndex / gridSize);
-        
-        // Initialize all borders as needed
-        let needsTopBorder = true;
-        let needsRightBorder = true;
-        let needsBottomBorder = true;
-        let needsLeftBorder = true;
-        
-        // Check if previous cell removes need for a border
-        if (position > 0) {
-            const prevIndex = path[position - 1];
-            const prevX = prevIndex % gridSize;
-            const prevY = Math.floor(prevIndex / gridSize);
-            
-            if (prevX === x && prevY === y - 1) needsTopBorder = false;
-            if (prevX === x + 1 && prevY === y) needsRightBorder = false;
-            if (prevX === x && prevY === y + 1) needsBottomBorder = false;
-            if (prevX === x - 1 && prevY === y) needsLeftBorder = false;
-        }
-        
-        // Check if next cell removes need for a border
-        if (position < path.length - 1) {
-            const nextIndex = path[position + 1];
-            const nextX = nextIndex % gridSize;
-            const nextY = Math.floor(nextIndex / gridSize);
-            
-            if (nextX === x && nextY === y - 1) needsTopBorder = false;
-            if (nextX === x + 1 && nextY === y) needsRightBorder = false;
-            if (nextX === x && nextY === y + 1) needsBottomBorder = false;
-            if (nextX === x - 1 && nextY === y) needsLeftBorder = false;
-        }
-        
-        // Add the necessary borders
-        if (needsTopBorder) cell.classList.add('border-top');
-        if (needsRightBorder) cell.classList.add('border-right');
-        if (needsBottomBorder) cell.classList.add('border-bottom');
-        if (needsLeftBorder) cell.classList.add('border-left');
-    }
 }
 
 /**
