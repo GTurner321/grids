@@ -650,10 +650,12 @@ handlePuzzleSolved() {
         }
     });
     
-    // Ensure borders are fully drawn on the completed path
+    // Ensure ALL borders are fully drawn on the completed path
     const config = getLevelConfig(this.state.currentLevel);
     const gridSize = config.gridSize || 10;
-    addPathBorders(this.state.userPath, 
+    
+    // Use drawCompleteBorders instead of addPathBorders to ensure all appropriate borders are shown
+    drawCompleteBorders(this.state.userPath, 
                  (index) => document.querySelector(`[data-index="${index}"]`), 
                  gridSize);
     
@@ -673,7 +675,7 @@ handlePuzzleSolved() {
         }
     }, 1500);
 }
-
+    
     getLevelConfig(level) {
         // Re-export the function from sequencegenerator.js
         return getLevelConfig(level);
