@@ -12,130 +12,76 @@ export function addPathBorders(path, getCellElement, gridSize = 10) {
     removeAllPathBorders();
     
     // If path is empty, nothing to do
-    if (!path || path.length <= 1) return;
+    if (!path || path.length === 0) return;
     
-    // Process each cell in the path
-    for (let position = 0; position < path.length; position++) {
+    // REVISED APPROACH:
+    // 1. Only add borders to cells that HAVE A NEXT CELL in the path
+    // 2. The last cell in the path will have no borders unless it's an end cell
+
+    // First, handle all cells that have a next cell
+    for (let position = 0; position < path.length - 1; position++) {
         const cellIndex = path[position];
+        const nextCellIndex = path[position + 1];
         const cell = getCellElement(cellIndex);
+        
         if (!cell) continue;
         
-        // Get next and previous indices if they exist
-        const prevIndex = position > 0 ? path[position - 1] : null;
-        const nextIndex = position < path.length - 1 ? path[position + 1] : null;
+        // Figure out which direction the next cell is in
+        const x = cellIndex % gridSize;
+        const y = Math.floor(cellIndex / gridSize);
+        const nextX = nextCellIndex % gridSize;
+        const nextY = Math.floor(nextCellIndex / gridSize);
         
-        // DELAYED BORDER RENDERING LOGIC:
-        // 1. Only render complete borders for cells that have a NEXT cell selected
-        // 2. For the most recently selected cell (last in path), only add borders
-        //    on sides that aren't in the direction of potential continuation
+        // Add borders to all sides EXCEPT the direction of the next cell
+        if (nextX > x) {
+            // Next cell is to the right, so don't add right border
+            cell.classList.add('border-top', 'border-bottom', 'border-left');
+        } else if (nextX < x) {
+            // Next cell is to the left, so don't add left border
+            cell.classList.add('border-top', 'border-bottom', 'border-right');
+        } else if (nextY > y) {
+            // Next cell is below, so don't add bottom border
+            cell.classList.add('border-top', 'border-left', 'border-right');
+        } else if (nextY < y) {
+            // Next cell is above, so don't add top border
+            cell.classList.add('border-bottom', 'border-left', 'border-right');
+        }
+    }
+    
+    // Now handle the last cell only if it's an end cell
+    if (path.length > 0) {
+        const lastCellIndex = path[path.length - 1];
+        const lastCell = getCellElement(lastCellIndex);
         
-        // Determine cell connections
-        const connections = determineConnections(cellIndex, prevIndex, nextIndex, gridSize);
-        
-        if (nextIndex !== null) {
-            // This cell has a next cell, so render all borders except where connected
-            applyBorders(cell, connections);
-        } else if (position === path.length - 1) {
-            // This is the last cell in the path
-            // For the last cell, complete all borders if it's the end cell (red)
-            if (cell.classList.contains('end-cell') || cell.classList.contains('end-cell-selected')) {
-                applyBorders(cell, connections);
-            } else {
-                // For non-end cells, still show previous connection but keep other sides open
-                // to indicate path can continue
-                const partialConnections = {
-                    top: connections.top,
-                    right: connections.right,
-                    bottom: connections.bottom,
-                    left: connections.left
-                };
+        if (lastCell && (lastCell.classList.contains('end-cell') || lastCell.classList.contains('end-cell-selected'))) {
+            // For end cells, add borders to all sides EXCEPT where connected to previous cell
+            if (path.length > 1) {
+                const prevCellIndex = path[path.length - 2];
+                const x = lastCellIndex % gridSize;
+                const y = Math.floor(lastCellIndex / gridSize);
+                const prevX = prevCellIndex % gridSize;
+                const prevY = Math.floor(prevCellIndex / gridSize);
                 
-                // Apply only the border connecting to the previous cell
-                if (prevIndex !== null) {
-                    const prevCell = getCellElement(prevIndex);
-                    if (prevCell) {
-                        applyPartialBorders(cell, partialConnections, prevIndex, cellIndex, gridSize);
-                    }
+                // Add borders to all sides EXCEPT the direction of the previous cell
+                if (prevX > x) {
+                    // Previous cell is to the right, so don't add right border
+                    lastCell.classList.add('border-top', 'border-bottom', 'border-left');
+                } else if (prevX < x) {
+                    // Previous cell is to the left, so don't add left border
+                    lastCell.classList.add('border-top', 'border-bottom', 'border-right');
+                } else if (prevY > y) {
+                    // Previous cell is below, so don't add bottom border
+                    lastCell.classList.add('border-top', 'border-left', 'border-right');
+                } else if (prevY < y) {
+                    // Previous cell is above, so don't add top border
+                    lastCell.classList.add('border-bottom', 'border-left', 'border-right');
                 }
+            } else {
+                // Single cell path - add all borders for end cells
+                lastCell.classList.add('border-top', 'border-right', 'border-bottom', 'border-left');
             }
         }
     }
-}
-
-/**
- * Apply only the borders connecting to the previous cell
- */
-function applyPartialBorders(cell, connections, prevIndex, currentIndex, gridSize) {
-    // Convert indices to grid coordinates
-    const prevX = prevIndex % gridSize;
-    const prevY = Math.floor(prevIndex / gridSize);
-    const currX = currentIndex % gridSize;
-    const currY = Math.floor(currentIndex / gridSize);
-    
-    // Determine which side connects to the previous cell
-    if (prevX < currX) {
-        // Previous cell is to the left
-        cell.classList.add('border-top', 'border-bottom', 'border-right');
-    } else if (prevX > currX) {
-        // Previous cell is to the right
-        cell.classList.add('border-top', 'border-bottom', 'border-left');
-    } else if (prevY < currY) {
-        // Previous cell is above
-        cell.classList.add('border-left', 'border-right', 'border-bottom');
-    } else if (prevY > currY) {
-        // Previous cell is below
-        cell.classList.add('border-left', 'border-right', 'border-top');
-    }
-}
-
-/**
- * Determine which sides of a cell are connected to other path cells
- */
-function determineConnections(cellIndex, prevIndex, nextIndex, gridSize) {
-    const x = cellIndex % gridSize;
-    const y = Math.floor(cellIndex / gridSize);
-    
-    const connections = {
-        top: false,    // Connected to cell above
-        right: false,  // Connected to cell to the right
-        bottom: false, // Connected to cell below
-        left: false    // Connected to cell to the left
-    };
-    
-    // Check previous cell connection
-    if (prevIndex !== null) {
-        const prevX = prevIndex % gridSize;
-        const prevY = Math.floor(prevIndex / gridSize);
-        
-        if (prevX === x && prevY === y - 1) connections.top = true;
-        if (prevX === x + 1 && prevY === y) connections.right = true;
-        if (prevX === x && prevY === y + 1) connections.bottom = true;
-        if (prevX === x - 1 && prevY === y) connections.left = true;
-    }
-    
-    // Check next cell connection
-    if (nextIndex !== null) {
-        const nextX = nextIndex % gridSize;
-        const nextY = Math.floor(nextIndex / gridSize);
-        
-        if (nextX === x && nextY === y - 1) connections.top = true;
-        if (nextX === x + 1 && nextY === y) connections.right = true;
-        if (nextX === x && nextY === y + 1) connections.bottom = true;
-        if (nextX === x - 1 && nextY === y) connections.left = true;
-    }
-    
-    return connections;
-}
-
-/**
- * Apply borders to a cell based on its connections
- */
-function applyBorders(cell, connections) {
-    // Add borders to sides that are NOT connected to the path
-    if (!connections.top) cell.classList.add('border-top');
-    if (!connections.right) cell.classList.add('border-right');
-    if (!connections.bottom) cell.classList.add('border-bottom');
-    if (!connections.left) cell.classList.add('border-left');
 }
 
 /**
@@ -156,6 +102,68 @@ export function removeAllPathBorders() {
  */
 export function updatePathBorders(path, getCellElement, gridSize = 10) {
     addPathBorders(path, getCellElement, gridSize);
+}
+
+/**
+ * Function to draw complete borders for the solved path
+ * Used when the puzzle is solved
+ * @param {Array} path - The completed path
+ * @param {Function} getCellElement - Function to get cell element by index
+ * @param {number} gridSize - Size of the grid
+ */
+export function drawCompleteBorders(path, getCellElement, gridSize = 10) {
+    // Clear existing borders
+    removeAllPathBorders();
+    
+    if (!path || path.length <= 1) return;
+    
+    // For each cell in the path, add borders except where connected to adjacent path cells
+    for (let position = 0; position < path.length; position++) {
+        const cellIndex = path[position];
+        const cell = getCellElement(cellIndex);
+        if (!cell) continue;
+        
+        // Get previous and next cells in path
+        const prevIndex = position > 0 ? path[position - 1] : null;
+        const nextIndex = position < path.length - 1 ? path[position + 1] : null;
+        
+        // Calculate which sides need borders
+        const x = cellIndex % gridSize;
+        const y = Math.floor(cellIndex / gridSize);
+        
+        let needsTopBorder = true;
+        let needsRightBorder = true;
+        let needsBottomBorder = true;
+        let needsLeftBorder = true;
+        
+        // Check if previous cell removes need for a border
+        if (prevIndex !== null) {
+            const prevX = prevIndex % gridSize;
+            const prevY = Math.floor(prevIndex / gridSize);
+            
+            if (prevX === x && prevY === y - 1) needsTopBorder = false;
+            if (prevX === x + 1 && prevY === y) needsRightBorder = false;
+            if (prevX === x && prevY === y + 1) needsBottomBorder = false;
+            if (prevX === x - 1 && prevY === y) needsLeftBorder = false;
+        }
+        
+        // Check if next cell removes need for a border
+        if (nextIndex !== null) {
+            const nextX = nextIndex % gridSize;
+            const nextY = Math.floor(nextIndex / gridSize);
+            
+            if (nextX === x && nextY === y - 1) needsTopBorder = false;
+            if (nextX === x + 1 && nextY === y) needsRightBorder = false;
+            if (nextX === x && nextY === y + 1) needsBottomBorder = false;
+            if (nextX === x - 1 && nextY === y) needsLeftBorder = false;
+        }
+        
+        // Add the necessary borders
+        if (needsTopBorder) cell.classList.add('border-top');
+        if (needsRightBorder) cell.classList.add('border-right');
+        if (needsBottomBorder) cell.classList.add('border-bottom');
+        if (needsLeftBorder) cell.classList.add('border-left');
+    }
 }
 
 /**
