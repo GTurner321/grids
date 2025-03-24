@@ -668,8 +668,16 @@ removeAllSpareCells(removeAll = false) {
 handlePuzzleSolved() {
     console.log("PUZZLE SOLVED! Congratulations message and score updates coming next...");
     
+    // Unlock message based on completed level
+    let successMessage = 'Congratulations! Puzzle solved!';
+    
+    // If level unlocker exists, handle level completion
+    if (window.levelUnlocker) {
+        successMessage = window.levelUnlocker.handleLevelCompletion(this.state.currentLevel);
+    }
+    
     // Display success message
-    this.showMessage('Congratulations! Puzzle solved!', 'success');
+    this.showMessage(successMessage, 'success');
     
     // Update score
     scoreManager.completePuzzle();
