@@ -20,13 +20,6 @@ function createRulesBox() {
             <div class="rules-image-container">
                 <img src="images/gridgameexample1.png" alt="Grid Game Example">
             </div>
-            <style>
-                @media (min-width: 768px) {
-                    .rules-image-container {
-                        width: 70% !important;
-                    }
-                }
-            </style>
             <h2 class="rules-box-title">RULES</h2>
             <div class="rules-section">
                 <p>FIND THE PATH OF SUMS - GREEN TO RED</p>
