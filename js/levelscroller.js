@@ -1,15 +1,93 @@
 // levelscroller.js - Replaces level buttons with a vertical scrolling interface
 
-class LevelScroller {
+class LevelUnlocker {
     constructor() {
-        this.currentLevel = 1;
-        this.maxLevels = 10;
-        this.initializeUI();
-        this.attachEventListeners();
+        // Track unlocked levels - start with only levels 1-3 unlocked
+        this.unlockedLevels = new Set([1, 2, 3]);
+        this.levelTiers = {
+            tier1: [1, 2, 3],      // Initially unlocked
+            tier2: [4, 5, 6],      // Unlocked after completing any level in tier1
+            tier3: [7, 8, 9, 10]   // Unlocked after completing any level in tier2
+        };
+        
+        // Load any saved unlock progress
+        this.loadUnlockProgress();
         
         // Make available globally
-        window.levelScroller = this;
+        window.levelUnlocker = this;
     }
+    
+    isLevelUnlocked(level) {
+        return this.unlockedLevels.has(level);
+    }
+    
+    unlockTier(tier) {
+        if (!this.levelTiers[tier]) return;
+        
+        this.levelTiers[tier].forEach(level => {
+            this.unlockedLevels.add(level);
+        });
+        
+        // Save progress
+        this.saveUnlockProgress();
+    }
+    
+    handleLevelCompletion(level) {
+        // Check if this completion unlocks new tiers
+        if (this.levelTiers.tier1.includes(level) && 
+            !this.levelTiers.tier2.some(l => this.unlockedLevels.has(l))) {
+            this.unlockTier('tier2');
+            return 'Congratulations! Puzzle solved! You have unlocked levels 4 to 6.';
+        } 
+        else if (this.levelTiers.tier2.includes(level) && 
+                !this.levelTiers.tier3.some(l => this.unlockedLevels.has(l))) {
+            this.unlockTier('tier3');
+            return 'Congratulations! Puzzle solved! You have unlocked levels 7 to 10.';
+        }
+        
+        return 'Congratulations! Puzzle solved!';
+    }
+    
+    saveUnlockProgress() {
+        try {
+            localStorage.setItem('mathPathUnlockedLevels', JSON.stringify(Array.from(this.unlockedLevels)));
+        } catch (error) {
+            console.error('Error saving unlock progress:', error);
+        }
+    }
+    
+    loadUnlockProgress() {
+        try {
+            const savedData = localStorage.getItem('mathPathUnlockedLevels');
+            if (savedData) {
+                const unlockedArray = JSON.parse(savedData);
+                this.unlockedLevels = new Set(unlockedArray);
+            }
+        } catch (error) {
+            console.error('Error loading unlock progress:', error);
+        }
+    }
+    
+    resetProgress() {
+        this.unlockedLevels = new Set([1, 2, 3]);
+        this.saveUnlockProgress();
+    }
+}
+
+class LevelScroller {
+    constructor() {
+    this.currentLevel = 1;
+    this.maxLevels = 10;
+    
+    // Initialize level unlocker
+    this.levelUnlocker = new LevelUnlocker();
+    
+    this.initializeUI();
+    this.attachEventListeners();
+    
+    // Make available globally
+    window.levelScroller = this;
+}
     
     initializeUI() {
         // Get the level buttons container
