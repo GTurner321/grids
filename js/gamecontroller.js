@@ -538,36 +538,48 @@ class GameController {
         document.head.appendChild(style);
     }
     
-    removeAllSpareCells(removeAll = false) {
-        const spareCells = this.state.gridEntries
-            .map((entry, index) => (!entry?.isPartOfPath && !this.state.removedCells.has(index)) ? index : null)
-            .filter(index => index !== null);
+removeAllSpareCells(removeAll = false) {
+    const spareCells = this.state.gridEntries
+        .map((entry, index) => (!entry?.isPartOfPath && !this.state.removedCells.has(index)) ? index : null)
+        .filter(index => index !== null);
 
-        if (spareCells.length === 0) {
-            this.showMessage('No spare cells to remove!', 'info');
-            return;
-        }
+    if (spareCells.length === 0) {
+        this.showMessage('No spare cells to remove!', 'info');
+        return;
+    }
 
-        scoreManager.handleSpareRemoval();
+    scoreManager.handleSpareRemoval();
 
-        // Remove either all or 50% of spare cells
-        const numToRemove = removeAll ? spareCells.length : Math.ceil(spareCells.length / 2);
-        const cellsToRemove = spareCells
-            .sort(() => Math.random() - 0.5)
-            .slice(0, numToRemove);
+    // Remove either all or 50% of spare cells
+    const numToRemove = removeAll ? spareCells.length : Math.ceil(spareCells.length / 2);
+    const cellsToRemove = spareCells
+        .sort(() => Math.random() - 0.5)
+        .slice(0, numToRemove);
 
-        cellsToRemove.forEach(index => {
-            this.state.removedCells.add(index);
-            updateCell(index, null);
-        });
+    cellsToRemove.forEach(index => {
+        this.state.removedCells.add(index);
+        updateCell(index, null);
+    });
 
-        // Disable button after use or if level 1 (where all cells are already removed)
-        document.getElementById('remove-spare').disabled = true;
+    // Disable button after use or if level 1 (where all cells are already removed)
+    document.getElementById('remove-spare').disabled = true;
+    
+    // Add 'used' class to hide the button in addition to disabling it
+    const removeButton = document.getElementById('remove-spare');
+    if (removeButton) {
+        removeButton.classList.add('used');
         
-        if (!removeAll) {
-            this.showMessage(`Removed ${numToRemove} spare cells.`, 'info');
+        // Also add two-buttons class to container to adjust layout
+        const gameControls = document.querySelector('.game-controls');
+        if (gameControls) {
+            gameControls.classList.add('two-buttons');
         }
     }
+    
+    if (!removeAll) {
+        this.showMessage(`Removed ${numToRemove} spare cells.`, 'info');
+    }
+}
     
     checkSolution() {
         // First, check if the path meets the required length formula (3n+1)
