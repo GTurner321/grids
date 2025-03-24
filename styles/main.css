@@ -484,7 +484,13 @@ body {
 
 /* Hide Remove Spares button when used */
 .game-controls button#remove-spare.used {
-  display: none;
+  display: none !important;
+  visibility: hidden !important;
+  width: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  overflow: hidden !important;
 }
 
 /* Two-button layout when Remove Spares is hidden */
@@ -493,16 +499,22 @@ body {
   width: 45%;
 }
 
+@media (max-width: 768px) {
+  .game-controls.two-buttons #check-solution,
+  .game-controls.two-buttons #reset-path {
+    width: 49% !important;
+  }
+}
+
 /* Button animation - PULSE INSTEAD OF COLOR CHANGE */
 @keyframes buttonPulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+  0% { transform: scale(1); background-color: #dd717e; }
+  50% { transform: scale(1.05); background-color: #c13a49; }
+  100% { transform: scale(1); background-color: #dd717e; }
 }
 
 .game-controls button.clicked {
-  animation: buttonPulse 0.3s ease-in-out;
-  background-color: #c13a49; /* Darker red while pulsing */
+  animation: buttonPulse 0.3s ease-in-out !important;
 }
 
 /* Force buttons to maintain original color */
@@ -523,12 +535,6 @@ body {
   
   .game-controls button {
     font-size: 1rem; /* Larger text for mobile */
-  }
-  
-  /* Mobile-specific button layout */
-  .game-controls.two-buttons #check-solution,
-  .game-controls.two-buttons #reset-path {
-    width: 49%;
   }
 }
 
