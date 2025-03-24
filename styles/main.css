@@ -514,17 +514,11 @@ body {
 }
 
 .game-controls button.clicked {
-  animation: buttonPulse 0.3s ease-in-out !important;
+  animation: buttonPulse 0.3s ease-in-out;
+  background-color: #dd717e !important; /* Force original color */
 }
 
-/* Ensure animation completes and returns to original color */
-.game-controls button.clicked::after {
-  content: '';
-  animation: none;
-  background-color: #dd717e !important;
-}
-
-/* Force buttons to maintain original color */
+/* Override any active/focus/selected state */
 .game-controls button:active, 
 .game-controls button:focus,
 .game-controls button.active,
