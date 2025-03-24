@@ -1,180 +1,4 @@
-// Improve modal sizing
-  function improveModalSizing() {
-    // Rules modal sizing
-    const rulesContainer = document.getElementById('rules-container');
-    if (rulesContainer) {
-      const observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-          if (mutation.addedNodes.length) {
-            const rulesModal = rulesContainer.querySelector('.rules-modal');
-            if (rulesModal && window.innerWidth <= 768) {
-              // Ensure content doesn't overflow screen
-              const rulesContent = rulesModal.querySelector('.rules-content');
-              if (rulesContent) {
-                rulesContent.style.maxHeight = "80vh";
-                rulesContent.style.overflowY = "auto";
-              }
-            }
-          }
-        });
-      });
-      
-      observer.observe(rulesContainer, { childList: true });
-    }
-    
-    // Explicitly move return button to bottom right
-    const returnToRecordBtn = document.getElementById('return-to-record-btn');
-    if (returnToRecordBtn) {
-      returnToRecordBtn.style.position = 'absolute';
-      returnToRecordBtn.style.bottom = '10px';
-      returnToRecordBtn.style.right = '10px';
-      returnToRecordBtn.style.top = '';
-      returnToRecordBtn.style.left = '';
-    }
-  }
-  
-  // Enhance message display for mobile
-  function enhanceMessageDisplay() {
-    // Wait for game controller to initialize
-    const checkInterval = setInterval(() => {
-      if (window.gameController) {
-        clearInterval(checkInterval);
-        
-        // Patch the showMessage method to improve mobile display
-        const originalShowMessage = window.gameController.showMessage;
-        if (originalShowMessage && window.innerWidth <= 768) {
-          window.gameController.showMessage = function(text, type = 'info', duration = null) {
-            // Call original method
-            originalShowMessage.call(this, text, type, duration);
-            
-            // Additional mobile enhancements for message element
-            const messageElement = document.getElementById('game-messages');
-            if (messageElement) {
-              // Ensure message fits and is properly centered
-              messageElement.style.display = "flex";
-              messageElement.style.alignItems = "center";
-              messageElement.style.justifyContent = "center";
-              messageElement.style.fontSize = "1.6rem";
-              
-              // Make container wider by reducing margins
-              messageElement.style.width = `calc(100vw - 20px)`;
-              
-              // More intense white shadow
-              messageElement.style.textShadow = "0 0 15px white, 0 0 25px white, 0 0 35px white, 0 0 40px white, 0 0 45px white";
-              
-              // Reduced margin to bottom buttons
-              messageElement.style.marginBottom = "2px";
-              
-              // Force text to wrap properly
-              if (text.length > 30) {
-                messageElement.style.whiteSpace = "normal";
-              }
-            }
-          };
-        }
-      }
-    }, 100);
-    
-    // Stop checking after 5 seconds
-    setTimeout(() => clearInterval(checkInterval), 5000);
-  }
-  
-  // Add mobile styles dynamically if needed
-  function addMobileStylesIfNeeded() {
-    // Only add the viewport meta if not present
-    if (!document.querySelector('meta[name="viewport"]')) {
-      const metaTag = document.createElement('meta');
-      metaTag.name = 'viewport';
-      metaTag.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
-      document.head.appendChild(metaTag);
-    }
-    
-    // Add CSS for button pulse animation
-    const style = document.createElement('style');
-    style.textContent = `
-      @keyframes buttonPulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.05); }
-        100% { transform: scale(1); }
-      }
-      
-      .game-controls button.clicked {
-        animation: buttonPulse 0.3s ease-in-out;
-      }
-      
-      /* Remove gray line under level buttons */
-      .level-selector-container, 
-      .level-buttons,
-      .game-header,
-      .game-container > *:not(.game-board) {
-        border-bottom: none !important;
-        box-shadow: none !important;
-        border-color: transparent !important;
-      }
-      
-      /* Add for hiding record button after submission */
-      .bottom-buttons.single-button {
-        justify-content: center !important;
-      }
-      
-      .bottom-buttons.single-button #leaderboard-btn {
-        margin: 0 auto !important;
-        min-width: 200px !important;
-      }
-    `;
-    document.head.appendChild(style);
-  }
-  
-  // Enhance path arrows for mobile
-  function enhancePathArrows() {
-    if (window.innerWidth <= 768) { // Only for mobile devices
-      // Watch for arrows being added to the DOM
-      const observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-          if (mutation.addedNodes) {
-            mutation.addedNodes.forEach(function(node) {
-              if (node && node.classList && node.classList.contains('path-arrow')) {
-                // Enlarge and bolden the arrow
-                node.style.width = '18px';
-                node.style.height = '18px';
-                
-                // Make the SVG stroke wider
-                const svg = node.querySelector('svg');
-                if (svg) {
-                  svg.setAttribute('stroke-width', '3');
-                  svg.style.width = '100%';
-                  svg.style.height = '100%';
-                  svg.style.fill = '#dd717e'; // Match crimson color from buttons
-                  svg.style.stroke = 'white'; // White outline for better visibility
-                }
-              }
-            });
-          }
-        });
-      });
-      
-      // Start observing the document
-      observer.observe(document.body, {
-        childList: true,
-        subtree: true
-      });
-      
-      // Also enhance any arrows that might already be in the DOM
-      document.querySelectorAll('.path-arrow').forEach(function(arrow) {
-        arrow.style.width = '18px';
-        arrow.style.height = '18px';
-        
-        const svg = arrow.querySelector('svg');
-        if (svg) {
-          svg.setAttribute('stroke-width', '3');
-          svg.style.width = '100%';
-          svg.style.height = '100%';
-          svg.style.fill = '#dd717e'; // Match crimson color from buttons
-          svg.style.stroke = 'white'; // White outline for better visibility
-        }
-      });
-    }
-  } mobile-responsive.js - Complete rewrite with button fixes and orientation warning improvements
+// mobile-responsive.js - Streamlined version with core mobile optimizations only
 
 (function() {
   // Execute when DOM is fully loaded
@@ -182,13 +6,10 @@
     // Fix for iOS viewport height issues
     initViewportHeightFix();
     
-    // Add orientation warning - FIXED to actually show up
-    createOrientationWarning();
-    
-    // Apply direct button styling
+    // Apply direct styling for mobile elements
     applyDirectStylesForMobile();
     
-    // Apply enhanced styles for requested improvements
+    // Apply enhanced styles for visual improvements
     applyEnhancedMobileStyles();
     
     // Add button animation fix (Pulse instead of color change)
@@ -206,15 +27,6 @@
     // Add mobile styles if needed
     addMobileStylesIfNeeded();
     
-    // Enhance path arrows
-    enhancePathArrows();
-    
-    // Set up FIXED button behaviors for "Remove Spares"
-    fixRemoveButtonDisappearing();
-    
-    // Fix button color issues - CRITICAL FIX
-    fixButtonColorIssue();
-    
     // Patch game controller methods
     patchGameControllerMethods();
     
@@ -224,18 +36,13 @@
   
   // Fix for mobile browsers, especially iOS Safari
   function initViewportHeightFix() {
-    // First we get the viewport height and multiply it by 1% to get a value for a vh unit
-    const vh = window.innerHeight * 0.01;
-    // Then we set the value in the --app-height custom property to the root of the document
+    // Set the value in the --app-height custom property to the root of the document
     document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`);
     
     // Update on orientation changes and resize
     window.addEventListener('resize', () => {
       const newHeight = window.innerHeight;
       document.documentElement.style.setProperty('--app-height', `${newHeight}px`);
-      
-      // Check orientation on resize (may be caused by orientation change)
-      checkOrientation();
     });
     
     // Add touch-device class for better control
@@ -246,87 +53,6 @@
       if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) {
         document.body.classList.add('ios-device');
       }
-    }
-  }
-  
-  // Create and manage warning for landscape orientation
-  function createOrientationWarning() {
-    // Only create for mobile devices
-    if (window.innerWidth <= 768) {
-      // First check if it already exists
-      let warningDiv = document.querySelector('.orientation-warning');
-      
-      if (!warningDiv) {
-        warningDiv = document.createElement('div');
-        warningDiv.className = 'orientation-warning';
-        warningDiv.innerHTML = `
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
-            <line x1="12" y1="18" x2="12" y2="18.01"></line>
-          </svg>
-          <div>Please rotate your device to portrait mode for the best experience</div>
-        `;
-        document.body.appendChild(warningDiv);
-        
-        // Apply initial styles to ensure visibility
-        warningDiv.style.position = 'fixed';
-        warningDiv.style.top = '0';
-        warningDiv.style.left = '0';
-        warningDiv.style.width = '100%';
-        warningDiv.style.height = '100%';
-        warningDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
-        warningDiv.style.zIndex = '2000';
-        warningDiv.style.color = 'white';
-        warningDiv.style.textAlign = 'center';
-        warningDiv.style.fontSize = '1.2rem';
-        warningDiv.style.padding = '20px';
-        warningDiv.style.boxSizing = 'border-box';
-        warningDiv.style.display = 'none'; // Hidden by default
-        warningDiv.style.justifyContent = 'center';
-        warningDiv.style.alignItems = 'center';
-        warningDiv.style.flexDirection = 'column';
-      }
-      
-      // Add CSS for the warning's rotate animation
-      const style = document.createElement('style');
-      style.textContent = `
-        @keyframes rotate {
-          0% { transform: rotate(0deg); }
-          25% { transform: rotate(90deg); }
-          50% { transform: rotate(90deg); }
-          75% { transform: rotate(0deg); }
-          100% { transform: rotate(0deg); }
-        }
-        
-        .orientation-warning svg {
-          width: 60px;
-          height: 60px;
-          margin-bottom: 20px;
-          animation: rotate 2s ease-in-out infinite;
-        }
-      `;
-      document.head.appendChild(style);
-      
-      // Initial check
-      checkOrientation();
-      
-      // Listen for orientation changes
-      window.addEventListener('orientationchange', checkOrientation);
-    }
-  }
-  
-  // Check device orientation and show/hide warning
-  function checkOrientation() {
-    const warning = document.querySelector('.orientation-warning');
-    if (!warning) return;
-    
-    // Check if in landscape mode AND width is <= 768px (mobile device)
-    const isLandscape = window.innerWidth > window.innerHeight && window.innerWidth <= 768;
-    
-    if (isLandscape) {
-      warning.style.display = 'flex';
-    } else {
-      warning.style.display = 'none';
     }
   }
   
@@ -702,203 +428,184 @@
         }
       }
       
-      // Enhance path arrows
-      document.querySelectorAll('.path-arrow svg').forEach(svg => {
-        svg.style.fill = '#dd717e'; // Match crimson from buttons
-        svg.style.stroke = 'white'; // White outline
-      });
-      
       console.log('Enhanced mobile styles applied successfully');
     }, 800); // Delay slightly longer than the basic styles to ensure we override them
   }
   
-  // FIXED: Better button animation without color change
-function enhanceButtonAnimations() {
-  // Add click event to all game control buttons
-  const gameControlButtons = document.querySelectorAll('.game-controls button');
-  
-  gameControlButtons.forEach(button => {
-    button.addEventListener('click', function() {
-      // Don't do anything if this is the remove button and it's already used
-      if (this.id === 'remove-spare' && this.classList.contains('used')) {
-        return;
-      }
-      
-      // Remove existing animation classes
-      this.classList.remove('clicked');
-      
-      // Force a reflow to ensure animation restarts
-      void this.offsetWidth;
-      
-      // Add animation class
-      this.classList.add('clicked');
-      
-      // Remove class after animation completes
-      setTimeout(() => {
+  // Improve button animations
+  function enhanceButtonAnimations() {
+    // Add click event to all game control buttons
+    const gameControlButtons = document.querySelectorAll('.game-controls button');
+    
+    gameControlButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        // Remove existing animation classes
         this.classList.remove('clicked');
-      }, 300);
-    });
-  });
-}
-  
-  // FIXED: Better implementation for Remove button disappearing
-function fixRemoveButtonDisappearing() {
-  // Add styles to hide the button and adjust layout
-  const buttonStyles = document.createElement('style');
-  buttonStyles.textContent = `
-    /* Hide Remove Spares button when "used" class is applied */
-    #remove-spare.used {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-      position: absolute;
-      z-index: -1;
-      transition: opacity 1s ease, visibility 1s ease;
-    }
-    
-    /* Adjust layout when Remove Spares is hidden */
-    .game-controls.two-buttons #check-solution,
-    .game-controls.two-buttons #reset-path {
-      width: 45% !important;
-      transition: width 1s ease;
-    }
-    
-    @media (max-width: 768px) {
-      .game-controls.two-buttons #check-solution,
-      .game-controls.two-buttons #reset-path {
-        width: 49% !important;
-      }
-    }
-  `;
-  document.head.appendChild(buttonStyles);
-  
-  // Direct DOM manipulation approach
-  const removeButton = document.getElementById('remove-spare');
-  if (removeButton) {
-    // Use both click & touchend events to ensure it works
-    ['click', 'touchend'].forEach(eventName => {
-      removeButton.addEventListener(eventName, function(e) {
-        // Set timeout to allow the original event to complete
+        
+        // Force a reflow to ensure animation restarts
+        void this.offsetWidth;
+        
+        // Add animation class
+        this.classList.add('clicked');
+        
+        // Remove class after animation completes
         setTimeout(() => {
-          // Apply used class to button
-          this.classList.add('used');
-          
-          // Add two-buttons class to container for layout adjustment
-          const gameControls = document.querySelector('.game-controls');
-          if (gameControls) {
-            gameControls.classList.add('two-buttons');
-          }
-          
-          console.log('Remove Spares button hidden');
-        }, 100);
-      }, { capture: true }); // Use capture phase to ensure this runs first
+          this.classList.remove('clicked');
+        }, 300);
+      });
     });
   }
   
-  // Watch for level changes to reset the 'used' class
-  function checkForLevelChanges() {
-    // First add a listener to all level buttons
-    document.querySelectorAll('.level-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        setTimeout(() => {
-          // When a level button is clicked, reset the remove button
-          const removeButton = document.getElementById('remove-spare');
-          if (removeButton) {
-            console.log('Level changed, resetting Remove Spares button');
-            removeButton.classList.remove('used');
-            removeButton.style.opacity = '';
-            removeButton.style.visibility = '';
-            removeButton.style.position = '';
-            removeButton.style.zIndex = '';
-            
-            // Reset the game controls layout
-            const gameControls = document.querySelector('.game-controls');
-            if (gameControls) {
-              gameControls.classList.remove('two-buttons');
-            }
-          }
-        }, 300); // Small delay to ensure level change happens first
-      });
-    });
-    
-    // Also observe game-active class changes on game container
-    const gameContainer = document.querySelector('.game-container');
-    if (gameContainer) {
-      const observer = new MutationObserver(mutations => {
-        mutations.forEach(mutation => {
-          if (mutation.attributeName === 'class' && 
-              gameContainer.classList.contains('game-active')) {
-            // Game became active, reset the button
-            const removeButton = document.getElementById('remove-spare');
-            if (removeButton) {
-              console.log('Game became active, resetting Remove Spares button');
-              removeButton.classList.remove('used');
-              
-              // Reset the game controls layout
-              const gameControls = document.querySelector('.game-controls');
-              if (gameControls) {
-                gameControls.classList.remove('two-buttons');
+  // Improve modal sizing
+  function improveModalSizing() {
+    // Rules modal sizing
+    const rulesContainer = document.getElementById('rules-container');
+    if (rulesContainer) {
+      const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if (mutation.addedNodes.length) {
+            const rulesModal = rulesContainer.querySelector('.rules-modal');
+            if (rulesModal && window.innerWidth <= 768) {
+              // Ensure content doesn't overflow screen
+              const rulesContent = rulesModal.querySelector('.rules-content');
+              if (rulesContent) {
+                rulesContent.style.maxHeight = "80vh";
+                rulesContent.style.overflowY = "auto";
               }
             }
           }
         });
       });
       
-      observer.observe(gameContainer, { attributes: true });
+      observer.observe(rulesContainer, { childList: true });
+    }
+    
+    // Explicitly move return button to bottom right
+    const returnToRecordBtn = document.getElementById('return-to-record-btn');
+    if (returnToRecordBtn) {
+      returnToRecordBtn.style.position = 'absolute';
+      returnToRecordBtn.style.bottom = '10px';
+      returnToRecordBtn.style.right = '10px';
+      returnToRecordBtn.style.top = '';
+      returnToRecordBtn.style.left = '';
     }
   }
   
-  // Try to set up the observers, retry if level buttons aren't ready
-  if (document.readyState === "complete" || document.readyState === "interactive") {
-    setTimeout(checkForLevelChanges, 500);
-  } else {
-    document.addEventListener("DOMContentLoaded", () => {
-      setTimeout(checkForLevelChanges, 500);
-    });
+  // Enhance message display for mobile
+  function enhanceMessageDisplay() {
+    // Wait for game controller to initialize
+    const checkInterval = setInterval(() => {
+      if (window.gameController) {
+        clearInterval(checkInterval);
+        
+        // Patch the showMessage method to improve mobile display
+        const originalShowMessage = window.gameController.showMessage;
+        if (originalShowMessage && window.innerWidth <= 768) {
+          window.gameController.showMessage = function(text, type = 'info', duration = null) {
+            // Call original method
+            originalShowMessage.call(this, text, type, duration);
+            
+            // Additional mobile enhancements for message element
+            const messageElement = document.getElementById('game-messages');
+            if (messageElement) {
+              // Ensure message fits and is properly centered
+              messageElement.style.display = "flex";
+              messageElement.style.alignItems = "center";
+              messageElement.style.justifyContent = "center";
+              messageElement.style.fontSize = "1.6rem";
+              
+              // Make container wider by reducing margins
+              messageElement.style.width = `calc(100vw - 20px)`;
+              
+              // More intense white shadow
+              messageElement.style.textShadow = "0 0 15px white, 0 0 25px white, 0 0 35px white, 0 0 40px white, 0 0 45px white";
+              
+              // Reduced margin to bottom buttons
+              messageElement.style.marginBottom = "2px";
+              
+              // Force text to wrap properly
+              if (text.length > 30) {
+                messageElement.style.whiteSpace = "normal";
+              }
+            }
+          };
+        }
+      }
+    }, 100);
+    
+    // Stop checking after 5 seconds
+    setTimeout(() => clearInterval(checkInterval), 5000);
   }
-}
-  // Add CSS styles to fix button color issues
-function addButtonStyles() {
-  const buttonStyles = document.createElement('style');
-  buttonStyles.textContent = `
-    /* Ensure buttons stay in their original color */
-    .game-controls button {
-      background-color: #dd717e !important; /* Set original crimson color */
-      color: white !important;
+  
+  // Add mobile styles dynamically if needed
+  function addMobileStylesIfNeeded() {
+    // Only add the viewport meta if not present
+    if (!document.querySelector('meta[name="viewport"]')) {
+      const metaTag = document.createElement('meta');
+      metaTag.name = 'viewport';
+      metaTag.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+      document.head.appendChild(metaTag);
     }
     
-    /* Button animation - PULSE INSTEAD OF COLOR CHANGE */
-    @keyframes buttonPulse {
-      0% { transform: scale(1); background-color: #dd717e; }
-      50% { transform: scale(1.05); background-color: #c13a49; }
-      100% { transform: scale(1); background-color: #dd717e; }
-    }
-    
-    .game-controls button.clicked {
-      animation: buttonPulse 0.3s ease-in-out !important;
-      background-color: #dd717e !important;
-    }
-    
-    /* Override any active/focus/selected state */
-    .game-controls button:active, 
-    .game-controls button:focus,
-    .game-controls button.active,
-    .game-controls button.selected {
-      background-color: #dd717e !important; /* Maintain crimson color */
-      color: white !important;
-    }
-  `;
-  document.head.appendChild(buttonStyles);
-}
-
-// Optimize touch interactions for mobile
-function optimizeTouchInteractions() {
-  // Improve grid cell responsiveness
-  const gridContainer = document.getElementById('grid-container');
-  if (gridContainer && 'ontouchstart' in window) {
-    gridContainer.addEventListener('touchmove', function(e) {
-      // Prevent scrolling while interacting with the grid
-      e.preventDefault();
-    }, { passive: false });
+    // Add CSS for button pulse animation
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes buttonPulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+      }
+      
+      .game-controls button.clicked {
+        animation: buttonPulse 0.3s ease-in-out;
+      }
+      
+      /* Remove gray line under level buttons */
+      .level-selector-container, 
+      .level-buttons,
+      .game-header,
+      .game-container > *:not(.game-board) {
+        border-bottom: none !important;
+        box-shadow: none !important;
+        border-color: transparent !important;
+      }
+      
+      /* Add for hiding record button after submission */
+      .bottom-buttons.single-button {
+        justify-content: center !important;
+      }
+      
+      .bottom-buttons.single-button #leaderboard-btn {
+        margin: 0 auto !important;
+        min-width: 200px !important;
+      }
+    `;
+    document.head.appendChild(style);
   }
-}
+  
+  // Optimize touch interactions for mobile
+  function optimizeTouchInteractions() {
+    // Improve grid cell responsiveness
+    const gridContainer = document.getElementById('grid-container');
+    if (gridContainer && 'ontouchstart' in window) {
+      gridContainer.addEventListener('touchmove', function(e) {
+        // Prevent scrolling while interacting with the grid
+        e.preventDefault();
+      }, { passive: false });
+    }
+  }
+  
+  // This function sets up any patching needed for game controller methods
+  // It's kept as a placeholder in case other methods need patching in the future
+  function patchGameControllerMethods() {
+    // Currently empty since showMessage patching is handled in enhanceMessageDisplay
+    // This function can be expanded if additional game controller patches are needed
+  }
+  
+  // Handle username submission behavior
+  function setupUsernameSubmissionHandling() {
+    // This is a placeholder function - implement username submission handling if needed
+    // Currently empty as the specific username submission code was not included in the snippets
+  }
+  
+})();
