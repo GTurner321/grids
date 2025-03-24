@@ -69,6 +69,14 @@
     background-color: #1d4ed8;
 }
 
+/* Locked Button */
+.level-btn-scrollable.locked {
+    opacity: 0.4;
+    pointer-events: none;
+    background-color: #94a3b8;
+    border-color: #64748b;
+}
+
 /* Arrow Buttons */
 .level-arrow {
     display: flex;
