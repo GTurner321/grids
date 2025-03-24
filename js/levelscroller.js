@@ -1,4 +1,4 @@
-// levelscroller.js - Replaces level buttons with a vertical scrolling interface
+// levelscroller.js - Fixed implementation with proper level unlocking
 
 class LevelUnlocker {
     constructor() {
@@ -18,7 +18,7 @@ class LevelUnlocker {
     }
     
     isLevelUnlocked(level) {
-        return this.unlockedLevels.has(level);
+        return this.unlockedLevels.has(Number(level));
     }
     
     unlockTier(tier) {
@@ -30,9 +30,16 @@ class LevelUnlocker {
         
         // Save progress
         this.saveUnlockProgress();
+        
+        // Update level scroller if available
+        if (window.levelScroller) {
+            window.levelScroller.updateVisibleLevel();
+        }
     }
     
     handleLevelCompletion(level) {
+        level = Number(level); // Ensure level is a number
+        
         // Check if this completion unlocks new tiers
         if (this.levelTiers.tier1.includes(level) && 
             !this.levelTiers.tier2.some(l => this.unlockedLevels.has(l))) {
@@ -61,7 +68,7 @@ class LevelUnlocker {
             const savedData = localStorage.getItem('mathPathUnlockedLevels');
             if (savedData) {
                 const unlockedArray = JSON.parse(savedData);
-                this.unlockedLevels = new Set(unlockedArray);
+                this.unlockedLevels = new Set(unlockedArray.map(Number)); // Ensure all values are numbers
             }
         } catch (error) {
             console.error('Error loading unlock progress:', error);
@@ -71,10 +78,13 @@ class LevelUnlocker {
     resetProgress() {
         this.unlockedLevels = new Set([1, 2, 3]);
         this.saveUnlockProgress();
+        
+        // Update level scroller if available
+        if (window.levelScroller) {
+            window.levelScroller.updateVisibleLevel();
+        }
     }
 }
-
-// Replace the entire LevelScroller class in your levelscroller.js file with this fixed version
 
 class LevelScroller {
     constructor() {
@@ -84,11 +94,23 @@ class LevelScroller {
         // Initialize level unlocker
         this.levelUnlocker = new LevelUnlocker();
         
-        this.initializeUI();
-        this.attachEventListeners();
+        // Initialize the UI once the DOM is loaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.init());
+        } else {
+            this.init();
+        }
         
         // Make available globally
         window.levelScroller = this;
+    }
+    
+    init() {
+        this.initializeUI();
+        this.attachEventListeners();
+        
+        // Debug logging
+        console.log('Level scroller initialized');
     }
     
     initializeUI() {
@@ -160,7 +182,7 @@ class LevelScroller {
             });
         }
         
-        // Level buttons - use event delegation with CORRECT selector
+        // Level buttons - use event delegation for better reliability
         const levelDisplayContainer = document.querySelector('.level-display-container');
         if (levelDisplayContainer) {
             levelDisplayContainer.addEventListener('click', (event) => {
@@ -176,18 +198,28 @@ class LevelScroller {
     
     updateVisibleLevel() {
         const buttons = document.querySelectorAll('.level-btn-scrollable');
-        if (!buttons || buttons.length === 0) return;
+        if (!buttons || buttons.length === 0) {
+            console.error('No level buttons found to update');
+            return;
+        }
         
         // First, hide all buttons and reset their classes
         buttons.forEach(btn => {
-            btn.classList.remove('active', 'visible', 'locked');
+            btn.classList.remove('active', 'visible', 'locked', 'changing');
+            btn.style.opacity = '0';
+            btn.style.pointerEvents = 'none';
         });
         
         // Show only the current level button
         const currentButton = document.querySelector(`.level-btn-scrollable[data-level="${this.currentLevel}"]`);
         if (currentButton) {
+            // Add changing class briefly for animation
+            currentButton.classList.add('changing');
+            
             // Make the current button visible
             currentButton.classList.add('visible');
+            currentButton.style.opacity = '1';
+            currentButton.style.pointerEvents = 'auto';
             
             // Check if this level is unlocked
             const isUnlocked = this.levelUnlocker.isLevelUnlocked(this.currentLevel);
@@ -202,12 +234,24 @@ class LevelScroller {
                 window.gameController.state.currentLevel === this.currentLevel) {
                 currentButton.classList.add('active');
             }
+            
+            // Remove changing class after animation completes
+            setTimeout(() => {
+                currentButton.classList.remove('changing');
+            }, 300);
+        } else {
+            console.error(`Button for level ${this.currentLevel} not found`);
         }
     }
     
     handleLevelSelection(level) {
+        console.log(`Handling level selection: ${level}`);
+        
         // Only allow selecting the visible level
-        if (level !== this.currentLevel) return;
+        if (level !== this.currentLevel) {
+            console.log(`Level ${level} is not the current visible level (${this.currentLevel})`);
+            return;
+        }
         
         // Check if this level is unlocked
         const isUnlocked = this.levelUnlocker.isLevelUnlocked(level);
@@ -216,12 +260,15 @@ class LevelScroller {
             // Show message that level is locked
             if (window.gameController && window.gameController.showMessage) {
                 window.gameController.showMessage(`Level ${level} is locked. Complete earlier levels to unlock it.`, 'error', 3000);
+            } else {
+                console.log(`Level ${level} is locked. Complete earlier levels to unlock it.`);
             }
             return;
         }
         
         // Find the game controller
         if (window.gameController && window.gameController.startLevel) {
+            console.log(`Starting level ${level} via game controller`);
             window.gameController.startLevel(level);
             
             // Update appearance
@@ -234,6 +281,7 @@ class LevelScroller {
     // Set the current level from external sources (like game controller)
     setCurrentLevel(level) {
         if (level >= 1 && level <= this.maxLevels) {
+            console.log(`Setting current level to ${level}`);
             this.currentLevel = level;
             this.updateVisibleLevel();
         }
@@ -242,6 +290,7 @@ class LevelScroller {
 
 // Initialize the level scroller when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', function() {
+    // Create global levelScroller instance
     window.levelScroller = new LevelScroller();
     
     // Patch the game controller to update level scroller when level changes
@@ -262,6 +311,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     window.levelScroller.setCurrentLevel(level);
                 }
             };
+            
+            // Fix handlePuzzleSolved method if missing drawCompleteBorders function
+            if (window.gameController.handlePuzzleSolved) {
+                const originalHandlePuzzleSolved = window.gameController.handlePuzzleSolved;
+                
+                window.gameController.handlePuzzleSolved = function() {
+                    // Call the original method first
+                    originalHandlePuzzleSolved.call(this);
+                    
+                    // Trigger unlock if this is a direct replacement
+                    if (window.levelUnlocker) {
+                        window.levelUnlocker.handleLevelCompletion(this.state.currentLevel);
+                    }
+                };
+            }
         }
     }, 100);
     
