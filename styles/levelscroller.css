@@ -25,21 +25,21 @@
     margin: 0 10px;
 }
 
-/* Scrollable Level Buttons */
+/* Scrollable Level Buttons - With Graduated Style */
 .level-btn-scrollable {
     position: absolute;
     width: 100%;
     height: 100%;
     border: none;
     border-radius: 8px;
-    background-color: #3b82f6;
+    background: linear-gradient(to bottom, #60a5fa, #3b82f6, #2563eb);
     color: white;
     font-family: 'Black Ops One', cursive !important; /* BLACK OPS FONT */
     font-size: 1.4rem;
     cursor: pointer;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    transition: opacity 0.3s ease, transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
     border: 2px solid #60a5fa;
     border-bottom-width: 3px;
     display: flex;
@@ -60,24 +60,39 @@
 }
 
 .level-btn-scrollable.visible:hover {
+    background: linear-gradient(to bottom, #93c5fd, #60a5fa, #3b82f6);
     transform: translateY(-2px);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 /* Active Button */
 .level-btn-scrollable.active {
-    background-color: #1d4ed8;
+    background: linear-gradient(to bottom, #3b82f6, #2563eb, #1e40af);
+    border-color: #3b82f6;
+}
+
+/* Active Button Hover State */
+.level-btn-scrollable.active:hover {
+    background: linear-gradient(to bottom, #60a5fa, #3b82f6, #2563eb);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 /* Locked Button */
 .level-btn-scrollable.locked {
     opacity: 0.4;
     pointer-events: none;
-    background-color: #94a3b8;
-    border-color: #64748b;
+    background: linear-gradient(to bottom, #a5b4fc, #94a3b8, #64748b);
+    border-color: #94a3b8;
 }
 
-/* Arrow Buttons */
+/* Active/click effect for buttons */
+.level-btn-scrollable:active {
+    transform: translateY(1px) !important;
+    border-bottom-width: 1px !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Arrow Buttons - With Graduated Style */
 .level-arrow {
     display: flex;
     align-items: center;
@@ -85,14 +100,13 @@
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background-color: #3b82f6;
+    background: linear-gradient(to bottom, #60a5fa, #3b82f6, #2563eb);
     color: white;
-    border: none;
+    border: 2px solid #60a5fa;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.1s ease;
+    transition: all 0.3s ease;
     -webkit-tap-highlight-color: transparent;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    border: 2px solid #60a5fa;
     z-index: 10;
 }
 
@@ -102,12 +116,16 @@
 }
 
 .level-arrow:hover {
-    background-color: #2563eb;
+    background: linear-gradient(to bottom, #93c5fd, #60a5fa, #3b82f6);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
 }
 
 .level-arrow:active {
-    transform: scale(0.95);
-    background-color: #1d4ed8;
+    transform: scale(0.95) translateY(1px);
+    background: linear-gradient(to bottom, #3b82f6, #2563eb, #1e40af);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    border-width: 1px;
 }
 
 /* Mobile Optimizations */
@@ -124,8 +142,8 @@
     }
     
     .level-arrow {
-        width: 30px;
-        height: 30px;
+        width: 32px;
+        height: 32px;
     }
     
     .level-arrow svg {
