@@ -22,7 +22,11 @@
   --text-blue: #1e40af;          /* Dark blue for text */
   --yellow: #f0e68c;             /* Soft yellow for solved path */
   --form-bg-color: #e6f2ff;      /* Light blue background */
-  
+    --lilac-light: #c084fc;  /* Light lilac */
+    --lilac-medium: #a855f7; /* Medium lilac */
+    --lilac-dark: #9333ea;   /* Dark lilac */
+    --lilac-border: #d8b4fe; /* Lighter lilac for border */
+   
   /* Sizing variables */
   --app-height: 100%;
   --screen-padding: 15px;
@@ -507,7 +511,7 @@ body {
 }
 
 /* ==========================================================================
-   8. GAME CONTROLS - UPDATED WITH GRADUATED STYLING
+   8. GAME CONTROLS - UPDATED WITH LILAC STYLING
    ========================================================================== */
 
 .game-controls {
@@ -522,7 +526,7 @@ body {
   margin-right: auto;
 }
 
-/* Base button styling for all screen sizes - WITH GRADUATED STYLING */
+/* Base button styling with lilac gradient */
 .game-controls button {
   display: flex;
   align-items: center;
@@ -531,9 +535,9 @@ body {
   font-size: 0.9rem;
   font-family: 'Trebuchet MS', Arial, sans-serif;
   font-weight: bold;
-  background: linear-gradient(to bottom, #f87171, #dd717e, #c13a49); /* Graduated red */
+  background: linear-gradient(to bottom, var(--lilac-light), var(--lilac-medium), var(--lilac-dark)); /* Graduated lilac */
   color: white;
-  border: 2px solid #f87171; /* Lighter red border to match */
+  border: 2px solid var(--lilac-border); /* Lighter lilac border */
   border-bottom-width: 3px;
   border-radius: 5px;
   cursor: pointer;
@@ -545,7 +549,7 @@ body {
 }
 
 .game-controls button:hover {
-  background: linear-gradient(to bottom, #fca5a5, #f87171, #dd717e); /* Lighter red gradient on hover */
+  background: linear-gradient(to bottom, #d8b4fe, var(--lilac-light), var(--lilac-medium)); /* Lighter lilac gradient on hover */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   transform: translateY(-2px);
 }
@@ -565,16 +569,16 @@ body {
 
 /* Button layout for specific controls - adjusted proportions */
 #check-solution {
-  width: 30%; /* Increased from 25% */
+  width: 28%; /* Reduced from 30% */
 }
 
 #remove-spare {
-  width: 40%; /* Reduced from 50% */
+  width: 44%; /* Increased from 40% to be 10% wider */
   transition: opacity 1s ease, visibility 1s ease, position 0.5s ease; /* Smooth transition */
 }
 
 #reset-path {
-  width: 30%; /* Increased from 25% */
+  width: 28%; /* Reduced from 30% */
 }
 
 /* Hide Remove Spares button when used */
@@ -602,7 +606,7 @@ body {
   }
 }
 
-/* Button animation - PULSE INSTEAD OF COLOR CHANGE */
+/* Button animation - PULSE ONLY */
 @keyframes buttonPulse {
   0% { transform: scale(1); }
   50% { transform: scale(1.05); }
@@ -613,13 +617,21 @@ body {
   animation: buttonPulse 0.3s ease-in-out;
 }
 
-/* Override any active/focus/selected state */
+/* REMOVE persistent active/focus/selected states */
 .game-controls button:active, 
 .game-controls button:focus,
 .game-controls button.active,
 .game-controls button.selected {
-  background: linear-gradient(to bottom, #dc2626, #c13a49, #9c3c47) !important; /* Darker red gradient when active */
+  background: linear-gradient(to bottom, var(--lilac-light), var(--lilac-medium), var(--lilac-dark)) !important;
   color: white !important;
+}
+
+/* Disabled button state - make it translucent lilac instead of gray */
+.game-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: linear-gradient(to bottom, var(--lilac-light), var(--lilac-medium), var(--lilac-dark)) !important;
+  border-color: var(--lilac-border);
 }
 
 /* Specific adjustments for smaller screens */
@@ -632,12 +644,6 @@ body {
   
   .game-controls button {
     font-size: 1rem; /* Larger text for mobile */
-  }
-  
-  .game-controls button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    background: linear-gradient(to bottom, #9ca3af, #6b7280, #4b5563); /* Gray gradient for disabled */
   }
 }
 
