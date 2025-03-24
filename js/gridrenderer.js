@@ -11,6 +11,14 @@ document.addEventListener('DOMContentLoaded', () => {
     gridContainer.style.border = 'none';
     gridContainer.style.boxShadow = 'none';
   }
+  
+  // Make sure the rules box remains visible
+  const rulesBox = document.querySelector('.rules-box');
+  if (rulesBox) {
+    rulesBox.style.display = 'block';
+    rulesBox.style.visibility = 'visible';
+    rulesBox.style.opacity = '1';
+  }
 });
 
 // Initialize border styles when module is loaded
