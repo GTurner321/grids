@@ -35,7 +35,7 @@
     background-color: #3b82f6;
     color: white;
     font-family: 'Black Ops One', cursive !important; /* BLACK OPS FONT */
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     cursor: pointer;
     opacity: 0;
     pointer-events: none;
@@ -74,8 +74,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     background-color: #3b82f6;
     color: white;
@@ -89,8 +89,8 @@
 }
 
 .level-arrow svg {
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
 }
 
 .level-arrow:hover {
