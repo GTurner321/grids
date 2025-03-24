@@ -1,4 +1,39 @@
-/* leaderboard.css - Complete updated file with spacing adjustments */
+/* ===========================================================================
+   LEADERBOARD STYLES
+   Complete file with graduated styling and improved structure
+   =========================================================================== */
+
+/* ==========================================================================
+   1. VARIABLES & GENERAL CONTAINER STYLES
+   ========================================================================== */
+
+:root {
+    /* Color variables for consistency */
+    --leaderboard-bg: #ede9fe;
+    --leaderboard-border: #16a34a;
+    --text-dark: #1e293b;
+    --text-dark-gray: #4a5568;
+    --text-medium-gray: #6b7280;
+    --text-light-gray: #94a3b8;
+    --text-blue: #1e40af;
+    --text-green: #166534;
+    --input-border: #cbd5e1;
+    --input-focus: #e2e8f0;
+    --header-bg: #f3f4f6;
+    --row-border: #f3f4f6;
+    --highlight-green: #f0fdf4;
+    --highlight-green-pulse: #dcfce7;
+    --status-info-bg: #dbeafe;
+    --status-success-bg: #dcfce7;
+    --status-error-bg: #fee2e2;
+    --status-error-text: #b91c1c;
+    
+    /* Button gradient variables */
+    --btn-gradient: linear-gradient(to bottom, #60a5fa, #3b82f6, #2563eb);
+    --btn-gradient-hover: linear-gradient(to bottom, #93c5fd, #60a5fa, #3b82f6);
+    --btn-gradient-active: linear-gradient(to bottom, #3b82f6, #2563eb, #1d4ed8);
+    --btn-border: #60a5fa;
+}
 
 .leaderboard-section {
     margin-top: 1rem;
@@ -15,12 +50,20 @@
     width: 100%;
 }
 
-/* Username submission area */
+/* Hidden elements */
+.hidden {
+    display: none;
+}
+
+/* ==========================================================================
+   2. USERNAME SUBMISSION AREA
+   ========================================================================== */
+
 .username-area {
-    background-color: #ede9fe;
-    border: 2px solid #16a34a;
+    background-color: var(--leaderboard-bg);
+    border: 2px solid var(--leaderboard-border);
     border-radius: 6px;
-    padding: 4px 8px 4px; /* Reduced bottom padding */
+    padding: 4px 8px 4px;
     margin-bottom: 10px;
     max-width: 400px;
     margin-left: auto;
@@ -29,7 +72,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start; /* Changed from center */
+    justify-content: flex-start;
 }
 
 .username-form {
@@ -44,7 +87,7 @@
     margin: 0;
     font-weight: bold;
     font-size: 0.9rem;
-    color: #4a5568; /* Dark gray - consistent with other text */
+    color: var(--text-dark-gray);
 }
 
 .input-wrapper {
@@ -58,7 +101,7 @@
 #username-input {
     flex: 1;
     padding: 6px 10px;
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--input-border);
     border-radius: 4px;
     max-width: 200px;
     font-family: 'Courier New', monospace;
@@ -66,26 +109,38 @@
 }
 
 #username-input:focus {
-    outline: 1px solid #cbd5e1; /* Light gray outline */
-    box-shadow: 0 0 2px #e2e8f0; /* Very subtle light gray shadow */
+    outline: 1px solid var(--input-border);
+    box-shadow: 0 0 2px var(--input-focus);
 }
 
+/* Submit Username Button - With Graduated Styling */
 #submit-username {
     padding: 6px 12px;
-    background-color: #3b82f6; /* Blue color to match level buttons */
+    background: var(--btn-gradient);
     color: white;
-    border: none;
+    border: 2px solid var(--btn-border);
+    border-bottom-width: 3px;
     border-radius: 4px;
     cursor: pointer;
     font-weight: bold;
     font-size: 0.85rem;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 #submit-username:hover {
-    background-color: #2563eb; /* Darker blue on hover */
+    background: var(--btn-gradient-hover);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
 }
 
+#submit-username:active {
+    transform: translateY(1px);
+    border-bottom-width: 1px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Status messages */
 .status-message {
     font-size: 0.8rem;
     padding: 2px 0;
@@ -93,7 +148,7 @@
 }
 
 .status-message.error {
-    color: #dc2626;
+    color: var(--status-error-text);
 }
 
 .status-message.checking {
@@ -104,18 +159,32 @@
     color: #22c55e;
 }
 
+/* Welcome message styling */
 .welcome-message {
-    padding: 8px 0;
-    font-weight: bold;
-    color: #166534;
+    padding: 15px;
+    background-color: var(--leaderboard-bg);
+    border: 2px solid var(--leaderboard-border);
+    border-radius: 6px;
+    text-align: center;
+    font-family: 'Courier New', monospace;
     font-size: 0.9rem;
+    color: var(--text-green);
+    line-height: 1.4;
+    margin: 10px auto;
+    max-width: 400px;
+    width: 100%;
 }
 
-.hidden {
-    display: none;
+.welcome-message strong {
+    font-weight: bold;
+    color: var(--text-blue);
 }
 
-/* Leaderboard styling */
+/* ==========================================================================
+   3. LEADERBOARD TABLE & HEADER
+   ========================================================================== */
+
+/* Leaderboard title & controls */
 .leaderboard-title {
     text-align: center;
     font-size: 1.2rem;
@@ -136,49 +205,50 @@
 }
 
 .leaderboard-status.info {
-    background-color: #dbeafe;
-    color: #1e40af;
+    background-color: var(--status-info-bg);
+    color: var(--text-blue);
 }
 
 .leaderboard-status.success {
-    background-color: #dcfce7;
-    color: #166534;
+    background-color: var(--status-success-bg);
+    color: var(--text-green);
 }
 
 .leaderboard-status.error {
-    background-color: #fee2e2;
-    color: #b91c1c;
+    background-color: var(--status-error-bg);
+    color: var(--status-error-text);
 }
 
-/* Updated: Make the leaderboard table 8% narrower */
+/* Leaderboard table container */
 .leaderboard-table {
-    background-color: #ede9fe; /* Light lilac - same as username-area */
-    border: 2px solid #16a34a; /* Dark green border - same as username-area */
+    background-color: var(--leaderboard-bg);
+    border: 2px solid var(--leaderboard-border);
     border-radius: 6px;
     overflow: hidden;
     max-height: 400px;
     overflow-y: auto;
-    max-width: 368px; /* Reduced from 400px (8% less) */
+    max-width: 368px;
     margin-left: auto;
     margin-right: auto;
-    width: 92%; /* 8% less than 100% */
+    width: 92%;
 }
 
-/* Updated: Adjust the grid column widths with better spacing */
+/* Grid rows and cells */
 .leaderboard-row {
     display: grid;
     grid-template-columns: 40px minmax(80px, 1fr) 70px 80px;
-    column-gap: 10px; /* Add spacing between all columns */
+    column-gap: 10px;
     padding: 6px 8px;
-    border-bottom: 1px solid #f3f4f6;
+    border-bottom: 1px solid var(--row-border);
 }
 
 .leaderboard-row:last-child {
     border-bottom: none;
 }
 
+/* Header row */
 .leaderboard-row.header {
-    background-color: #f3f4f6;
+    background-color: var(--header-bg);
     font-weight: bold;
     font-size: 0.8rem;
     position: sticky;
@@ -186,7 +256,6 @@
     z-index: 10;
 }
 
-/* Updated: Improve header cell alignment */
 .leaderboard-row.header .leaderboard-cell.rank {
     text-align: center;
 }
@@ -196,11 +265,13 @@
     padding-left: 5px;
 }
 
+/* Current user highlighting */
 .leaderboard-row.current-user {
-    background-color: #f0fdf4;
+    background-color: var(--highlight-green);
     font-weight: bold;
 }
 
+/* Cell styling */
 .leaderboard-cell {
     font-size: 0.85rem;
     overflow: hidden;
@@ -217,26 +288,59 @@
     text-align: center;
 }
 
-/* Updated: Push SCORE right with extra padding */
 .leaderboard-cell.score {
     text-align: right;
-    padding-right: 10px; /* Add extra padding on the right */
+    padding-right: 10px;
 }
 
-/* Updated: Push DATE further right */
 .leaderboard-cell.date {
     text-align: right;
     padding-right: 5px;
 }
 
+/* Empty state */
 .leaderboard-row.empty {
     text-align: center;
     padding: 20px;
-    color: #6b7280;
+    color: var(--text-medium-gray);
     grid-column: 1 / -1;
 }
 
-/* Styles for bottom buttons */
+/* Scrollbar styling */
+.leaderboard-table::-webkit-scrollbar {
+    width: 8px;
+}
+
+.leaderboard-table::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 0 6px 6px 0;
+}
+
+.leaderboard-table::-webkit-scrollbar-thumb {
+    background: var(--input-border);
+    border-radius: 4px;
+}
+
+.leaderboard-table::-webkit-scrollbar-thumb:hover {
+    background: var(--text-light-gray);
+}
+
+/* Animation for new entries */
+@keyframes highlight-pulse {
+    0% { background-color: var(--highlight-green); }
+    50% { background-color: var(--highlight-green-pulse); }
+    100% { background-color: var(--highlight-green); }
+}
+
+.leaderboard-row.current-user.new-entry {
+    animation: highlight-pulse 2s ease-in-out 1;
+}
+
+/* ==========================================================================
+   4. BUTTONS & INTERACTIVE ELEMENTS
+   ========================================================================== */
+
+/* Bottom buttons styling with gradients */
 .bottom-buttons {
     display: flex;
     flex-direction: column;
@@ -253,21 +357,31 @@
     gap: 8px;
     padding: 10px 15px;
     font-size: 0.85rem;
-    background-color: #3b82f6; /* Blue color */
+    background: var(--btn-gradient);
     color: white;
-    border: none;
+    border: 2px solid var(--btn-border);
+    border-bottom-width: 3px;
     border-radius: 4px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     font-family: 'Courier New', monospace;
     font-weight: bold;
     text-transform: uppercase;
     max-width: 300px;
     width: 100%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .bottom-btn:hover {
-    background-color: #2563eb; /* Darker blue on hover */
+    background: var(--btn-gradient-hover);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.bottom-btn:active {
+    transform: translateY(1px);
+    border-bottom-width: 1px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .bottom-btn svg {
@@ -275,123 +389,76 @@
     height: 16px;
 }
 
+/* Button highlight animation - modified for gradient */
+@keyframes pulse {
+    0%, 100% { 
+        background: var(--btn-gradient);
+    }
+    50% { 
+        background: var(--btn-gradient-active);
+    }
+}
+
 .bottom-btn.highlight {
     animation: pulse 1s infinite;
 }
 
-@keyframes pulse {
-    0%, 100% { background-color: #3b82f6; }
-    50% { background-color: #1d4ed8; }
+/* Close leaderboard button with graduated styling */
+#close-leaderboard-btn {
+    margin-top: 15px;
+    padding: 8px 15px;
+    background: var(--btn-gradient);
+    color: white;
+    border: 2px solid var(--btn-border);
+    border-bottom-width: 3px;
+    border-radius: 4px;
+    font-family: 'Trebuchet MS', Arial, sans-serif;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Update return to record button */
-#return-to-record-btn {
+#close-leaderboard-btn:hover {
+    background: var(--btn-gradient-hover);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+#close-leaderboard-btn:active {
+    transform: translateY(1px);
+    border-bottom-width: 1px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Return buttons styling */
+#return-to-record-btn,
+#return-from-leaderboard-btn {
     background: none;
     border: none;
     color: #3b82f6;
     font-size: 24px;
     cursor: pointer;
-    margin-top: 10px;
+    margin: 10px auto;
+    display: block;
+    text-align: center;
     transition: color 0.2s ease;
+    padding: 5px;
+    width: 40px;
+    height: 40px;
 }
 
-#return-to-record-btn:hover {
-    color: #1e40af;
-}
-
-/* Adjust username area and leaderboard table containers */
-#username-area-container,
-#leaderboard-table-container {
-    margin-top: 10px;
-    width: 100%;
-    max-width: 400px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-/* Updated: Adjust responsive styling for smaller screens */
-@media (max-width: 480px) {
-    .leaderboard-row {
-        grid-template-columns: 35px minmax(70px, 1fr) 60px 70px;
-        column-gap: 8px;
-        font-size: 0.8rem;
-        padding: 6px;
-    }
-    
-    .leaderboard-table {
-        max-width: 92%; /* Keep it proportionally smaller */
-    }
-    
-    .leaderboard-cell {
-        font-size: 0.75rem;
-    }
-    
-    .input-wrapper {
-        flex-direction: column;
-    }
-    
-    #submit-username {
-        width: 100%;
-    }
-}
-
-/* Leaderboard scrollbar styling */
-.leaderboard-table::-webkit-scrollbar {
-    width: 8px;
-}
-
-.leaderboard-table::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 0 6px 6px 0;
-}
-
-.leaderboard-table::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 4px;
-}
-
-.leaderboard-table::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
-}
-
-/* Animation for the current user's row */
-@keyframes highlight-pulse {
-    0% { background-color: #f0fdf4; }
-    50% { background-color: #dcfce7; }
-    100% { background-color: #f0fdf4; }
-}
-
-.leaderboard-row.current-user.new-entry {
-    animation: highlight-pulse 2s ease-in-out 1;
-}
-
-/* Connection status indicator */
-.connection-status {
-    position: absolute;
-    top: 0;
-    right: 0;
-    font-size: 0.75rem;
-    padding: 4px 8px;
-    border-radius: 0 0 0 4px;
-    background-color: rgba(0, 0, 0, 0.1);
-    color: #4b5563;
-}
-
-.connection-status.online {
-    background-color: #dcfce7;
-    color: #166534;
-}
-
-.connection-status.offline {
-    background-color: #fee2e2;
-    color: #b91c1c;
+#return-to-record-btn:hover,
+#return-from-leaderboard-btn:hover {
+    color: var(--text-blue);
 }
 
 /* Convert leaderboard title to button */
 .leaderboard-title-button {
     text-align: center;
     font-size: 1.2rem;
-    margin: 8px auto; /* Changed from 8px 0 to center horizontally */
+    margin: 8px auto;
     font-family: 'Courier New', monospace;
     font-weight: bold;
     letter-spacing: 0.05em;
@@ -401,13 +468,13 @@
     padding: 8px 0;
     cursor: pointer;
     transition: all 0.2s ease;
-    color: #1e293b;
+    color: var(--text-dark);
     position: relative;
-    display: block; /* Added to ensure proper centering */
+    display: block;
 }
 
 .leaderboard-title-button:hover {
-    color: #16a34a;
+    color: var(--leaderboard-border);
 }
 
 .leaderboard-title-button:active {
@@ -434,14 +501,86 @@
     font-size: 0.8rem;
     margin-top: -8px;
     margin-bottom: 6px;
-    color: #374151; /* Darker gray */
+    color: #374151;
     max-width: 400px;
     margin-left: auto;
     margin-right: auto;
     width: 100%;
 }
 
-/* Touch device optimizations for leaderboard */
+/* Transition effects */
+#score-bonus {
+    transition: color 0.3s ease;
+}
+
+.level-selector-title {
+    transition: opacity 0.5s ease-out;
+}
+
+/* ==========================================================================
+   5. CONNECTION STATUS
+   ========================================================================== */
+
+/* Connection status indicator */
+.connection-status {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border-radius: 0 0 0 4px;
+    background-color: rgba(0, 0, 0, 0.1);
+    color: #4b5563;
+}
+
+.connection-status.online {
+    background-color: var(--status-success-bg);
+    color: var(--text-green);
+}
+
+.connection-status.offline {
+    background-color: var(--status-error-bg);
+    color: var(--status-error-text);
+}
+
+/* ==========================================================================
+   6. CONTAINER ADJUSTMENTS
+   ========================================================================== */
+
+/* Adjust username area and leaderboard table containers */
+#username-area-container,
+#leaderboard-table-container {
+    margin-top: 10px;
+    width: 100%;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#username-area-container.visible,
+#leaderboard-table-container.visible {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* ==========================================================================
+   7. RESPONSIVE DESIGN
+   ========================================================================== */
+
+/* Touch device optimizations */
 .touch-device .leaderboard-title-button {
     padding: 12px 0;
     font-size: 1.3rem;
@@ -468,73 +607,147 @@
     overflow-y: scroll;
 }
 
-/* Add these styles to your existing leaderboard.css file */
+/* Tablet and small screens */
+@media (max-width: 768px) {
+    /* Submit username button - mobile specific */
+    #submit-username {
+        width: 50% !important;
+        padding: 12px;
+        font-size: 1.2rem !important;
+        font-weight: bold;
+        background: var(--btn-gradient);
+        color: white;
+        border: 2px solid var(--btn-border) !important;
+        border-bottom-width: 3px !important;
+        border-radius: 6px;
+        cursor: pointer;
+        text-align: center;
+        margin: 0 auto !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-family: 'Trebuchet MS', Arial, sans-serif;
+        text-transform: uppercase;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
 
-/* Welcome message styling */
-.welcome-message {
-    padding: 15px;
-    background-color: #ede9fe;
-    border: 2px solid #16a34a;
-    border-radius: 6px;
-    text-align: center;
-    font-family: 'Courier New', monospace;
-    font-size: 0.9rem;
-    color: #166534;
-    line-height: 1.4;
-    margin: 10px auto;
-    max-width: 400px;
-    width: 100%;
+    #submit-username:hover {
+        background: var(--btn-gradient-hover);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    #submit-username:active {
+        transform: translateY(2px);
+        border-bottom-width: 1px !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Rocket icon after Submit */
+    #submit-username::after {
+        content: " 🚀";
+        margin-left: 5px;
+        font-size: 1.2rem;
+    }
+    
+    /* Return Button Positioning */
+    #return-to-record-btn {
+        position: absolute !important;
+        bottom: 10px !important;
+        right: 10px !important;
+        top: auto !important;
+        left: auto !important;
+        background-color: rgba(255, 255, 255, 0.8);
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        z-index: 10000;
+        border: none;
+        color: var(--text-blue);
+        font-size: 24px;
+        cursor: pointer;
+    }
+    
+    /* Leaderboard title */
+    .leaderboard-title {
+        font-size: 1.4rem !important;
+        margin: 15px 0;
+        font-weight: bold;
+        font-family: 'Trebuchet MS', Arial, sans-serif !important;
+        color: white;
+    }
+    
+    /* Username Form */
+    .username-area {
+        width: 92% !important;
+        max-width: 340px !important;
+        background-color: var(--leaderboard-bg) !important;
+        border: 2px solid var(--btn-border) !important;
+        border-radius: 6px;
+        padding: 15px;
+        margin: 0 auto;
+        position: relative;
+    }
+    
+    .username-prompt {
+        font-size: 1rem !important;
+        font-family: 'Trebuchet MS', Arial, sans-serif;
+        font-weight: bold;
+        margin-bottom: 12px;
+        text-align: center;
+        text-transform: uppercase;
+    }
+    
+    .input-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 90%;
+        max-width: 280px;
+        margin: 0 auto;
+        gap: 12px;
+    }
+    
+    #username-input {
+        width: 90% !important;
+        padding: 12px;
+        font-size: 1.1rem !important;
+        text-align: center;
+        border: 2px solid var(--input-border);
+        border-radius: 6px;
+        max-width: 90% !important;
+        margin: 0 auto !important;
+        display: block !important;
+        font-family: 'Trebuchet MS', Arial, sans-serif;
+        font-weight: bold;
+    }
+    
+    /* Hide welcome message on mobile */
+    .welcome-message {
+        display: none !important;
+    }
 }
 
-.welcome-message strong {
-    font-weight: bold;
-    color: #1e40af;
-}
-
-/* Return buttons styling */
-#return-to-record-btn,
-#return-from-leaderboard-btn {
-    background: none;
-    border: none;
-    color: #3b82f6;
-    font-size: 24px;
-    cursor: pointer;
-    margin: 10px auto;
-    display: block;
-    text-align: center;
-    transition: color 0.2s ease;
-    padding: 5px;
-    width: 40px;
-    height: 40px;
-}
-
-#return-to-record-btn:hover,
-#return-from-leaderboard-btn:hover {
-    color: #1e40af;
-}
-
-/* Level selector title transition */
-.level-selector-title {
-    transition: opacity 0.5s ease-out;
-}
-
-/* Username in score area */
-#score-bonus {
-    transition: color 0.3s ease;
-}
-
-/* Highlight animation for bottom buttons */
-.bottom-btn.highlight {
-    animation: pulse 1s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { background-color: #3b82f6; }
-    50% { background-color: #1d4ed8; }
-}
-
-/* Mobile optimizations */
+/* Smaller screens */
 @media (max-width: 480px) {
+    .leaderboard-row {
+        grid-template-columns: 35px minmax(70px, 1fr) 60px 70px;
+        column-gap: 8px;
+        font-size: 0.8rem;
+        padding: 6px;
+    }
+    
+    .leaderboard-table {
+        max-width: 92%;
+    }
+    
+    .leaderboard-cell {
+        font-size: 0.75rem;
+    }
+    
     .welcome-message {
         font-size: 0.8rem;
         padding: 10px;
