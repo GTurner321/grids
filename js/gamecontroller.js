@@ -34,61 +34,65 @@ class GameController {
 
         this.initializeEventListeners();
         this.initializeGridInteractions();
+        this.initializeButtonAnimations();
     }
 
-    initializeEventListeners() {
-        console.log('Initializing game event listeners');
-        
-        // Level selection
-        document.querySelectorAll('.level-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const level = parseInt(btn.dataset.level);
-                console.log(`Level ${level} button clicked`);
-                this.startLevel(level);
-            });
+initializeEventListeners() {
+    console.log('Initializing game event listeners');
+    
+    // Level selection
+    document.querySelectorAll('.level-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const level = parseInt(btn.dataset.level);
+            console.log(`Level ${level} button clicked`);
+            this.startLevel(level);
         });
+    });
 
-        // Game controls
-        const checkButton = document.getElementById('check-solution');
-        if (checkButton) {
-            checkButton.addEventListener('click', () => {
-                console.log('Check solution button clicked');
-                if (this.state.userPath.length > 0) {
-                    this.checkSolution();
-                }
-            });
-        } else {
-            console.error('Check solution button not found');
-        }
-
-        const removeButton = document.getElementById('remove-spare');
-        if (removeButton) {
-            removeButton.addEventListener('click', () => {
-                console.log('Remove spare button clicked');
-                this.removeAllSpareCells();
-            });
-        } else {
-            console.error('Remove spare button not found');
-        }
-        
-        // Add reset path button handler
-        const resetButton = document.getElementById('reset-path');
-        if (resetButton) {
-            // Update the button text to "Reset" while preserving the SVG
-            const svgContent = resetButton.innerHTML.split('</svg>')[0] + '</svg>';
-            resetButton.innerHTML = svgContent + ' Reset';
-            
-            resetButton.addEventListener('click', (e) => {
-                console.log('Reset button clicked');
-                e.preventDefault(); // Prevent any default behavior
-                this.resetPath(); // Call the resetPath method
-            });
-        } else {
-            console.error('Reset path button not found');
-        }   
-        
-        console.log('Game event listeners initialized');
+    // Game controls
+    const checkButton = document.getElementById('check-solution');
+    if (checkButton) {
+        checkButton.addEventListener('click', () => {
+            console.log('Check solution button clicked');
+            if (this.state.userPath.length > 0) {
+                this.checkSolution();
+            }
+        });
+    } else {
+        console.error('Check solution button not found');
     }
+
+    const removeButton = document.getElementById('remove-spare');
+    if (removeButton) {
+        removeButton.addEventListener('click', () => {
+            console.log('Remove spare button clicked');
+            this.removeAllSpareCells();
+        });
+    } else {
+        console.error('Remove spare button not found');
+    }
+    
+    // Add reset path button handler
+    const resetButton = document.getElementById('reset-path');
+    if (resetButton) {
+        // Update the button text to "Reset" while preserving the SVG
+        const svgContent = resetButton.innerHTML.split('</svg>')[0] + '</svg>';
+        resetButton.innerHTML = svgContent + ' Reset';
+        
+        resetButton.addEventListener('click', (e) => {
+            console.log('Reset button clicked');
+            e.preventDefault(); // Prevent any default behavior
+            this.resetPath(); // Call the resetPath method
+        });
+    } else {
+        console.error('Reset path button not found');
+    }
+    
+    // Initialize button animations for pulse effect without persistent states
+    this.initializeButtonAnimations();
+    
+    console.log('Game event listeners initialized');
+}
     
 async startLevel(level) {
     // Reset state for the new level
@@ -378,6 +382,21 @@ async startLevel(level) {
                 this.handleCellClick(cell);
             }
         });
+
+initializeButtonAnimations() {
+    const controlButtons = document.querySelectorAll('.game-controls button');
+    controlButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Add animation class
+            button.classList.add('clicked');
+            
+            // Remove ALL state classes after animation completes
+            setTimeout(() => {
+                button.classList.remove('clicked', 'active', 'selected');
+            }, 300); // Reduced from 500ms to match animation duration
+        });
+    });
+}
         
         // 2. Touch handling (simplified and more reliable)
         gridContainer.addEventListener('touchstart', (e) => {
