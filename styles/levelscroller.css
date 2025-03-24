@@ -82,8 +82,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 30px;
-    height: 30px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     background-color: #3b82f6;
     color: white;
@@ -97,8 +97,8 @@
 }
 
 .level-arrow svg {
-    width: 22px;
-    height: 22px;
+    width: 26px;
+    height: 26px;
 }
 
 .level-arrow:hover {
@@ -124,13 +124,13 @@
     }
     
     .level-arrow {
-        width: 48px;
-        height: 48px;
+        width: 30px;
+        height: 30px;
     }
     
     .level-arrow svg {
-        width: 28px;
-        height: 28px;
+        width: 22px;
+        height: 22px;
     }
     
     /* No need for dot spacing - using minimal margin */
