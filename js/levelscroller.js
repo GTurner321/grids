@@ -311,8 +311,8 @@ updateVisibleLevel() {
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                width: 30px;
-                height: 30px;
+                width: 20px;
+                height: 20px;
                 border-radius: 50%;
                 background-color: #3b82f6;
                 color: white;
