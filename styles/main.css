@@ -174,8 +174,8 @@ body {
    ========================================================================== */
 /* Main container styling */
 .rules-box {
-  background-color: var(--form-bg-color);
-  border: 2px solid var(--secondary-color);
+  background-color: #e0f2ff; /* Light blue background, non-transparent */
+  border: 2px solid #60a5fa; /* Blue border matching the button border */
   border-radius: 8px;
   padding: 15px;
   margin: 15px auto;
@@ -187,7 +187,7 @@ body {
   box-sizing: border-box;
   z-index: 50;
   position: relative;
-  width: 60%;
+  width: 60%; /* 60% width for large screens */
   max-width: 900px;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
 }
@@ -242,7 +242,6 @@ body {
 
 /* Rules section container */
 .rules-section {
-  background-color: rgba(240, 240, 240, 0.5);
   border-radius: 6px;
   padding: 10px;
   margin: 15px 0;
@@ -303,7 +302,7 @@ body {
 
 @media (max-width: 768px) {
   .rules-box {
-    width: 90%;
+    width: 95%; /* 95% width for small screens as requested */
     max-width: none;
     margin: 10px auto;
     padding: 12px;
