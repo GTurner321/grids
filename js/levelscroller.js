@@ -89,41 +89,44 @@ class LevelScroller {
     window.levelScroller = this;
 }
     
-    initializeUI() {
-        // Get the level buttons container
-        const levelButtonsContainer = document.querySelector('.level-buttons');
-        if (!levelButtonsContainer) {
-            console.error('Could not find level buttons container');
-            return;
-        }
-        
-        // Clear existing buttons
-        levelButtonsContainer.innerHTML = '';
-        
-        // Add new scroller UI
-        levelButtonsContainer.innerHTML = `
-            <div class="level-scroller-container">
-                <button class="level-arrow up-arrow" aria-label="Previous level">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="18 15 12 9 6 15"></polyline>
-                    </svg>
-                </button>
-                
-                <div class="level-display-container">
-                    ${this.createLevelButtons()}
-                </div>
-                
-                <button class="level-arrow down-arrow" aria-label="Next level">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="6 9 12 15 18 9"></polyline>
-                    </svg>
-                </button>
-            </div>
-        `;
-        
-        // Update the visible level (initially level 1)
-        this.updateVisibleLevel();
+initializeUI() {
+    // Get the level buttons container
+    const levelButtonsContainer = document.querySelector('.level-buttons');
+    if (!levelButtonsContainer) {
+        console.error('Could not find level buttons container');
+        return;
     }
+    
+    // Clear existing buttons
+    levelButtonsContainer.innerHTML = '';
+    
+    // Add new scroller UI
+    levelButtonsContainer.innerHTML = `
+        <div class="level-scroller-container">
+            <button class="level-arrow up-arrow" aria-label="Previous level">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="18 15 12 9 6 15"></polyline>
+                </svg>
+            </button>
+            
+            <div class="level-display-container">
+                ${this.createLevelButtons()}
+            </div>
+            
+            <button class="level-arrow down-arrow" aria-label="Next level">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </button>
+        </div>
+    `;
+    
+    // Remove this line:
+    // this.addStyles();
+    
+    // Update the visible level (initially level 1)
+    this.updateVisibleLevel();
+}
     
     createLevelButtons() {
         let buttonsHtml = '';
