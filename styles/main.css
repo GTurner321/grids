@@ -476,7 +476,7 @@ body {
 
 #remove-spare {
   width: 40%; /* Reduced from 50% */
-  transition: opacity 1s ease, visibility 1s ease; /* Slow fade transition */
+  transition: opacity 1s ease, visibility 1s ease, position 0.5s ease; /* Smooth transition */
 }
 
 #reset-path {
@@ -484,12 +484,13 @@ body {
 }
 
 /* Hide Remove Spares button when used */
-.game-controls button#remove-spare.used {
+#remove-spare.used {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
   position: absolute;
   z-index: -1;
+  transition: opacity 1s ease, visibility 1s ease;
 }
 
 /* Two-button layout when Remove Spares is hidden */
@@ -499,6 +500,7 @@ body {
   transition: width 1s ease; /* Smooth transition for width change */
 }
 
+/* Mobile adjustment for two-button layout */
 @media (max-width: 768px) {
   .game-controls.two-buttons #check-solution,
   .game-controls.two-buttons #reset-path {
@@ -532,10 +534,16 @@ body {
   .game-controls {
     width: calc(100vw - 20px);
     gap: 5px;
+    margin: 12px auto !important;
   }
   
   .game-controls button {
     font-size: 1rem; /* Larger text for mobile */
+  }
+  
+  .game-controls button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 }
 
