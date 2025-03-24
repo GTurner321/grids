@@ -17,8 +17,8 @@ function createRulesBox() {
     // Set the content of the rules box
     rulesBox.innerHTML = `
         <div class="rules-content">
-            <div class="rules-image-container" style="width: 98%; margin: 0 auto; display: block;">
-                <img src="images/gridgameexample1.png" alt="Grid Game Example" style="width: 100%; height: auto;">
+            <div class="rules-image-container">
+                <img src="images/gridgameexample1.png" alt="Grid Game Example">
             </div>
             <style>
                 @media (min-width: 768px) {
