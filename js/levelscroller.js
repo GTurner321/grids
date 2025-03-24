@@ -174,42 +174,57 @@ class LevelScroller {
         }
     }
     
-    updateVisibleLevel() {
-        const buttons = document.querySelectorAll('.level-btn-scrollable');
-        if (!buttons || buttons.length === 0) return;
+updateVisibleLevel() {
+    const buttons = document.querySelectorAll('.level-btn-scrollable');
+    if (!buttons || buttons.length === 0) return;
+    
+    // Hide all buttons
+    buttons.forEach(btn => {
+        btn.classList.remove('active', 'visible', 'locked');
+    });
+    
+    // Show only the current level button
+    const currentButton = document.querySelector(`.level-btn-scrollable[data-level="${this.currentLevel}"]`);
+    if (currentButton) {
+        currentButton.classList.add('visible');
         
-        // Hide all buttons
-        buttons.forEach(btn => {
-            btn.classList.remove('active', 'visible');
-        });
+        // Check if this level is unlocked
+        const isUnlocked = this.levelUnlocker.isLevelUnlocked(this.currentLevel);
+        if (!isUnlocked) {
+            currentButton.classList.add('locked');
+        }
         
-        // Show only the current level button
-        const currentButton = document.querySelector(`.level-btn-scrollable[data-level="${this.currentLevel}"]`);
-        if (currentButton) {
-            currentButton.classList.add('visible');
-            
-            // If this level is the active level in the game, add active class
-            if (window.gameController && window.gameController.state && 
-                window.gameController.state.currentLevel === this.currentLevel) {
-                currentButton.classList.add('active');
-            }
+        // If this level is the active level in the game, add active class
+        if (window.gameController && window.gameController.state && 
+            window.gameController.state.currentLevel === this.currentLevel) {
+            currentButton.classList.add('active');
         }
     }
+}
     
     handleLevelSelection(level) {
-        // Only allow selecting the visible level
-        if (level !== this.currentLevel) return;
-        
-        // Find the game controller
-        if (window.gameController && window.gameController.startLevel) {
-            window.gameController.startLevel(level);
-            
-            // Update appearance
-            this.updateVisibleLevel();
-        } else {
-            console.error('Game controller not found or missing startLevel method');
+    // Only allow selecting the visible level
+    if (level !== this.currentLevel) return;
+    
+    // Check if this level is unlocked
+    if (!this.levelUnlocker.isLevelUnlocked(level)) {
+        // Show message that level is locked
+        if (window.gameController && window.gameController.showMessage) {
+            window.gameController.showMessage(`Level ${level} is locked. Complete earlier levels to unlock it.`, 'error', 3000);
         }
+        return;
     }
+    
+    // Find the game controller
+    if (window.gameController && window.gameController.startLevel) {
+        window.gameController.startLevel(level);
+        
+        // Update appearance
+        this.updateVisibleLevel();
+    } else {
+        console.error('Game controller not found or missing startLevel method');
+    }
+}
     
     // Set the current level from external sources (like game controller)
     setCurrentLevel(level) {
@@ -284,13 +299,20 @@ class LevelScroller {
             .level-btn-scrollable.active {
                 background-color: #1d4ed8;
             }
+
+            .level-btn-scrollable.locked {
+                opacity: 0.4;
+                pointer-events: none;
+                background-color: #94a3b8;
+                border-color: #64748b;
+            }
             
             .level-arrow {
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                width: 40px;
-                height: 40px;
+                width: 30px;
+                height: 30px;
                 border-radius: 50%;
                 background-color: #3b82f6;
                 color: white;
@@ -304,8 +326,8 @@ class LevelScroller {
             }
             
             .level-arrow svg {
-                width: 24px;
-                height: 24px;
+                width: 22px;
+                height: 22px;
             }
             
             .level-arrow:hover {
