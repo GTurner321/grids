@@ -1,4 +1,4 @@
-// levelscroller.js - Fixed implementation with proper level unlocking
+// levelscroller.js - Enhanced implementation with game activation fix
 
 class LevelUnlocker {
     constructor() {
@@ -15,6 +15,8 @@ class LevelUnlocker {
         
         // Make available globally
         window.levelUnlocker = this;
+        
+        console.log('Level unlocker initialized with levels:', Array.from(this.unlockedLevels));
     }
     
     isLevelUnlocked(level) {
@@ -35,10 +37,13 @@ class LevelUnlocker {
         if (window.levelScroller) {
             window.levelScroller.updateVisibleLevel();
         }
+        
+        console.log(`Unlocked tier ${tier}:`, this.levelTiers[tier]);
     }
     
     handleLevelCompletion(level) {
         level = Number(level); // Ensure level is a number
+        console.log(`Handling completion of level ${level}`);
         
         // Check if this completion unlocks new tiers
         if (this.levelTiers.tier1.includes(level) && 
@@ -58,6 +63,7 @@ class LevelUnlocker {
     saveUnlockProgress() {
         try {
             localStorage.setItem('mathPathUnlockedLevels', JSON.stringify(Array.from(this.unlockedLevels)));
+            console.log('Saved unlock progress:', Array.from(this.unlockedLevels));
         } catch (error) {
             console.error('Error saving unlock progress:', error);
         }
@@ -69,6 +75,9 @@ class LevelUnlocker {
             if (savedData) {
                 const unlockedArray = JSON.parse(savedData);
                 this.unlockedLevels = new Set(unlockedArray.map(Number)); // Ensure all values are numbers
+                console.log('Loaded unlock progress:', Array.from(this.unlockedLevels));
+            } else {
+                console.log('No saved unlock progress found, using defaults');
             }
         } catch (error) {
             console.error('Error loading unlock progress:', error);
@@ -83,6 +92,8 @@ class LevelUnlocker {
         if (window.levelScroller) {
             window.levelScroller.updateVisibleLevel();
         }
+        
+        console.log('Reset progress to default levels 1-3');
     }
 }
 
@@ -106,11 +117,9 @@ class LevelScroller {
     }
     
     init() {
+        console.log('Initializing level scroller UI');
         this.initializeUI();
         this.attachEventListeners();
-        
-        // Debug logging
-        console.log('Level scroller initialized');
     }
     
     initializeUI() {
@@ -145,6 +154,8 @@ class LevelScroller {
             </div>
         `;
         
+        console.log('Level scroller UI created');
+        
         // Update the visible level (initially level 1)
         this.updateVisibleLevel();
     }
@@ -167,33 +178,40 @@ class LevelScroller {
         // Up arrow (decrements level, loops from 1 to 10)
         const upArrow = document.querySelector('.up-arrow');
         if (upArrow) {
-            upArrow.addEventListener('click', () => {
+            upArrow.addEventListener('click', (e) => {
+                console.log('Up arrow clicked');
+                e.preventDefault(); // Prevent default behavior
                 this.currentLevel = this.currentLevel === 1 ? this.maxLevels : this.currentLevel - 1;
                 this.updateVisibleLevel();
             });
+        } else {
+            console.error('Up arrow not found');
         }
         
         // Down arrow (increments level, loops from 10 to 1)
         const downArrow = document.querySelector('.down-arrow');
         if (downArrow) {
-            downArrow.addEventListener('click', () => {
+            downArrow.addEventListener('click', (e) => {
+                console.log('Down arrow clicked');
+                e.preventDefault(); // Prevent default behavior
                 this.currentLevel = this.currentLevel === this.maxLevels ? 1 : this.currentLevel + 1;
                 this.updateVisibleLevel();
             });
+        } else {
+            console.error('Down arrow not found');
         }
         
-        // Level buttons - use event delegation for better reliability
-        const levelDisplayContainer = document.querySelector('.level-display-container');
-        if (levelDisplayContainer) {
-            levelDisplayContainer.addEventListener('click', (event) => {
-                // Use closest to find the level button even if a child element was clicked
-                const levelBtn = event.target.closest('.level-btn-scrollable');
-                if (levelBtn) {
-                    const level = parseInt(levelBtn.dataset.level);
-                    this.handleLevelSelection(level);
-                }
+        // Level buttons - use direct click handlers for better reliability
+        document.querySelectorAll('.level-btn-scrollable').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault(); // Prevent default behavior
+                const level = parseInt(btn.dataset.level);
+                console.log(`Level button ${level} clicked directly`);
+                this.handleLevelSelection(level);
             });
-        }
+        });
+        
+        console.log('Level scroller event listeners attached');
     }
     
     updateVisibleLevel() {
@@ -202,6 +220,8 @@ class LevelScroller {
             console.error('No level buttons found to update');
             return;
         }
+        
+        console.log(`Updating visible level to ${this.currentLevel}`);
         
         // First, hide all buttons and reset their classes
         buttons.forEach(btn => {
@@ -223,10 +243,13 @@ class LevelScroller {
             
             // Check if this level is unlocked
             const isUnlocked = this.levelUnlocker.isLevelUnlocked(this.currentLevel);
+            console.log(`Level ${this.currentLevel} is ${isUnlocked ? 'unlocked' : 'locked'}`);
             
             // Add locked class if needed
             if (!isUnlocked) {
                 currentButton.classList.add('locked');
+                currentButton.style.opacity = '0.4';
+                currentButton.style.pointerEvents = 'none';
             }
             
             // If this level is the active level in the game, add active class
@@ -262,8 +285,35 @@ class LevelScroller {
                 window.gameController.showMessage(`Level ${level} is locked. Complete earlier levels to unlock it.`, 'error', 3000);
             } else {
                 console.log(`Level ${level} is locked. Complete earlier levels to unlock it.`);
+                alert(`Level ${level} is locked. Complete earlier levels to unlock it.`);
             }
             return;
+        }
+        
+        console.log(`Starting level ${level}`);
+        
+        // Make sure the game container gets the active class
+        const gameContainer = document.querySelector('.game-container');
+        if (gameContainer) {
+            gameContainer.classList.add('game-active');
+            
+            // Make sure rules box is hidden
+            const rulesBox = document.querySelector('.rules-box');
+            if (rulesBox) {
+                rulesBox.style.display = 'none';
+                rulesBox.style.visibility = 'hidden';
+                rulesBox.style.opacity = '0';
+            }
+        }
+        
+        // Make sure grid container is visible and has proper styles
+        const gridContainer = document.getElementById('grid-container');
+        if (gridContainer) {
+            gridContainer.style.visibility = 'visible';
+            gridContainer.style.height = 'auto';
+            gridContainer.style.overflow = 'visible';
+            gridContainer.style.backgroundColor = '#94a3b8'; // Set grid lines color
+            gridContainer.style.border = '1px solid #94a3b8';
         }
         
         // Find the game controller
@@ -275,6 +325,7 @@ class LevelScroller {
             this.updateVisibleLevel();
         } else {
             console.error('Game controller not found or missing startLevel method');
+            alert(`Error: Game controller not found. Please refresh the page.`);
         }
     }
     
@@ -290,6 +341,8 @@ class LevelScroller {
 
 // Initialize the level scroller when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM fully loaded, initializing level scroller');
+    
     // Create global levelScroller instance
     window.levelScroller = new LevelScroller();
     
@@ -297,12 +350,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const checkInterval = setInterval(() => {
         if (window.gameController) {
             clearInterval(checkInterval);
+            console.log('Game controller found, patching methods');
             
             // Store the original startLevel method
             const originalStartLevel = window.gameController.startLevel;
             
             // Replace with a patched version that also updates the scroller
             window.gameController.startLevel = function(level) {
+                console.log(`Patched startLevel called with level ${level}`);
+                
+                // Make sure the game container gets the active class
+                const gameContainer = document.querySelector('.game-container');
+                if (gameContainer) {
+                    gameContainer.classList.add('game-active');
+                }
+                
                 // Call the original method
                 originalStartLevel.call(this, level);
                 
@@ -312,11 +374,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             };
             
-            // Fix handlePuzzleSolved method if missing drawCompleteBorders function
+            // Fix handlePuzzleSolved method
             if (window.gameController.handlePuzzleSolved) {
                 const originalHandlePuzzleSolved = window.gameController.handlePuzzleSolved;
                 
                 window.gameController.handlePuzzleSolved = function() {
+                    console.log('Patched handlePuzzleSolved called');
+                    
                     // Call the original method first
                     originalHandlePuzzleSolved.call(this);
                     
@@ -331,6 +395,41 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Stop checking after 5 seconds
     setTimeout(() => clearInterval(checkInterval), 5000);
+});
+
+// Add auxiliary function to ensure grid is properly displayed when game starts
+document.addEventListener('DOMContentLoaded', function() {
+    // Ensure grid container has proper styles when game becomes active
+    const gameContainer = document.querySelector('.game-container');
+    if (gameContainer) {
+        const observer = new MutationObserver(mutations => {
+            mutations.forEach(mutation => {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                    if (gameContainer.classList.contains('game-active')) {
+                        console.log('Game became active, ensuring grid is visible');
+                        const gridContainer = document.getElementById('grid-container');
+                        if (gridContainer) {
+                            gridContainer.style.visibility = 'visible';
+                            gridContainer.style.height = 'auto';
+                            gridContainer.style.overflow = 'visible';
+                            gridContainer.style.backgroundColor = '#94a3b8';
+                            gridContainer.style.border = '1px solid #94a3b8';
+                        }
+                        
+                        // Make sure rules box is hidden
+                        const rulesBox = document.querySelector('.rules-box');
+                        if (rulesBox) {
+                            rulesBox.style.display = 'none';
+                            rulesBox.style.visibility = 'hidden';
+                            rulesBox.style.opacity = '0';
+                        }
+                    }
+                }
+            });
+        });
+        
+        observer.observe(gameContainer, { attributes: true });
+    }
 });
 
 export default LevelScroller;
