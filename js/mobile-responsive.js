@@ -713,49 +713,33 @@
   }
   
   // FIXED: Better button animation without color change
-  function enhanceButtonAnimations() {
-    // Improve game control buttons to pulse instead of staying colored
-    const gameControlButtons = document.querySelectorAll('.game-controls button');
-    
-    gameControlButtons.forEach(button => {
-      // Remove any existing click listeners to prevent duplicates
-      button.removeEventListener('click', handleButtonClick);
+function enhanceButtonAnimations() {
+  // Add click event to all game control buttons
+  const gameControlButtons = document.querySelectorAll('.game-controls button');
+  
+  gameControlButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      // Don't do anything if this is the remove button and it's already used
+      if (this.id === 'remove-spare' && this.classList.contains('used')) {
+        return;
+      }
       
-      // Add our enhanced click handler
-      button.addEventListener('click', handleButtonClick);
-    });
-    
-    function handleButtonClick(e) {
-      const button = e.currentTarget;
-      const originalColor = '#dd717e'; // Crimson red
-      
-      // Force button to maintain its color
-      button.style.backgroundColor = originalColor;
-      
-      // Remove any existing animation classes
-      button.classList.remove('clicked');
-      
-      // Remove any other classes that might affect color
-      button.classList.remove('active', 'selected');
+      // Remove existing animation classes
+      this.classList.remove('clicked');
       
       // Force a reflow to ensure animation restarts
-      void button.offsetWidth;
+      void this.offsetWidth;
       
       // Add animation class
-      button.classList.add('clicked');
+      this.classList.add('clicked');
       
       // Remove class after animation completes
       setTimeout(() => {
-        button.classList.remove('clicked');
-        
-        // Ensure the color is maintained
-        button.style.backgroundColor = originalColor;
-        
-        // Extra assurance for no color change
-        button.classList.remove('active', 'selected');
+        this.classList.remove('clicked');
       }, 300);
-    }
-  }
+    });
+  });
+}
   
   // FIXED: Better implementation for Remove button disappearing
 function fixRemoveButtonDisappearing() {
@@ -873,12 +857,10 @@ function fixRemoveButtonDisappearing() {
     });
   }
 }
-  
-  // FIXED: Ensure buttons don't stay darker after click
-function fixButtonColorIssue() {
-  // Add CSS to override any existing button color behavior
-  const colorFixStyles = document.createElement('style');
-  colorFixStyles.textContent = `
+  // Add CSS styles to fix button color issues
+function addButtonStyles() {
+  const buttonStyles = document.createElement('style');
+  buttonStyles.textContent = `
     /* Ensure buttons stay in their original color */
     .game-controls button {
       background-color: #dd717e !important; /* Set original crimson color */
@@ -906,76 +888,9 @@ function fixButtonColorIssue() {
       color: white !important;
     }
   `;
-  document.head.appendChild(colorFixStyles);
-  
-  // Define the color reset function to ensure buttons return to original color
-  function resetButtonColor() {
-    document.querySelectorAll('.game-controls button').forEach(btn => {
-      btn.style.backgroundColor = '#dd717e';
-      btn.classList.remove('active', 'selected');
-    });
-  }
-  
-  // Run it immediately and periodically to ensure buttons always return to original color
-  resetButtonColor();
-  setInterval(resetButtonColor, 2000);
-  
-  // Define the handler function with more aggressive color resets
-  function handleButtonClick(e) {
-    const button = e.currentTarget;
-    
-    // Skip if this is the remove button and it's already used
-    if (button.id === 'remove-spare' && button.classList.contains('used')) {
-      return;
-    }
-    
-    // Force button to maintain its original color
-    button.style.backgroundColor = '#dd717e'; // Crimson red
-    
-    // Remove any existing animation/state classes
-    button.classList.remove('clicked', 'active', 'selected');
-    
-    // Force a reflow to ensure animation restarts
-    void button.offsetWidth;
-    
-    // Add animation class
-    button.classList.add('clicked');
-    
-    // Remove class after animation completes and ensure color is reset
-    setTimeout(() => {
-      button.classList.remove('clicked');
-      button.style.backgroundColor = '#dd717e';
-      button.style.color = 'white';
-      button.classList.remove('active', 'selected');
-    }, 300);
-    
-    // Extra assurance for color reset after animation
-    setTimeout(() => {
-      document.querySelectorAll('.game-controls button').forEach(btn => {
-        btn.style.backgroundColor = '#dd717e';
-        btn.classList.remove('active', 'selected');
-      });
-    }, 350);
-  }
-  
-  // Apply the handler to all game control buttons
-  document.querySelectorAll('.game-controls button').forEach(button => {
-    // Clean up any existing event listeners
-    const newHandler = function(e) {
-      handleButtonClick(e);
-      
-      // Prevent the button from staying darker
-      setTimeout(() => {
-        button.style.backgroundColor = '#dd717e';
-      }, 350);
-    };
-    
-    // Add our enhanced click handler to both events
-    button.addEventListener('click', newHandler);
-    button.addEventListener('touchend', newHandler);
-  });
+  document.head.appendChild(buttonStyles);
 }
-  
+
 // Optimize touch interactions for mobile
 function optimizeTouchInteractions() {
   // Improve grid cell responsiveness
