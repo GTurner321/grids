@@ -34,8 +34,8 @@ function createRulesBox() {
                 <p>THE ANSWER TO EACH SUM IS THE FIRST NUMBER OF THE NEXT SUM</p>
                 <p>A SQUARE CANNOT BE REUSED</p>
             </div>
-            <div class="close-button-container" style="text-align: center; margin-top: 20px;">
-                <button id="rules-close-button" style="background-color: #1e88e5; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer;">CLOSE</button>
+            <div class="close-button-container">
+                <button id="rules-close-button" class="rules-close-button">CLOSE</button>
             </div>
         </div>
     `;
