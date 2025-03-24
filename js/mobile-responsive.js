@@ -829,7 +829,7 @@
 }
   
   // FIXED: Ensure buttons don't stay darker after click
- function fixButtonColorIssue() {
+function fixButtonColorIssue() {
   // Add CSS to override any existing button color behavior
   const colorFixStyles = document.createElement('style');
   colorFixStyles.textContent = `
@@ -906,43 +906,15 @@
     button.addEventListener('touchend', handleButtonClick);
   });
 }
-    
-    function handleButtonClick(e) {
-      const button = e.currentTarget;
-      
-      // Force button to maintain its original color
-      button.style.backgroundColor = '#dd717e'; // Crimson red
-      
-      // Remove any existing animation/state classes
-      button.classList.remove('clicked', 'active', 'selected');
-      
-      // Force a reflow to ensure animation restarts
-      void button.offsetWidth;
-      
-      // Add animation class
-      button.classList.add('clicked');
-      
-      // Remove class after animation completes
-      setTimeout(() => {
-        button.classList.remove('clicked');
-        
-        // Ensure the color is reset to original
-        button.style.backgroundColor = '#dd717e';
-        button.classList.remove('active', 'selected');
-      }, 300);
-    }
-  }
   
-  // Optimize touch interactions for mobile
-  function optimizeTouchInteractions() {
-    // Improve grid cell responsiveness
-    const gridContainer = document.getElementById('grid-container');
-    if (gridContainer && 'ontouchstart' in window) {
-      gridContainer.addEventListener('touchmove', function(e) {
-        // Prevent scrolling while interacting with the grid
-        e.preventDefault();
-      }, { passive: false });
-    }
+// Optimize touch interactions for mobile
+function optimizeTouchInteractions() {
+  // Improve grid cell responsiveness
+  const gridContainer = document.getElementById('grid-container');
+  if (gridContainer && 'ontouchstart' in window) {
+    gridContainer.addEventListener('touchmove', function(e) {
+      // Prevent scrolling while interacting with the grid
+      e.preventDefault();
+    }, { passive: false });
   }
-  
-  //
+}
