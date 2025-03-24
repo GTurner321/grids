@@ -330,7 +330,7 @@ body {
 }
 
 /* ==========================================================================
-   6. LEVEL SELECTOR
+   6. LEVEL SELECTOR - UPDATED WITH GRADUATED STYLING
    ========================================================================== */
 
 .level-selector-container {
@@ -360,26 +360,38 @@ body {
   margin: 5px 0;
 }
 
+/* Level button with graduated styling */
 .level-btn {
   padding: 8px 10px;
   font-size: 0.85rem;
-  background-color: var(--primary-color);
+  background: linear-gradient(to bottom, #60a5fa, #3b82f6, #2563eb); /* Graduated blue */
   color: white;
-  border: none;
+  border: 2px solid #60a5fa; /* Light blue border */
+  border-bottom-width: 3px;
   border-radius: 4px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   font-weight: bold;
   min-width: 40px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .level-btn:hover {
-  background-color: #2563eb; /* Darker blue on hover */
+  background: linear-gradient(to bottom, #93c5fd, #60a5fa, #3b82f6); /* Lighter blue gradient on hover */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.level-btn:active {
+  transform: translateY(1px);
+  border-bottom-width: 1px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .level-btn.active {
-  background-color: #1d4ed8; /* Even darker blue when active */
-  transform: translateY(1px);
+  background: linear-gradient(to bottom, #3b82f6, #2563eb, #1d4ed8); /* Darker blue gradient when active */
+  transform: translateY(0);
+  border-color: #3b82f6;
 }
 
 /* Mobile adjustments */
@@ -403,9 +415,9 @@ body {
     font-size: 0.9rem; /* LARGER TEXT */
     font-family: 'Black Ops One', cursive !important; /* BLACK OPS FONT */
     font-weight: normal !important; /* NOT BOLD */
-    background-color: var(--primary-color);
+    background: linear-gradient(to bottom, #60a5fa, #3b82f6, #2563eb);
     color: white;
-    border: 2px solid var(--secondary-color);
+    border: 2px solid #60a5fa;
     border-bottom-width: 3px;
     border-radius: 5px;
     height: 40px !important;
@@ -420,6 +432,10 @@ body {
     transform: translateY(2px);
     border-bottom-width: 1px;
     height: 38px;
+  }
+  
+  .level-btn.active {
+    background: linear-gradient(to bottom, #3b82f6, #2563eb, #1d4ed8); /* Darker blue gradient when active */
   }
   
   /* No border/shadow under level buttons */
@@ -491,7 +507,7 @@ body {
 }
 
 /* ==========================================================================
-   8. GAME CONTROLS
+   8. GAME CONTROLS - UPDATED WITH GRADUATED STYLING
    ========================================================================== */
 
 .game-controls {
@@ -506,7 +522,7 @@ body {
   margin-right: auto;
 }
 
-/* Base button styling for all screen sizes */
+/* Base button styling for all screen sizes - WITH GRADUATED STYLING */
 .game-controls button {
   display: flex;
   align-items: center;
@@ -515,25 +531,29 @@ body {
   font-size: 0.9rem;
   font-family: 'Trebuchet MS', Arial, sans-serif;
   font-weight: bold;
-  background-color: #dd717e; /* Crimson red */
+  background: linear-gradient(to bottom, #f87171, #dd717e, #c13a49); /* Graduated red */
   color: white;
-  border: 2px solid #9c3c47; /* Dark red border */
+  border: 2px solid #f87171; /* Lighter red border to match */
   border-bottom-width: 3px;
   border-radius: 5px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   height: 40px;
   text-transform: uppercase; /* UPPERCASE TEXT */
   letter-spacing: 0.03em; /* Better letter spacing */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .game-controls button:hover {
-  background-color: #c13a49; /* Darker red on hover */
+  background: linear-gradient(to bottom, #fca5a5, #f87171, #dd717e); /* Lighter red gradient on hover */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
 }
 
 .game-controls button:active {
-  transform: translateY(2px);
+  transform: translateY(1px);
   border-bottom-width: 1px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .game-controls button svg {
@@ -584,14 +604,13 @@ body {
 
 /* Button animation - PULSE INSTEAD OF COLOR CHANGE */
 @keyframes buttonPulse {
-  0% { transform: scale(1); background-color: #dd717e; }
-  50% { transform: scale(1.05); background-color: #c13a49; }
-  100% { transform: scale(1); background-color: #dd717e; }
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
 }
 
 .game-controls button.clicked {
   animation: buttonPulse 0.3s ease-in-out;
-  background-color: #dd717e !important; /* Force original color */
 }
 
 /* Override any active/focus/selected state */
@@ -599,7 +618,7 @@ body {
 .game-controls button:focus,
 .game-controls button.active,
 .game-controls button.selected {
-  background-color: #dd717e !important; /* Maintain crimson color */
+  background: linear-gradient(to bottom, #dc2626, #c13a49, #9c3c47) !important; /* Darker red gradient when active */
   color: white !important;
 }
 
@@ -618,6 +637,7 @@ body {
   .game-controls button:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+    background: linear-gradient(to bottom, #9ca3af, #6b7280, #4b5563); /* Gray gradient for disabled */
   }
 }
 
@@ -629,7 +649,7 @@ body {
 }
 
 /* ==========================================================================
-   9. BOTTOM BUTTONS (RECORD NAME & LEADERBOARD)
+   9. BOTTOM BUTTONS (RECORD NAME & LEADERBOARD) - UPDATED WITH GRADUATED STYLING
    ========================================================================== */
 
 /* Bottom buttons - container */
@@ -656,16 +676,17 @@ body {
   margin: 15px auto !important;
 }
 
-/* Bottom buttons - button styles */
+/* Bottom buttons - button styles with graduated styling */
 #record-score-btn, 
 #leaderboard-btn {
   font-family: 'Trebuchet MS', Arial, sans-serif;
   font-size: 1rem;
   font-weight: bold;
   padding: 8px 12px;
-  background-color: var(--primary-color);
+  background: linear-gradient(to bottom, #60a5fa, #3b82f6, #2563eb); /* Graduated blue */
   color: white;
-  border: 2px solid var(--secondary-color);
+  border: 2px solid #60a5fa;
+  border-bottom-width: 3px;
   border-radius: 5px;
   cursor: pointer;
   display: flex;
@@ -673,6 +694,22 @@ body {
   justify-content: center;
   min-width: 140px;
   text-transform: uppercase; /* UPPERCASE TEXT */
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#record-score-btn:hover,
+#leaderboard-btn:hover {
+  background: linear-gradient(to bottom, #93c5fd, #60a5fa, #3b82f6); /* Lighter blue gradient on hover */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+#record-score-btn:active,
+#leaderboard-btn:active {
+  transform: translateY(1px);
+  border-bottom-width: 1px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 #record-score-btn svg,
@@ -706,20 +743,29 @@ body {
     font-weight: bold !important;
     height: 42px !important;
     padding: 8px 12px !important;
-    background-color: var(--primary-color) !important;
+    background: linear-gradient(to bottom, #60a5fa, #3b82f6, #2563eb) !important; /* Graduated blue */
     color: white !important;
-    border: 2px solid var(--secondary-color) !important;
+    border: 2px solid #60a5fa !important;
     border-bottom-width: 3px !important;
     border-radius: 5px !important;
     cursor: pointer;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    transition: all 0.3s ease !important;
+  }
+  
+  .bottom-btn:hover {
+    background: linear-gradient(to bottom, #93c5fd, #60a5fa, #3b82f6) !important; /* Lighter blue gradient on hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+    transform: translateY(-2px) !important;
   }
   
   .bottom-btn:active {
     transform: translateY(2px) !important;
     border-bottom-width: 1px !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
   }
 
   /* Single button mode adjustments */
@@ -738,8 +784,12 @@ body {
   }
   
   @keyframes pulse {
-    0%, 100% { background-color: var(--primary-color); }
-    50% { background-color: #1d4ed8; }
+    0%, 100% { 
+      background: linear-gradient(to bottom, #60a5fa, #3b82f6, #2563eb) !important; 
+    }
+    50% { 
+      background: linear-gradient(to bottom, #3b82f6, #2563eb, #1d4ed8) !important; 
+    }
   }
   
   /* Specific button styling for record & leaderboard */
@@ -747,7 +797,7 @@ body {
   #leaderboard-btn {
     width: calc((100vw - 20px) * 0.48 - 5px); /* WIDER BUTTONS */
     max-width: 160px;
-    border: 2px solid var(--secondary-color);
+    border: 2px solid #60a5fa;
     border-bottom-width: 3px;
   }
   
