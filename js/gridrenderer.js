@@ -4,6 +4,7 @@ import PuzzleSymbols from './puzzlesymbols.js';
 import { addPathBorders, addBorderStyles } from './cell-borders.js';
 
 // Initialize the grid container with proper hidden state when page loads
+// In the DOMContentLoaded event handler in gridrenderer.js
 document.addEventListener('DOMContentLoaded', () => {
   const gridContainer = document.getElementById('grid-container');
   if (gridContainer) {
@@ -12,12 +13,21 @@ document.addEventListener('DOMContentLoaded', () => {
     gridContainer.style.boxShadow = 'none';
   }
   
-  // Make sure the rules box remains visible
-  const rulesBox = document.querySelector('.rules-box');
-  if (rulesBox) {
-    rulesBox.style.display = 'block';
-    rulesBox.style.visibility = 'visible';
-    rulesBox.style.opacity = '1';
+  // Check if game is active
+  const gameContainer = document.querySelector('.game-container');
+  if (gameContainer && !gameContainer.classList.contains('game-active')) {
+    // Make sure the rules box remains visible if game is not active
+    const rulesBox = document.querySelector('.rules-box');
+    if (rulesBox) {
+      console.log('Ensuring rules box is visible');
+      rulesBox.style.display = 'block';
+      rulesBox.style.visibility = 'visible';
+      rulesBox.style.opacity = '1';
+      rulesBox.style.height = 'auto';
+      rulesBox.style.overflow = 'visible';
+    } else {
+      console.log('Rules box not found in DOM');
+    }
   }
 });
 
