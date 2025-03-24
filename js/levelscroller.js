@@ -177,28 +177,33 @@ class LevelScroller {
     // Replace the updateVisibleLevel method in the LevelScroller class with this updated version
 // in your levelscroller.js file
 
+// Replace the updateVisibleLevel method in the LevelScroller class with this corrected version
+// in your levelscroller.js file
+
 updateVisibleLevel() {
     const buttons = document.querySelectorAll('.level-btn-scrollable');
     if (!buttons || buttons.length === 0) return;
     
-    // First, update all buttons to reflect locked/unlocked state
+    // First, hide all buttons and reset their classes
     buttons.forEach(btn => {
-        const level = parseInt(btn.dataset.level);
-        const isUnlocked = this.levelUnlocker.isLevelUnlocked(level);
-        
-        // Reset previous classes
-        btn.classList.remove('active', 'visible', 'locked');
-        
-        // Add locked class to locked levels
-        if (!isUnlocked) {
-            btn.classList.add('locked');
-        }
+        btn.classList.remove('active', 'visible');
     });
     
     // Show only the current level button
     const currentButton = document.querySelector(`.level-btn-scrollable[data-level="${this.currentLevel}"]`);
     if (currentButton) {
+        // Make the current button visible
         currentButton.classList.add('visible');
+        
+        // Check if this level is unlocked
+        const isUnlocked = this.levelUnlocker.isLevelUnlocked(this.currentLevel);
+        
+        // Add locked class if needed
+        if (!isUnlocked) {
+            currentButton.classList.add('locked');
+        } else {
+            currentButton.classList.remove('locked');
+        }
         
         // If this level is the active level in the game, add active class
         if (window.gameController && window.gameController.state && 
