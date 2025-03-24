@@ -3,6 +3,16 @@
 import PuzzleSymbols from './puzzlesymbols.js';
 import { addPathBorders, addBorderStyles } from './cell-borders.js';
 
+// Initialize the grid container with proper hidden state when page loads
+document.addEventListener('DOMContentLoaded', () => {
+  const gridContainer = document.getElementById('grid-container');
+  if (gridContainer) {
+    gridContainer.style.backgroundColor = 'transparent';
+    gridContainer.style.border = 'none';
+    gridContainer.style.boxShadow = 'none';
+  }
+});
+
 // Initialize border styles when module is loaded
 addBorderStyles();
 
@@ -105,12 +115,12 @@ export function renderGrid(gridEntries, options = {}) {
     }
     
     // Set grid template columns
-    gridContainer.style.display = 'grid';
-    gridContainer.style.gap = '1px';
-    gridContainer.style.backgroundColor = '#94a3b8';
-    gridContainer.style.padding = '1px';
-    gridContainer.style.margin = '0 auto';
-    gridContainer.style.gridTemplateColumns = `repeat(${gridSize}, ${options.cellSize || cellSize})`;
+gridContainer.style.display = 'grid';
+gridContainer.style.gap = '1px';
+gridContainer.style.backgroundColor = '#94a3b8'; // This line is key - only set when rendering
+gridContainer.style.padding = '1px';
+gridContainer.style.margin = '0 auto';
+gridContainer.style.gridTemplateColumns = `repeat(${gridSize}, ${options.cellSize || cellSize})`;
     
     if (window.innerWidth > 768) {
         gridContainer.style.width = gridSize === 6 ? 'calc(6 * 67.5px + 7px)' : 'calc(10 * 40px + 11px)';
