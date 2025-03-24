@@ -758,25 +758,25 @@
   }
   
   // FIXED: Better implementation for Remove button disappearing
-  function fixRemoveButtonDisappearing() {
+function fixRemoveButtonDisappearing() {
   // Add styles to hide the button and adjust layout
   const buttonStyles = document.createElement('style');
   buttonStyles.textContent = `
     /* Hide Remove Spares button when "used" class is applied */
     #remove-spare.used {
-      display: none !important;
-      visibility: hidden !important;
-      width: 0 !important;
-      padding: 0 !important;
-      margin: 0 !important;
-      border: none !important;
-      overflow: hidden !important;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      position: absolute;
+      z-index: -1;
+      transition: opacity 1s ease, visibility 1s ease;
     }
     
     /* Adjust layout when Remove Spares is hidden */
     .game-controls.two-buttons #check-solution,
     .game-controls.two-buttons #reset-path {
       width: 45% !important;
+      transition: width 1s ease;
     }
     
     @media (max-width: 768px) {
@@ -788,17 +788,44 @@
   `;
   document.head.appendChild(buttonStyles);
   
+  // Direct DOM manipulation approach
+  const removeButton = document.getElementById('remove-spare');
+  if (removeButton) {
+    // Use both click & touchend events to ensure it works
+    ['click', 'touchend'].forEach(eventName => {
+      removeButton.addEventListener(eventName, function(e) {
+        // Set timeout to allow the original event to complete
+        setTimeout(() => {
+          // Apply used class to button
+          this.classList.add('used');
+          
+          // Add two-buttons class to container for layout adjustment
+          const gameControls = document.querySelector('.game-controls');
+          if (gameControls) {
+            gameControls.classList.add('two-buttons');
+          }
+          
+          console.log('Remove Spares button hidden');
+        }, 100);
+      }, { capture: true }); // Use capture phase to ensure this runs first
+    });
+  }
+  
   // Watch for level changes to reset the 'used' class
-  const checkForLevelChanges = () => {
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.attributeName === 'class' && 
-            mutation.target.classList.contains('active')) {
-          // Level changed, find the remove button and reset it
+  function checkForLevelChanges() {
+    // First add a listener to all level buttons
+    document.querySelectorAll('.level-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        setTimeout(() => {
+          // When a level button is clicked, reset the remove button
           const removeButton = document.getElementById('remove-spare');
           if (removeButton) {
-            // Reset disabled state - gamecontroller will handle if it should be disabled
+            console.log('Level changed, resetting Remove Spares button');
             removeButton.classList.remove('used');
+            removeButton.style.opacity = '';
+            removeButton.style.visibility = '';
+            removeButton.style.position = '';
+            removeButton.style.zIndex = '';
             
             // Reset the game controls layout
             const gameControls = document.querySelector('.game-controls');
@@ -806,26 +833,45 @@
               gameControls.classList.remove('two-buttons');
             }
           }
-        }
+        }, 300); // Small delay to ensure level change happens first
       });
     });
     
-    // Observe level buttons for class changes
-    document.querySelectorAll('.level-btn').forEach(btn => {
-      observer.observe(btn, { attributes: true });
-    });
-  };
-  
-  // Try to set up the observer, retry if level buttons aren't ready
-  const setupObserver = () => {
-    if (document.querySelectorAll('.level-btn').length > 0) {
-      checkForLevelChanges();
-    } else {
-      setTimeout(setupObserver, 500);
+    // Also observe game-active class changes on game container
+    const gameContainer = document.querySelector('.game-container');
+    if (gameContainer) {
+      const observer = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+          if (mutation.attributeName === 'class' && 
+              gameContainer.classList.contains('game-active')) {
+            // Game became active, reset the button
+            const removeButton = document.getElementById('remove-spare');
+            if (removeButton) {
+              console.log('Game became active, resetting Remove Spares button');
+              removeButton.classList.remove('used');
+              
+              // Reset the game controls layout
+              const gameControls = document.querySelector('.game-controls');
+              if (gameControls) {
+                gameControls.classList.remove('two-buttons');
+              }
+            }
+          }
+        });
+      });
+      
+      observer.observe(gameContainer, { attributes: true });
     }
-  };
+  }
   
-  setupObserver();
+  // Try to set up the observers, retry if level buttons aren't ready
+  if (document.readyState === "complete" || document.readyState === "interactive") {
+    setTimeout(checkForLevelChanges, 500);
+  } else {
+    document.addEventListener("DOMContentLoaded", () => {
+      setTimeout(checkForLevelChanges, 500);
+    });
+  }
 }
   
   // FIXED: Ensure buttons don't stay darker after click
@@ -848,6 +894,7 @@ function fixButtonColorIssue() {
     
     .game-controls button.clicked {
       animation: buttonPulse 0.3s ease-in-out !important;
+      background-color: #dd717e !important;
     }
     
     /* Override any active/focus/selected state */
@@ -861,10 +908,19 @@ function fixButtonColorIssue() {
   `;
   document.head.appendChild(colorFixStyles);
   
-  // Add click handlers to all game control buttons
-  const gameControlButtons = document.querySelectorAll('.game-controls button');
+  // Define the color reset function to ensure buttons return to original color
+  function resetButtonColor() {
+    document.querySelectorAll('.game-controls button').forEach(btn => {
+      btn.style.backgroundColor = '#dd717e';
+      btn.classList.remove('active', 'selected');
+    });
+  }
   
-  // Define the handler function
+  // Run it immediately and periodically to ensure buttons always return to original color
+  resetButtonColor();
+  setInterval(resetButtonColor, 2000);
+  
+  // Define the handler function with more aggressive color resets
   function handleButtonClick(e) {
     const button = e.currentTarget;
     
@@ -885,25 +941,38 @@ function fixButtonColorIssue() {
     // Add animation class
     button.classList.add('clicked');
     
-    // Remove class after animation completes
+    // Remove class after animation completes and ensure color is reset
     setTimeout(() => {
       button.classList.remove('clicked');
-      
-      // Ensure the color is reset to original
       button.style.backgroundColor = '#dd717e';
+      button.style.color = 'white';
       button.classList.remove('active', 'selected');
     }, 300);
+    
+    // Extra assurance for color reset after animation
+    setTimeout(() => {
+      document.querySelectorAll('.game-controls button').forEach(btn => {
+        btn.style.backgroundColor = '#dd717e';
+        btn.classList.remove('active', 'selected');
+      });
+    }, 350);
   }
   
   // Apply the handler to all game control buttons
-  gameControlButtons.forEach(button => {
-    // Clean up any existing event listeners with the same name
-    button.removeEventListener('click', handleButtonClick);
-    button.removeEventListener('touchend', handleButtonClick);
+  document.querySelectorAll('.game-controls button').forEach(button => {
+    // Clean up any existing event listeners
+    const newHandler = function(e) {
+      handleButtonClick(e);
+      
+      // Prevent the button from staying darker
+      setTimeout(() => {
+        button.style.backgroundColor = '#dd717e';
+      }, 350);
+    };
     
     // Add our enhanced click handler to both events
-    button.addEventListener('click', handleButtonClick);
-    button.addEventListener('touchend', handleButtonClick);
+    button.addEventListener('click', newHandler);
+    button.addEventListener('touchend', newHandler);
   });
 }
   
