@@ -90,65 +90,90 @@ class GameController {
         console.log('Game event listeners initialized');
     }
     
-    async startLevel(level) {
-        // Reset state
-        this.state.currentLevel = level;
-        this.state.userPath = [];
+async startLevel(level) {
+    // Reset state for the new level
+    this.state.currentLevel = level;
+    this.state.userPath = [];
+    
+    // Get grid size from config
+    const config = getLevelConfig(level);
+    const gridSize = config.gridSize || 10;
+    
+    // Create appropriate sized grid entries array
+    this.state.gridEntries = new Array(gridSize * gridSize).fill(null);
+    this.state.removedCells.clear();
+    this.state.gameActive = true;
+    
+    // Mark the game container as active
+    document.querySelector('.game-container')?.classList.add('game-active');
+    
+    // Initialize scoring for the level
+    scoreManager.startLevel(level);
+
+    // Reset the remove-spare button state
+    const removeButton = document.getElementById('remove-spare');
+    if (removeButton) {
+        // Reset visibility and state
+        removeButton.classList.remove('used');
+        removeButton.disabled = false;
         
-        // Get grid size from config
-        const config = getLevelConfig(level);
-        const gridSize = config.gridSize || 10;
+        // Reset the game controls layout
+        const gameControls = document.querySelector('.game-controls');
+        if (gameControls) {
+            gameControls.classList.remove('two-buttons');
+        }
         
-        // Create appropriate sized grid entries array
-        this.state.gridEntries = new Array(gridSize * gridSize).fill(null);
-        this.state.removedCells.clear();
-        this.state.gameActive = true;
-        
-        document.querySelector('.game-container').classList.add('game-active');
-        
-        scoreManager.startLevel(level);
-
-        try {
-            // Generate path with appropriate grid size
-            this.state.path = await generatePath(gridSize);
-            this.state.sequence = await generateSequence(level);
-            this.state.sequenceEntries = sequenceToEntries(this.state.sequence);
-
-            // Place sequence on path
-            this.placeMathSequence();
-            
-            // For level 1, remove all spare cells
-            if (level === 1) {
-                this.removeAllSpareCells(true); // true for remove ALL
-            } 
-            // Otherwise fill remaining cells
-            else {
-                this.fillRemainingCells();
-            }
-
-            // For level 2, show suggestion to remove spare cells
-            if (level === 2) {
-                setTimeout(() => {
-                    this.showMessage('Hint: Consider removing spare cells to make the puzzle easier!', 'info', 5000);
-                }, 1000);
-            }
-
-            // Render grid with appropriate size
-            renderGrid(this.state.gridEntries, {
-                startCoord: this.state.path[0],
-                endCoord: this.state.path[this.state.path.length - 1],
-                gridSize: gridSize
-            });
-
-            // Update UI
-            this.updateUI();
-            this.showMessage('Find the path by following the mathematical sequence.');
-
-        } catch (error) {
-            console.error('Error starting level:', error);
-            this.showMessage('Error starting game. Please try again.', 'error');
+        // Handle level-specific button visibility
+        if (level === 1) {
+            // Hide the button for level 1 where it's not needed
+            removeButton.style.display = 'none';
+        } else {
+            // Show the button for all other levels
+            removeButton.style.display = '';
         }
     }
+
+    try {
+        // Generate path with appropriate grid size
+        this.state.path = await generatePath(gridSize);
+        this.state.sequence = await generateSequence(level);
+        this.state.sequenceEntries = sequenceToEntries(this.state.sequence);
+
+        // Place sequence on path
+        this.placeMathSequence();
+        
+        // Level-specific setup
+        if (level === 1) {
+            // For level 1, remove all spare cells automatically
+            this.removeAllSpareCells(true); // true for remove ALL
+        } else {
+            // For other levels, fill remaining cells with numbers
+            this.fillRemainingCells();
+        }
+
+        // For level 2, show suggestion to remove spare cells
+        if (level === 2) {
+            setTimeout(() => {
+                this.showMessage('Hint: Consider removing spare cells to make the puzzle easier!', 'info', 5000);
+            }, 1000);
+        }
+
+        // Render grid with appropriate size
+        renderGrid(this.state.gridEntries, {
+            startCoord: this.state.path[0],
+            endCoord: this.state.path[this.state.path.length - 1],
+            gridSize: gridSize
+        });
+
+        // Update UI elements and buttons
+        this.updateUI();
+        this.showMessage('Find the path by following the mathematical sequence.');
+
+    } catch (error) {
+        console.error('Error starting level:', error);
+        this.showMessage('Error starting game. Please try again.', 'error');
+    }
+}
     
     placeMathSequence() {
         // Get the current grid size
@@ -539,43 +564,51 @@ class GameController {
     }
     
 removeAllSpareCells(removeAll = false) {
+    // Find all spare cells that can be removed
     const spareCells = this.state.gridEntries
         .map((entry, index) => (!entry?.isPartOfPath && !this.state.removedCells.has(index)) ? index : null)
         .filter(index => index !== null);
 
+    // Check if there are any spare cells to remove
     if (spareCells.length === 0) {
         this.showMessage('No spare cells to remove!', 'info');
         return;
     }
 
+    // Handle score penalty for using this feature
     scoreManager.handleSpareRemoval();
 
-    // Remove either all or 50% of spare cells
+    // Determine how many cells to remove (all or 50%)
     const numToRemove = removeAll ? spareCells.length : Math.ceil(spareCells.length / 2);
+    
+    // Randomly select cells to remove
     const cellsToRemove = spareCells
         .sort(() => Math.random() - 0.5)
         .slice(0, numToRemove);
 
+    // Remove the selected cells
     cellsToRemove.forEach(index => {
         this.state.removedCells.add(index);
         updateCell(index, null);
     });
 
-    // Disable button after use or if level 1 (where all cells are already removed)
-    document.getElementById('remove-spare').disabled = true;
-    
-    // Add 'used' class to hide the button in addition to disabling it
+    // Disable the button after use
     const removeButton = document.getElementById('remove-spare');
     if (removeButton) {
+        // Disable the button functionally
+        removeButton.disabled = true;
+        
+        // Add 'used' class to visually hide the button with transition
         removeButton.classList.add('used');
         
-        // Also add two-buttons class to container to adjust layout
+        // Adjust the game controls layout 
         const gameControls = document.querySelector('.game-controls');
         if (gameControls) {
             gameControls.classList.add('two-buttons');
         }
     }
     
+    // Show feedback message unless this is an automatic removal (level 1)
     if (!removeAll) {
         this.showMessage(`Removed ${numToRemove} spare cells.`, 'info');
     }
