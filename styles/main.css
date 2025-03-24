@@ -1486,8 +1486,20 @@ approach throughout this consolidated stylesheet.
 .level-selector-container, 
 .level-buttons,
 .game-header,
+#grid-container,
 .game-container > *:not(.game-board) {
   border-bottom: none !important;
   box-shadow: none !important;
   border-color: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Ensure grid container has no visible elements before game is active */
+.game-container:not(.game-active) #grid-container {
+  border: none !important;
+  padding: 0 !important;
+  background-color: transparent !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  overflow: hidden !important;
 }
