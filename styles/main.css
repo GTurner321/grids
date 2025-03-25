@@ -1667,7 +1667,6 @@ body {
 /* ==========================================================================
    16. SCORE BAR
    ========================================================================== */
-
 /* Score row */
 .score-row {
   display: flex !important;
@@ -1683,6 +1682,35 @@ body {
   position: relative; /* For level indicators */
   font-family: 'Trebuchet MS', Arial, sans-serif !important;
   font-weight: bold !important;
+}
+
+/* Level Segments Container */
+.level-segment-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Individual Level Segment */
+.level-segment {
+  height: 100%;
+  /* Default matching the score row background */
+  background-color: #e6f2ff;
+  border-right: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.level-segment:last-child {
+  border-right: none;
+}
+
+.level-segment.completed {
+  background-color: #22c55e;
 }
 
 /* Score left (name and score in red) */
