@@ -17,9 +17,39 @@ class LevelUnlocker {
         window.levelUnlocker = this;
     }
     
-    isLevelUnlocked(level) {
-        return this.unlockedLevels.has(Number(level));
+isLevelUnlocked(level) {
+    level = Number(level);
+    
+    // Level tiers
+    const tier1 = [1, 2, 3];
+    const tier2 = [4, 5, 6];
+    const tier3 = [7, 8, 9, 10];
+    
+    // Tier 1 is always unlocked
+    if (tier1.includes(level)) {
+        return true;
     }
+    
+    // Check if any tier1 level is in the completed levels set
+    // to determine if tier2 should be unlocked
+    if (tier2.includes(level) && window.levelTracker) {
+        const anyTier1Completed = tier1.some(lvl => 
+            window.levelTracker.completedLevels.has(lvl)
+        );
+        return anyTier1Completed;
+    }
+    
+    // Check if any tier2 level is in the completed levels set
+    // to determine if tier3 should be unlocked
+    if (tier3.includes(level) && window.levelTracker) {
+        const anyTier2Completed = tier2.some(lvl => 
+            window.levelTracker.completedLevels.has(lvl)
+        );
+        return anyTier2Completed;
+    }
+    
+    return false;
+}
     
     unlockTier(tier) {
         if (!this.levelTiers[tier]) return;
@@ -37,23 +67,37 @@ class LevelUnlocker {
         }
     }
     
-    handleLevelCompletion(level) {
-        level = Number(level); // Ensure level is a number
+handleLevelCompletion(level) {
+    level = Number(level);
+    
+    // Level tiers
+    const tier1 = [1, 2, 3];
+    const tier2 = [4, 5, 6];
+    
+    // Check if this completion unlocks new tiers
+    if (tier1.includes(level)) {
+        // Schedule follow-up message after 5 seconds
+        setTimeout(() => {
+            if (window.gameController && window.gameController.showMessage) {
+                window.gameController.showMessage('Scroll through and select a new level from 1 to 6 to continue.', 'info', 5000);
+            }
+        }, 5000);
         
-        // Check if this completion unlocks new tiers
-        if (this.levelTiers.tier1.includes(level) && 
-            !this.levelTiers.tier2.some(l => this.unlockedLevels.has(l))) {
-            this.unlockTier('tier2');
-            return 'Congratulations! Puzzle solved! You have unlocked levels 4 to 6.';
-        } 
-        else if (this.levelTiers.tier2.includes(level) && 
-                !this.levelTiers.tier3.some(l => this.unlockedLevels.has(l))) {
-            this.unlockTier('tier3');
-            return 'Congratulations! Puzzle solved! You have unlocked levels 7 to 10.';
-        }
+        return 'Congratulations! Puzzle solved! You have unlocked levels 4 to 6.';
+    } 
+    else if (tier2.includes(level)) {
+        // Schedule follow-up message after 5 seconds
+        setTimeout(() => {
+            if (window.gameController && window.gameController.showMessage) {
+                window.gameController.showMessage('Scroll through and select a new level from 1 to 10 to continue.', 'info', 5000);
+            }
+        }, 5000);
         
-        return 'Congratulations! Puzzle solved!';
+        return 'Congratulations! Puzzle solved! You have unlocked levels 7 to 10.';
     }
+    
+    return 'Congratulations! Puzzle solved!';
+}
     
     saveUnlockProgress() {
         try {
@@ -84,6 +128,47 @@ class LevelUnlocker {
             window.levelScroller.updateVisibleLevel();
         }
     }
+
+// Add this method to the LevelUnlocker class in levelscroller.js
+updateScoreBarSegments() {
+    const segments = document.querySelectorAll('.level-segment');
+    if (!segments.length) return;
+    
+    // Level tiers
+    const tier1 = [1, 2, 3];
+    const tier2 = [4, 5, 6];
+    const tier3 = [7, 8, 9, 10];
+    
+    // Check if any tier1 level is completed
+    const anyTier1Completed = window.levelTracker && 
+        tier1.some(lvl => window.levelTracker.completedLevels.has(lvl));
+        
+    // Check if any tier2 level is completed
+    const anyTier2Completed = window.levelTracker && 
+        tier2.some(lvl => window.levelTracker.completedLevels.has(lvl));
+    
+    // Apply styles
+    segments.forEach(segment => {
+        const level = parseInt(segment.dataset.level);
+        
+        // Skip if already completed
+        if (segment.classList.contains('completed')) return;
+        
+        if (tier1.includes(level)) {
+            // Tier 1 is always available
+            segment.style.backgroundColor = '#dbeafe'; // Darker blue for available
+        } else if (tier2.includes(level)) {
+            // Tier 2 is available only if any tier1 level is completed
+            segment.style.backgroundColor = anyTier1Completed ? 
+                '#dbeafe' : '#e6f2ff'; // Darker blue if available, lighter if locked
+        } else if (tier3.includes(level)) {
+            // Tier 3 is available only if any tier2 level is completed
+            segment.style.backgroundColor = anyTier2Completed ? 
+                '#dbeafe' : '#e6f2ff'; // Darker blue if available, lighter if locked
+        }
+    });
+}
+    
 }
 
 class LevelScroller {
