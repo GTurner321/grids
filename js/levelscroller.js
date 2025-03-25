@@ -1,4 +1,4 @@
-// levelscroller.js - Simplified to rely directly on level tracker
+// levelscroller.js - Modified to properly enforce level locking
 
 class LevelScroller {
     constructor() {
@@ -149,12 +149,12 @@ class LevelScroller {
             if (level >= 1 && level <= 3) {
                 isUnlocked = true;
             }
-            // Levels 4-6 are unlocked if any level from 1-3 is completed
+            // Levels 4-6 are unlocked if any level from 1-3 is completed IN THIS SESSION
             else if (level >= 4 && level <= 6) {
                 isUnlocked = window.levelTracker && 
                     [1, 2, 3].some(lvl => window.levelTracker.completedLevels.has(lvl));
             }
-            // Levels 7-10 are unlocked if any level from 4-6 is completed
+            // Levels 7-10 are unlocked if any level from 4-6 is completed IN THIS SESSION
             else if (level >= 7 && level <= 10) {
                 isUnlocked = window.levelTracker && 
                     [4, 5, 6].some(lvl => window.levelTracker.completedLevels.has(lvl));
@@ -163,6 +163,9 @@ class LevelScroller {
             // Add locked class if needed
             if (!isUnlocked) {
                 currentButton.classList.add('locked');
+                console.log(`Level ${level} is locked`);
+            } else {
+                console.log(`Level ${level} is unlocked`);
             }
             
             // If this level is the active level in the game, add active class
