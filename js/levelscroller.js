@@ -2,30 +2,39 @@
 
 class LevelScroller {
     constructor() {
-        this.currentLevel = 1;
-        this.maxLevels = 10;
-        
-        // Initialize the UI once the DOM is loaded
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => this.init());
-        } else {
-            this.init();
-        }
-        
-        // Make available globally
-        window.levelScroller = this;
-        
-        // Listen for game controller ready event
-        document.addEventListener('gameControllerReady', () => {
-            console.log('Game controller is now ready - level scroller notified');
-        });
-        
-        // Listen for level tracker updates
-        document.addEventListener('levelTrackerReady', () => {
-            console.log('Level tracker is ready - updating level scroller');
-            this.updateVisibleLevel();
-        });
+    this.currentLevel = 1;
+    this.maxLevels = 10;
+    
+    // Initialize the UI once the DOM is loaded
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => this.init());
+    } else {
+        this.init();
     }
+    
+    // Make available globally
+    window.levelScroller = this;
+    
+    // Listen for game controller ready event
+    document.addEventListener('gameControllerReady', () => {
+        console.log('Game controller is now ready - level scroller notified');
+    });
+    
+    // Listen for level tracker updates
+    document.addEventListener('levelTrackerReady', () => {
+        console.log('Level tracker is ready - updating level scroller');
+        this.updateVisibleLevel();
+    });
+    
+    // Add this to the LevelScroller constructor
+    window.addEventListener('scoreUpdated', (event) => {
+        if (event.detail && event.detail.roundComplete) {
+            console.log('Score updated with round complete - refreshing level scroller');
+            // Update the visible level to reflect new unlocks
+            setTimeout(() => this.updateVisibleLevel(), 100);
+        }
+    });
+}
     
     init() {
         this.initializeUI();
