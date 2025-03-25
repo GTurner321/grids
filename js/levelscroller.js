@@ -103,11 +103,17 @@ class LevelScroller {
         
         // Make available globally
         window.levelScroller = this;
+        
+        // Listen for game controller ready event
+        document.addEventListener('gameControllerReady', () => {
+            console.log('Game controller is now ready - level scroller notified');
+        });
     }
     
     init() {
         this.initializeUI();
         this.attachEventListeners();
+        this.addStyles();
     }
     
     initializeUI() {
@@ -151,7 +157,7 @@ class LevelScroller {
         
         for (let i = 1; i <= this.maxLevels; i++) {
             buttonsHtml += `
-                <button class="level-btn-scrollable" data-level="${i}">
+                <button class="level-btn level-btn-scrollable" data-level="${i}">
                     LEVEL ${i}
                 </button>
             `;
@@ -179,16 +185,20 @@ class LevelScroller {
             });
         }
         
-        // Level buttons 
-        document.querySelectorAll('.level-btn-scrollable').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const level = parseInt(btn.dataset.level);
-                // Only process if this is the visible button
-                if (level === this.currentLevel) {
-                    this.handleLevelSelection(level);
+        // Level buttons - use event delegation for better performance
+        const levelDisplayContainer = document.querySelector('.level-display-container');
+        if (levelDisplayContainer) {
+            levelDisplayContainer.addEventListener('click', (event) => {
+                const levelBtn = event.target.closest('.level-btn');
+                if (levelBtn) {
+                    const level = parseInt(levelBtn.dataset.level);
+                    // Only process if this is the visible button
+                    if (level === this.currentLevel) {
+                        this.handleLevelSelection(level);
+                    }
                 }
             });
-        });
+        }
     }
     
     updateVisibleLevel() {
@@ -270,14 +280,16 @@ class LevelScroller {
         let attempts = 0;
         const retryInterval = setInterval(() => {
             attempts++;
-            if (startSelectedLevel() || attempts >= 5) {
+            console.log(`Attempt ${attempts} to find game controller...`);
+            
+            if (startSelectedLevel() || attempts >= 10) { // Increased max attempts to 10
                 clearInterval(retryInterval);
-                if (attempts >= 5) {
+                if (attempts >= 10) {
                     console.error('Game controller not available after multiple attempts');
                     alert('Error starting level. Please refresh the page and try again.');
                 }
             }
-        }, 100);
+        }, 200); // Increased delay between attempts to 200ms
     }
     
     // Set the current level from external sources (like game controller)
@@ -287,6 +299,179 @@ class LevelScroller {
             this.updateVisibleLevel();
         }
     }
+    
+    addStyles() {
+        // Check if styles are already added
+        if (document.getElementById('level-scroller-styles')) return;
+        
+        const styleElement = document.createElement('style');
+        styleElement.id = 'level-scroller-styles';
+        
+        styleElement.textContent = `
+            /* Level Scroller Styles */
+            .level-scroller-container {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+                width: 100%;
+                max-width: 320px;
+                margin: 0 auto;
+                padding: 5px 0;
+                height: 50px;
+            }
+            
+            .level-display-container {
+                position: relative;
+                width: 180px;
+                height: 48px;
+                overflow: hidden;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin: 0 10px;
+            }
+            
+            .level-btn-scrollable {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                border: none;
+                border-radius: 8px;
+                background: linear-gradient(to bottom, #60a5fa, #3b82f6, #2563eb);
+                color: white;
+                font-family: 'Black Ops One', cursive;
+                font-size: 1.2rem;
+                cursor: pointer;
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.3s ease, transform 0.3s ease, background 0.3s ease;
+                border: 2px solid #60a5fa;
+                border-bottom-width: 3px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            
+            .level-btn-scrollable.visible {
+                opacity: 1;
+                pointer-events: auto;
+                transform: translateY(0);
+            }
+            
+            .level-btn-scrollable.visible:hover:not(.locked) {
+                background: linear-gradient(to bottom, #93c5fd, #60a5fa, #3b82f6);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            }
+            
+            .level-btn-scrollable.active {
+                background: linear-gradient(to bottom, #3b82f6, #2563eb, #1d4ed8);
+                border-color: #3b82f6;
+            }
+            
+            .level-btn-scrollable.locked {
+                opacity: 0.4;
+                pointer-events: none;
+                background: linear-gradient(to bottom, #60a5fa, #3b82f6, #2563eb);
+                border-color: #60a5fa;
+                cursor: not-allowed;
+            }
+            
+            .level-btn-scrollable:active:not(.locked) {
+                transform: translateY(1px);
+                border-bottom-width: 1px;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            }
+            
+            .level-arrow {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: linear-gradient(to bottom, #60a5fa, #3b82f6, #2563eb);
+                color: white;
+                border: 2px solid #60a5fa;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                -webkit-tap-highlight-color: transparent;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                z-index: 10;
+            }
+            
+            .level-arrow svg {
+                width: 24px;
+                height: 24px;
+            }
+            
+            .level-arrow:hover {
+                background: linear-gradient(to bottom, #93c5fd, #60a5fa, #3b82f6);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+                transform: translateY(-2px);
+            }
+            
+            .level-arrow:active {
+                transform: scale(0.95) translateY(1px);
+                background: linear-gradient(to bottom, #3b82f6, #2563eb, #1d4ed8);
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+                border-width: 1px;
+            }
+            
+            /* Adjust level selector title margin */
+            .level-selector-title {
+                margin-bottom: 10px;
+            }
+            
+            /* Mobile Optimizations */
+            @media (max-width: 768px) {
+                .level-scroller-container {
+                    height: 55px;
+                }
+                
+                .level-btn-scrollable {
+                    font-size: 1.1rem;
+                }
+                
+                .level-arrow {
+                    width: 36px;
+                    height: 36px;
+                }
+                
+                .level-arrow svg {
+                    width: 22px;
+                    height: 22px;
+                }
+                
+                .level-selector-container {
+                    margin-bottom: 15px;
+                }
+            }
+            
+            /* Touch device optimizations */
+            .touch-device .level-arrow {
+                min-height: 48px;
+                min-width: 48px;
+            }
+            
+            /* Animation for level change */
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+                100% { transform: scale(1); }
+            }
+            
+            .level-btn-scrollable.visible.changing {
+                animation: pulse 0.3s ease-in-out;
+            }
+        `;
+        
+        document.head.appendChild(styleElement);
+    }
 }
 
 // Initialize the level scroller when the DOM is fully loaded
@@ -294,4 +479,6 @@ document.addEventListener('DOMContentLoaded', function() {
     window.levelScroller = new LevelScroller();
 });
 
+// Export both classes to make them available to other modules
+export { LevelUnlocker, LevelScroller };
 export default LevelScroller;
