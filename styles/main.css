@@ -1,7 +1,28 @@
 /* ===========================================================================
-   COMBINED STYLES (Merged from main.css and mobile-responsive.css)
-   Organized by feature with desktop and mobile styles grouped together
-   =========================================================================== */
+   TABLE OF CONTENTS
+   ===========================================================================
+
+   0. DOCUMENT OVERVIEW
+   1. CSS VARIABLES & ROOT SETTINGS (Lines 15-40)
+   2. BASE STYLES (Lines 42-74)
+   3. GAME CONTAINER (Lines 76-134)
+   4. GAME HEADER & TITLE (Lines 136-178)
+   5. RULES BOX (Lines 180-336)
+   6. LEVEL SELECTOR (Lines 338-500)
+   7. GAME MESSAGES (Lines 502-560)
+   8. GAME CONTROLS (Lines 562-724)
+   9. BOTTOM BUTTONS (Lines 726-862)
+   10. PATH BORDERS (Lines 864-867)
+   11. ANIMATIONS & VISUAL FEEDBACK (Lines 869-894)
+   12. MOBILE-SPECIFIC STYLES (Lines 896-967)
+   13. USERNAME MODAL STYLING (Lines 969-1146)
+   14. LEADERBOARD STYLING (Lines 1148-1367)
+   15. RETURN BUTTONS (Lines 1369-1404)
+   16. SCORE BAR (Lines 1406-1472)
+   17. UTILITY CLASSES & ANIMATIONS (Lines 1474-1499)
+   18. MEDIA QUERY CONSISTENCY CHECK (Lines 1501-1511)
+   19. ADDITIONAL CLEAN-UP (Lines 1513-1533)
+*/
 
 /* ==========================================================================
    1. CSS VARIABLES & ROOT SETTINGS
