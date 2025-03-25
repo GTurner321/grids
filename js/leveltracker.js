@@ -191,7 +191,7 @@ class LevelTracker {
                     // Note: We intentionally don't update visual indicators on page load
                 });
                 
-                this.hasCompletedAllLevels = !!progressData.hasCompletedAllLevels;
+            this.hasCompletedAllLevels = !!progressData.hasCompletedAllLevels;
             } else if (Array.isArray(progressData)) {
                 // Old format (just an array of levels)
                 progressData.forEach(level => {
@@ -201,6 +201,19 @@ class LevelTracker {
                 
                 this.hasCompletedAllLevels = this.completedLevels.size === 10;
             }
+            
+            // Dispatch an event to notify that level tracker is ready
+            document.dispatchEvent(new CustomEvent('levelTrackerReady', {
+                detail: {
+                    completedLevels: Array.from(this.completedLevels)
+                }
+            }));
+            
+            console.log('Level tracker ready event dispatched');
+            
+            // Call updateLevelUnlocker
+            this.updateLevelUnlocker();
+            
         } catch (error) {
             console.error('Error loading progress:', error);
         }
@@ -258,6 +271,23 @@ class LevelTracker {
         document.head.appendChild(styleEl);
         console.log('Level tracker styles added');
     }
+
+updateLevelUnlocker() {
+    // Make sure both levelTracker and levelUnlocker are available
+    if (window.levelTracker && window.levelScroller && window.levelScroller.levelUnlocker) {
+        console.log('Updating level unlocks based on completed levels');
+        
+        // Using the level unlocker to update UI after level tracker is loaded
+        window.levelScroller.levelUnlocker.updateScoreBarSegments();
+        
+        // Make sure the visible level is updated to reflect unlock status
+        window.levelScroller.updateVisibleLevel();
+    } else {
+        console.log('Either levelTracker or levelUnlocker not available yet');
+        // Try again in a short while
+        setTimeout(() => this.updateLevelUnlocker(), 200);
+    }
+}
     
     resetProgress() {
         // Clear stored progress
