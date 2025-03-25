@@ -729,7 +729,7 @@ class GameController {
         this.updateUI();
     }
 
-    handlePuzzleSolved() {
+handlePuzzleSolved() {
     console.log("PUZZLE SOLVED! Congratulations message and score updates coming next...");
     
     // Immediately disable all game control buttons when puzzle is solved
@@ -747,6 +747,11 @@ class GameController {
     // If level unlocker exists, handle level completion
     if (window.levelUnlocker) {
         successMessage = window.levelUnlocker.handleLevelCompletion(this.state.currentLevel);
+    }
+    
+    // Directly update level scroller to reflect newly unlocked levels
+    if (window.levelScroller) {
+        window.levelScroller.updateVisibleLevel();
     }
     
     // Display success message
