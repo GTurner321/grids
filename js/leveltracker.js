@@ -30,8 +30,20 @@ class LevelTracker {
             console.log('Score bar found, initializing segments');
             this.initializeScoreBar(scoreRow);
             
-            // Load saved progress only AFTER initializing the score bar
-            setTimeout(() => this.loadProgress(), 100);
+            // IMPORTANT CHANGE: Don't load progress on page refresh
+            // We want levels to be locked after page refresh
+            // setTimeout(() => this.loadProgress(), 100);
+            
+            // Instead, reset progress and dispatch levelTrackerReady event
+            this.resetProgressWithoutUI();
+            setTimeout(() => {
+                document.dispatchEvent(new CustomEvent('levelTrackerReady', {
+                    detail: {
+                        completedLevels: Array.from(this.completedLevels)
+                    }
+                }));
+                console.log('Level tracker ready event dispatched with reset progress');
+            }, 100);
         } else {
             console.log('Score bar not found, will try again in 500ms');
             // Try again after a delay
@@ -107,7 +119,20 @@ class LevelTracker {
                     const scoreRow = document.querySelector('.score-row');
                     if (scoreRow && !scoreRow.querySelector('.level-segment-container')) {
                         this.initializeScoreBar(scoreRow);
-                        setTimeout(() => this.loadProgress(), 100);
+                        
+                        // IMPORTANT CHANGE: Don't load progress here either
+                        // setTimeout(() => this.loadProgress(), 100);
+                        
+                        // Instead, reset progress and dispatch levelTrackerReady event
+                        this.resetProgressWithoutUI();
+                        setTimeout(() => {
+                            document.dispatchEvent(new CustomEvent('levelTrackerReady', {
+                                detail: {
+                                    completedLevels: Array.from(this.completedLevels)
+                                }
+                            }));
+                            console.log('Level tracker ready event dispatched (from observer)');
+                        }, 100);
                     }
                 }
             });
@@ -136,6 +161,11 @@ class LevelTracker {
         
         // Save progress
         this.saveProgress();
+        
+        // Explicitly notify levelScroller about the change
+        if (window.levelScroller) {
+            window.levelScroller.updateVisibleLevel();
+        }
     }
     
     handleAllLevelsComplete() {
@@ -188,7 +218,7 @@ class LevelTracker {
                     // Note: We intentionally don't update visual indicators on page load
                 });
                 
-            this.hasCompletedAllLevels = !!progressData.hasCompletedAllLevels;
+                this.hasCompletedAllLevels = !!progressData.hasCompletedAllLevels;
             } else if (Array.isArray(progressData)) {
                 // Old format (just an array of levels)
                 progressData.forEach(level => {
@@ -217,17 +247,17 @@ class LevelTracker {
     }
 
     updateLevelUnlocker() {
-    // Check if level scroller exists
-    if (window.levelScroller) {
-        console.log('Updating level unlock status based on completed levels');
-        // Directly update the level scroller UI
-        window.levelScroller.updateVisibleLevel();
-    } else {
-        console.log('Level scroller not available yet');
-        // Try again in a short while
-        setTimeout(() => this.updateLevelUnlocker(), 200);
+        // Check if level scroller exists
+        if (window.levelScroller) {
+            console.log('Updating level unlock status based on completed levels');
+            // Directly update the level scroller UI
+            window.levelScroller.updateVisibleLevel();
+        } else {
+            console.log('Level scroller not available yet');
+            // Try again in a short while
+            setTimeout(() => this.updateLevelUnlocker(), 200);
+        }
     }
-}
     
     resetProgress() {
         // Clear stored progress
@@ -241,6 +271,16 @@ class LevelTracker {
         });
         
         console.log('Progress reset');
+    }
+    
+    // New method: Reset progress without changing UI
+    resetProgressWithoutUI() {
+        // Clear stored progress
+        this.completedLevels.clear();
+        this.hasCompletedAllLevels = false;
+        localStorage.removeItem('mathPathCompletedLevels');
+        
+        console.log('Progress reset (without UI changes)');
     }
 }
 
