@@ -1,198 +1,9 @@
-// levelscroller.js - Fixed timing issues with game controller access
-
-class LevelUnlocker {
-    constructor() {
-    // Define level tiers
-    this.levelTiers = {
-        tier1: [1, 2, 3],      // Initially unlocked
-        tier2: [4, 5, 6],      // Unlocked after completing any level in tier1
-        tier3: [7, 8, 9, 10]   // Unlocked after completing any level in tier2
-    };
-    
-    // Track unlocked levels - start with only levels 1-3 unlocked
-    this.unlockedLevels = new Set(this.levelTiers.tier1);
-    
-    // No need to load from localStorage since we want to reset on page refresh
-    // this.loadUnlockProgress(); 
-    
-    // Listen for level tracker initialization
-    document.addEventListener('levelTrackerReady', () => {
-        console.log('Level tracker is ready - updating unlocks');
-        this.syncWithLevelTracker();
-    });
-    
-    // Make available globally
-    window.levelUnlocker = this;
-    
-    // Check if level tracker is already available
-    if (window.levelTracker) {
-        this.syncWithLevelTracker();
-    }
-}
-    
-isLevelUnlocked(level) {
-    level = Number(level);
-    
-    // Tier 1 is always unlocked
-    if (this.levelTiers.tier1.includes(level)) {
-        return true;
-    }
-    
-    // Check if level is in our unlockedLevels set (regardless of levelTracker)
-    if (this.unlockedLevels.has(level)) {
-        return true;
-    }
-    
-    return false;
-}
-    
-syncWithLevelTracker() {
-    if (!window.levelTracker || !window.levelTracker.completedLevels) {
-        console.log('Level tracker not fully initialized yet');
-        return;
-    }
-    
-    console.log('Syncing level unlocks with level tracker');
-    
-    // Reset to initial state (only tier1 unlocked)
-    this.unlockedLevels = new Set(this.levelTiers.tier1);
-    
-    // Check if any tier1 level is completed to unlock tier2
-    const anyTier1Completed = this.levelTiers.tier1.some(lvl => 
-        window.levelTracker.completedLevels.has(lvl)
-    );
-    
-    if (anyTier1Completed) {
-        this.levelTiers.tier2.forEach(level => {
-            this.unlockedLevels.add(level);
-        });
-    }
-    
-    // Check if any tier2 level is completed to unlock tier3
-    const anyTier2Completed = this.levelTiers.tier2.some(lvl => 
-        window.levelTracker.completedLevels.has(lvl)
-    );
-    
-    if (anyTier2Completed) {
-        this.levelTiers.tier3.forEach(level => {
-            this.unlockedLevels.add(level);
-        });
-    }
-    
-    // Update the UI
-    this.updateScoreBarSegments();
-    
-    // Update level scroller if available
-    if (window.levelScroller) {
-        window.levelScroller.updateVisibleLevel();
-    }
-}
-    
-    unlockTier(tier) {
-        if (!this.levelTiers[tier]) return;
-        
-        this.levelTiers[tier].forEach(level => {
-            this.unlockedLevels.add(level);
-        });
-        
-        // Update level scroller if available
-        if (window.levelScroller) {
-            window.levelScroller.updateVisibleLevel();
-        }
-    }
-    
-handleLevelCompletion(level) {
-    level = Number(level);
-    
-    // Sync with level tracker to ensure we have latest completed levels
-    this.syncWithLevelTracker();
-    
-    // Level tiers
-    const tier1 = this.levelTiers.tier1;
-    const tier2 = this.levelTiers.tier2;
-    
-    // Check if this completion unlocks new tiers
-    if (tier1.includes(level)) {
-        // Unlock tier2 levels
-        tier2.forEach(lvl => this.unlockedLevels.add(lvl));
-        
-        // Schedule follow-up message after 5 seconds
-        setTimeout(() => {
-            if (window.gameController && window.gameController.showMessage) {
-                window.gameController.showMessage('Scroll through and select a new level from 1 to 6 to continue.', 'info', 5000);
-            }
-        }, 5000);
-        
-        // Update UI
-        this.updateScoreBarSegments();
-        if (window.levelScroller) {
-            window.levelScroller.updateVisibleLevel();
-        }
-        
-        return 'Congratulations! Puzzle solved! You have unlocked levels 4 to 6.';
-    } 
-    else if (tier2.includes(level)) {
-        // Unlock tier3 levels
-        this.levelTiers.tier3.forEach(lvl => this.unlockedLevels.add(lvl));
-        
-        // Schedule follow-up message after 5 seconds
-        setTimeout(() => {
-            if (window.gameController && window.gameController.showMessage) {
-                window.gameController.showMessage('Scroll through and select a new level from 1 to 10 to continue.', 'info', 5000);
-            }
-        }, 5000);
-        
-        // Update UI
-        this.updateScoreBarSegments();
-        if (window.levelScroller) {
-            window.levelScroller.updateVisibleLevel();
-        }
-        
-        return 'Congratulations! Puzzle solved! You have unlocked levels 7 to 10.';
-    }
-    
-    return 'Congratulations! Puzzle solved!';
-}
-        
-    resetProgress() {
-        this.unlockedLevels = new Set([1, 2, 3]);
-        
-        // Update level scroller if available
-        if (window.levelScroller) {
-            window.levelScroller.updateVisibleLevel();
-        }
-    }
-
-updateScoreBarSegments() {
-    const segments = document.querySelectorAll('.level-segment');
-    if (!segments.length) return;
-    
-    // Apply styles based on our unlockedLevels set
-    segments.forEach(segment => {
-        const level = parseInt(segment.dataset.level);
-        
-        // Skip if already completed
-        if (segment.classList.contains('completed')) return;
-        
-        if (this.unlockedLevels.has(level)) {
-            // Unlocked levels get darker blue background
-            segment.style.backgroundColor = '#dbeafe';
-        } else {
-            // Locked levels get lighter blue background
-            segment.style.backgroundColor = '#e6f2ff';
-        }
-    });
-}
-    
-}
+// levelscroller.js - Simplified to rely directly on level tracker
 
 class LevelScroller {
     constructor() {
         this.currentLevel = 1;
         this.maxLevels = 10;
-        
-        // Initialize level unlocker
-        this.levelUnlocker = new LevelUnlocker();
         
         // Initialize the UI once the DOM is loaded
         if (document.readyState === 'loading') {
@@ -207,6 +18,12 @@ class LevelScroller {
         // Listen for game controller ready event
         document.addEventListener('gameControllerReady', () => {
             console.log('Game controller is now ready - level scroller notified');
+        });
+        
+        // Listen for level tracker updates
+        document.addEventListener('levelTrackerReady', () => {
+            console.log('Level tracker is ready - updating level scroller');
+            this.updateVisibleLevel();
         });
     }
     
@@ -316,7 +133,23 @@ class LevelScroller {
             currentButton.classList.add('visible');
             
             // Check if this level is unlocked
-            const isUnlocked = this.levelUnlocker.isLevelUnlocked(this.currentLevel);
+            const level = this.currentLevel;
+            let isUnlocked = false;
+            
+            // Levels 1-3 are always unlocked
+            if (level >= 1 && level <= 3) {
+                isUnlocked = true;
+            }
+            // Levels 4-6 are unlocked if any level from 1-3 is completed
+            else if (level >= 4 && level <= 6) {
+                isUnlocked = window.levelTracker && 
+                    [1, 2, 3].some(lvl => window.levelTracker.completedLevels.has(lvl));
+            }
+            // Levels 7-10 are unlocked if any level from 4-6 is completed
+            else if (level >= 7 && level <= 10) {
+                isUnlocked = window.levelTracker && 
+                    [4, 5, 6].some(lvl => window.levelTracker.completedLevels.has(lvl));
+            }
             
             // Add locked class if needed
             if (!isUnlocked) {
@@ -329,11 +162,62 @@ class LevelScroller {
                 currentButton.classList.add('active');
             }
         }
+        
+        // Update score bar segments 
+        this.updateScoreBarSegments();
+    }
+    
+    updateScoreBarSegments() {
+        const segments = document.querySelectorAll('.level-segment');
+        if (!segments.length) return;
+        
+        // For each segment, check if level should be unlocked
+        segments.forEach(segment => {
+            const level = parseInt(segment.dataset.level);
+            
+            // Skip if already completed
+            if (segment.classList.contains('completed')) return;
+            
+            let isUnlocked = false;
+            
+            // Levels 1-3 are always unlocked
+            if (level >= 1 && level <= 3) {
+                isUnlocked = true;
+            }
+            // Levels 4-6 are unlocked if any level from 1-3 is completed
+            else if (level >= 4 && level <= 6) {
+                isUnlocked = window.levelTracker && 
+                    [1, 2, 3].some(lvl => window.levelTracker.completedLevels.has(lvl));
+            }
+            // Levels 7-10 are unlocked if any level from 4-6 is completed
+            else if (level >= 7 && level <= 10) {
+                isUnlocked = window.levelTracker && 
+                    [4, 5, 6].some(lvl => window.levelTracker.completedLevels.has(lvl));
+            }
+            
+            // Apply background color based on unlock status
+            segment.style.backgroundColor = isUnlocked ? '#dbeafe' : '#e6f2ff';
+        });
     }
     
     handleLevelSelection(level) {
-        // Check if this level is unlocked
-        const isUnlocked = this.levelUnlocker.isLevelUnlocked(level);
+        // Check if this level is unlocked using the same logic as updateVisibleLevel
+        let isUnlocked = false;
+        
+        // Levels 1-3 are always unlocked
+        if (level >= 1 && level <= 3) {
+            isUnlocked = true;
+        }
+        // Levels 4-6 are unlocked if any level from 1-3 is completed
+        else if (level >= 4 && level <= 6) {
+            isUnlocked = window.levelTracker && 
+                [1, 2, 3].some(lvl => window.levelTracker.completedLevels.has(lvl));
+        }
+        // Levels 7-10 are unlocked if any level from 4-6 is completed
+        else if (level >= 7 && level <= 10) {
+            isUnlocked = window.levelTracker && 
+                [4, 5, 6].some(lvl => window.levelTracker.completedLevels.has(lvl));
+        }
         
         if (!isUnlocked) {
             // Show message that level is locked
@@ -381,14 +265,14 @@ class LevelScroller {
             attempts++;
             console.log(`Attempt ${attempts} to find game controller...`);
             
-            if (startSelectedLevel() || attempts >= 10) { // Increased max attempts to 10
+            if (startSelectedLevel() || attempts >= 10) { // Max 10 attempts
                 clearInterval(retryInterval);
                 if (attempts >= 10) {
                     console.error('Game controller not available after multiple attempts');
                     alert('Error starting level. Please refresh the page and try again.');
                 }
             }
-        }, 200); // Increased delay between attempts to 200ms
+        }, 200);
     }
     
     // Set the current level from external sources (like game controller)
@@ -396,6 +280,90 @@ class LevelScroller {
         if (level >= 1 && level <= this.maxLevels) {
             this.currentLevel = level;
             this.updateVisibleLevel();
+        }
+    }
+    
+    // Handle level completion - updates UI and returns appropriate message
+    handleLevelCompletion(level) {
+        level = Number(level);
+        
+        // Update UI to reflect newly completed level
+        this.updateVisibleLevel();
+        
+        // Level tiers
+        const tier1 = [1, 2, 3];
+        const tier2 = [4, 5, 6];
+        
+        // Check if this completion unlocks new tiers
+        if (tier1.includes(level)) {
+            // Schedule follow-up message after 5 seconds
+            setTimeout(() => {
+                if (window.gameController && window.gameController.showMessage) {
+                    window.gameController.showMessage('Scroll through and select a new level from 1 to 6 to continue.', 'info', 5000);
+                }
+            }, 5000);
+            
+            return 'Congratulations! Puzzle solved! You have unlocked levels 4 to 6.';
+        } 
+        else if (tier2.includes(level)) {
+            // Schedule follow-up message after 5 seconds
+            setTimeout(() => {
+                if (window.gameController && window.gameController.showMessage) {
+                    window.gameController.showMessage('Scroll through and select a new level from 1 to 10 to continue.', 'info', 5000);
+                }
+            }, 5000);
+            
+            return 'Congratulations! Puzzle solved! You have unlocked levels 7 to 10.';
+        }
+        
+        return 'Congratulations! Puzzle solved!';
+    }
+}
+
+// Create the levelUnlocker reference for backward compatibility
+class LevelUnlocker {
+    constructor() {
+        // This class is now a thin wrapper that delegates to level scroller
+        console.log('LevelUnlocker is now a compatibility wrapper');
+        
+        // Make available globally for backward compatibility
+        window.levelUnlocker = this;
+    }
+    
+    // Compatibility method - delegates to level scroller
+    isLevelUnlocked(level) {
+        level = Number(level);
+        
+        // Levels 1-3 are always unlocked
+        if (level >= 1 && level <= 3) {
+            return true;
+        }
+        // Levels 4-6 are unlocked if any level from 1-3 is completed
+        else if (level >= 4 && level <= 6) {
+            return window.levelTracker && 
+                [1, 2, 3].some(lvl => window.levelTracker.completedLevels.has(lvl));
+        }
+        // Levels 7-10 are unlocked if any level from 4-6 is completed
+        else if (level >= 7 && level <= 10) {
+            return window.levelTracker && 
+                [4, 5, 6].some(lvl => window.levelTracker.completedLevels.has(lvl));
+        }
+        
+        return false;
+    }
+    
+    // Compatibility method - delegates to level scroller
+    handleLevelCompletion(level) {
+        if (window.levelScroller) {
+            return window.levelScroller.handleLevelCompletion(level);
+        }
+        return 'Congratulations! Puzzle solved!';
+    }
+    
+    // Compatibility method - updates score bar segments
+    updateScoreBarSegments() {
+        if (window.levelScroller) {
+            window.levelScroller.updateScoreBarSegments();
         }
     }
 }
