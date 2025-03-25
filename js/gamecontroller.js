@@ -729,6 +729,8 @@ class GameController {
         this.updateUI();
     }
 
+// Modified handlePuzzleSolved method for GameController
+
 handlePuzzleSolved() {
     console.log("PUZZLE SOLVED! Congratulations message and score updates coming next...");
     
@@ -740,6 +742,12 @@ handlePuzzleSolved() {
     if (checkButton) checkButton.disabled = true;
     if (removeButton) removeButton.disabled = true;
     if (resetButton) resetButton.disabled = true;
+    
+    // Important: First update level tracker's completed levels
+    if (window.levelTracker) {
+        console.log(`Marking level ${this.state.currentLevel} as completed in level tracker`);
+        window.levelTracker.markLevelCompleted(this.state.currentLevel);
+    }
     
     // Unlock message based on completed level
     let successMessage = 'Congratulations! Puzzle solved!';
