@@ -1715,7 +1715,7 @@ body {
   display: flex !important;
   align-items: center !important;
   width: var(--grid-total-width);
-  height: 35px !important;
+  height: 25px !important;
   background-color: #e6f2ff !important;
   border: 1px solid #94a3b8 !important;
   border-bottom: none !important;
@@ -1807,7 +1807,7 @@ body {
 /* MOBILE: Larger text for score bar */
 @media (max-width: 768px) {
   .score-row {
-    height: 50px !important; /* TALLER */
+    height: 25px !important;
   }
   
   .score-left, .score-right {
