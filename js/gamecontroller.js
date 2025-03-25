@@ -402,19 +402,19 @@ class GameController {
     }
     
     initializeButtonAnimations() {
-        const controlButtons = document.querySelectorAll('.game-controls button');
-        controlButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                // Add animation class
-                button.classList.add('clicked');
-                
-                // Remove ALL state classes after animation completes
-                setTimeout(() => {
-                    button.classList.remove('clicked', 'active', 'selected');
-                }, 300); // Reduced from 500ms to match animation duration
-            });
+    const controlButtons = document.querySelectorAll('.game-controls button');
+    controlButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Add animation class
+            button.classList.add('clicked');
+            
+            // Remove ALL state classes after animation completes
+            setTimeout(() => {
+                button.classList.remove('clicked', 'active', 'selected');
+            }, 300); // Reduced from 500ms to match animation duration
         });
-    }
+    });
+}
     
     initializeGridInteractions() {
         const gridContainer = document.getElementById('grid-container');
@@ -730,68 +730,77 @@ class GameController {
     }
 
     handlePuzzleSolved() {
-        console.log("PUZZLE SOLVED! Congratulations message and score updates coming next...");
-        
-        // Unlock message based on completed level
-        let successMessage = 'Congratulations! Puzzle solved!';
-        
-        // If level unlocker exists, handle level completion
-        if (window.levelUnlocker) {
-            successMessage = window.levelUnlocker.handleLevelCompletion(this.state.currentLevel);
-        }
-        
-        // Display success message
-        this.showMessage(successMessage, 'success');
-        
-        // Update score
-        scoreManager.completePuzzle();
-        
-        // Mark cells in the path as solved
-        this.state.userPath.forEach((index, position) => {
-            const cell = document.querySelector(`[data-index="${index}"]`);
-            if (!cell) return;
-            
-            // Don't change the start and end cell colors
-            if (position === 0) {
-                // Start cell - keep it green/dark green
-                cell.classList.add('start-cell-selected');
-            } else if (position === this.state.userPath.length - 1) {
-                // End cell - keep it red/dark red
-                cell.classList.add('end-cell-selected');
-            } else {
-                // Middle cells - add solved path class for yellow
-                cell.classList.add('user-solved-path');
-                
-                // Remove 'selected' class to ensure the yellow color shows
-                cell.classList.remove('selected');
-            }
-        });
-        
-        // Ensure ALL borders are fully drawn on the completed path
-        const config = getLevelConfig(this.state.currentLevel);
-        const gridSize = config.gridSize || 10;
-        
-        // Use drawCompleteBorders instead of addPathBorders to ensure all appropriate borders are shown
-        drawCompleteBorders(this.state.userPath, 
-                     (index) => document.querySelector(`[data-index="${index}"]`), 
-                     gridSize);
-        
-        // Delay before enabling next level
-        setTimeout(() => {
-            // Disable game to prevent further interaction with this puzzle
-            this.state.gameActive = false;
-            
-            // Update UI to reflect completion
-            this.updateUI();
-            
-            // Suggestion for next level if not at max level
-            if (this.state.currentLevel < 10) {
-                this.showMessage(`Ready for level ${this.state.currentLevel + 1}?`, 'info');
-            } else {
-                this.showMessage('You completed the highest level! Try again for a better score.', 'info');
-            }
-        }, 1500);
+    console.log("PUZZLE SOLVED! Congratulations message and score updates coming next...");
+    
+    // Immediately disable all game control buttons when puzzle is solved
+    const checkButton = document.getElementById('check-solution');
+    const removeButton = document.getElementById('remove-spare');
+    const resetButton = document.getElementById('reset-path');
+    
+    if (checkButton) checkButton.disabled = true;
+    if (removeButton) removeButton.disabled = true;
+    if (resetButton) resetButton.disabled = true;
+    
+    // Unlock message based on completed level
+    let successMessage = 'Congratulations! Puzzle solved!';
+    
+    // If level unlocker exists, handle level completion
+    if (window.levelUnlocker) {
+        successMessage = window.levelUnlocker.handleLevelCompletion(this.state.currentLevel);
     }
+    
+    // Display success message
+    this.showMessage(successMessage, 'success');
+    
+    // Update score
+    scoreManager.completePuzzle();
+    
+    // Mark cells in the path as solved
+    this.state.userPath.forEach((index, position) => {
+        const cell = document.querySelector(`[data-index="${index}"]`);
+        if (!cell) return;
+        
+        // Don't change the start and end cell colors
+        if (position === 0) {
+            // Start cell - keep it green/dark green
+            cell.classList.add('start-cell-selected');
+        } else if (position === this.state.userPath.length - 1) {
+            // End cell - keep it red/dark red
+            cell.classList.add('end-cell-selected');
+        } else {
+            // Middle cells - add solved path class for yellow
+            cell.classList.add('user-solved-path');
+            
+            // Remove 'selected' class to ensure the yellow color shows
+            cell.classList.remove('selected');
+        }
+    });
+    
+    // Ensure ALL borders are fully drawn on the completed path
+    const config = getLevelConfig(this.state.currentLevel);
+    const gridSize = config.gridSize || 10;
+    
+    // Use drawCompleteBorders instead of addPathBorders to ensure all appropriate borders are shown
+    drawCompleteBorders(this.state.userPath, 
+                 (index) => document.querySelector(`[data-index="${index}"]`), 
+                 gridSize);
+    
+    // Disable game to prevent further interaction with this puzzle
+    this.state.gameActive = false;
+    
+    // Update UI to reflect completion
+    this.updateUI();
+    
+    // Delay the suggestion for next level
+    setTimeout(() => {
+        // Suggestion for next level if not at max level
+        if (this.state.currentLevel < 10) {
+            this.showMessage(`Ready for level ${this.state.currentLevel + 1}?`, 'info');
+        } else {
+            this.showMessage('You completed the highest level! Try again for a better score.', 'info');
+        }
+    }, 1500);
+}
     
     getLevelConfig(level) {
         // Re-export the function from sequencegenerator.js
