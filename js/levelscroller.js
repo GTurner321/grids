@@ -95,9 +95,6 @@ syncWithLevelTracker() {
             this.unlockedLevels.add(level);
         });
         
-        // Save progress
-        this.saveUnlockProgress();
-        
         // Update level scroller if available
         if (window.levelScroller) {
             window.levelScroller.updateVisibleLevel();
@@ -159,7 +156,6 @@ handleLevelCompletion(level) {
         
     resetProgress() {
         this.unlockedLevels = new Set([1, 2, 3]);
-        this.saveUnlockProgress();
         
         // Update level scroller if available
         if (window.levelScroller) {
