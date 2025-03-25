@@ -712,7 +712,7 @@ body {
 }
 
 /* ==========================================================================
-   8. GAME CONTROLS - UPDATED WITH LILAC STYLING
+   8. GAME CONTROLS - UPDATED WITH LILAC STYLING & FIXES
    ========================================================================== */
 
 .game-controls {
@@ -747,18 +747,27 @@ body {
   text-transform: uppercase; /* UPPERCASE TEXT */
   letter-spacing: 0.03em; /* Better letter spacing */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* Ensure initial state is consistent */
+  transform: translateY(0);
 }
 
-.game-controls button:hover {
+/* Only apply hover effects to non-disabled buttons */
+.game-controls button:hover:not(:disabled) {
   background: linear-gradient(to bottom, #d8b4fe, var(--lilac-light), var(--lilac-medium)); /* Lighter lilac gradient on hover */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   transform: translateY(-2px);
 }
 
-.game-controls button:active {
+/* Only apply active effects to non-disabled buttons */
+.game-controls button:active:not(:disabled) {
   transform: translateY(1px);
   border-bottom-width: 1px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Ensure buttons return to normal state after being released */
+.game-controls button:not(:active) {
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
 }
 
 .game-controls button svg {
@@ -818,21 +827,35 @@ body {
   animation: buttonPulse 0.3s ease-in-out;
 }
 
+/* Reset button after animation completes to prevent persistent states */
+.game-controls button.clicked:not(:active) {
+  transform: translateY(0);
+  border-bottom-width: 3px;
+}
+
 /* REMOVE persistent active/focus/selected states */
-.game-controls button:active, 
 .game-controls button:focus,
 .game-controls button.active,
 .game-controls button.selected {
-  background: linear-gradient(to bottom, var(--lilac-light), var(--lilac-medium), var(--lilac-dark)) !important;
-  color: white !important;
+  background: linear-gradient(to bottom, var(--lilac-light), var(--lilac-medium), var(--lilac-dark));
+  color: white;
+  /* Don't change position on focus/active/selected - only on :active state */
+  transform: translateY(0);
+  border-bottom-width: 3px;
 }
 
 /* Disabled button state - make it translucent lilac instead of gray */
 .game-controls button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  background: linear-gradient(to bottom, var(--lilac-light), var(--lilac-medium), var(--lilac-dark)) !important;
+  background: linear-gradient(to bottom, var(--lilac-light), var(--lilac-medium), var(--lilac-dark));
   border-color: var(--lilac-border);
+  /* Force normal position for disabled buttons */
+  transform: translateY(0) !important;
+  border-bottom-width: 3px !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  /* Don't allow hover or active effects */
+  pointer-events: none;
 }
 
 /* Specific adjustments for smaller screens */
@@ -854,7 +877,6 @@ body {
     padding: 6px 8px;
   }
 }
-
 /* ==========================================================================
    9. BOTTOM BUTTONS (RECORD NAME & LEADERBOARD) - UPDATED WITH GRADUATED STYLING
    ========================================================================== */
