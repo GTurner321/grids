@@ -2,37 +2,51 @@
 
 class LevelUnlocker {
     constructor() {
-        // Track unlocked levels - start with only levels 1-3 unlocked
-        this.unlockedLevels = new Set([1, 2, 3]);
-        this.levelTiers = {
-            tier1: [1, 2, 3],      // Initially unlocked
-            tier2: [4, 5, 6],      // Unlocked after completing any level in tier1
-            tier3: [7, 8, 9, 10]   // Unlocked after completing any level in tier2
-        };
-        
-        // Load any saved unlock progress
-        this.loadUnlockProgress();
-        
-        // Make available globally
-        window.levelUnlocker = this;
+    // Define level tiers
+    this.levelTiers = {
+        tier1: [1, 2, 3],      // Initially unlocked
+        tier2: [4, 5, 6],      // Unlocked after completing any level in tier1
+        tier3: [7, 8, 9, 10]   // Unlocked after completing any level in tier2
+    };
+    
+    // Track unlocked levels - start with only levels 1-3 unlocked
+    this.unlockedLevels = new Set(this.levelTiers.tier1);
+    
+    // Load any saved unlock progress
+    this.loadUnlockProgress();
+    
+    // Listen for level tracker initialization
+    document.addEventListener('levelTrackerReady', () => {
+        console.log('Level tracker is ready - updating unlocks');
+        this.syncWithLevelTracker();
+    });
+    
+    // Make available globally
+    window.levelUnlocker = this;
+    
+    // Check if level tracker is already available
+    if (window.levelTracker) {
+        this.syncWithLevelTracker();
     }
+}
     
 isLevelUnlocked(level) {
     level = Number(level);
     
-    // Level tiers
-    const tier1 = [1, 2, 3];
-    const tier2 = [4, 5, 6];
-    const tier3 = [7, 8, 9, 10];
+    // Use the class's levelTiers property instead of redefining tiers
+    const tier1 = this.levelTiers.tier1;
+    const tier2 = this.levelTiers.tier2;
+    const tier3 = this.levelTiers.tier3;
     
     // Tier 1 is always unlocked
     if (tier1.includes(level)) {
         return true;
     }
     
-    // If levelTracker isn't available yet, default to locked for tiers 2 & 3
+    // Check if we have access to levelTracker
     if (!window.levelTracker || !window.levelTracker.completedLevels) {
-        return false;
+        // If levelTracker isn't available yet, check unlockedLevels from localStorage
+        return this.unlockedLevels.has(level);
     }
     
     // Check if any tier1 level is in the completed levels set
@@ -54,6 +68,46 @@ isLevelUnlocked(level) {
     }
     
     return false;
+}
+
+// Add this new method to the LevelUnlocker class in levelscroller.js
+syncWithLevelTracker() {
+    if (!window.levelTracker || !window.levelTracker.completedLevels) {
+        console.log('Level tracker not fully initialized yet');
+        return;
+    }
+    
+    console.log('Syncing level unlocks with level tracker');
+    
+    // Check if any tier1 level is completed to unlock tier2
+    const anyTier1Completed = this.levelTiers.tier1.some(lvl => 
+        window.levelTracker.completedLevels.has(lvl)
+    );
+    
+    if (anyTier1Completed) {
+        this.levelTiers.tier2.forEach(level => {
+            this.unlockedLevels.add(level);
+        });
+    }
+    
+    // Check if any tier2 level is completed to unlock tier3
+    const anyTier2Completed = this.levelTiers.tier2.some(lvl => 
+        window.levelTracker.completedLevels.has(lvl)
+    );
+    
+    if (anyTier2Completed) {
+        this.levelTiers.tier3.forEach(level => {
+            this.unlockedLevels.add(level);
+        });
+    }
+    
+    // Update the UI
+    this.updateScoreBarSegments();
+    
+    // Update level scroller if available
+    if (window.levelScroller) {
+        window.levelScroller.updateVisibleLevel();
+    }
 }
     
     unlockTier(tier) {
