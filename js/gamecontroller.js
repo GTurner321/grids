@@ -1,13 +1,15 @@
-// gamecontroller.js - Updated for border-based path visualization
+// gamecontroller.js - Updated for border-based path visualization with improved initialization
 import { generatePath } from './pathgenerator.js';
 import { generateSequence, sequenceToEntries, getLevelConfig } from './sequencegenerator.js';
 import { renderGrid, updateCell } from './gridrenderer.js';
 import { validatePath as validatePathMath, isPathContinuous } from './pathvalidator.js';
 import { scoreManager } from './scoremanager.js';
-import { addPathBorders, addBorderStyles, removeAllPathBorders } from './cell-borders.js';
+import { addPathBorders, addBorderStyles, removeAllPathBorders, drawCompleteBorders } from './cell-borders.js';
 
 class GameController {
     constructor() {
+        console.log('Initializing game controller...');
+        
         // Store a global reference for easy access
         window.gameController = this;
         
@@ -32,152 +34,190 @@ class GameController {
         
         document.querySelector('.game-container')?.classList.remove('game-active');
 
-        this.initializeEventListeners();
-        this.initializeGridInteractions();
+        // Only initialize event listeners if DOM is fully loaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                this.initializeEventListeners();
+                this.initializeGridInteractions();
+                this.initializeButtonAnimations();
+                
+                // Signal that controller is fully initialized
+                this.signalReady();
+            });
+        } else {
+            this.initializeEventListeners();
+            this.initializeGridInteractions();
+            this.initializeButtonAnimations();
+            
+            // Signal that controller is fully initialized
+            this.signalReady();
+        }
+    }
+
+    // Signal that the game controller is fully initialized and ready
+    signalReady() {
+        console.log('Game controller initialized and ready');
+        document.dispatchEvent(new CustomEvent('gameControllerReady'));
+    }
+
+    initializeEventListeners() {
+        console.log('Initializing game event listeners');
+        
+        // Level selection
+        document.querySelectorAll('.level-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const level = parseInt(btn.dataset.level);
+                console.log(`Level ${level} button clicked`);
+                this.startLevel(level);
+            });
+        });
+
+        // Game controls
+        const checkButton = document.getElementById('check-solution');
+        if (checkButton) {
+            checkButton.addEventListener('click', () => {
+                console.log('Check solution button clicked');
+                if (this.state.userPath.length > 0) {
+                    this.checkSolution();
+                }
+            });
+        } else {
+            console.error('Check solution button not found');
+        }
+
+        const removeButton = document.getElementById('remove-spare');
+        if (removeButton) {
+            removeButton.addEventListener('click', () => {
+                console.log('Remove spare button clicked');
+                this.removeAllSpareCells();
+            });
+        } else {
+            console.error('Remove spare button not found');
+        }
+        
+        // Add reset path button handler
+        const resetButton = document.getElementById('reset-path');
+        if (resetButton) {
+            // Update the button text to "Reset" while preserving the SVG
+            const svgContent = resetButton.innerHTML.split('</svg>')[0] + '</svg>';
+            resetButton.innerHTML = svgContent + ' Reset';
+            
+            resetButton.addEventListener('click', (e) => {
+                console.log('Reset button clicked');
+                e.preventDefault(); // Prevent any default behavior
+                this.resetPath(); // Call the resetPath method
+            });
+        } else {
+            console.error('Reset path button not found');
+        }
+        
+        // Initialize button animations for pulse effect without persistent states
         this.initializeButtonAnimations();
+        
+        console.log('Game event listeners initialized');
     }
-
-initializeEventListeners() {
-    console.log('Initializing game event listeners');
     
-    // Level selection
-    document.querySelectorAll('.level-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const level = parseInt(btn.dataset.level);
-            console.log(`Level ${level} button clicked`);
-            this.startLevel(level);
-        });
-    });
+    async startLevel(level) {
+        console.log(`Starting level ${level}`);
+        
+        // Reset state for the new level
+        this.state.currentLevel = level;
+        this.state.userPath = [];
+        
+        // Get grid size from config
+        const config = getLevelConfig(level);
+        const gridSize = config.gridSize || 10;
+        
+        // Create appropriate sized grid entries array
+        this.state.gridEntries = new Array(gridSize * gridSize).fill(null);
+        this.state.removedCells.clear();
+        this.state.gameActive = true;
+        
+        // Mark the game container as active
+        document.querySelector('.game-container')?.classList.add('game-active');
+        
+        // Initialize scoring for the level
+        scoreManager.startLevel(level);
 
-    // Game controls
-    const checkButton = document.getElementById('check-solution');
-    if (checkButton) {
-        checkButton.addEventListener('click', () => {
-            console.log('Check solution button clicked');
-            if (this.state.userPath.length > 0) {
-                this.checkSolution();
+        // Reset the remove-spare button state
+        const removeButton = document.getElementById('remove-spare');
+        if (removeButton) {
+            // Reset visibility and state
+            removeButton.classList.remove('used');
+            removeButton.disabled = false;
+            
+            // Reset the game controls layout
+            const gameControls = document.querySelector('.game-controls');
+            if (gameControls) {
+                gameControls.classList.remove('two-buttons');
             }
-        });
-    } else {
-        console.error('Check solution button not found');
-    }
-
-    const removeButton = document.getElementById('remove-spare');
-    if (removeButton) {
-        removeButton.addEventListener('click', () => {
-            console.log('Remove spare button clicked');
-            this.removeAllSpareCells();
-        });
-    } else {
-        console.error('Remove spare button not found');
-    }
-    
-    // Add reset path button handler
-    const resetButton = document.getElementById('reset-path');
-    if (resetButton) {
-        // Update the button text to "Reset" while preserving the SVG
-        const svgContent = resetButton.innerHTML.split('</svg>')[0] + '</svg>';
-        resetButton.innerHTML = svgContent + ' Reset';
-        
-        resetButton.addEventListener('click', (e) => {
-            console.log('Reset button clicked');
-            e.preventDefault(); // Prevent any default behavior
-            this.resetPath(); // Call the resetPath method
-        });
-    } else {
-        console.error('Reset path button not found');
-    }
-    
-    // Initialize button animations for pulse effect without persistent states
-    this.initializeButtonAnimations();
-    
-    console.log('Game event listeners initialized');
-}
-    
-async startLevel(level) {
-    // Reset state for the new level
-    this.state.currentLevel = level;
-    this.state.userPath = [];
-    
-    // Get grid size from config
-    const config = getLevelConfig(level);
-    const gridSize = config.gridSize || 10;
-    
-    // Create appropriate sized grid entries array
-    this.state.gridEntries = new Array(gridSize * gridSize).fill(null);
-    this.state.removedCells.clear();
-    this.state.gameActive = true;
-    
-    // Mark the game container as active
-    document.querySelector('.game-container')?.classList.add('game-active');
-    
-    // Initialize scoring for the level
-    scoreManager.startLevel(level);
-
-    // Reset the remove-spare button state
-    const removeButton = document.getElementById('remove-spare');
-    if (removeButton) {
-        // Reset visibility and state
-        removeButton.classList.remove('used');
-        removeButton.disabled = false;
-        
-        // Reset the game controls layout
-        const gameControls = document.querySelector('.game-controls');
-        if (gameControls) {
-            gameControls.classList.remove('two-buttons');
-        }
-        
-        // Handle level-specific button visibility
-        if (level === 1) {
-            // Hide the button for level 1 where it's not needed
-            removeButton.style.display = 'none';
-        } else {
-            // Show the button for all other levels
-            removeButton.style.display = '';
-        }
-    }
-
-    try {
-        // Generate path with appropriate grid size
-        this.state.path = await generatePath(gridSize);
-        this.state.sequence = await generateSequence(level);
-        this.state.sequenceEntries = sequenceToEntries(this.state.sequence);
-
-        // Place sequence on path
-        this.placeMathSequence();
-        
-        // Level-specific setup
-        if (level === 1) {
-            // For level 1, remove all spare cells automatically
-            this.removeAllSpareCells(true); // true for remove ALL
-        } else {
-            // For other levels, fill remaining cells with numbers
-            this.fillRemainingCells();
+            
+            // Handle level-specific button visibility
+            if (level === 1) {
+                // Hide the button for level 1 where it's not needed
+                removeButton.style.display = 'none';
+            } else {
+                // Show the button for all other levels
+                removeButton.style.display = '';
+            }
         }
 
-        // For level 2, show suggestion to remove spare cells
-        if (level === 2) {
-            setTimeout(() => {
-                this.showMessage('Hint: Consider removing spare cells to make the puzzle easier!', 'info', 5000);
-            }, 1000);
+        try {
+            // Generate path with appropriate grid size
+            this.state.path = await generatePath(gridSize);
+            this.state.sequence = await generateSequence(level);
+            this.state.sequenceEntries = sequenceToEntries(this.state.sequence);
+
+            // Place sequence on path
+            this.placeMathSequence();
+            
+            // Level-specific setup
+            if (level === 1) {
+                // For level 1, remove all spare cells automatically
+                this.removeAllSpareCells(true); // true for remove ALL
+            } else {
+                // For other levels, fill remaining cells with numbers
+                this.fillRemainingCells();
+            }
+
+            // For level 2, show suggestion to remove spare cells
+            if (level === 2) {
+                setTimeout(() => {
+                    this.showMessage('Hint: Consider removing spare cells to make the puzzle easier!', 'info', 5000);
+                }, 1000);
+            }
+
+            // Ensure grid container visibility is set properly
+            const gridContainer = document.getElementById('grid-container');
+            if (gridContainer) {
+                gridContainer.style.visibility = 'visible';
+                gridContainer.style.height = 'auto';
+                gridContainer.style.backgroundColor = '#94a3b8';
+            }
+
+            // Render grid with appropriate size
+            renderGrid(this.state.gridEntries, {
+                startCoord: this.state.path[0],
+                endCoord: this.state.path[this.state.path.length - 1],
+                gridSize: gridSize
+            });
+
+            // Update UI elements and buttons
+            this.updateUI();
+            this.showMessage('Find the path by following the mathematical sequence.');
+            
+            console.log(`Level ${level} started successfully`);
+            
+            // Update level scroller if available
+            if (window.levelScroller && typeof window.levelScroller.setCurrentLevel === 'function') {
+                window.levelScroller.setCurrentLevel(level);
+            }
+
+        } catch (error) {
+            console.error('Error starting level:', error);
+            this.showMessage('Error starting game. Please try again.', 'error');
         }
-
-        // Render grid with appropriate size
-        renderGrid(this.state.gridEntries, {
-            startCoord: this.state.path[0],
-            endCoord: this.state.path[this.state.path.length - 1],
-            gridSize: gridSize
-        });
-
-        // Update UI elements and buttons
-        this.updateUI();
-        this.showMessage('Find the path by following the mathematical sequence.');
-
-    } catch (error) {
-        console.error('Error starting level:', error);
-        this.showMessage('Error starting game. Please try again.', 'error');
     }
-}
     
     placeMathSequence() {
         // Get the current grid size
@@ -361,11 +401,31 @@ async startLevel(level) {
                (Math.abs(y1 - y2) === 1 && x1 === x2);
     }
     
+    initializeButtonAnimations() {
+        const controlButtons = document.querySelectorAll('.game-controls button');
+        controlButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Add animation class
+                button.classList.add('clicked');
+                
+                // Remove ALL state classes after animation completes
+                setTimeout(() => {
+                    button.classList.remove('clicked', 'active', 'selected');
+                }, 300); // Reduced from 500ms to match animation duration
+            });
+        });
+    }
+    
     initializeGridInteractions() {
         const gridContainer = document.getElementById('grid-container');
-        if (!gridContainer) return;
+        if (!gridContainer) {
+            console.warn('Grid container not found, will try to initialize later');
+            // Set a retry for when the DOM might be ready
+            setTimeout(() => this.initializeGridInteractions(), 500);
+            return;
+        }
         
-        // IMPROVED: Direct and more reliable touch and click handlers
+        console.log('Initializing grid interactions');
         
         // 1. Mouse click handler (simple and direct)
         gridContainer.addEventListener('click', (e) => {
@@ -382,21 +442,6 @@ async startLevel(level) {
                 this.handleCellClick(cell);
             }
         });
-
-initializeButtonAnimations() {
-    const controlButtons = document.querySelectorAll('.game-controls button');
-    controlButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            // Add animation class
-            button.classList.add('clicked');
-            
-            // Remove ALL state classes after animation completes
-            setTimeout(() => {
-                button.classList.remove('clicked', 'active', 'selected');
-            }, 300); // Reduced from 500ms to match animation duration
-        });
-    });
-}
         
         // 2. Touch handling (simplified and more reliable)
         gridContainer.addEventListener('touchstart', (e) => {
@@ -436,7 +481,6 @@ initializeButtonAnimations() {
             }
             
             // Continue with swipe path creation logic...
-            // (existing touch drag logic remains largely unchanged)
             const touch = e.touches[0];
             const element = document.elementFromPoint(touch.clientX, touch.clientY);
             if (!element) return;
@@ -503,8 +547,40 @@ initializeButtonAnimations() {
         });
         
         // 3. Add direct focus on the start cell (very important fix)
+        this.enhanceStartCells();
+        
+        // Add CSS for touch active state
+        const style = document.createElement('style');
+        style.textContent = `
+            .grid-cell.touch-active {
+                transform: scale(1.1);
+                box-shadow: 0 0 10px rgba(59, 130, 246, 0.8);
+                z-index: 40;
+                transition: transform 0.1s ease-out, box-shadow 0.1s ease-out;
+            }
+            .grid-cell.start-cell.touch-active {
+                background-color: #15803d;
+            }
+        `;
+        document.head.appendChild(style);
+        
+        console.log('Grid interactions initialized');
+    }
+    
+    // Separate method to enhance start cells for better touch handling
+    enhanceStartCells() {
+        // Wait for DOM to be fully loaded
         setTimeout(() => {
             const startCells = document.querySelectorAll('.grid-cell.start-cell');
+            if (startCells.length === 0) {
+                // No start cells found yet, try again later
+                console.log('No start cells found, will try again');
+                setTimeout(() => this.enhanceStartCells(), 500);
+                return;
+            }
+            
+            console.log(`Enhancing ${startCells.length} start cells for touch handling`);
+            
             startCells.forEach(cell => {
                 // Enhance start cell for better touch detection
                 cell.style.zIndex = '30';
@@ -551,87 +627,58 @@ initializeButtonAnimations() {
                 }, { passive: false });
             });
         }, 500);
+    }
+    
+    removeAllSpareCells(removeAll = false) {
+        // Find all spare cells that can be removed
+        const spareCells = this.state.gridEntries
+            .map((entry, index) => (!entry?.isPartOfPath && !this.state.removedCells.has(index)) ? index : null)
+            .filter(index => index !== null);
+
+        // Check if there are any spare cells to remove
+        if (spareCells.length === 0) {
+            this.showMessage('No spare cells to remove!', 'info');
+            return;
+        }
+
+        // Handle score penalty for using this feature
+        scoreManager.handleSpareRemoval();
+
+        // Determine how many cells to remove (all or 50%)
+        const numToRemove = removeAll ? spareCells.length : Math.ceil(spareCells.length / 2);
         
-        // Add button animation
-        const controlButtons = document.querySelectorAll('.game-controls button');
-        controlButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                // Add animation class
-                button.classList.add('clicked');
-                
-                // Remove class after animation completes
-                setTimeout(() => {
-                    button.classList.remove('clicked');
-                }, 500); // 0.5 seconds matching the CSS animation
-            });
+        // Randomly select cells to remove
+        const cellsToRemove = spareCells
+            .sort(() => Math.random() - 0.5)
+            .slice(0, numToRemove);
+
+        // Remove the selected cells
+        cellsToRemove.forEach(index => {
+            this.state.removedCells.add(index);
+            updateCell(index, null);
         });
-        
-        // Add CSS for touch active state
-        const style = document.createElement('style');
-        style.textContent = `
-            .grid-cell.touch-active {
-                transform: scale(1.1);
-                box-shadow: 0 0 10px rgba(59, 130, 246, 0.8);
-                z-index: 40;
-                transition: transform 0.1s ease-out, box-shadow 0.1s ease-out;
+
+        // Disable the button after use
+        const removeButton = document.getElementById('remove-spare');
+        if (removeButton) {
+            // Disable the button functionally
+            removeButton.disabled = true;
+            
+            // Add 'used' class to visually hide the button with transition
+            removeButton.classList.add('used');
+            
+            // Adjust the game controls layout 
+            const gameControls = document.querySelector('.game-controls');
+            if (gameControls) {
+                gameControls.classList.add('two-buttons');
             }
-            .grid-cell.start-cell.touch-active {
-                background-color: #15803d;
-            }
-        `;
-        document.head.appendChild(style);
-    }
-    
-removeAllSpareCells(removeAll = false) {
-    // Find all spare cells that can be removed
-    const spareCells = this.state.gridEntries
-        .map((entry, index) => (!entry?.isPartOfPath && !this.state.removedCells.has(index)) ? index : null)
-        .filter(index => index !== null);
-
-    // Check if there are any spare cells to remove
-    if (spareCells.length === 0) {
-        this.showMessage('No spare cells to remove!', 'info');
-        return;
-    }
-
-    // Handle score penalty for using this feature
-    scoreManager.handleSpareRemoval();
-
-    // Determine how many cells to remove (all or 50%)
-    const numToRemove = removeAll ? spareCells.length : Math.ceil(spareCells.length / 2);
-    
-    // Randomly select cells to remove
-    const cellsToRemove = spareCells
-        .sort(() => Math.random() - 0.5)
-        .slice(0, numToRemove);
-
-    // Remove the selected cells
-    cellsToRemove.forEach(index => {
-        this.state.removedCells.add(index);
-        updateCell(index, null);
-    });
-
-    // Disable the button after use
-    const removeButton = document.getElementById('remove-spare');
-    if (removeButton) {
-        // Disable the button functionally
-        removeButton.disabled = true;
+        }
         
-        // Add 'used' class to visually hide the button with transition
-        removeButton.classList.add('used');
-        
-        // Adjust the game controls layout 
-        const gameControls = document.querySelector('.game-controls');
-        if (gameControls) {
-            gameControls.classList.add('two-buttons');
+        // Show feedback message unless this is an automatic removal (level 1)
+        if (!removeAll) {
+            this.showMessage(`Removed ${numToRemove} spare cells.`, 'info');
         }
     }
-    
-    // Show feedback message unless this is an automatic removal (level 1)
-    if (!removeAll) {
-        this.showMessage(`Removed ${numToRemove} spare cells.`, 'info');
-    }
-}
     
     checkSolution() {
         // First, check if the path meets the required length formula (3n+1)
@@ -682,71 +729,69 @@ removeAllSpareCells(removeAll = false) {
         this.updateUI();
     }
 
-// Updated handlePuzzleSolved method for gamecontroller.js
-
-handlePuzzleSolved() {
-    console.log("PUZZLE SOLVED! Congratulations message and score updates coming next...");
-    
-    // Unlock message based on completed level
-    let successMessage = 'Congratulations! Puzzle solved!';
-    
-    // If level unlocker exists, handle level completion
-    if (window.levelUnlocker) {
-        successMessage = window.levelUnlocker.handleLevelCompletion(this.state.currentLevel);
-    }
-    
-    // Display success message
-    this.showMessage(successMessage, 'success');
-    
-    // Update score
-    scoreManager.completePuzzle();
-    
-    // Mark cells in the path as solved
-    this.state.userPath.forEach((index, position) => {
-        const cell = document.querySelector(`[data-index="${index}"]`);
-        if (!cell) return;
+    handlePuzzleSolved() {
+        console.log("PUZZLE SOLVED! Congratulations message and score updates coming next...");
         
-        // Don't change the start and end cell colors
-        if (position === 0) {
-            // Start cell - keep it green/dark green
-            cell.classList.add('start-cell-selected');
-        } else if (position === this.state.userPath.length - 1) {
-            // End cell - keep it red/dark red
-            cell.classList.add('end-cell-selected');
-        } else {
-            // Middle cells - add solved path class for yellow
-            cell.classList.add('user-solved-path');
+        // Unlock message based on completed level
+        let successMessage = 'Congratulations! Puzzle solved!';
+        
+        // If level unlocker exists, handle level completion
+        if (window.levelUnlocker) {
+            successMessage = window.levelUnlocker.handleLevelCompletion(this.state.currentLevel);
+        }
+        
+        // Display success message
+        this.showMessage(successMessage, 'success');
+        
+        // Update score
+        scoreManager.completePuzzle();
+        
+        // Mark cells in the path as solved
+        this.state.userPath.forEach((index, position) => {
+            const cell = document.querySelector(`[data-index="${index}"]`);
+            if (!cell) return;
             
-            // Remove 'selected' class to ensure the yellow color shows
-            cell.classList.remove('selected');
-        }
-    });
-    
-    // Ensure ALL borders are fully drawn on the completed path
-    const config = getLevelConfig(this.state.currentLevel);
-    const gridSize = config.gridSize || 10;
-    
-    // Use drawCompleteBorders instead of addPathBorders to ensure all appropriate borders are shown
-    drawCompleteBorders(this.state.userPath, 
-                 (index) => document.querySelector(`[data-index="${index}"]`), 
-                 gridSize);
-    
-    // Delay before enabling next level
-    setTimeout(() => {
-        // Disable game to prevent further interaction with this puzzle
-        this.state.gameActive = false;
+            // Don't change the start and end cell colors
+            if (position === 0) {
+                // Start cell - keep it green/dark green
+                cell.classList.add('start-cell-selected');
+            } else if (position === this.state.userPath.length - 1) {
+                // End cell - keep it red/dark red
+                cell.classList.add('end-cell-selected');
+            } else {
+                // Middle cells - add solved path class for yellow
+                cell.classList.add('user-solved-path');
+                
+                // Remove 'selected' class to ensure the yellow color shows
+                cell.classList.remove('selected');
+            }
+        });
         
-        // Update UI to reflect completion
-        this.updateUI();
+        // Ensure ALL borders are fully drawn on the completed path
+        const config = getLevelConfig(this.state.currentLevel);
+        const gridSize = config.gridSize || 10;
         
-        // Suggestion for next level if not at max level
-        if (this.state.currentLevel < 10) {
-            this.showMessage(`Ready for level ${this.state.currentLevel + 1}?`, 'info');
-        } else {
-            this.showMessage('You completed the highest level! Try again for a better score.', 'info');
-        }
-    }, 1500);
-}
+        // Use drawCompleteBorders instead of addPathBorders to ensure all appropriate borders are shown
+        drawCompleteBorders(this.state.userPath, 
+                     (index) => document.querySelector(`[data-index="${index}"]`), 
+                     gridSize);
+        
+        // Delay before enabling next level
+        setTimeout(() => {
+            // Disable game to prevent further interaction with this puzzle
+            this.state.gameActive = false;
+            
+            // Update UI to reflect completion
+            this.updateUI();
+            
+            // Suggestion for next level if not at max level
+            if (this.state.currentLevel < 10) {
+                this.showMessage(`Ready for level ${this.state.currentLevel + 1}?`, 'info');
+            } else {
+                this.showMessage('You completed the highest level! Try again for a better score.', 'info');
+            }
+        }, 1500);
+    }
     
     getLevelConfig(level) {
         // Re-export the function from sequencegenerator.js
@@ -783,7 +828,7 @@ handlePuzzleSolved() {
         return validatePathMath(this.state.userPath, this.state.gridEntries);
     }
 
-    resetPath() {
+resetPath() {
         console.log('resetPath method called');
         
         try {
@@ -843,9 +888,13 @@ handlePuzzleSolved() {
             resetButton.disabled = !this.state.gameActive || this.state.userPath.length === 0;
         }
 
-        // Update level buttons
-        document.querySelectorAll('.level-btn').forEach(btn => {
-            btn.classList.toggle('active', parseInt(btn.dataset.level) === this.state.currentLevel);
+        // Update level buttons - both traditional and scrollable buttons
+        document.querySelectorAll('.level-btn, .level-btn-scrollable').forEach(btn => {
+            if (parseInt(btn.dataset.level) === this.state.currentLevel) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
         });
     }
    
@@ -904,9 +953,24 @@ handlePuzzleSolved() {
     }
 }
 
-// Initialize game and store reference
-window.addEventListener('DOMContentLoaded', () => {
-    window.gameController = new GameController();
-});
+// Initialize game and store reference - with retries for reliability
+function initializeGameController() {
+    console.log('Attempting to initialize game controller...');
+    
+    if (document.readyState === 'loading') {
+        // If document is still loading, wait for it to be ready
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM fully loaded, creating game controller');
+            window.gameController = new GameController();
+        });
+    } else {
+        // Document is already ready, create controller immediately
+        console.log('DOM already loaded, creating game controller');
+        window.gameController = new GameController();
+    }
+}
+
+// Start initialization
+initializeGameController();
 
 export default GameController;
