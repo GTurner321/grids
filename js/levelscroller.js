@@ -30,9 +30,14 @@ isLevelUnlocked(level) {
         return true;
     }
     
+    // If levelTracker isn't available yet, default to locked for tiers 2 & 3
+    if (!window.levelTracker || !window.levelTracker.completedLevels) {
+        return false;
+    }
+    
     // Check if any tier1 level is in the completed levels set
     // to determine if tier2 should be unlocked
-    if (tier2.includes(level) && window.levelTracker) {
+    if (tier2.includes(level)) {
         const anyTier1Completed = tier1.some(lvl => 
             window.levelTracker.completedLevels.has(lvl)
         );
@@ -41,7 +46,7 @@ isLevelUnlocked(level) {
     
     // Check if any tier2 level is in the completed levels set
     // to determine if tier3 should be unlocked
-    if (tier3.includes(level) && window.levelTracker) {
+    if (tier3.includes(level)) {
         const anyTier2Completed = tier2.some(lvl => 
             window.levelTracker.completedLevels.has(lvl)
         );
