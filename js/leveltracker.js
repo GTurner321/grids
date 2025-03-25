@@ -217,21 +217,17 @@ class LevelTracker {
     }
 
     updateLevelUnlocker() {
-        // Make sure both levelTracker and levelUnlocker are available
-        if (window.levelTracker && window.levelScroller && window.levelScroller.levelUnlocker) {
-            console.log('Updating level unlocks based on completed levels');
-            
-            // Using the level unlocker to update UI after level tracker is loaded
-            window.levelScroller.levelUnlocker.updateScoreBarSegments();
-            
-            // Make sure the visible level is updated to reflect unlock status
-            window.levelScroller.updateVisibleLevel();
-        } else {
-            console.log('Either levelTracker or levelUnlocker not available yet');
-            // Try again in a short while
-            setTimeout(() => this.updateLevelUnlocker(), 200);
-        }
+    // Check if level scroller exists
+    if (window.levelScroller) {
+        console.log('Updating level unlock status based on completed levels');
+        // Directly update the level scroller UI
+        window.levelScroller.updateVisibleLevel();
+    } else {
+        console.log('Level scroller not available yet');
+        // Try again in a short while
+        setTimeout(() => this.updateLevelUnlocker(), 200);
     }
+}
     
     resetProgress() {
         // Clear stored progress
