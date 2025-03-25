@@ -1,4 +1,4 @@
-// leveltracker.js - Tracks completed levels in the score bar only
+// leveltracker.js - Modified to prevent loading saved levels on refresh
 
 class LevelTracker {
     constructor() {
@@ -32,10 +32,11 @@ class LevelTracker {
             
             // IMPORTANT CHANGE: Don't load progress on page refresh
             // We want levels to be locked after page refresh
-            // setTimeout(() => this.loadProgress(), 100);
+
+            // Instead, reset progress and dispatch levelTrackerReady event immediately
+            this.resetProgress();
             
-            // Instead, reset progress and dispatch levelTrackerReady event
-            this.resetProgressWithoutUI();
+            // Dispatch event that level tracker is ready (after resetting progress)
             setTimeout(() => {
                 document.dispatchEvent(new CustomEvent('levelTrackerReady', {
                     detail: {
@@ -120,11 +121,10 @@ class LevelTracker {
                     if (scoreRow && !scoreRow.querySelector('.level-segment-container')) {
                         this.initializeScoreBar(scoreRow);
                         
-                        // IMPORTANT CHANGE: Don't load progress here either
-                        // setTimeout(() => this.loadProgress(), 100);
+                        // Reset progress instead of loading from storage
+                        this.resetProgress();
                         
-                        // Instead, reset progress and dispatch levelTrackerReady event
-                        this.resetProgressWithoutUI();
+                        // Notify that level tracker is ready
                         setTimeout(() => {
                             document.dispatchEvent(new CustomEvent('levelTrackerReady', {
                                 detail: {
@@ -162,7 +162,7 @@ class LevelTracker {
         // Save progress
         this.saveProgress();
         
-        // Explicitly notify levelScroller about the change
+        // Ensure level scroller updates to reflect newly unlocked levels
         if (window.levelScroller) {
             window.levelScroller.updateVisibleLevel();
         }
@@ -194,56 +194,10 @@ class LevelTracker {
         }
     }
     
+    // This method is now SKIPPED in this implementation to prevent loading saved levels
     loadProgress() {
-        try {
-            console.log('Loading saved progress...');
-            const savedData = localStorage.getItem('mathPathCompletedLevels');
-            
-            if (!savedData) {
-                console.log('No saved progress found');
-                return;
-            }
-            
-            const progressData = JSON.parse(savedData);
-            
-            // On page refresh, we load completion data but DO NOT apply visual indicators
-            // This ensures the score bar always starts blue
-            console.log('Loading completed levels data (visual indicators will remain blue on refresh)');
-            
-            // Handle both the new format and the old format
-            if (progressData && typeof progressData === 'object' && progressData.completedLevels) {
-                // New format
-                progressData.completedLevels.forEach(level => {
-                    this.completedLevels.add(level);
-                    // Note: We intentionally don't update visual indicators on page load
-                });
-                
-                this.hasCompletedAllLevels = !!progressData.hasCompletedAllLevels;
-            } else if (Array.isArray(progressData)) {
-                // Old format (just an array of levels)
-                progressData.forEach(level => {
-                    this.completedLevels.add(level);
-                    // Note: We intentionally don't update visual indicators on page load
-                });
-                
-                this.hasCompletedAllLevels = this.completedLevels.size === 10;
-            }
-            
-            // Dispatch an event to notify that level tracker is ready
-            document.dispatchEvent(new CustomEvent('levelTrackerReady', {
-                detail: {
-                    completedLevels: Array.from(this.completedLevels)
-                }
-            }));
-            
-            console.log('Level tracker ready event dispatched');
-            
-            // Call updateLevelUnlocker
-            this.updateLevelUnlocker();
-            
-        } catch (error) {
-            console.error('Error loading progress:', error);
-        }
+        console.log('loadProgress method called but intentionally skipped to enforce level locking on refresh');
+        // We intentionally don't load saved progress to ensure levels start locked
     }
 
     updateLevelUnlocker() {
@@ -263,7 +217,6 @@ class LevelTracker {
         // Clear stored progress
         this.completedLevels.clear();
         this.hasCompletedAllLevels = false;
-        localStorage.removeItem('mathPathCompletedLevels');
         
         // Reset visual indicators
         document.querySelectorAll('.level-segment').forEach(segment => {
@@ -271,16 +224,6 @@ class LevelTracker {
         });
         
         console.log('Progress reset');
-    }
-    
-    // New method: Reset progress without changing UI
-    resetProgressWithoutUI() {
-        // Clear stored progress
-        this.completedLevels.clear();
-        this.hasCompletedAllLevels = false;
-        localStorage.removeItem('mathPathCompletedLevels');
-        
-        console.log('Progress reset (without UI changes)');
     }
 }
 
