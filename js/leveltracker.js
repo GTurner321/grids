@@ -8,9 +8,6 @@ class LevelTracker {
         // Flag to track if all levels have been completed before
         this.hasCompletedAllLevels = false;
         
-        // Add our styles
-        this.addStyles();
-        
         // Find and initialize the score bar
         this.findScoreBar();
         
@@ -218,76 +215,23 @@ class LevelTracker {
             console.error('Error loading progress:', error);
         }
     }
-    
-    addStyles() {
-        // Avoid adding styles multiple times
-        if (document.getElementById('level-tracker-styles')) {
-            return;
-        }
-        
-        const styleEl = document.createElement('style');
-        styleEl.id = 'level-tracker-styles';
-        styleEl.textContent = `
-            /* Very targeted styles for level segments */
-            .score-row {
-                position: relative;
-            }
-            
-            .level-segment-container {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                display: grid;
-                grid-template-columns: repeat(10, 1fr);
-                z-index: 0;
-                pointer-events: none;
-            }
-            
-            .level-segment {
-                height: 100%;
-                /* Default matching the score row background */
-                background-color: #e6f2ff;
-                border-right: 1px solid rgba(148, 163, 184, 0.3);
-            }
-            
-            .level-segment:last-child {
-                border-right: none;
-            }
-            
-            .level-segment.completed {
-                background-color: #22c55e;
-            }
-            
-            /* Make sure text appears on top */
-            .score-row .score-left,
-            .score-row .score-right {
-                position: relative;
-                z-index: 2;
-            }
-        `;
-        
-        document.head.appendChild(styleEl);
-        console.log('Level tracker styles added');
-    }
 
-updateLevelUnlocker() {
-    // Make sure both levelTracker and levelUnlocker are available
-    if (window.levelTracker && window.levelScroller && window.levelScroller.levelUnlocker) {
-        console.log('Updating level unlocks based on completed levels');
-        
-        // Using the level unlocker to update UI after level tracker is loaded
-        window.levelScroller.levelUnlocker.updateScoreBarSegments();
-        
-        // Make sure the visible level is updated to reflect unlock status
-        window.levelScroller.updateVisibleLevel();
-    } else {
-        console.log('Either levelTracker or levelUnlocker not available yet');
-        // Try again in a short while
-        setTimeout(() => this.updateLevelUnlocker(), 200);
+    updateLevelUnlocker() {
+        // Make sure both levelTracker and levelUnlocker are available
+        if (window.levelTracker && window.levelScroller && window.levelScroller.levelUnlocker) {
+            console.log('Updating level unlocks based on completed levels');
+            
+            // Using the level unlocker to update UI after level tracker is loaded
+            window.levelScroller.levelUnlocker.updateScoreBarSegments();
+            
+            // Make sure the visible level is updated to reflect unlock status
+            window.levelScroller.updateVisibleLevel();
+        } else {
+            console.log('Either levelTracker or levelUnlocker not available yet');
+            // Try again in a short while
+            setTimeout(() => this.updateLevelUnlocker(), 200);
+        }
     }
-}
     
     resetProgress() {
         // Clear stored progress
