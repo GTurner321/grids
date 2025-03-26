@@ -319,7 +319,7 @@ generateFallbackPath(gridSize) {
             case 'down':
                 if (currentY < gridSize - 1) {
                     currentY++;
-                    path.push([currentY, currentY]);
+                    path.push([currentX, currentY]);
                 }
                 if (currentY === gridSize - 1) {
                     direction = 'left';
