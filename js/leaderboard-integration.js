@@ -746,22 +746,22 @@ class LeaderboardManager {
         }
     }
     
-    // Handle buttons after username submission
-    handleButtonsAfterSubmission() {
-        // Hide record name button
-        const recordScoreBtn = document.getElementById('record-score-btn');
-        if (recordScoreBtn) {
-            recordScoreBtn.style.display = 'none';
-        }
-        
-        // Center the leaderboard button
-        const leaderboardBtn = document.getElementById('leaderboard-btn');
-        const bottomButtons = document.getElementById('bottom-buttons');
-        if (leaderboardBtn && bottomButtons) {
-            bottomButtons.classList.add('single-button');
-            leaderboardBtn.style.margin = '0 auto';
-        }
+handleButtonsAfterSubmission() {
+    // Hide record name button
+    const recordScoreBtn = document.getElementById('record-score-btn');
+    if (recordScoreBtn) {
+        recordScoreBtn.style.display = 'none';
+        recordScoreBtn.classList.add('hidden'); // Add this class for CSS targeting
     }
+    
+    // Center the leaderboard button
+    const leaderboardBtn = document.getElementById('leaderboard-btn');
+    const bottomButtons = document.getElementById('bottom-buttons');
+    if (leaderboardBtn && bottomButtons) {
+        bottomButtons.classList.add('single-button');
+        leaderboardBtn.style.margin = '0 auto';
+    }
+}
     
     // Check if username is appropriate
     checkUsername(username) {
