@@ -729,6 +729,34 @@
     .welcome-message {
         display: none !important;
     }
+
+    /* Fix for record button and bottom buttons - ADDED CODE */
+    #record-score-btn.hidden,
+    #record-score-btn[style*="display: none"] {
+        display: none !important;
+    }
+    
+    .bottom-buttons.single-button {
+        justify-content: center !important;
+        align-items: center !important;
+        flex-direction: row !important;
+    }
+    
+    .bottom-buttons.single-button #leaderboard-btn {
+        margin: 0 auto !important;
+        max-width: 50% !important;
+    }
+    
+    /* Bottom buttons layout */
+    .bottom-buttons {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .bottom-btn {
+        max-width: 45%;
+    }
 }
 
 /* Smaller screens */
@@ -756,5 +784,88 @@
     #return-to-record-btn,
     #return-from-leaderboard-btn {
         font-size: 20px;
+    }
+    
+    /* Improved smaller screen specific styling - ADDED CODE */
+    #submit-username {
+        width: 80% !important; /* Wider button for very small screens */
+        min-height: 44px; /* Better touch target */
+    }
+    
+    .bottom-btn {
+        max-width: 80% !important; /* Make buttons wider for easier tapping */
+        min-height: 44px; /* Ensure good tap target size */
+        padding: 12px 10px;
+        margin-bottom: 8px;
+    }
+    
+    /* Stack buttons vertically on very small screens for better usability */
+    .bottom-buttons {
+        flex-direction: column !important;
+    }
+    
+    /* When record button is hidden, ensure leaderboard button is full width */
+    .bottom-buttons.single-button #leaderboard-btn {
+        max-width: 80% !important;
+    }
+    
+    /* Ensure record button stays hidden */
+    #record-score-btn.hidden,
+    #record-score-btn[style*="display: none"] {
+        display: none !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        opacity: 0 !important;
+        overflow: hidden !important;
+        visibility: hidden !important;
+    }
+    
+    /* Make sure the leaderboard table is visible and scrollable */
+    .leaderboard-table {
+        max-height: 70vh;
+    }
+    
+    /* Ensure text doesn't overflow on smallest screens */
+    .leaderboard-cell.name {
+        max-width: 70px;
+    }
+}
+
+/* Extra small screens like older smartphones */
+@media (max-width: 320px) {
+    /* Further optimize for tiny screens */
+    .bottom-btn,
+    .bottom-buttons.single-button #leaderboard-btn,
+    #submit-username {
+        width: 95% !important;
+        max-width: 95% !important;
+        font-size: 0.9rem !important;
+    }
+    
+    .username-area {
+        width: 98% !important;
+        padding: 10px 5px !important;
+    }
+    
+    .leaderboard-row {
+        grid-template-columns: 25px minmax(60px, 1fr) 55px 60px;
+        column-gap: 5px;
+        font-size: 0.7rem;
+    }
+    
+    .leaderboard-cell {
+        font-size: 0.7rem;
+    }
+    
+    .leaderboard-title {
+        font-size: 1.2rem !important;
+    }
+    
+    /* Ensure record button is definitely hidden */
+    #record-score-btn.hidden,
+    #record-score-btn[style*="display: none"] {
+        display: none !important;
     }
 }
