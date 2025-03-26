@@ -43,10 +43,10 @@
   --text-blue: #1e40af;          /* Dark blue for text */
   --yellow: #f0e68c;             /* Soft yellow for solved path */
   --form-bg-color: #e6f2ff;      /* Light blue background */
-    --lilac-light: #c084fc;  /* Light lilac */
-    --lilac-medium: #a855f7; /* Medium lilac */
-    --lilac-dark: #9333ea;   /* Dark lilac */
-    --lilac-border: #d8b4fe; /* Lighter lilac for border */
+    --lilac-light: #dfdbe5;  /* Light lilac */
+    --lilac-medium: #b7aec5; /* Medium lilac */
+    --lilac-dark: #8b79a7;   /* Dark lilac */
+    --lilac-border: #dfdbe5; /* Lighter lilac for border */
    
   /* Sizing variables */
   --app-height: 100%;
