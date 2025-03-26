@@ -208,7 +208,7 @@ class LevelScroller {
             }
             
             // Apply background color based on unlock status
-            segment.style.backgroundColor = isUnlocked ? '#dbeafe' : '#e6f2ff';
+            segment.style.backgroundColor = isUnlocked ? '#dfdbe5' : '#b7aec5';
         });
     }
     
