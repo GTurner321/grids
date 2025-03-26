@@ -313,7 +313,7 @@ class LevelScroller {
                 if (window.gameController && window.gameController.showMessage) {
                     window.gameController.showMessage('Scroll through and select a new level from 1 to 6 to continue.', 'info', 10000);
                 }
-            }, 8000);
+            }, 10000);
             
             return 'Congratulations! Puzzle solved! You have unlocked levels 4 to 6.';
         } 
@@ -321,7 +321,7 @@ class LevelScroller {
             // Schedule follow-up message after 5 seconds
             setTimeout(() => {
                 if (window.gameController && window.gameController.showMessage) {
-                    window.gameController.showMessage('Scroll through and select a new level from 1 to 10 to continue.', 'info', 10000);
+                    window.gameController.showMessage('Scroll through and select a new level from 1 to 10 to continue.', 'info', 8000);
                 }
             }, 8000);
             
