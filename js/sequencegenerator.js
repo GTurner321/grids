@@ -394,13 +394,7 @@ function generateNextSum(startNum, level) {
             attempts++;
             continue;
         }
-        
-        // Skip if division by a fraction is not allowed for this level
-        if ((level === 6 || level === 7) && operator === '/' && num2 instanceof Object && config.disallowFractionDivision) {
-            attempts++;
-            continue;
-        }
-        
+         
         const result = calculateResult(startNum, operator, num2, config);
         
         if (result !== null && isValidNumber(result, config)) {
