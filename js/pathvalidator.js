@@ -121,7 +121,7 @@ function validateSequence(sequence) {
 }
 
 /**
- * Validates the entire path
+ * Validates the entire path, including handling partial paths
  * @param {Array} path - Array of cell indices
  * @param {Array} gridEntries - Array of all grid cell entries
  * @returns {Object} Validation result with details
@@ -150,11 +150,14 @@ export function validatePath(path, gridEntries) {
         };
     }
 
-    // Path length minus 1 must be divisible by 3
-    if ((path.length - 1) % 3 !== 0) {
+    // Calculate the number of complete calculations (number → operator → number → result)
+    const maxCompleteSteps = Math.floor((path.length - 1) / 3);
+    
+    // If path is too short to even have one calculation
+    if (maxCompleteSteps === 0) {
         return {
             isValid: false,
-            error: 'Invalid path length - each calculation requires 4 cells (number, operator, number, result)'
+            error: 'Path is too short. You need at least 4 cells to form a complete calculation.'
         };
     }
 
@@ -162,7 +165,7 @@ export function validatePath(path, gridEntries) {
     const pathCells = path.map(index => gridEntries[index]);
 
     // Validate each sequence of 4 cells
-    for (let i = 0; i < path.length - 3; i += 3) {
+    for (let i = 0; i < maxCompleteSteps * 3; i += 3) {
         const sequence = pathCells.slice(i, i + 4);
         const validation = validateSequence(sequence);
         
