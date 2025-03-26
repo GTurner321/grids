@@ -117,13 +117,9 @@ class GameController {
         console.log('Game event listeners initialized');
     }
     
-    // Add this to the GameController class to add error handling for level startup
-
-// Enhanced startLevel method with improved error handling
-async startLevel(level) {
-    console.log(`Starting level ${level}`);
-    
-    try {
+    async startLevel(level) {
+        console.log(`Starting level ${level}`);
+        
         // Reset state for the new level
         this.state.currentLevel = level;
         this.state.userPath = [];
@@ -166,26 +162,10 @@ async startLevel(level) {
             }
         }
 
-        // Set a timeout to prevent hanging if path generation takes too long
-        const pathGenerationPromise = Promise.race([
-            generatePath(gridSize),
-            new Promise((_, reject) => {
-                setTimeout(() => reject(new Error("Path generation timed out")), 5000);
-            })
-        ]);
-
-        // Set a timeout to prevent hanging if sequence generation takes too long
-        const sequenceGenerationPromise = Promise.race([
-            generateSequence(level),
-            new Promise((_, reject) => {
-                setTimeout(() => reject(new Error("Sequence generation timed out")), 5000);
-            })
-        ]);
-
         try {
             // Generate path with appropriate grid size
-            this.state.path = await pathGenerationPromise;
-            this.state.sequence = await sequenceGenerationPromise;
+            this.state.path = await generatePath(gridSize);
+            this.state.sequence = await generateSequence(level);
             this.state.sequenceEntries = sequenceToEntries(this.state.sequence);
 
             // Place sequence on path
@@ -232,252 +212,12 @@ async startLevel(level) {
             if (window.levelScroller && typeof window.levelScroller.setCurrentLevel === 'function') {
                 window.levelScroller.setCurrentLevel(level);
             }
+
         } catch (error) {
-            console.error(`Error during level ${level} generation:`, error);
-            
-            // Show error message
-            this.showMessage(`Error starting level ${level}. Trying to generate a simpler puzzle...`, 'error', 3000);
-            
-            // Fallback for path generation
-            if (!this.state.path || this.state.path.length === 0) {
-                console.log("Using fallback path generation");
-                this.state.path = this.generateFallbackPath(gridSize);
-            }
-            
-            // Fallback for sequence generation
-            if (!this.state.sequence || this.state.sequence.length === 0) {
-                console.log("Using fallback sequence generation");
-                this.state.sequence = this.generateFallbackSequence(level);
-                this.state.sequenceEntries = sequenceToEntries(this.state.sequence);
-            }
-            
-            // Try again with fallbacks
-            this.placeMathSequence();
-            
-            if (level === 1) {
-                this.removeAllSpareCells(true);
-            } else {
-                this.fillRemainingCells();
-            }
-            
-            const gridContainer = document.getElementById('grid-container');
-            if (gridContainer) {
-                gridContainer.style.visibility = 'visible';
-                gridContainer.style.height = 'auto';
-                gridContainer.style.backgroundColor = '#94a3b8';
-            }
-            
-            renderGrid(this.state.gridEntries, {
-                startCoord: this.state.path[0],
-                endCoord: this.state.path[this.state.path.length - 1],
-                gridSize: gridSize
-            });
-            
-            this.updateUI();
-            this.showMessage('Find the path by following the mathematical sequence.');
+            console.error('Error starting level:', error);
+            this.showMessage('Error starting game. Please try again.', 'error');
         }
-    } catch (error) {
-        console.error('Unexpected error starting level:', error);
-        this.showMessage('Error starting game. Please try a different level.', 'error', 5000);
     }
-}
-
-// Fallback methods for the GameController class
-
-// Generate a simple path when the regular generation fails
-generateFallbackPath(gridSize) {
-    console.log(`Generating fallback path for grid size ${gridSize}`);
-    
-    // Create a simple zigzag path that's valid
-    const path = [];
-    
-    // Start position (always top left for simplicity)
-    const startX = 0;
-    const startY = 0;
-    path.push([startX, startY]);
-    
-    // For a 6x6 grid, we need a path length of 16 (5 operations * 3 + 1)
-    // For a 10x10 grid, we need a path length of 34 (11 operations * 3 + 1)
-    const targetLength = gridSize === 6 ? 16 : 34;
-    
-    // Create a zigzag pattern
-    let currentX = startX;
-    let currentY = startY;
-    let direction = 'right';
-    
-    while (path.length < targetLength) {
-        switch (direction) {
-            case 'right':
-                if (currentX < gridSize - 1) {
-                    currentX++;
-                    path.push([currentX, currentY]);
-                }
-                if (currentX === gridSize - 1) {
-                    direction = 'down';
-                }
-                break;
-            case 'down':
-                if (currentY < gridSize - 1) {
-                    currentY++;
-                    path.push([currentX, currentY]);
-                }
-                if (currentY === gridSize - 1) {
-                    direction = 'left';
-                }
-                break;
-            case 'left':
-                if (currentX > 0) {
-                    currentX--;
-                    path.push([currentX, currentY]);
-                }
-                if (currentX === 0) {
-                    direction = 'up';
-                }
-                break;
-            case 'up':
-                if (currentY > 0) {
-                    currentY--;
-                    path.push([currentX, currentY]);
-                }
-                if (currentY === 0) {
-                    direction = 'right';
-                }
-                break;
-        }
-        
-        // Safety check to prevent infinite loops
-        if (path.length === targetLength) break;
-    }
-    
-    // Ensure the path has the correct length (multiple of 3 plus 1)
-    while (path.length > 1 && (path.length - 1) % 3 !== 0) {
-        path.pop();
-    }
-    
-    return path;
-}
-
-// Generate a simple sequence for fallback
-generateFallbackSequence(level) {
-    console.log(`Generating fallback sequence for level ${level}`);
-    
-    // Create operations that are guaranteed to work
-    const sequence = [];
-    
-    // Simple operations that work for any level
-    let currentNum = 3;
-    
-    // First sum: 3 + 2 = 5
-    sequence.push({
-        num1: currentNum,
-        operator: '+',
-        num2: 2,
-        result: 5,
-        display: `${currentNum} + 2 = 5`
-    });
-    currentNum = 5;
-    
-    // Second sum: 5 + 4 = 9
-    sequence.push({
-        num1: currentNum,
-        operator: '+',
-        num2: 4,
-        result: 9,
-        display: `${currentNum} + 4 = 9`
-    });
-    currentNum = 9;
-    
-    // Third sum: 9 - 2 = 7
-    sequence.push({
-        num1: currentNum,
-        operator: '-',
-        num2: 2,
-        result: 7,
-        display: `${currentNum} - 2 = 7`
-    });
-    currentNum = 7;
-    
-    // Fourth sum: 7 x 2 = 14
-    sequence.push({
-        num1: currentNum,
-        operator: 'x',
-        num2: 2,
-        result: 14,
-        display: `${currentNum} x 2 = 14`
-    });
-    currentNum = 14;
-    
-    // Fifth sum: 14 / 2 = 7
-    sequence.push({
-        num1: currentNum,
-        operator: '/',
-        num2: 2,
-        result: 7,
-        display: `${currentNum} / 2 = 7`
-    });
-    currentNum = 7;
-    
-    // Six sum: 7 + 3 = 10
-    sequence.push({
-        num1: currentNum,
-        operator: '+',
-        num2: 3,
-        result: 10,
-        display: `${currentNum} + 3 = 10`
-    });
-    currentNum = 10;
-    
-    // Seven sum: 10 - 4 = 6
-    sequence.push({
-        num1: currentNum,
-        operator: '-',
-        num2: 4,
-        result: 6,
-        display: `${currentNum} - 4 = 6`
-    });
-    currentNum = 6;
-    
-    // Eight sum: 6 x 3 = 18
-    sequence.push({
-        num1: currentNum,
-        operator: 'x',
-        num2: 3,
-        result: 18,
-        display: `${currentNum} x 3 = 18`
-    });
-    currentNum = 18;
-    
-    // Nine sum: 18 / 3 = 6
-    sequence.push({
-        num1: currentNum,
-        operator: '/',
-        num2: 3,
-        result: 6,
-        display: `${currentNum} / 3 = 6`
-    });
-    currentNum = 6;
-    
-    // Ten sum: 6 + 5 = 11
-    sequence.push({
-        num1: currentNum,
-        operator: '+',
-        num2: 5,
-        result: 11,
-        display: `${currentNum} + 5 = 11`
-    });
-    currentNum = 11;
-    
-    // Eleven sum: 11 + 3 = 14
-    sequence.push({
-        num1: currentNum,
-        operator: '+',
-        num2: 3,
-        result: 14,
-        display: `${currentNum} + 3 = 14`
-    });
-    
-    return sequence;
-}
     
     placeMathSequence() {
         // Get the current grid size
