@@ -41,10 +41,10 @@ const LEVEL_CONFIG = {
     8: { 
         maxNum: 30, 
         allowFractions: true, 
-        maxDenominator: 12, 
+        maxDenominator: 8, 
         gridSize: 10,
         preferFractionOperations: true,
-        fractionOperationRate: 0.5
+        fractionOperationRate: 0.4
     },
     9: { maxNum: 99, allowFractions: true, maxDenominator: 12, gridSize: 10 },  // Original level 5
     10: { maxNum: 99, allowFractions: true, maxDenominator: 12, gridSize: 10, forceFractionOps: true }
@@ -187,8 +187,9 @@ function getFactorsOf(number) {
 }
 
 function calculateResult(num1, operator, num2, config) {
-    const n1 = num1 instanceof Object ? num1.toDecimal() : num1;
-    const n2 = num2 instanceof Object ? num2.toDecimal() : num2;
+    try {
+        const n1 = num1 instanceof Object ? num1.toDecimal() : num1;
+        const n2 = num2 instanceof Object ? num2.toDecimal() : num2;
     
     let result;
     switch (operator) {
@@ -225,42 +226,30 @@ function selectOperatorAndNum2(num1, level, config) {
    const n1 = num1 instanceof Object ? num1.toDecimal() : num1;
    let operator, num2;
    
-   // Special handling for level 10 - force multiplication/division with fractions
-   if (level === 10 && n1 >= 2 && n1 <= 12 && config.forceFractionOps) {
-       if (Math.random() < 0.5) {
-           // Multiplication by fraction
-           return { 
-               operator: 'x', 
-               num2: generateFraction(config.maxDenominator) 
-           };
-       } else {
-           // Division by fraction
-           return { 
-               operator: '/', 
-               num2: generateFraction(config.maxDenominator) 
-           };
-       }
+   // Special handling for level 10
+   if (level === 10) {
+       return selectOperatorAndNum2ForLevel10(num1, config);
    }
    
-// Level 5: Preference for division when numbers are large and not prime
-if (level === 5 && n1 >= config.divisionThreshold && !isPrime(n1) && Math.random() < config.divisionPreferenceRate) {
-    const factors = getFactorsOf(n1);
-    
-    if (factors.length > 0) {
-        // Choose a random factor (not 1 or itself)
-        const factor = factors[Math.floor(Math.random() * factors.length)];
-        
-        // When dividing by 2, occasionally use multiplication by 1/2 instead (50% chance)
-        if (factor === 2 && Math.random() < 0.5) {
-            return {
-                operator: 'x',
-                num2: { numerator: 1, denominator: 2, toString() { return "1/2"; }, toDecimal() { return 0.5; } }
-            };
-        } else {
-            return { operator: '/', num2: factor };
-        }
-    }
-}
+   // Level 5: Preference for division when numbers are large and not prime
+   if (level === 5 && n1 >= config.divisionThreshold && !isPrime(n1) && Math.random() < config.divisionPreferenceRate) {
+       const factors = getFactorsOf(n1);
+       
+       if (factors.length > 0) {
+           // Choose a random factor (not 1 or itself)
+           const factor = factors[Math.floor(Math.random() * factors.length)];
+           
+           // When dividing by 2, occasionally use multiplication by 1/2 instead (50% chance)
+           if (factor === 2 && Math.random() < 0.5) {
+               return {
+                   operator: 'x',
+                   num2: { numerator: 1, denominator: 2, toString() { return "1/2"; }, toDecimal() { return 0.5; } }
+               };
+           } else {
+               return { operator: '/', num2: factor };
+           }
+       }
+   }
    
    // Level 6: Preference for multiplying by fractions for non-prime numbers
    if (level === 6 && n1 >= config.multiplicationThreshold && !isPrime(n1) && Math.random() < config.multiplicationPreferenceRate) {
@@ -341,13 +330,13 @@ if (level === 5 && n1 >= config.divisionThreshold && !isPrime(n1) && Math.random
    
    // Generate num2 based on level configuration
    
-// For level 5 - occasionally allow 1/2 as a fraction, but at a much lower rate
-if (level === 5 && config.allowFractions && operator === 'x' && Math.random() < 0.1) {
-    return {
-        operator: 'x',
-        num2: { numerator: 1, denominator: 2, toString() { return "1/2"; }, toDecimal() { return 0.5; } }
-    };
-}
+   // For level 5 - occasionally allow 1/2 as a fraction, but at a much lower rate
+   if (level === 5 && config.allowFractions && operator === 'x' && Math.random() < 0.1) {
+       return {
+           operator: 'x',
+           num2: { numerator: 1, denominator: 2, toString() { return "1/2"; }, toDecimal() { return 0.5; } }
+       };
+   }
    
    // For level 6, ensure fractions are unit fractions
    if (level === 6 && config.allowFractions && config.unitFractionsOnly && 
@@ -356,7 +345,7 @@ if (level === 5 && config.allowFractions && operator === 'x' && Math.random() < 
    }
    // For level 7, prefer non-unit fractions when multiplying
    else if (level === 7 && config.allowFractions && 
-      (operator === 'x') && Math.random() < 0.4) {
+      (operator === 'x') && Math.random() < 0.4) { // Reduced from 0.6 to 0.4
        num2 = generateFraction(config.maxDenominator, false, config.preferNonUnitFractions);
    }
    // For level 8, allow all types of fractions
@@ -391,6 +380,65 @@ if (level === 5 && config.allowFractions && operator === 'x' && Math.random() < 
    return { operator, num2 };
 }
 
+// Specialized function for level 10
+function selectOperatorAndNum2ForLevel10(num1, config) {
+    const n1 = num1 instanceof Object ? num1.toDecimal() : num1;
+    
+    // Only force fraction operations if the number is in a good range
+    // and not too many attempts have been made
+    if (n1 >= 2 && n1 <= 12 && config.forceFractionOps && Math.random() < 0.7) {
+        if (Math.random() < 0.5) {
+            // Multiplication by a simple fraction (1/2, 1/3, 1/4)
+            const simpleDenominators = [2, 3, 4];
+            const denominator = simpleDenominators[Math.floor(Math.random() * simpleDenominators.length)];
+            return { 
+                operator: 'x', 
+                num2: { 
+                    numerator: 1, 
+                    denominator, 
+                    toString() { return `1/${denominator}`; }, 
+                    toDecimal() { return 1/denominator; } 
+                } 
+            };
+        } else {
+            // Division by a simple whole number
+            const divisor = Math.min(3, Math.floor(n1 / 2));
+            if (divisor > 0) {
+                return { operator: '/', num2: divisor };
+            }
+        }
+    }
+    
+    // Fall back to standard operator selection
+    const operatorBias = Math.random();
+    let operator;
+    
+    if (operatorBias < 0.4) operator = '+';
+    else if (operatorBias < 0.7) operator = '-';
+    else if (operatorBias < 0.85) operator = 'x';
+    else operator = '/';
+    
+    // Generate a safer num2
+    let num2;
+    if (operator === '+' || operator === '-') {
+        num2 = Math.floor(Math.random() * 5) + 1; // Small numbers for addition/subtraction
+    } else if (operator === 'x') {
+        num2 = Math.floor(Math.random() * 3) + 2; // 2-4 for multiplication
+    } else { // division
+        // Find a divisor that works
+        const possibleDivisors = [2, 3, 4, 5];
+        for (const d of possibleDivisors) {
+            if (n1 % d === 0) {
+                num2 = d;
+                break;
+            }
+        }
+        if (!num2) num2 = 2; // Default
+    }
+    
+    return { operator, num2 };
+}
+
 function generateNextSum(startNum, level) {
     const config = LEVEL_CONFIG[level];
     if (!config) throw new Error(`Invalid level: ${level}`);
@@ -403,8 +451,8 @@ function generateNextSum(startNum, level) {
             // Pass the level along with the config
             const { operator, num2 } = selectOperatorAndNum2(startNum, level, config);
             
-            // Skip if both are fractions
-            if (startNum instanceof Object && num2 instanceof Object) {
+            // Skip if both are fractions (unless it's level 10 which might need this)
+            if (level !== 10 && startNum instanceof Object && num2 instanceof Object) {
                 attempts++;
                 continue;
             }
@@ -425,24 +473,90 @@ function generateNextSum(startNum, level) {
         attempts++;
     }
     
-    // Fallback solution for when we can't find a valid operation
-    if (level === 7 && typeof startNum === 'number') {
-        // Create a simple addition that's guaranteed to work
-        const num2 = Math.min(3, config.maxNum);
-        const result = startNum + num2;
+    console.warn(`Failed to generate valid sum after ${maxAttempts} attempts for level ${level}`);
+    
+    // Fallback solutions for different levels
+    if (typeof startNum === 'number') {
+        // For fraction-heavy levels (7-10), provide fallbacks
+        if (level >= 7 && level <= 10) {
+            // First try a simple multiplication if number is small
+            if (startNum <= 10) {
+                const num2 = 2;
+                const result = startNum * num2;
+                
+                if (result <= config.maxNum) {
+                    return {
+                        num1: startNum,
+                        operator: 'x',
+                        num2,
+                        result
+                    };
+                }
+            }
+            
+            // Then try simple addition as a last resort
+            const num2 = Math.min(3, config.maxNum);
+            const result = startNum + num2;
+            
+            if (result <= config.maxNum) {
+                return {
+                    num1: startNum,
+                    operator: '+',
+                    num2,
+                    result
+                };
+            }
+            
+            // If the number is large, try subtraction
+            if (startNum > 10) {
+                const num2 = 2;
+                const result = startNum - num2;
+                
+                if (result > 0) {
+                    return {
+                        num1: startNum,
+                        operator: '-',
+                        num2,
+                        result
+                    };
+                }
+            }
+            
+            // For very large numbers, division is the best fallback
+            if (startNum > 20 && startNum % 2 === 0) {
+                return {
+                    num1: startNum,
+                    operator: '/',
+                    num2: 2,
+                    result: startNum / 2
+                };
+            }
+        }
+    } else if (startNum instanceof Object) {
+        // Handle fraction startNum fallbacks
+        // Convert fraction to decimal for calculation
+        const startDecimal = startNum.toDecimal();
         
-        if (result <= config.maxNum) {
+        // Try multiplication by 2 (simple operation that often works with fractions)
+        const result = startDecimal * 2;
+        if (result <= config.maxNum && result > 0) {
             return {
                 num1: startNum,
-                operator: '+',
-                num2,
-                result
+                operator: 'x',
+                num2: 2,
+                result: Math.floor(result) // Convert to whole number for simplicity
             };
         }
     }
     
-    console.warn(`Failed to generate valid sum after ${maxAttempts} attempts for level ${level}`);
-    return null;
+    // Last resort - return a predefined sum that's guaranteed to work
+    // This ensures the game doesn't crash even if all else fails
+    return {
+        num1: 5,
+        operator: '+',
+        num2: 1,
+        result: 6
+    };
 }
 
 export function formatNumber(num) {
@@ -454,28 +568,136 @@ export function generateSequence(level) {
     const config = LEVEL_CONFIG[level];
     if (!config) throw new Error(`Invalid level: ${level}`);
 
-    let sequence = [];
-    // Start with a smaller number for easier first calculations
-    let currentNum = Math.floor(Math.random() * 16) + 1;
+    return new Promise((resolve, reject) => {
+        try {
+            let sequence = [];
+            // Start with a smaller number for easier first calculations
+            let currentNum = Math.floor(Math.random() * 16) + 1;
+            
+            // For level 5-10, occasionally start with a larger number
+            if (level >= 5 && Math.random() < 0.3) {
+                currentNum = Math.floor(Math.random() * 30) + 10;
+            }
+            
+            // Set timeout for sequence generation to prevent browser hanging
+            const timeoutId = setTimeout(() => {
+                console.warn(`Sequence generation for level ${level} timed out, using fallback sequence`);
+                resolve(generateFallbackSequence(level));
+            }, 5000); // 5 second timeout
+            
+            // Maximum operations to try generating
+            const maxOperations = 50;
+            
+            // Target sequence length (operations)
+            const targetLength = level <= 6 ? 10 : 15;
+            
+            for (let i = 0; i < maxOperations; i++) {
+                const sum = generateNextSum(currentNum, level);
+                if (!sum) {
+                    console.warn(`Failed to generate next sum at position ${i} for level ${level}`);
+                    
+                    // If we have a minimally viable sequence, use it
+                    if (sequence.length >= Math.min(5, targetLength)) {
+                        clearTimeout(timeoutId);
+                        resolve(sequence);
+                        return;
+                    }
+                    
+                    // Otherwise use fallback
+                    clearTimeout(timeoutId);
+                    resolve(generateFallbackSequence(level));
+                    return;
+                }
+                
+                sequence.push({
+                    ...sum,
+                    display: `${formatNumber(sum.num1)} ${sum.operator} ${formatNumber(sum.num2)} = ${formatNumber(sum.result)}`
+                });
+                
+                currentNum = sum.result;
+                
+                // If we've reached our target length, we're done
+                if (sequence.length >= targetLength) {
+                    clearTimeout(timeoutId);
+                    resolve(sequence);
+                    return;
+                }
+            }
+            
+            // If we got here, we have a sequence but it may not be the target length
+            clearTimeout(timeoutId);
+            resolve(sequence);
+            
+        } catch (error) {
+            console.error(`Error generating sequence for level ${level}:`, error);
+            resolve(generateFallbackSequence(level));
+        }
+    });
+}
+
+// Fallback sequence generator for when the normal generation fails
+function generateFallbackSequence(level) {
+    console.log(`Using fallback sequence for level ${level}`);
     
-    // For level 5-10, occasionally start with a larger number
-    if (level >= 5 && Math.random() < 0.3) {
-        currentNum = Math.floor(Math.random() * 30) + 10;
-    }
+    // Start with a small, easy number
+    let start = 3;
     
-    for (let i = 0; i < 100; i++) {
-        const sum = generateNextSum(currentNum, level);
-        if (!sum) break;
+    // Create basic operations based on level
+    const sequence = [];
+    
+    if (level <= 3) {
+        // Simple addition/subtraction sequence for levels 1-3
+        sequence.push(createOperation(start, '+', 2, 5));
+        sequence.push(createOperation(5, '+', 3, 8));
+        sequence.push(createOperation(8, '-', 2, 6));
+        sequence.push(createOperation(6, 'x', 2, 12));
+        sequence.push(createOperation(12, '/', 3, 4));
+        sequence.push(createOperation(4, '+', 5, 9));
+        sequence.push(createOperation(9, '+', 3, 12));
+    } else if (level <= 6) {
+        // More complex operations for levels 4-6
+        sequence.push(createOperation(start, 'x', 2, 6));
+        sequence.push(createOperation(6, '+', 6, 12));
+        sequence.push(createOperation(12, '/', 4, 3));
+        sequence.push(createOperation(3, 'x', 5, 15));
+        sequence.push(createOperation(15, '-', 5, 10));
+        sequence.push(createOperation(10, '/', 2, 5));
+        sequence.push(createOperation(5, 'x', 3, 15));
+        sequence.push(createOperation(15, '+', 4, 19));
+    } else {
+        // For levels 7-10, include some fraction operations if appropriate
+        sequence.push(createOperation(start, 'x', 3, 9));
+        sequence.push(createOperation(9, '+', 5, 14));
+        sequence.push(createOperation(14, '-', 4, 10));
         
-        sequence.push({
-            ...sum,
-            display: `${formatNumber(sum.num1)} ${sum.operator} ${formatNumber(sum.num2)} = ${formatNumber(sum.result)}`
-        });
+        if (level >= 8) {
+            // Add fraction for higher levels
+            sequence.push(createOperation(10, 'x', {numerator: 1, denominator: 2, toDecimal: () => 0.5, toString: () => "1/2"}, 5));
+            sequence.push(createOperation(5, 'x', 4, 20));
+            sequence.push(createOperation(20, '/', 5, 4));
+        } else {
+            // Simpler operations for level 7
+            sequence.push(createOperation(10, '/', 2, 5));
+            sequence.push(createOperation(5, 'x', 4, 20));
+            sequence.push(createOperation(20, '-', 5, 15));
+        }
         
-        currentNum = sum.result;
+        sequence.push(createOperation(level >= 8 ? 4 : 15, '+', 7, level >= 8 ? 11 : 22));
+        sequence.push(createOperation(level >= 8 ? 11 : 22, '-', 3, level >= 8 ? 8 : 19));
     }
     
     return sequence;
+}
+
+// Helper to create operation objects for the fallback sequence
+function createOperation(num1, operator, num2, result) {
+    return {
+        num1,
+        operator,
+        num2,
+        result,
+        display: `${formatNumber(num1)} ${operator} ${formatNumber(num2)} = ${formatNumber(result)}`
+    };
 }
 
 export function sequenceToEntries(sequence) {
