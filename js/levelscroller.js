@@ -297,38 +297,39 @@ class LevelScroller {
     
     // Handle level completion - updates UI and returns appropriate message
     handleLevelCompletion(level) {
-        level = Number(level);
+    level = Number(level);
+    
+    // Update UI to reflect newly completed level
+    this.updateVisibleLevel();
+    
+    // Level tiers
+    const tier1 = [1, 2, 3];
+    const tier2 = [4, 5, 6];
+    
+    // Check if this completion unlocks new tiers
+    if (tier1.includes(level)) {
+        // Schedule follow-up message after 5 seconds
+        setTimeout(() => {
+            if (window.gameController && window.gameController.showMessage) {
+                window.gameController.showMessage('Scroll through and select a new level from 1 to 6 to continue.', 'info', 5000);
+            }
+        }, 5000);
         
-        // Update UI to reflect newly completed level
-        this.updateVisibleLevel();
+        // Return the combined message including the "complete all levels" encouragement
+        return 'Congratulations! Puzzle solved! You have unlocked levels 4 to 6. Complete all levels to turn the score bar green.';
+    } 
+    else if (tier2.includes(level)) {
+        // Schedule follow-up message after 5 seconds
+        setTimeout(() => {
+            if (window.gameController && window.gameController.showMessage) {
+                window.gameController.showMessage('Scroll through and select a new level from 1 to 10 to continue.', 'info', 5000);
+            }
+        }, 5000);
         
-        // Level tiers
-        const tier1 = [1, 2, 3];
-        const tier2 = [4, 5, 6];
-        
-        // Check if this completion unlocks new tiers
-        if (tier1.includes(level)) {
-            // Schedule follow-up message after 5 seconds
-            setTimeout(() => {
-                if (window.gameController && window.gameController.showMessage) {
-                    window.gameController.showMessage('Scroll through and select a new level from 1 to 6 to continue.', 'info', 10000);
-                }
-            }, 10000);
-            
-            return 'Congratulations! Puzzle solved! You have unlocked levels 4 to 6.';
-        } 
-        else if (tier2.includes(level)) {
-            // Schedule follow-up message after 5 seconds
-            setTimeout(() => {
-                if (window.gameController && window.gameController.showMessage) {
-                    window.gameController.showMessage('Scroll through and select a new level from 1 to 10 to continue.', 'info', 8000);
-                }
-            }, 8000);
-            
-            return 'Congratulations! Puzzle solved! You have unlocked levels 7 to 10.';
-        }
-        
-        return 'Congratulations! Puzzle solved!';
+        return 'Congratulations! Puzzle solved! You have unlocked levels 7 to 10.';
+    }
+    
+    return 'Congratulations! Puzzle solved!';
     }
 }
 
