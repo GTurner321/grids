@@ -358,24 +358,24 @@ body {
    6. LEVEL SELECTOR - WITH INTEGRATED LEVEL SCROLLER
    ========================================================================== */
 
-/* Enhanced Metallic Styles for Buttons */
-
 /* Scrollable Level Buttons - Enhanced Metallic Style */
 .level-btn-scrollable {
     position: absolute;
-    width: 100%;
+    width: 25%; /* Reduced width to 25% as requested */
     height: 100%;
     border: none;
     border-radius: 8px;
-    /* Enhanced diagonal metallic gradient with random oscillation effect */
+    /* Enhanced metallic gradient with fixed pixel values instead of percentages */
     background: 
-        linear-gradient(120deg, #e0e0e0 0%, #b8b8b8 15%, #d0d0d0 30%, 
-                                 #a8a8a8 45%, #c0c0c0 60%, #b0b0b0 75%, 
-                                 #d8d8d8 90%, #a0a0a0 100%),
+        linear-gradient(120deg, 
+            #e0e0e0 0px, #b8b8b8 15px, #d0d0d0 30px, 
+            #a8a8a8 45px, #c0c0c0 60px, #b0b0b0 75px, 
+            #d8d8d8 90px, #a0a0a0 105px),
         linear-gradient(180deg, rgba(255,255,255,0.1) 0%, 
-                                 rgba(255,255,255,0) 50%, 
-                                 rgba(0,0,0,0.1) 100%);
+                                rgba(255,255,255,0) 50%, 
+                                rgba(0,0,0,0.1) 100%);
     background-blend-mode: overlay;
+    background-size: 420px 100%; /* Fixed size pattern */
     /* Improved metallic border */
     border: 1px solid #888;
     border-top: 1px solid #aaa;
@@ -383,9 +383,9 @@ body {
     /* Enhanced embossed text effect */
     color: #444; /* Dark gray text color as fallback */
     text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.9), 
-                 0px -1px 2px rgba(0, 0, 0, 0.6);
+                0px -1px 2px rgba(0, 0, 0, 0.6);
     font-family: 'Black Ops One', cursive !important;
-    font-size: 1.8rem;
+    font-size: 2.2rem; /* Increased text size as requested */
     cursor: pointer;
     opacity: 0;
     pointer-events: none;
@@ -402,9 +402,13 @@ body {
     font-weight: normal !important;
     /* Adding screw elements on both sides */
     position: relative;
+    /* Ensure level buttons don't move up/down when arrows clicked */
+    top: 0 !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
 }
 
-/* Screw elements */
+/* Screw elements with enhanced shadows */
 .level-btn-scrollable::before,
 .level-btn-scrollable::after {
     content: '';
@@ -413,8 +417,12 @@ body {
     height: 16px;
     background-color: #b0b0b0;
     border-radius: 50%;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
     z-index: 1;
+    /* Enhanced top border and bottom shadow */
+    border-top: 2px solid rgba(255, 255, 255, 0.8);
+    border-bottom: 2px solid rgba(0, 0, 0, 0.5);
+    box-shadow: 0 3px 4px rgba(0, 0, 0, 0.5),
+                inset 0 -1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .level-btn-scrollable::before {
@@ -439,19 +447,19 @@ body {
 .level-btn-scrollable.visible {
     opacity: 1;
     pointer-events: auto;
-    transform: translateY(0);
 }
 
 .level-btn-scrollable.visible:hover:not(.locked) {
     background: 
-        linear-gradient(120deg, #e8e8e8 0%, #c0c0c0 15%, #d8d8d8 30%, 
-                                 #b0b0b0 45%, #c8c8c8 60%, #b8b8b8 75%, 
-                                 #e0e0e0 90%, #a8a8a8 100%),
+        linear-gradient(120deg, 
+            #e8e8e8 0px, #c0c0c0 15px, #d8d8d8 30px, 
+            #b0b0b0 45px, #c8c8c8 60px, #b8b8b8 75px, 
+            #e0e0e0 90px, #a8a8a8 105px),
         linear-gradient(180deg, rgba(255,255,255,0.2) 0%, 
-                                 rgba(255,255,255,0) 50%, 
-                                 rgba(0,0,0,0.05) 100%);
+                                rgba(255,255,255,0) 50%, 
+                                rgba(0,0,0,0.05) 100%);
     background-blend-mode: overlay;
-    transform: translateY(-2px);
+    background-size: 420px 100%; /* Fixed size pattern */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35),
                 inset 0 1px 3px rgba(255, 255, 255, 0.9),
                 inset 0 -1px 2px rgba(0, 0, 0, 0.1);
@@ -460,28 +468,32 @@ body {
 /* Active Button */
 .level-btn-scrollable.active {
     background: 
-        linear-gradient(120deg, #d0d0d0 0%, #a8a8a8 15%, #c0c0c0 30%, 
-                                 #989898 45%, #b0b0b0 60%, #a0a0a0 75%, 
-                                 #c8c8c8 90%, #909090 100%),
+        linear-gradient(120deg, 
+            #d0d0d0 0px, #a8a8a8 15px, #c0c0c0 30px, 
+            #989898 45px, #b0b0b0 60px, #a0a0a0 75px, 
+            #c8c8c8 90px, #909090 105px),
         linear-gradient(180deg, rgba(255,255,255,0.05) 0%, 
-                                 rgba(255,255,255,0) 50%, 
-                                 rgba(0,0,0,0.15) 100%);
+                                rgba(255,255,255,0) 50%, 
+                                rgba(0,0,0,0.15) 100%);
     background-blend-mode: overlay;
+    background-size: 420px 100%; /* Fixed size pattern */
     border-color: #777;
     text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.7), 
-                 0px -1px 2px rgba(0, 0, 0, 0.5);
+                0px -1px 2px rgba(0, 0, 0, 0.5);
 }
 
 /* Active Button Hover State */
 .level-btn-scrollable.active:hover {
     background: 
-        linear-gradient(120deg, #d8d8d8 0%, #b0b0b0 15%, #c8c8c8 30%, 
-                                 #a0a0a0 45%, #b8b8b8 60%, #a8a8a8 75%, 
-                                 #d0d0d0 90%, #989898 100%),
+        linear-gradient(120deg, 
+            #d8d8d8 0px, #b0b0b0 15px, #c8c8c8 30px, 
+            #a0a0a0 45px, #b8b8b8 60px, #a8a8a8 75px, 
+            #d0d0d0 90px, #989898 105px),
         linear-gradient(180deg, rgba(255,255,255,0.1) 0%, 
-                                 rgba(255,255,255,0) 50%, 
-                                 rgba(0,0,0,0.1) 100%);
+                                rgba(255,255,255,0) 50%, 
+                                rgba(0,0,0,0.1) 100%);
     background-blend-mode: overlay;
+    background-size: 420px 100%; /* Fixed size pattern */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
 }
 
@@ -490,33 +502,37 @@ body {
     opacity: 0.4;
     pointer-events: none;
     background: 
-        linear-gradient(120deg, #e0e0e0 0%, #b8b8b8 15%, #d0d0d0 30%, 
-                                 #a8a8a8 45%, #c0c0c0 60%, #b0b0b0 75%, 
-                                 #d8d8d8 90%, #a0a0a0 100%),
+        linear-gradient(120deg, 
+            #e0e0e0 0px, #b8b8b8 15px, #d0d0d0 30px, 
+            #a8a8a8 45px, #c0c0c0 60px, #b0b0b0 75px, 
+            #d8d8d8 90px, #a0a0a0 105px),
         linear-gradient(180deg, rgba(255,255,255,0.1) 0%, 
-                                 rgba(255,255,255,0) 50%, 
-                                 rgba(0,0,0,0.1) 100%);
+                                rgba(255,255,255,0) 50%, 
+                                rgba(0,0,0,0.1) 100%);
     background-blend-mode: overlay;
+    background-size: 420px 100%; /* Fixed size pattern */
     border-color: #888;
     cursor: not-allowed;
 }
 
 /* Active/click effect for buttons */
 .level-btn-scrollable:active:not(.locked) {
-    transform: translateY(1px) !important;
+    transform: translateX(-50%) translateY(1px) !important;
     border-bottom-width: 1px !important;
     background: 
-        linear-gradient(120deg, #c0c0c0 0%, #989898 15%, #b0b0b0 30%, 
-                                 #888888 45%, #a0a0a0 60%, #909090 75%, 
-                                 #b8b8b8 90%, #808080 100%),
+        linear-gradient(120deg, 
+            #c0c0c0 0px, #989898 15px, #b0b0b0 30px, 
+            #888888 45px, #a0a0a0 60px, #909090 75px, 
+            #b8b8b8 90px, #808080 105px),
         linear-gradient(180deg, rgba(0,0,0,0.05) 0%, 
-                                 rgba(0,0,0,0) 50%, 
-                                 rgba(0,0,0,0.1) 100%);
+                                rgba(0,0,0,0) 50%, 
+                                rgba(0,0,0,0.1) 100%);
     background-blend-mode: overlay;
+    background-size: 420px 100%; /* Fixed size pattern */
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3),
                 inset 0 1px 2px rgba(0, 0, 0, 0.2) !important;
     text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.4),
-                 0px -1px 1px rgba(0, 0, 0, 0.4);
+                0px -1px 1px rgba(0, 0, 0, 0.4);
 }
 
 /* Arrow Buttons - Enhanced Metallic Style */
@@ -524,18 +540,20 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
+    width: 44px; /* Increased size for arrows */
+    height: 44px; /* Increased size for arrows */
     border-radius: 50%;
-    /* Enhanced diagonal metallic gradient with random oscillation effect */
+    /* Enhanced diagonal metallic gradient with fixed dimensions */
     background: 
-        linear-gradient(120deg, #e0e0e0 0%, #b8b8b8 15%, #d0d0d0 30%, 
-                                 #a8a8a8 45%, #c0c0c0 60%, #b0b0b0 75%, 
-                                 #d8d8d8 90%, #a0a0a0 100%),
+        linear-gradient(120deg, 
+            #e0e0e0 0px, #b8b8b8 5px, #d0d0d0 10px, 
+            #a8a8a8 15px, #c0c0c0 20px, #b0b0b0 25px, 
+            #d8d8d8 30px, #a0a0a0 35px),
         linear-gradient(180deg, rgba(255,255,255,0.1) 0%, 
-                                 rgba(255,255,255,0) 50%, 
-                                 rgba(0,0,0,0.1) 100%);
+                                rgba(255,255,255,0) 50%, 
+                                rgba(0,0,0,0.1) 100%);
     background-blend-mode: overlay;
+    background-size: 140px 100%; /* Fixed size pattern */
     /* Make arrows visible with color */
     color: #444;
     /* Metallic border */
@@ -550,12 +568,23 @@ body {
                 inset 0 1px 2px rgba(255, 255, 255, 0.9),
                 inset 0 -1px 2px rgba(0, 0, 0, 0.2);
     z-index: 10;
-    position: relative;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Position arrows on either side of the button */
+.level-arrow.left {
+    left: calc(50% - 12.5% - 44px - 10px); /* Position to the left of the button */
+}
+
+.level-arrow.right {
+    right: calc(50% - 12.5% - 44px - 10px); /* Position to the right of the button */
 }
 
 .level-arrow svg {
-    width: 26px;
-    height: 26px;
+    width: 30px; /* Increased size for arrow icons */
+    height: 30px; /* Increased size for arrow icons */
     /* Enhanced SVG styling for visibility */
     filter: drop-shadow(0px 1px 1px rgba(255, 255, 255, 0.7))
            drop-shadow(0px -1px 1px rgba(0, 0, 0, 0.4));
@@ -567,51 +596,77 @@ body {
 
 .level-arrow:hover {
     background: 
-        linear-gradient(120deg, #e8e8e8 0%, #c0c0c0 15%, #d8d8d8 30%, 
-                                 #b0b0b0 45%, #c8c8c8 60%, #b8b8b8 75%, 
-                                 #e0e0e0 90%, #a8a8a8 100%),
+        linear-gradient(120deg, 
+            #e8e8e8 0px, #c0c0c0 5px, #d8d8d8 10px, 
+            #b0b0b0 15px, #c8c8c8 20px, #b8b8b8 25px, 
+            #e0e0e0 30px, #a8a8a8 35px),
         linear-gradient(180deg, rgba(255,255,255,0.2) 0%, 
-                                 rgba(255,255,255,0) 50%, 
-                                 rgba(0,0,0,0.05) 100%);
+                                rgba(255,255,255,0) 50%, 
+                                rgba(0,0,0,0.05) 100%);
     background-blend-mode: overlay;
+    background-size: 140px 100%; /* Fixed size pattern */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35),
                 inset 0 1px 3px rgba(255, 255, 255, 0.9),
                 inset 0 -1px 2px rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);
+    transform: translateY(calc(-50% - 2px));
 }
 
 .level-arrow:active {
-    transform: scale(0.95) translateY(1px);
+    transform: translateY(calc(-50% + 1px)) scale(0.95);
     background: 
-        linear-gradient(120deg, #c0c0c0 0%, #989898 15%, #b0b0b0 30%, 
-                                 #888888 45%, #a0a0a0 60%, #909090 75%, 
-                                 #b8b8b8 90%, #808080 100%),
+        linear-gradient(120deg, 
+            #c0c0c0 0px, #989898 5px, #b0b0b0 10px, 
+            #888888 15px, #a0a0a0 20px, #909090 25px, 
+            #b8b8b8 30px, #808080 35px),
         linear-gradient(180deg, rgba(0,0,0,0.05) 0%, 
-                                 rgba(0,0,0,0) 50%, 
-                                 rgba(0,0,0,0.1) 100%);
+                                rgba(0,0,0,0) 50%, 
+                                rgba(0,0,0,0.1) 100%);
     background-blend-mode: overlay;
+    background-size: 140px 100%; /* Fixed size pattern */
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3),
                 inset 0 1px 2px rgba(0, 0, 0, 0.2);
     border-bottom-width: 1px;
+}
+
+/* Level selector container adjustments */
+.level-scroller-container {
+    position: relative;
+    height: 70px; /* Increased height to accommodate larger text */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Level selector title - dark blue with white shadow */
+.level-selector-title {
+    font-family: 'Trebuchet MS', Arial, sans-serif !important;
+    font-weight: bold !important;
+    font-size: 1.2rem;
+    color: #00008B; /* Dark blue */
+    text-align: center;
+    margin-bottom: 8px;
+    text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.8);
 }
 
 /* Legacy Level Button Styles - Enhanced Metallic Style */
 .level-btn {
     padding: 8px 10px;
     font-size: 0.85rem;
-    /* Enhanced diagonal metallic gradient with random oscillation effect */
+    /* Enhanced diagonal metallic gradient with fixed dimensions */
     background: 
-        linear-gradient(120deg, #e0e0e0 0%, #b8b8b8 15%, #d0d0d0 30%, 
-                                 #a8a8a8 45%, #c0c0c0 60%, #b0b0b0 75%, 
-                                 #d8d8d8 90%, #a0a0a0 100%),
+        linear-gradient(120deg, 
+            #e0e0e0 0px, #b8b8b8 5px, #d0d0d0 10px, 
+            #a8a8a8 15px, #c0c0c0 20px, #b0b0b0 25px, 
+            #d8d8d8 30px, #a0a0a0 35px),
         linear-gradient(180deg, rgba(255,255,255,0.1) 0%, 
-                                 rgba(255,255,255,0) 50%, 
-                                 rgba(0,0,0,0.1) 100%);
+                                rgba(255,255,255,0) 50%, 
+                                rgba(0,0,0,0.1) 100%);
     background-blend-mode: overlay;
+    background-size: 140px 100%; /* Fixed size pattern */
     /* Enhanced embossed text effect */
     color: #444; /* Dark gray text color as fallback */
     text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.9), 
-                 0px -1px 2px rgba(0, 0, 0, 0.6);
+                0px -1px 2px rgba(0, 0, 0, 0.6);
     /* Improved metallic border */
     border: 1px solid #888;
     border-top: 1px solid #aaa;
@@ -628,18 +683,17 @@ body {
     position: relative;
 }
 
-Here's the next section of the complete CSS file:
-
-```css
 .level-btn:hover:not(.locked) {
     background: 
-        linear-gradient(120deg, #e8e8e8 0%, #c0c0c0 15%, #d8d8d8 30%, 
-                                 #b0b0b0 45%, #c8c8c8 60%, #b8b8b8 75%, 
-                                 #e0e0e0 90%, #a8a8a8 100%),
+        linear-gradient(120deg, 
+            #e8e8e8 0px, #c0c0c0 5px, #d8d8d8 10px, 
+            #b0b0b0 15px, #c8c8c8 20px, #b8b8b8 25px, 
+            #e0e0e0 30px, #a8a8a8 35px),
         linear-gradient(180deg, rgba(255,255,255,0.2) 0%, 
-                                 rgba(255,255,255,0) 50%, 
-                                 rgba(0,0,0,0.05) 100%);
+                                rgba(255,255,255,0) 50%, 
+                                rgba(0,0,0,0.05) 100%);
     background-blend-mode: overlay;
+    background-size: 140px 100%; /* Fixed size pattern */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35),
                 inset 0 1px 3px rgba(255, 255, 255, 0.9),
                 inset 0 -1px 2px rgba(0, 0, 0, 0.1);
@@ -650,54 +704,60 @@ Here's the next section of the complete CSS file:
     transform: translateY(1px);
     border-bottom-width: 1px;
     background: 
-        linear-gradient(120deg, #c0c0c0 0%, #989898 15%, #b0b0b0 30%, 
-                                 #888888 45%, #a0a0a0 60%, #909090 75%, 
-                                 #b8b8b8 90%, #808080 100%),
+        linear-gradient(120deg, 
+            #c0c0c0 0px, #989898 5px, #b0b0b0 10px, 
+            #888888 15px, #a0a0a0 20px, #909090 25px, 
+            #b8b8b8 30px, #808080 35px),
         linear-gradient(180deg, rgba(0,0,0,0.05) 0%, 
-                                 rgba(0,0,0,0) 50%, 
-                                 rgba(0,0,0,0.1) 100%);
+                                rgba(0,0,0,0) 50%, 
+                                rgba(0,0,0,0.1) 100%);
     background-blend-mode: overlay;
+    background-size: 140px 100%; /* Fixed size pattern */
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3),
                 inset 0 1px 2px rgba(0, 0, 0, 0.2);
     text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.4),
-                 0px -1px 1px rgba(0, 0, 0, 0.4);
+                0px -1px 1px rgba(0, 0, 0, 0.4);
 }
 
 .level-btn.active {
     background: 
-        linear-gradient(120deg, #d0d0d0 0%, #a8a8a8 15%, #c0c0c0 30%, 
-                                 #989898 45%, #b0b0b0 60%, #a0a0a0 75%, 
-                                 #c8c8c8 90%, #909090 100%),
+        linear-gradient(120deg, 
+            #d0d0d0 0px, #a8a8a8 5px, #c0c0c0 10px, 
+            #989898 15px, #b0b0b0 20px, #a0a0a0 25px, 
+            #c8c8c8 30px, #909090 35px),
         linear-gradient(180deg, rgba(255,255,255,0.05) 0%, 
-                                 rgba(255,255,255,0) 50%, 
-                                 rgba(0,0,0,0.15) 100%);
+                                rgba(255,255,255,0) 50%, 
+                                rgba(0,0,0,0.15) 100%);
     background-blend-mode: overlay;
+    background-size: 140px 100%; /* Fixed size pattern */
     transform: translateY(0);
     border-color: #777;
     text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.7), 
-                 0px -1px 2px rgba(0, 0, 0, 0.5);
+                0px -1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .level-btn.locked {
     opacity: 0.4;
     pointer-events: none;
     background: 
-        linear-gradient(120deg, #e0e0e0 0%, #b8b8b8 15%, #d0d0d0 30%, 
-                                 #a8a8a8 45%, #c0c0c0 60%, #b0b0b0 75%, 
-                                 #d8d8d8 90%, #a0a0a0 100%),
+        linear-gradient(120deg, 
+            #e0e0e0 0px, #b8b8b8 5px, #d0d0d0 10px, 
+            #a8a8a8 15px, #c0c0c0 20px, #b0b0b0 25px, 
+            #d8d8d8 30px, #a0a0a0 35px),
         linear-gradient(180deg, rgba(255,255,255,0.1) 0%, 
-                                 rgba(255,255,255,0) 50%, 
-                                 rgba(0,0,0,0.1) 100%);
+                                rgba(255,255,255,0) 50%, 
+                                rgba(0,0,0,0.1) 100%);
     background-blend-mode: overlay;
+    background-size: 140px 100%; /* Fixed size pattern */
     border-color: #888;
     cursor: not-allowed;
 }
 
 /* Animation for level change */
 @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
+    0% { transform: translateX(-50%) scale(1); }
+    50% { transform: translateX(-50%) scale(1.05); }
+    100% { transform: translateX(-50%) scale(1); }
 }
 
 .level-btn-scrollable.visible.changing {
@@ -711,9 +771,10 @@ Here's the next section of the complete CSS file:
     }
     
     .level-btn-scrollable {
-        font-size: 1.4rem;
+        font-size: 1.6rem; /* Adjusted for mobile but still larger than original */
         font-family: 'Black Ops One', cursive !important;
         font-weight: normal !important;
+        width: 40%; /* Wider button on mobile for better visibility */
     }
     
     /* Adjust the screw size for smaller screens */
@@ -732,18 +793,22 @@ Here's the next section of the complete CSS file:
     }
     
     .level-arrow {
-        width: 32px;
-        height: 32px;
+        width: 38px; /* Still larger than original but appropriate for mobile */
+        height: 38px;
     }
     
     .level-arrow svg {
-        width: 22px;
-        height: 22px;
-        fill: #444;
-        stroke: #444;
-        stroke-width: 1px;
-        filter: drop-shadow(0px 1px 1px rgba(255, 255, 255, 0.7))
-               drop-shadow(0px -1px 1px rgba(0, 0, 0, 0.4));
+        width: 26px; /* Larger than original but appropriate for mobile */
+        height: 26px;
+    }
+    
+    /* Adjust arrow positions for mobile */
+    .level-arrow.left {
+        left: calc(50% - 20% - 38px - 5px);
+    }
+    
+    .level-arrow.right {
+        right: calc(50% - 20% - 38px - 5px);
     }
     
     .level-selector-container {
@@ -753,10 +818,11 @@ Here's the next section of the complete CSS file:
     .level-selector-title {
         font-size: 1rem;
         margin-bottom: 8px;
-        text-shadow: none !important;
+        text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.8) !important;
         font-family: 'Trebuchet MS', Arial, sans-serif !important;
         font-weight: bold !important;
         text-align: center;
+        color: #00008B; /* Dark blue */
     }
     
     .level-buttons {
@@ -770,16 +836,18 @@ Here's the next section of the complete CSS file:
         font-family: 'Black Ops One', cursive !important;
         font-weight: normal !important;
         background: 
-            linear-gradient(120deg, #e0e0e0 0%, #b8b8b8 15%, #d0d0d0 30%, 
-                                     #a8a8a8 45%, #c0c0c0 60%, #b0b0b0 75%, 
-                                     #d8d8d8 90%, #a0a0a0 100%),
+            linear-gradient(120deg, 
+                #e0e0e0 0px, #b8b8b8 5px, #d0d0d0 10px, 
+                #a8a8a8 15px, #c0c0c0 20px, #b0b0b0 25px, 
+                #d8d8d8 30px, #a0a0a0 35px),
             linear-gradient(180deg, rgba(255,255,255,0.1) 0%, 
-                                     rgba(255,255,255,0) 50%, 
-                                     rgba(0,0,0,0.1) 100%);
+                                    rgba(255,255,255,0) 50%, 
+                                    rgba(0,0,0,0.1) 100%);
         background-blend-mode: overlay;
+        background-size: 140px 100%; /* Fixed size pattern */
         color: #444;
         text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.9), 
-                     0px -1px 2px rgba(0, 0, 0, 0.6);
+                    0px -1px 2px rgba(0, 0, 0, 0.6);
         border: 1px solid #888;
         border-top: 1px solid #aaa;
         border-bottom: 3px solid #666;
@@ -799,26 +867,41 @@ Here's the next section of the complete CSS file:
         border-bottom-width: 1px;
         height: 38px;
         background: 
-            linear-gradient(120deg, #c0c0c0 0%, #989898 15%, #b0b0b0 30%, 
-                                     #888888 45%, #a0a0a0 60%, #909090 75%, 
-                                     #b8b8b8 90%, #808080 100%),
+            linear-gradient(120deg, 
+                #c0c0c0 0px, #989898 5px, #b0b0b0 10px, 
+                #888888 15px, #a0a0a0 20px, #909090 25px, 
+                #b8b8b8 30px, #808080 35px),
             linear-gradient(180deg, rgba(0,0,0,0.05) 0%, 
-                                     rgba(0,0,0,0) 50%, 
-                                     rgba(0,0,0,0.1) 100%);
+                                    rgba(0,0,0,0) 50%, 
+                                    rgba(0,0,0,0.1) 100%);
         background-blend-mode: overlay;
+        background-size: 140px 100%; /* Fixed size pattern */
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3),
                     inset 0 1px 2px rgba(0, 0, 0, 0.2);
     }
     
     .level-btn.active {
         background: 
-            linear-gradient(120deg, #d0d0d0 0%, #a8a8a8 15%, #c0c0c0 30%, 
-                                     #989898 45%, #b0b0b0 60%, #a0a0a0 75%, 
-                                     #c8c8c8 90%, #909090 100%),
+            linear-gradient(120deg, 
+                #d0d0d0 0px, #a8a8a8 5px, #c0c0c0 10px, 
+                #989898 15px, #b0b0b0 20px, #a0a0a0 25px, 
+                #c8c8c8 30px, #909090 35px),
             linear-gradient(180deg, rgba(255,255,255,0.05) 0%, 
-                                     rgba(255,255,255,0) 50%, 
-                                     rgba(0,0,0,0.15) 100%);
+                                    rgba(255,255,255,0) 50%, 
+                                    rgba(0,0,0,0.15) 100%);
         background-blend-mode: overlay;
+        background-size: 140px 100%; /* Fixed size pattern */
+    }
+    
+    /* Mobile animation adjustments */
+    @keyframes pulse-mobile {
+        0% { transform: translateX(-50%) scale(1); }
+        50% { transform: translateX(-50%) scale(1.05); }
+        100% { transform: translateX(-50%) scale(1); }
+    }
+
+    .level-btn-scrollable.visible.changing {
+        animation: pulse-mobile 0.3s ease-in-out;
     }
 }
 
@@ -836,6 +919,11 @@ Here's the next section of the complete CSS file:
         font-size: 0.75rem;
     }
     
+    .level-btn-scrollable {
+        width: 45%; /* Even wider on very small screens */
+        font-size: 1.4rem;
+    }
+    
     .level-btn-scrollable::before,
     .level-btn-scrollable::after {
         width: 10px;
@@ -848,6 +936,25 @@ Here's the next section of the complete CSS file:
     
     .level-btn-scrollable::after {
         right: 6px;
+    }
+    
+    .level-arrow {
+        width: 34px;
+        height: 34px;
+    }
+    
+    .level-arrow svg {
+        width: 22px;
+        height: 22px;
+    }
+    
+    /* Adjust arrow positions for small mobile */
+    .level-arrow.left {
+        left: calc(50% - 22.5% - 34px - 3px);
+    }
+    
+    .level-arrow.right {
+        right: calc(50% - 22.5% - 34px - 3px);
     }
 }
 
