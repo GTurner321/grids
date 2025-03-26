@@ -231,23 +231,25 @@ function selectOperatorAndNum2(num1, level, config) {
        }
    }
    
-   // Level 5: Preference for division when numbers are large and not prime
-   if (level === 5 && n1 >= config.divisionThreshold && !isPrime(n1) && Math.random() < config.divisionPreferenceRate) {
-       const factors = getFactorsOf(n1);
-       
-       if (factors.length > 0) {
-           // Either regular division or multiplication by 1/2 (50% chance)
-           if (Math.random() < 0.5 && n1 % 2 === 0) {
-               return {
-                   operator: 'x',
-                   num2: { numerator: 1, denominator: 2, toString() { return "1/2"; }, toDecimal() { return 0.5; } }
-               };
-           } else {
-               const factor = factors[Math.floor(Math.random() * factors.length)];
-               return { operator: '/', num2: factor };
-           }
-       }
-   }
+// Level 5: Preference for division when numbers are large and not prime
+if (level === 5 && n1 >= config.divisionThreshold && !isPrime(n1) && Math.random() < config.divisionPreferenceRate) {
+    const factors = getFactorsOf(n1);
+    
+    if (factors.length > 0) {
+        // Choose a random factor (not 1 or itself)
+        const factor = factors[Math.floor(Math.random() * factors.length)];
+        
+        // When dividing by 2, occasionally use multiplication by 1/2 instead (50% chance)
+        if (factor === 2 && Math.random() < 0.5) {
+            return {
+                operator: 'x',
+                num2: { numerator: 1, denominator: 2, toString() { return "1/2"; }, toDecimal() { return 0.5; } }
+            };
+        } else {
+            return { operator: '/', num2: factor };
+        }
+    }
+}
    
    // Level 6: Preference for multiplying by fractions for non-prime numbers
    if (level === 6 && n1 >= config.multiplicationThreshold && !isPrime(n1) && Math.random() < config.multiplicationPreferenceRate) {
@@ -328,13 +330,13 @@ function selectOperatorAndNum2(num1, level, config) {
    
    // Generate num2 based on level configuration
    
-   // For level 5 - allow only 1/2 as a fraction
-   if (level === 5 && config.allowFractions && operator === 'x' && Math.random() < 0.3) {
-       return {
-           operator: 'x',
-           num2: { numerator: 1, denominator: 2, toString() { return "1/2"; }, toDecimal() { return 0.5; } }
-       };
-   }
+// For level 5 - occasionally allow 1/2 as a fraction, but at a much lower rate
+if (level === 5 && config.allowFractions && operator === 'x' && Math.random() < 0.1) {
+    return {
+        operator: 'x',
+        num2: { numerator: 1, denominator: 2, toString() { return "1/2"; }, toDecimal() { return 0.5; } }
+    };
+}
    
    // For level 6, ensure fractions are unit fractions
    if (level === 6 && config.allowFractions && config.unitFractionsOnly && 
