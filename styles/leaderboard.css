@@ -17,6 +17,10 @@
     --text-light-gray: #94a3b8;
     --text-blue: #1e40af;
     --text-green: #166534;
+    --lilac-light: #dfdbe5;  /* Light lilac */
+    --lilac-medium: #b7aec5; /* Medium lilac */
+    --lilac-dark: #8b79a7;   /* Dark lilac */
+    --lilac-border: #8b79a7; /* Dark lilac for border */
     --input-border: #cbd5e1;
     --input-focus: #e2e8f0;
     --header-bg: #f3f4f6;
@@ -29,17 +33,17 @@
     --status-error-text: #b91c1c;
     
     /* Button gradient variables */
-    --btn-gradient: linear-gradient(to bottom, #60a5fa, #3b82f6, #2563eb);
-    --btn-gradient-hover: linear-gradient(to bottom, #93c5fd, #60a5fa, #3b82f6);
-    --btn-gradient-active: linear-gradient(to bottom, #3b82f6, #2563eb, #1d4ed8);
-    --btn-border: #60a5fa;
+    --btn-gradient: linear-gradient(to bottom, var(--lilac-light), var(--lilac-medium), var(--lilac-dark)); /* Graduated lilac */
+    --btn-gradient-hover: linear-gradient(to bottom, var(--lilac-medium), var(--lilac-light), var(--lilac-medium)); /* Graduated lilac */
+    --btn-gradient-active: linear-gradient(to bottom, var(--lilac-dark), var(--lilac-medium), var(--lilac-dark)); /* Graduated lilac */
+    --btn-border: var(--lilac-dark);
 }
 
 .leaderboard-section {
     margin-top: 1rem;
     width: 100%;
     max-width: 640px;
-    font-family: 'Courier New', monospace;
+    font-family: 'Trebuchet MS', Arial, sans-serif;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -60,8 +64,8 @@
    ========================================================================== */
 
 .username-area {
-    background-color: var(--leaderboard-bg);
-    border: 2px solid var(--leaderboard-border);
+    background-color: var(--lilac-light);
+    border: 2px solid var(--lilac-dark);
     border-radius: 6px;
     padding: 4px 8px 4px;
     margin-bottom: 10px;
@@ -104,7 +108,7 @@
     border: 1px solid var(--input-border);
     border-radius: 4px;
     max-width: 200px;
-    font-family: 'Courier New', monospace;
+    font-family: 'Trebuchet MS', Arial, sans-serif;
     font-size: 0.85rem;
 }
 
@@ -159,27 +163,6 @@
     color: #22c55e;
 }
 
-/* Welcome message styling */
-.welcome-message {
-    padding: 15px;
-    background-color: var(--leaderboard-bg);
-    border: 2px solid var(--leaderboard-border);
-    border-radius: 6px;
-    text-align: center;
-    font-family: 'Courier New', monospace;
-    font-size: 0.9rem;
-    color: var(--text-green);
-    line-height: 1.4;
-    margin: 10px auto;
-    max-width: 400px;
-    width: 100%;
-}
-
-.welcome-message strong {
-    font-weight: bold;
-    color: var(--text-blue);
-}
-
 /* ==========================================================================
    3. LEADERBOARD TABLE & HEADER
    ========================================================================== */
@@ -189,7 +172,7 @@
     text-align: center;
     font-size: 1.2rem;
     margin: 8px 0;
-    font-family: 'Courier New', monospace;
+    font-family: 'Trebuchet MS', Arial, sans-serif;
     font-weight: bold;
     letter-spacing: 0.05em;
 }
@@ -205,24 +188,24 @@
 }
 
 .leaderboard-status.info {
-    background-color: var(--status-info-bg);
+    background-color: var(--lilac-light);
     color: var(--text-blue);
 }
 
 .leaderboard-status.success {
-    background-color: var(--status-success-bg);
+    background-color: var(--lilac-light);
     color: var(--text-green);
 }
 
 .leaderboard-status.error {
-    background-color: var(--status-error-bg);
+    background-color: var(--lilac-light);
     color: var(--status-error-text);
 }
 
 /* Leaderboard table container */
 .leaderboard-table {
-    background-color: var(--leaderboard-bg);
-    border: 2px solid var(--leaderboard-border);
+    background-color: var(--lilac-light);
+    border: 2px solid var(--lilac-dark);
     border-radius: 6px;
     overflow: hidden;
     max-height: 400px;
@@ -248,7 +231,7 @@
 
 /* Header row */
 .leaderboard-row.header {
-    background-color: var(--header-bg);
+    background-color: var(--lilac-medium);
     font-weight: bold;
     font-size: 0.8rem;
     position: sticky;
@@ -302,7 +285,7 @@
 .leaderboard-row.empty {
     text-align: center;
     padding: 20px;
-    color: var(--text-medium-gray);
+    color: var(--lilac-light);
     grid-column: 1 / -1;
 }
 
@@ -312,7 +295,7 @@
 }
 
 .leaderboard-table::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: var(--lilac-light);
     border-radius: 0 6px 6px 0;
 }
 
@@ -322,7 +305,7 @@
 }
 
 .leaderboard-table::-webkit-scrollbar-thumb:hover {
-    background: var(--text-light-gray);
+    background: var(--lilac-light);
 }
 
 /* Animation for new entries */
@@ -340,7 +323,7 @@
    4. BUTTONS & INTERACTIVE ELEMENTS
    ========================================================================== */
 
-/* Bottom buttons styling with gradients */
+/* Bottom buttons styling with metallic silver effect */
 .bottom-buttons {
     display: flex;
     flex-direction: column;
@@ -357,45 +340,65 @@
     gap: 8px;
     padding: 10px 15px;
     font-size: 0.85rem;
-    background: var(--btn-gradient);
-    color: white;
-    border: 2px solid var(--btn-border);
-    border-bottom-width: 3px;
+    /* Silver metallic gradient background */
+    background: linear-gradient(180deg, #f0f0f0 0%, #d0d0d0 50%, #a8a8a8 100%);
+    /* Remove color property as we'll use text-shadow for indented effect */
+    color: transparent;
+    text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.7), 
+                 0px -1px 1px rgba(0, 0, 0, 0.4);
+    /* Metallic border */
+    border: 1px solid #999;
+    border-top: 1px solid #bbb;
+    border-bottom: 3px solid #777;
     border-radius: 4px;
     cursor: pointer;
     transition: all 0.3s ease;
-    font-family: 'Courier New', monospace;
+    font-family: 'Trebuchet MS', Arial, sans-serif;
     font-weight: bold;
     text-transform: uppercase;
     max-width: 300px;
     width: 100%;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* Enhanced 3D appearance */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2),
+                inset 0 1px 2px rgba(255, 255, 255, 0.8),
+                inset 0 -1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .bottom-btn:hover {
-    background: var(--btn-gradient-hover);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    background: linear-gradient(180deg, #f5f5f5 0%, #d8d8d8 50%, #b0b0b0 100%);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25),
+                inset 0 1px 3px rgba(255, 255, 255, 0.9),
+                inset 0 -1px 2px rgba(0, 0, 0, 0.1);
     transform: translateY(-2px);
 }
 
 .bottom-btn:active {
+    /* Pressed effect */
     transform: translateY(1px);
     border-bottom-width: 1px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(180deg, #d0d0d0 0%, #c0c0c0 50%, #a0a0a0 100%);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2),
+                inset 0 1px 1px rgba(0, 0, 0, 0.2);
+    text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.5),
+                 0px -1px 1px rgba(0, 0, 0, 0.3);
 }
 
 .bottom-btn svg {
     width: 16px;
     height: 16px;
+    /* SVG filter to match metallic theme */
+    filter: drop-shadow(0px 1px 1px rgba(255, 255, 255, 0.5));
 }
 
-/* Button highlight animation - modified for gradient */
+/* Button highlight animation - modified for metallic effect */
 @keyframes pulse {
     0%, 100% { 
-        background: var(--btn-gradient);
+        background: linear-gradient(180deg, #f0f0f0 0%, #d0d0d0 50%, #a8a8a8 100%);
     }
     50% { 
-        background: var(--btn-gradient-active);
+        background: linear-gradient(180deg, #e5e5e5 0%, #c5c5c5 50%, #999999 100%);
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.5),
+                    inset 0 1px 3px rgba(255, 255, 255, 0.9);
     }
 }
 
@@ -403,33 +406,45 @@
     animation: pulse 1s infinite;
 }
 
-/* Close leaderboard button with graduated styling */
+/* Close leaderboard button with metallic styling */
 #close-leaderboard-btn {
     margin-top: 15px;
     padding: 8px 15px;
-    background: var(--btn-gradient);
-    color: white;
-    border: 2px solid var(--btn-border);
-    border-bottom-width: 3px;
+    /* Silver metallic gradient background */
+    background: linear-gradient(180deg, #f0f0f0 0%, #d0d0d0 50%, #a8a8a8 100%);
+    color: transparent;
+    text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.7), 
+                 0px -1px 1px rgba(0, 0, 0, 0.4);
+    border: 1px solid #999;
+    border-top: 1px solid #bbb;
+    border-bottom: 3px solid #777;
     border-radius: 4px;
     font-family: 'Trebuchet MS', Arial, sans-serif;
     font-weight: bold;
     font-size: 1rem;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2),
+                inset 0 1px 2px rgba(255, 255, 255, 0.8),
+                inset 0 -1px 2px rgba(0, 0, 0, 0.1);
 }
 
 #close-leaderboard-btn:hover {
-    background: var(--btn-gradient-hover);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    background: linear-gradient(180deg, #f5f5f5 0%, #d8d8d8 50%, #b0b0b0 100%);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25),
+                inset 0 1px 3px rgba(255, 255, 255, 0.9),
+                inset 0 -1px 2px rgba(0, 0, 0, 0.1);
     transform: translateY(-2px);
 }
 
 #close-leaderboard-btn:active {
     transform: translateY(1px);
     border-bottom-width: 1px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(180deg, #d0d0d0 0%, #c0c0c0 50%, #a0a0a0 100%);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2),
+                inset 0 1px 1px rgba(0, 0, 0, 0.2);
+    text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.5),
+                 0px -1px 1px rgba(0, 0, 0, 0.3);
 }
 
 /* Return buttons styling */
@@ -459,7 +474,7 @@
     text-align: center;
     font-size: 1.2rem;
     margin: 8px auto;
-    font-family: 'Courier New', monospace;
+    font-family: 'Trebuchet MS', Arial, sans-serif;
     font-weight: bold;
     letter-spacing: 0.05em;
     background: transparent;
