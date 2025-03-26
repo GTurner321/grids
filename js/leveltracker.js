@@ -1,12 +1,9 @@
-// leveltracker.js - Modified to prevent loading saved levels for unlocking but maintain score bar functionality
+// leveltracker.js - Updated to reset visual green progress on page load
 
 class LevelTracker {
     constructor() {
         // Store which levels have been completed in THIS session
         this.completedLevels = new Set();
-        
-        // Store which levels have been visually marked as completed
-        this.visuallyCompletedLevels = new Set();
         
         // Flag to track if all levels have been completed before
         this.hasCompletedAllLevels = false;
@@ -33,14 +30,14 @@ class LevelTracker {
             console.log('Score bar found, initializing segments');
             this.initializeScoreBar(scoreRow);
             
-            // Load saved visual progress for score bar, but NOT for level unlocking
-            setTimeout(() => this.loadVisualProgress(), 100);
+            // Start with NO completed level segments (clear any green backgrounds)
+            // But still have blue backgrounds for unlockable levels
             
             // Dispatch levelTrackerReady event with empty completedLevels
             setTimeout(() => {
                 document.dispatchEvent(new CustomEvent('levelTrackerReady', {
                     detail: {
-                        completedLevels: [] // Empty array for level unlocking
+                        completedLevels: []
                     }
                 }));
                 console.log('Level tracker ready event dispatched with empty completed levels');
@@ -103,10 +100,9 @@ class LevelTracker {
                     }
                     
                     // Check if all levels are complete
-                    if (this.visuallyCompletedLevels.size === 10 && !this.hasCompletedAllLevels) {
+                    if (this.completedLevels.size === 10 && !this.hasCompletedAllLevels) {
                         this.handleAllLevelsComplete();
                         this.hasCompletedAllLevels = true;
-                        this.saveProgress();
                     }
                 }
             }
@@ -121,14 +117,11 @@ class LevelTracker {
                     if (scoreRow && !scoreRow.querySelector('.level-segment-container')) {
                         this.initializeScoreBar(scoreRow);
                         
-                        // Load saved visual progress for score bar
-                        setTimeout(() => this.loadVisualProgress(), 100);
-                        
                         // Dispatch levelTrackerReady event with empty completedLevels
                         setTimeout(() => {
                             document.dispatchEvent(new CustomEvent('levelTrackerReady', {
                                 detail: {
-                                    completedLevels: [] // Empty array for level unlocking
+                                    completedLevels: []
                                 }
                             }));
                             console.log('Level tracker ready event dispatched (from observer)');
@@ -151,19 +144,14 @@ class LevelTracker {
         // Add to our set of completed levels for THIS session
         this.completedLevels.add(level);
         
-        // Add to visually completed levels
-        this.visuallyCompletedLevels.add(level);
-        
-        // Update visual segment
+        // Update visual segment - turn it green
         const segment = document.querySelector(`.level-segment[data-level="${level}"]`);
         if (segment) {
             segment.classList.add('completed');
+            segment.style.backgroundColor = '#22c55e'; // Green color to ensure it overrides any blue
         } else {
             console.warn(`Segment for level ${level} not found`);
         }
-        
-        // Save progress (only for visual indication)
-        this.saveProgress();
         
         // Ensure level scroller updates to reflect newly unlocked levels
         if (window.levelScroller) {
@@ -182,74 +170,9 @@ class LevelTracker {
         }, 3000);
     }
     
-    saveProgress() {
-        try {
-            const completedArray = Array.from(this.visuallyCompletedLevels);
-            const progressData = {
-                completedLevels: completedArray,
-                hasCompletedAllLevels: this.hasCompletedAllLevels
-            };
-            
-            localStorage.setItem('mathPathCompletedLevels', JSON.stringify(progressData));
-            console.log('Visual progress saved:', progressData);
-        } catch (error) {
-            console.error('Error saving progress:', error);
-        }
-    }
+    // We no longer need saveProgress and loadProgress methods
+    // since we want to start fresh on page reload
     
-    // Load visual progress ONLY for score bar background
-    loadVisualProgress() {
-        try {
-            console.log('Loading saved visual progress for score bar...');
-            const savedData = localStorage.getItem('mathPathCompletedLevels');
-            
-            if (!savedData) {
-                console.log('No saved progress found');
-                return;
-            }
-            
-            const progressData = JSON.parse(savedData);
-            
-            console.log('Loading visual indicators for score bar');
-            
-            // Handle both the new format and the old format
-            if (progressData && typeof progressData === 'object' && progressData.completedLevels) {
-                // New format
-                progressData.completedLevels.forEach(level => {
-                    // Only update visually completed levels, NOT the session completed levels
-                    this.visuallyCompletedLevels.add(level);
-                    
-                    // Update UI
-                    const segment = document.querySelector(`.level-segment[data-level="${level}"]`);
-                    if (segment) {
-                        segment.classList.add('completed');
-                    }
-                });
-                
-                this.hasCompletedAllLevels = !!progressData.hasCompletedAllLevels;
-            } else if (Array.isArray(progressData)) {
-                // Old format (just an array of levels)
-                progressData.forEach(level => {
-                    // Only update visually completed levels, NOT the session completed levels
-                    this.visuallyCompletedLevels.add(level);
-                    
-                    // Update UI
-                    const segment = document.querySelector(`.level-segment[data-level="${level}"]`);
-                    if (segment) {
-                        segment.classList.add('completed');
-                    }
-                });
-                
-                this.hasCompletedAllLevels = this.visuallyCompletedLevels.size === 10;
-            }
-            
-            console.log('Visual progress loaded successfully');
-            
-        } catch (error) {
-            console.error('Error loading visual progress:', error);
-        }
-    }
-
     updateLevelUnlocker() {
         // Check if level scroller exists
         if (window.levelScroller) {
@@ -266,9 +189,7 @@ class LevelTracker {
     resetProgress() {
         // Clear stored progress
         this.completedLevels.clear();
-        this.visuallyCompletedLevels.clear();
         this.hasCompletedAllLevels = false;
-        localStorage.removeItem('mathPathCompletedLevels');
         
         // Reset visual indicators
         document.querySelectorAll('.level-segment').forEach(segment => {
