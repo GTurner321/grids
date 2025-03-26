@@ -1,4 +1,4 @@
-// pathgenerator.js - Modified to remove end cell corner restriction
+// pathgenerator.js - Modified to remove end cell edge restriction
 
 // Use variables instead of constants to support different grid sizes
 let GRID_SIZE = 10;
@@ -20,17 +20,17 @@ export function setGridSize(size) {
 }
 
 // Function to check if a cell is valid as end cell
-// We're no longer requiring it to be a corner
+// We're no longer requiring it to be at the edge
 function isValidEndCell([x, y]) {
-    // End cells can now be any cell at the edge of the grid
-    // This makes edges and corners valid end points
-    return x === 0 || x === GRID_SIZE - 1 || y === 0 || y === GRID_SIZE - 1;
+    // End cells can now be anywhere - no edge restriction
+    // We just want to make sure it's not the same as the start
+    return true;
 }
 
 function getRandomStart() {
-    // Start cell should be away from the edges (to avoid very short paths)
-    const x = Math.floor(Math.random() * (GRID_SIZE - 4)) + 2;
-    const y = Math.floor(Math.random() * (GRID_SIZE - 4)) + 2;
+    // Start cell can be anywhere on the grid now
+    const x = Math.floor(Math.random() * GRID_SIZE);
+    const y = Math.floor(Math.random() * GRID_SIZE);
     return [x, y];
 }
 
@@ -63,14 +63,14 @@ function findPath(start) {
     const visited = [start];
     
     function dfs(current) {
-        // Check if we've reached an edge with valid length
-        if (isValidEndCell(current) && isValidLength(visited.length)) {
+        // Check if we've reached a valid length to end the path
+        // No longer testing for edge position
+        if (isValidLength(visited.length)) {
             return true;
         }
         
-        // If we've reached an edge but length is invalid, or exceeded max length, backtrack
-        if ((isValidEndCell(current) && !isValidLength(visited.length)) || 
-            visited.length >= MAX_PATH_LENGTH) {
+        // If we've exceeded max length, backtrack
+        if (visited.length >= MAX_PATH_LENGTH) {
             return false;
         }
         
@@ -129,7 +129,8 @@ export async function generatePath(gridSize = 10) {
 export function validatePath(path) {
     if (!Array.isArray(path)) return false;
     if (!isValidLength(path.length)) return false;
-    if (!isValidEndCell(path[path.length - 1])) return false;
+    
+    // Remove check for end cell being at the edge
     
     // Check each step is adjacent
     for (let i = 1; i < path.length; i++) {
