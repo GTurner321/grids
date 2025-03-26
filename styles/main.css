@@ -753,7 +753,7 @@ body {
 
 /* Only apply hover effects to non-disabled buttons */
 .game-controls button:hover:not(:disabled) {
-  background: linear-gradient(to bottom, #d8b4fe, var(--lilac-light), var(--lilac-medium)); /* Lighter lilac gradient on hover */
+  background: linear-gradient(to bottom, var(--lilac-medium), var(--lilac-light), var(--lilac-medium)); /* Graduated lilac */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   transform: translateY(-2px);
 }
