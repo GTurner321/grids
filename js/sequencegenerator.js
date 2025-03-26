@@ -29,14 +29,14 @@ const LEVEL_CONFIG = {
     7: { 
         maxNum: 30, 
         allowFractions: true, 
-        maxDenominator: 12, 
+        maxDenominator: 8,  // Reduced from 12 to 8 for simpler fractions
         gridSize: 10,
         preferFractionMultiplication: true, 
         disallowFractionDivision: true,
         multiplicationThreshold: 10,
-        multiplicationPreferenceRate: 0.5,
+        multiplicationPreferenceRate: 0.3,  // Reduced from 0.5 to 0.3
         preferNonUnitFractions: true,
-        nonUnitFractionRate: 0.75
+        nonUnitFractionRate: 0.4  // Reduced from 0.75 to 0.4
     },
     8: { 
         maxNum: 30, 
@@ -78,14 +78,24 @@ class Fraction {
 }
 
 function generateFraction(maxDenominator = 12, unitFractionOnly = false, preferNonUnit = false) {
+    // Reduce the preference rate for non-unit fractions to avoid infinite loops
+    const nonUnitRate = preferNonUnit ? 0.5 : 0.25; // Reduced from 0.75 to 0.5
+    
     // If we prefer non-unit fractions and not forced to use unit fractions
-    if (preferNonUnit && !unitFractionOnly && Math.random() < 0.75) {
+    if (preferNonUnit && !unitFractionOnly && Math.random() < nonUnitRate) {
         const denominator = Math.floor(Math.random() * (maxDenominator - 1)) + 2;
-        // Ensure numerator isn't 1 (not a unit fraction)
+        // Ensure numerator isn't 1 (not a unit fraction) and is less than denominator
         let numerator;
+        let attempts = 0;
         do {
-            numerator = Math.floor(Math.random() * (denominator - 1)) + 1;
-        } while (numerator === 1);
+            numerator = Math.floor(Math.random() * (denominator - 1)) + 2;
+            attempts++;
+            // Break after a few attempts to avoid infinite loops
+            if (attempts > 10) {
+                numerator = 2; // Default to a simpler fraction
+                break;
+            }
+        } while (numerator === 1 || numerator >= denominator);
         
         // Simplify fraction
         const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
@@ -103,6 +113,7 @@ function generateFraction(maxDenominator = 12, unitFractionOnly = false, preferN
         };
     }
     
+    // Rest of the function remains the same...
     const denominator = Math.floor(Math.random() * (maxDenominator - 1)) + 2;
     const numerator = unitFractionOnly ? 1 : Math.floor(Math.random() * (denominator - 1)) + 1;
     
@@ -345,7 +356,7 @@ if (level === 5 && config.allowFractions && operator === 'x' && Math.random() < 
    }
    // For level 7, prefer non-unit fractions when multiplying
    else if (level === 7 && config.allowFractions && 
-      (operator === 'x') && Math.random() < 0.6) {
+      (operator === 'x') && Math.random() < 0.4) {
        num2 = generateFraction(config.maxDenominator, false, config.preferNonUnitFractions);
    }
    // For level 8, allow all types of fractions
@@ -385,28 +396,52 @@ function generateNextSum(startNum, level) {
     if (!config) throw new Error(`Invalid level: ${level}`);
 
     let attempts = 0;
-    while (attempts < 100) {
-        // Pass the level along with the config
-        const { operator, num2 } = selectOperatorAndNum2(startNum, level, config);
-        
-        // Skip if both are fractions
-        if (startNum instanceof Object && num2 instanceof Object) {
-            attempts++;
-            continue;
+    const maxAttempts = 150; // Increased from 100 to 150
+    
+    while (attempts < maxAttempts) {
+        try {
+            // Pass the level along with the config
+            const { operator, num2 } = selectOperatorAndNum2(startNum, level, config);
+            
+            // Skip if both are fractions
+            if (startNum instanceof Object && num2 instanceof Object) {
+                attempts++;
+                continue;
+            }
+             
+            const result = calculateResult(startNum, operator, num2, config);
+            
+            if (result !== null && isValidNumber(result, config)) {
+                return {
+                    num1: startNum,
+                    operator,
+                    num2,
+                    result
+                };
+            }
+        } catch (error) {
+            console.error(`Error in generateNextSum for level ${level}:`, error);
         }
-         
-        const result = calculateResult(startNum, operator, num2, config);
+        attempts++;
+    }
+    
+    // Fallback solution for when we can't find a valid operation
+    if (level === 7 && typeof startNum === 'number') {
+        // Create a simple addition that's guaranteed to work
+        const num2 = Math.min(3, config.maxNum);
+        const result = startNum + num2;
         
-        if (result !== null && isValidNumber(result, config)) {
+        if (result <= config.maxNum) {
             return {
                 num1: startNum,
-                operator,
+                operator: '+',
                 num2,
                 result
             };
         }
-        attempts++;
     }
+    
+    console.warn(`Failed to generate valid sum after ${maxAttempts} attempts for level ${level}`);
     return null;
 }
 
