@@ -400,12 +400,11 @@ body {
                 inset 0 1px 2px rgba(255, 255, 255, 0.9),
                 inset 0 -1px 2px rgba(0, 0, 0, 0.2);
     font-weight: normal !important;
-    /* Adding screw elements on both sides */
-    position: relative;
-    /* Ensure level buttons don't move up/down when arrows clicked */
-    top: 0 !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
+    position: relative; /* Change from absolute to relative */
+    display: inline-block; /* Add this */
+    top: auto; /* Reset top */
+    left: auto; /* Reset left */
+    transform: none; /* Reset transform */
 }
 
 /* Screw elements with enhanced shadows */
@@ -517,7 +516,7 @@ body {
 
 /* Active/click effect for buttons */
 .level-btn-scrollable:active:not(.locked) {
-    transform: translateX(-50%) translateY(1px) !important;
+    transform: translateY(1px) !important;
     border-bottom-width: 1px !important;
     background: 
         linear-gradient(120deg, 
@@ -568,18 +567,22 @@ body {
                 inset 0 1px 2px rgba(255, 255, 255, 0.9),
                 inset 0 -1px 2px rgba(0, 0, 0, 0.2);
     z-index: 10;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
+    position: relative;
+    top: auto;
+    transform: none;
+    display: inline-flex; /* Change to inline-flex */
+    vertical-align: middle; /* Add this for alignment */
 }
 
 /* Position arrows on either side of the button */
-.level-arrow.left {
-    left: calc(50% - 12.5% - 44px - 10px); /* Position to the left of the button */
+.level-arrow.left {    
+   left: auto; /* Reset left */
+   margin-right: 10px; /* Add margin instead */
 }
 
 .level-arrow.right {
-    right: calc(50% - 12.5% - 44px - 10px); /* Position to the right of the button */
+    right: auto; /* Reset right */
+    margin-left: 10px; /* Add margin instead */
 }
 
 .level-arrow svg {
@@ -631,10 +634,12 @@ body {
 /* Level selector container adjustments */
 .level-scroller-container {
     position: relative;
-    height: 70px; /* Increased height to accommodate larger text */
+    height: 70px;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: row; /* Ensure horizontal layout */
+    flex-wrap: nowrap; /* Prevent wrapping */
 }
 
 /* Level selector title - dark blue with white shadow */
@@ -755,9 +760,9 @@ body {
 
 /* Animation for level change */
 @keyframes pulse {
-    0% { transform: translateX(-50%) scale(1); }
-    50% { transform: translateX(-50%) scale(1.05); }
-    100% { transform: translateX(-50%) scale(1); }
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
 }
 
 .level-btn-scrollable.visible.changing {
