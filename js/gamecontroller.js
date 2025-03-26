@@ -860,11 +860,11 @@ handlePuzzleSolved() {
     setTimeout(() => {
         // Suggestion for next level if not at max level
         if (this.state.currentLevel < 10) {
-            this.showMessage(`Ready for level ${this.state.currentLevel + 1}?`, 'info');
+            this.showMessage(`Ready for level ${this.state.currentLevel + 1}? Scroll through and select your level.`, 'info');
         } else {
-            this.showMessage('You completed the highest level! Try again for a better score.', 'info');
+            this.showMessage('You completed the highest level! Select a level of your choice for a better score.', 'info');
         }
-    }, 1500);
+    }, 5000);
 }
     
     getLevelConfig(level) {
