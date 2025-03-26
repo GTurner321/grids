@@ -89,16 +89,7 @@ class LevelTracker {
                 
                 if (level >= 1 && level <= 10) {
                     this.markLevelCompleted(level);
-                    
-                    // Check if this is the first level completion
-                    if (this.completedLevels.size === 1) {
-                        setTimeout(() => {
-                            if (window.gameController) {
-                                window.gameController.showMessage('Complete all the levels to turn the score bar green!', 'info', 5000);
-                            }
-                        }, 2000);
-                    }
-                    
+                                      
                     // Check if all levels are complete
                     if (this.completedLevels.size === 10 && !this.hasCompletedAllLevels) {
                         this.handleAllLevelsComplete();
