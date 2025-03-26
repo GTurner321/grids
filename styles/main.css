@@ -358,76 +358,33 @@ body {
    6. LEVEL SELECTOR - WITH INTEGRATED LEVEL SCROLLER
    ========================================================================== */
 
-.level-selector-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 16px;
-}
+/* Enhanced Metallic Styles for Buttons */
 
-.level-selector-title {
-  font-family: 'Trebuchet MS', Arial, sans-serif;
-  font-size: 1rem;
-  color: var(--text-blue);
-  text-align: center;
-  margin-bottom: 5px;
-  letter-spacing: 0.05em;
-  font-weight: bold;
-  transition: opacity 0.5s ease-out;
-  text-shadow: none; /* NO SHADOW */
-}
-
-.level-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 5px;
-  margin: 5px 0;
-}
-
-/* Level Scroller Container */
-.level-scroller-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    width: 100%;
-    max-width: 320px;
-    margin: 0 auto;
-    padding: 5px 0;
-    height: 50px;
-}
-
-/* Level Display Container (holds the buttons) */
-.level-display-container {
-    position: relative;
-    width: 180px;
-    height: 48px;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0 10px;
-}
-
-/* Scrollable Level Buttons - With Metallic Style */
+/* Scrollable Level Buttons - Enhanced Metallic Style */
 .level-btn-scrollable {
     position: absolute;
     width: 100%;
     height: 100%;
     border: none;
     border-radius: 8px;
-    /* Silver metallic gradient background */
-    background: linear-gradient(180deg, #f0f0f0 0%, #d0d0d0 50%, #a8a8a8 100%);
-    /* Metallic border */
-    border: 1px solid #999;
-    border-top: 1px solid #bbb;
-    border-bottom: 3px solid #777;
-    /* Indented text effect */
-    color: transparent;
-    text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.7), 
-                 0px -1px 1px rgba(0, 0, 0, 0.4);
-    font-family: 'Black Ops One', cursive !important; /* BLACK OPS FONT */
+    /* Enhanced diagonal metallic gradient with random oscillation effect */
+    background: 
+        linear-gradient(120deg, #e0e0e0 0%, #b8b8b8 15%, #d0d0d0 30%, 
+                                 #a8a8a8 45%, #c0c0c0 60%, #b0b0b0 75%, 
+                                 #d8d8d8 90%, #a0a0a0 100%),
+        linear-gradient(180deg, rgba(255,255,255,0.1) 0%, 
+                                 rgba(255,255,255,0) 50%, 
+                                 rgba(0,0,0,0.1) 100%);
+    background-blend-mode: overlay;
+    /* Improved metallic border */
+    border: 1px solid #888;
+    border-top: 1px solid #aaa;
+    border-bottom: 3px solid #666;
+    /* Enhanced embossed text effect */
+    color: #444; /* Dark gray text color as fallback */
+    text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.9), 
+                 0px -1px 2px rgba(0, 0, 0, 0.6);
+    font-family: 'Black Ops One', cursive !important;
     font-size: 1.8rem;
     cursor: pointer;
     opacity: 0;
@@ -438,14 +395,47 @@ body {
     justify-content: center;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    /* Enhanced 3D appearance */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2),
-                inset 0 1px 2px rgba(255, 255, 255, 0.8),
-                inset 0 -1px 2px rgba(0, 0, 0, 0.1);
-    font-weight: normal !important; /* NOT BOLD */
+    /* All-around shadow effect */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3),
+                inset 0 1px 2px rgba(255, 255, 255, 0.9),
+                inset 0 -1px 2px rgba(0, 0, 0, 0.2);
+    font-weight: normal !important;
+    /* Adding screw elements on both sides */
+    position: relative;
 }
 
-/* Visible Button - add hover effect */
+/* Screw elements */
+.level-btn-scrollable::before,
+.level-btn-scrollable::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background-color: #b0b0b0;
+    border-radius: 50%;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+    z-index: 1;
+}
+
+.level-btn-scrollable::before {
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.level-btn-scrollable::after {
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Screw diagonal lines */
+.level-btn-scrollable::before,
+.level-btn-scrollable::after {
+    background-image: linear-gradient(135deg, transparent 45%, #555 45%, #555 55%, transparent 55%);
+}
+
+/* Visible Button - enhanced hover effect */
 .level-btn-scrollable.visible {
     opacity: 1;
     pointer-events: auto;
@@ -453,31 +443,61 @@ body {
 }
 
 .level-btn-scrollable.visible:hover:not(.locked) {
-    background: linear-gradient(180deg, #f5f5f5 0%, #d8d8d8 50%, #b0b0b0 100%);
+    background: 
+        linear-gradient(120deg, #e8e8e8 0%, #c0c0c0 15%, #d8d8d8 30%, 
+                                 #b0b0b0 45%, #c8c8c8 60%, #b8b8b8 75%, 
+                                 #e0e0e0 90%, #a8a8a8 100%),
+        linear-gradient(180deg, rgba(255,255,255,0.2) 0%, 
+                                 rgba(255,255,255,0) 50%, 
+                                 rgba(0,0,0,0.05) 100%);
+    background-blend-mode: overlay;
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25),
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35),
                 inset 0 1px 3px rgba(255, 255, 255, 0.9),
                 inset 0 -1px 2px rgba(0, 0, 0, 0.1);
 }
 
 /* Active Button */
 .level-btn-scrollable.active {
-    background: linear-gradient(180deg, #d8d8d8 0%, #b8b8b8 50%, #989898 100%);
-    border-color: #888;
+    background: 
+        linear-gradient(120deg, #d0d0d0 0%, #a8a8a8 15%, #c0c0c0 30%, 
+                                 #989898 45%, #b0b0b0 60%, #a0a0a0 75%, 
+                                 #c8c8c8 90%, #909090 100%),
+        linear-gradient(180deg, rgba(255,255,255,0.05) 0%, 
+                                 rgba(255,255,255,0) 50%, 
+                                 rgba(0,0,0,0.15) 100%);
+    background-blend-mode: overlay;
+    border-color: #777;
+    text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.7), 
+                 0px -1px 2px rgba(0, 0, 0, 0.5);
 }
 
 /* Active Button Hover State */
 .level-btn-scrollable.active:hover {
-    background: linear-gradient(180deg, #e0e0e0 0%, #c0c0c0 50%, #a0a0a0 100%);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    background: 
+        linear-gradient(120deg, #d8d8d8 0%, #b0b0b0 15%, #c8c8c8 30%, 
+                                 #a0a0a0 45%, #b8b8b8 60%, #a8a8a8 75%, 
+                                 #d0d0d0 90%, #989898 100%),
+        linear-gradient(180deg, rgba(255,255,255,0.1) 0%, 
+                                 rgba(255,255,255,0) 50%, 
+                                 rgba(0,0,0,0.1) 100%);
+    background-blend-mode: overlay;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
 }
 
 /* Locked Levels */
 .level-btn-scrollable.locked {
     opacity: 0.4;
     pointer-events: none;
-    background: linear-gradient(180deg, #f0f0f0 0%, #d0d0d0 50%, #a8a8a8 100%);
-    border-color: #999;
+    background: 
+        linear-gradient(120deg, #e0e0e0 0%, #b8b8b8 15%, #d0d0d0 30%, 
+                                 #a8a8a8 45%, #c0c0c0 60%, #b0b0b0 75%, 
+                                 #d8d8d8 90%, #a0a0a0 100%),
+        linear-gradient(180deg, rgba(255,255,255,0.1) 0%, 
+                                 rgba(255,255,255,0) 50%, 
+                                 rgba(0,0,0,0.1) 100%);
+    background-blend-mode: overlay;
+    border-color: #888;
     cursor: not-allowed;
 }
 
@@ -485,14 +505,21 @@ body {
 .level-btn-scrollable:active:not(.locked) {
     transform: translateY(1px) !important;
     border-bottom-width: 1px !important;
-    background: linear-gradient(180deg, #d0d0d0 0%, #c0c0c0 50%, #a0a0a0 100%);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2),
-                inset 0 1px 1px rgba(0, 0, 0, 0.2) !important;
-    text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.5),
-                 0px -1px 1px rgba(0, 0, 0, 0.3);
+    background: 
+        linear-gradient(120deg, #c0c0c0 0%, #989898 15%, #b0b0b0 30%, 
+                                 #888888 45%, #a0a0a0 60%, #909090 75%, 
+                                 #b8b8b8 90%, #808080 100%),
+        linear-gradient(180deg, rgba(0,0,0,0.05) 0%, 
+                                 rgba(0,0,0,0) 50%, 
+                                 rgba(0,0,0,0.1) 100%);
+    background-blend-mode: overlay;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3),
+                inset 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+    text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.4),
+                 0px -1px 1px rgba(0, 0, 0, 0.4);
 }
 
-/* Arrow Buttons - With Metallic Style */
+/* Arrow Buttons - Enhanced Metallic Style */
 .level-arrow {
     display: flex;
     align-items: center;
@@ -500,34 +527,54 @@ body {
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    /* Silver metallic gradient background */
-    background: linear-gradient(180deg, #f0f0f0 0%, #d0d0d0 50%, #a8a8a8 100%);
-    /* Indented text effect for icons */
-    color: transparent;
+    /* Enhanced diagonal metallic gradient with random oscillation effect */
+    background: 
+        linear-gradient(120deg, #e0e0e0 0%, #b8b8b8 15%, #d0d0d0 30%, 
+                                 #a8a8a8 45%, #c0c0c0 60%, #b0b0b0 75%, 
+                                 #d8d8d8 90%, #a0a0a0 100%),
+        linear-gradient(180deg, rgba(255,255,255,0.1) 0%, 
+                                 rgba(255,255,255,0) 50%, 
+                                 rgba(0,0,0,0.1) 100%);
+    background-blend-mode: overlay;
+    /* Make arrows visible with color */
+    color: #444;
     /* Metallic border */
-    border: 1px solid #999;
-    border-top: 1px solid #bbb;
-    border-bottom: 2px solid #777;
+    border: 1px solid #888;
+    border-top: 1px solid #aaa;
+    border-bottom: 2px solid #666;
     cursor: pointer;
     transition: all 0.3s ease;
     -webkit-tap-highlight-color: transparent;
-    /* Enhanced 3D appearance */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2),
-                inset 0 1px 2px rgba(255, 255, 255, 0.8),
-                inset 0 -1px 2px rgba(0, 0, 0, 0.1);
+    /* All-around shadow effect */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3),
+                inset 0 1px 2px rgba(255, 255, 255, 0.9),
+                inset 0 -1px 2px rgba(0, 0, 0, 0.2);
     z-index: 10;
+    position: relative;
 }
 
 .level-arrow svg {
     width: 26px;
     height: 26px;
-    /* SVG filter to match metallic theme */
-    filter: drop-shadow(0px 1px 1px rgba(255, 255, 255, 0.5));
+    /* Enhanced SVG styling for visibility */
+    filter: drop-shadow(0px 1px 1px rgba(255, 255, 255, 0.7))
+           drop-shadow(0px -1px 1px rgba(0, 0, 0, 0.4));
+    /* Ensure SVG is visible */
+    fill: #444;
+    stroke: #444;
+    stroke-width: 1px;
 }
 
 .level-arrow:hover {
-    background: linear-gradient(180deg, #f5f5f5 0%, #d8d8d8 50%, #b0b0b0 100%);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25),
+    background: 
+        linear-gradient(120deg, #e8e8e8 0%, #c0c0c0 15%, #d8d8d8 30%, 
+                                 #b0b0b0 45%, #c8c8c8 60%, #b8b8b8 75%, 
+                                 #e0e0e0 90%, #a8a8a8 100%),
+        linear-gradient(180deg, rgba(255,255,255,0.2) 0%, 
+                                 rgba(255,255,255,0) 50%, 
+                                 rgba(0,0,0,0.05) 100%);
+    background-blend-mode: overlay;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35),
                 inset 0 1px 3px rgba(255, 255, 255, 0.9),
                 inset 0 -1px 2px rgba(0, 0, 0, 0.1);
     transform: translateY(-2px);
@@ -535,67 +582,115 @@ body {
 
 .level-arrow:active {
     transform: scale(0.95) translateY(1px);
-    background: linear-gradient(180deg, #d0d0d0 0%, #c0c0c0 50%, #a0a0a0 100%);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2),
-                inset 0 1px 1px rgba(0, 0, 0, 0.2);
+    background: 
+        linear-gradient(120deg, #c0c0c0 0%, #989898 15%, #b0b0b0 30%, 
+                                 #888888 45%, #a0a0a0 60%, #909090 75%, 
+                                 #b8b8b8 90%, #808080 100%),
+        linear-gradient(180deg, rgba(0,0,0,0.05) 0%, 
+                                 rgba(0,0,0,0) 50%, 
+                                 rgba(0,0,0,0.1) 100%);
+    background-blend-mode: overlay;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3),
+                inset 0 1px 2px rgba(0, 0, 0, 0.2);
     border-bottom-width: 1px;
 }
 
-/* Legacy Level Button Styles (for backward compatibility) */
+/* Legacy Level Button Styles - Enhanced Metallic Style */
 .level-btn {
-  padding: 8px 10px;
-  font-size: 0.85rem;
-  /* Silver metallic gradient background */
-  background: linear-gradient(180deg, #f0f0f0 0%, #d0d0d0 50%, #a8a8a8 100%);
-  /* Indented text effect */
-  color: transparent;
-  text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.7), 
-               0px -1px 1px rgba(0, 0, 0, 0.4);
-  /* Metallic border */
-  border: 1px solid #999;
-  border-top: 1px solid #bbb;
-  border-bottom: 3px solid #777;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: bold;
-  min-width: 40px;
-  /* Enhanced 3D appearance */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2),
-              inset 0 1px 2px rgba(255, 255, 255, 0.8),
-              inset 0 -1px 2px rgba(0, 0, 0, 0.1);
+    padding: 8px 10px;
+    font-size: 0.85rem;
+    /* Enhanced diagonal metallic gradient with random oscillation effect */
+    background: 
+        linear-gradient(120deg, #e0e0e0 0%, #b8b8b8 15%, #d0d0d0 30%, 
+                                 #a8a8a8 45%, #c0c0c0 60%, #b0b0b0 75%, 
+                                 #d8d8d8 90%, #a0a0a0 100%),
+        linear-gradient(180deg, rgba(255,255,255,0.1) 0%, 
+                                 rgba(255,255,255,0) 50%, 
+                                 rgba(0,0,0,0.1) 100%);
+    background-blend-mode: overlay;
+    /* Enhanced embossed text effect */
+    color: #444; /* Dark gray text color as fallback */
+    text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.9), 
+                 0px -1px 2px rgba(0, 0, 0, 0.6);
+    /* Improved metallic border */
+    border: 1px solid #888;
+    border-top: 1px solid #aaa;
+    border-bottom: 3px solid #666;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: bold;
+    min-width: 40px;
+    /* All-around shadow effect */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3),
+                inset 0 1px 2px rgba(255, 255, 255, 0.9),
+                inset 0 -1px 2px rgba(0, 0, 0, 0.2);
+    position: relative;
 }
 
+Here's the next section of the complete CSS file:
+
+```css
 .level-btn:hover:not(.locked) {
-  background: linear-gradient(180deg, #f5f5f5 0%, #d8d8d8 50%, #b0b0b0 100%);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25),
-              inset 0 1px 3px rgba(255, 255, 255, 0.9),
-              inset 0 -1px 2px rgba(0, 0, 0, 0.1);
-  transform: translateY(-2px);
+    background: 
+        linear-gradient(120deg, #e8e8e8 0%, #c0c0c0 15%, #d8d8d8 30%, 
+                                 #b0b0b0 45%, #c8c8c8 60%, #b8b8b8 75%, 
+                                 #e0e0e0 90%, #a8a8a8 100%),
+        linear-gradient(180deg, rgba(255,255,255,0.2) 0%, 
+                                 rgba(255,255,255,0) 50%, 
+                                 rgba(0,0,0,0.05) 100%);
+    background-blend-mode: overlay;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35),
+                inset 0 1px 3px rgba(255, 255, 255, 0.9),
+                inset 0 -1px 2px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
 }
 
 .level-btn:active:not(.locked) {
-  transform: translateY(1px);
-  border-bottom-width: 1px;
-  background: linear-gradient(180deg, #d0d0d0 0%, #c0c0c0 50%, #a0a0a0 100%);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2),
-              inset 0 1px 1px rgba(0, 0, 0, 0.2);
-  text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.5),
-               0px -1px 1px rgba(0, 0, 0, 0.3);
+    transform: translateY(1px);
+    border-bottom-width: 1px;
+    background: 
+        linear-gradient(120deg, #c0c0c0 0%, #989898 15%, #b0b0b0 30%, 
+                                 #888888 45%, #a0a0a0 60%, #909090 75%, 
+                                 #b8b8b8 90%, #808080 100%),
+        linear-gradient(180deg, rgba(0,0,0,0.05) 0%, 
+                                 rgba(0,0,0,0) 50%, 
+                                 rgba(0,0,0,0.1) 100%);
+    background-blend-mode: overlay;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3),
+                inset 0 1px 2px rgba(0, 0, 0, 0.2);
+    text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.4),
+                 0px -1px 1px rgba(0, 0, 0, 0.4);
 }
 
 .level-btn.active {
-  background: linear-gradient(180deg, #d8d8d8 0%, #b8b8b8 50%, #989898 100%);
-  transform: translateY(0);
-  border-color: #888;
+    background: 
+        linear-gradient(120deg, #d0d0d0 0%, #a8a8a8 15%, #c0c0c0 30%, 
+                                 #989898 45%, #b0b0b0 60%, #a0a0a0 75%, 
+                                 #c8c8c8 90%, #909090 100%),
+        linear-gradient(180deg, rgba(255,255,255,0.05) 0%, 
+                                 rgba(255,255,255,0) 50%, 
+                                 rgba(0,0,0,0.15) 100%);
+    background-blend-mode: overlay;
+    transform: translateY(0);
+    border-color: #777;
+    text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.7), 
+                 0px -1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .level-btn.locked {
-  opacity: 0.4;
-  pointer-events: none;
-  background: linear-gradient(180deg, #f0f0f0 0%, #d0d0d0 50%, #a8a8a8 100%);
-  border-color: #999;
-  cursor: not-allowed;
+    opacity: 0.4;
+    pointer-events: none;
+    background: 
+        linear-gradient(120deg, #e0e0e0 0%, #b8b8b8 15%, #d0d0d0 30%, 
+                                 #a8a8a8 45%, #c0c0c0 60%, #b0b0b0 75%, 
+                                 #d8d8d8 90%, #a0a0a0 100%),
+        linear-gradient(180deg, rgba(255,255,255,0.1) 0%, 
+                                 rgba(255,255,255,0) 50%, 
+                                 rgba(0,0,0,0.1) 100%);
+    background-blend-mode: overlay;
+    border-color: #888;
+    cursor: not-allowed;
 }
 
 /* Animation for level change */
@@ -617,8 +712,23 @@ body {
     
     .level-btn-scrollable {
         font-size: 1.4rem;
-        font-family: 'Black Ops One', cursive !important; /* BLACK OPS FONT */
-        font-weight: normal !important; /* NOT BOLD */
+        font-family: 'Black Ops One', cursive !important;
+        font-weight: normal !important;
+    }
+    
+    /* Adjust the screw size for smaller screens */
+    .level-btn-scrollable::before,
+    .level-btn-scrollable::after {
+        width: 12px;
+        height: 12px;
+    }
+    
+    .level-btn-scrollable::before {
+        left: 8px;
+    }
+    
+    .level-btn-scrollable::after {
+        right: 8px;
     }
     
     .level-arrow {
@@ -629,9 +739,13 @@ body {
     .level-arrow svg {
         width: 22px;
         height: 22px;
+        fill: #444;
+        stroke: #444;
+        stroke-width: 1px;
+        filter: drop-shadow(0px 1px 1px rgba(255, 255, 255, 0.7))
+               drop-shadow(0px -1px 1px rgba(0, 0, 0, 0.4));
     }
     
-    /* No need for dot spacing - using minimal margin */
     .level-selector-container {
         margin-bottom: 15px;
     }
@@ -639,7 +753,7 @@ body {
     .level-selector-title {
         font-size: 1rem;
         margin-bottom: 8px;
-        text-shadow: none !important; /* NO SHADOW */
+        text-shadow: none !important;
         font-family: 'Trebuchet MS', Arial, sans-serif !important;
         font-weight: bold !important;
         text-align: center;
@@ -652,38 +766,59 @@ body {
     .level-btn {
         min-width: 30px;
         padding: 0 8px !important;
-        font-size: 0.9rem; /* LARGER TEXT */
-        font-family: 'Black Ops One', cursive !important; /* BLACK OPS FONT */
-        font-weight: normal !important; /* NOT BOLD */
-        background: linear-gradient(180deg, #f0f0f0 0%, #d0d0d0 50%, #a8a8a8 100%);
-        color: transparent;
-        text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.7), 
-                     0px -1px 1px rgba(0, 0, 0, 0.4);
-        border: 1px solid #999;
-        border-top: 1px solid #bbb;
-        border-bottom: 3px solid #777;
+        font-size: 0.9rem;
+        font-family: 'Black Ops One', cursive !important;
+        font-weight: normal !important;
+        background: 
+            linear-gradient(120deg, #e0e0e0 0%, #b8b8b8 15%, #d0d0d0 30%, 
+                                     #a8a8a8 45%, #c0c0c0 60%, #b0b0b0 75%, 
+                                     #d8d8d8 90%, #a0a0a0 100%),
+            linear-gradient(180deg, rgba(255,255,255,0.1) 0%, 
+                                     rgba(255,255,255,0) 50%, 
+                                     rgba(0,0,0,0.1) 100%);
+        background-blend-mode: overlay;
+        color: #444;
+        text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.9), 
+                     0px -1px 2px rgba(0, 0, 0, 0.6);
+        border: 1px solid #888;
+        border-top: 1px solid #aaa;
+        border-bottom: 3px solid #666;
         border-radius: 5px;
         height: 40px !important;
         display: flex !important;
         align-items: center !important; 
         justify-content: center !important;
         line-height: normal !important;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2),
-                    inset 0 1px 2px rgba(255, 255, 255, 0.8),
-                    inset 0 -1px 2px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3),
+                    inset 0 1px 2px rgba(255, 255, 255, 0.9),
+                    inset 0 -1px 2px rgba(0, 0, 0, 0.2);
     }
     
     .level-btn:active:not(.locked) {
         transform: translateY(2px);
         border-bottom-width: 1px;
         height: 38px;
-        background: linear-gradient(180deg, #d0d0d0 0%, #c0c0c0 50%, #a0a0a0 100%);
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2),
-                    inset 0 1px 1px rgba(0, 0, 0, 0.2);
+        background: 
+            linear-gradient(120deg, #c0c0c0 0%, #989898 15%, #b0b0b0 30%, 
+                                     #888888 45%, #a0a0a0 60%, #909090 75%, 
+                                     #b8b8b8 90%, #808080 100%),
+            linear-gradient(180deg, rgba(0,0,0,0.05) 0%, 
+                                     rgba(0,0,0,0) 50%, 
+                                     rgba(0,0,0,0.1) 100%);
+        background-blend-mode: overlay;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3),
+                    inset 0 1px 2px rgba(0, 0, 0, 0.2);
     }
     
     .level-btn.active {
-        background: linear-gradient(180deg, #d8d8d8 0%, #b8b8b8 50%, #989898 100%);
+        background: 
+            linear-gradient(120deg, #d0d0d0 0%, #a8a8a8 15%, #c0c0c0 30%, 
+                                     #989898 45%, #b0b0b0 60%, #a0a0a0 75%, 
+                                     #c8c8c8 90%, #909090 100%),
+            linear-gradient(180deg, rgba(255,255,255,0.05) 0%, 
+                                     rgba(255,255,255,0) 50%, 
+                                     rgba(0,0,0,0.15) 100%);
+        background-blend-mode: overlay;
     }
 }
 
@@ -699,6 +834,20 @@ body {
         min-width: 28px;
         padding: 6px 4px;
         font-size: 0.75rem;
+    }
+    
+    .level-btn-scrollable::before,
+    .level-btn-scrollable::after {
+        width: 10px;
+        height: 10px;
+    }
+    
+    .level-btn-scrollable::before {
+        left: 6px;
+    }
+    
+    .level-btn-scrollable::after {
+        right: 6px;
     }
 }
 
