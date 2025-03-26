@@ -569,18 +569,6 @@ function createSimpleSequence(level) {
             const maxSubtract = Math.min(currentNum - 1, 5);
             if (maxSubtract < 1) {
                 // If we can't subtract, multiply instead
-                const result = currentNum * 2;
-                if (result <= config.maxNum) {
-                    sequence.push({
-                        num1: currentNum,
-                        operator: 'x',
-                        num2: 2,
-                        result: result,
-                        display: `${currentNum} × 2 = ${result}`
-                    });
-                    currentNum = result;
-                } else {
-                // If we can't subtract, multiply instead
                 const multResult = currentNum * 2;
                 if (multResult <= config.maxNum) {
                     sequence.push({
@@ -592,18 +580,19 @@ function createSimpleSequence(level) {
                     });
                     currentNum = multResult;
                 } else {
-                // Division as last resort
-                const divResult = Math.floor(currentNum / 2); // Ensure integer result
-                sequence.push({
-                num1: currentNum,
-                operator: '/',
-                num2: 2,
-                result: divResult,
-                display: `${currentNum} ÷ 2 = ${divResult}`
-                });
-                currentNum = divResult;
+                    // Division as last resort if multiplication would exceed max
+                    const divResult = Math.floor(currentNum / 2); // Ensure integer result
+                    sequence.push({
+                        num1: currentNum,
+                        operator: '/',
+                        num2: 2,
+                        result: divResult,
+                        display: `${currentNum} ÷ 2 = ${divResult}`
+                    });
+                    currentNum = divResult;
                 }
-                } else {
+            } else {
+                // Normal subtraction case
                 const subtrahend = Math.floor(Math.random() * maxSubtract) + 1;
                 const result = currentNum - subtrahend;
                 
