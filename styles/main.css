@@ -46,7 +46,7 @@
     --lilac-light: #dfdbe5;  /* Light lilac */
     --lilac-medium: #b7aec5; /* Medium lilac */
     --lilac-dark: #8b79a7;   /* Dark lilac */
-    --lilac-border: #dfdbe5; /* Lighter lilac for border */
+    --lilac-border: #8b79a7; /* Dark lilac for border */
    
   /* Sizing variables */
   --app-height: 100%;
