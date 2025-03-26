@@ -183,8 +183,8 @@ class GameController {
             // For level 2, show suggestion to remove spare cells
             if (level === 2) {
                 setTimeout(() => {
-                    this.showMessage('Hint: Consider removing spare cells to make the puzzle easier!', 'info', 5000);
-                }, 1000);
+                    this.showMessage('Hint: Consider removing some of the spare cells to make the puzzle easier!', 'info', 10000);
+                }, 0);
             }
 
             // Ensure grid container visibility is set properly
