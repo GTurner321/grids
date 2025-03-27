@@ -1081,10 +1081,9 @@ setTimeout(() => {
     }
 }, 1000);
 
-// At the bottom of gamecontroller.js, add:
 // Make initializeGameController available globally
 window.initializeGameController = initializeGameController;
 
-// At the end of gamecontroller.js
+// Export the GameController class
 export { GameController };
 export default GameController;
