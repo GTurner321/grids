@@ -1,43 +1,11 @@
 /* ===========================================================================
    LEADERBOARD STYLES
-   Complete file with graduated styling and improved structure
+   Updated to leverage buttonsboxes.css for consistent styling
    =========================================================================== */
 
 /* ==========================================================================
-   1. VARIABLES & GENERAL CONTAINER STYLES
+   1. GENERAL CONTAINER STYLES
    ========================================================================== */
-
-:root {
-    /* Color variables for consistency */
-    --leaderboard-bg: #ede9fe;
-    --leaderboard-border: #16a34a;
-    --text-dark: #1e293b;
-    --text-dark-gray: #4a5568;
-    --text-medium-gray: #6b7280;
-    --text-light-gray: #94a3b8;
-    --text-blue: #1e40af;
-    --text-green: #166534;
-    --lilac-light: #dfdbe5;  /* Light lilac */
-    --lilac-medium: #b7aec5; /* Medium lilac */
-    --lilac-dark: #8b79a7;   /* Dark lilac */
-    --lilac-border: #8b79a7; /* Dark lilac for border */
-    --input-border: #cbd5e1;
-    --input-focus: #e2e8f0;
-    --header-bg: #f3f4f6;
-    --row-border: #f3f4f6;
-    --highlight-green: #f0fdf4;
-    --highlight-green-pulse: #dcfce7;
-    --status-info-bg: #dbeafe;
-    --status-success-bg: #dcfce7;
-    --status-error-bg: #fee2e2;
-    --status-error-text: #b91c1c;
-    
-    /* Button gradient variables */
-    --btn-gradient: linear-gradient(to bottom, var(--lilac-light), var(--lilac-medium), var(--lilac-dark)); /* Graduated lilac */
-    --btn-gradient-hover: linear-gradient(to bottom, var(--lilac-medium), var(--lilac-light), var(--lilac-medium)); /* Graduated lilac */
-    --btn-gradient-active: linear-gradient(to bottom, var(--lilac-dark), var(--lilac-medium), var(--lilac-dark)); /* Graduated lilac */
-    --btn-border: var(--lilac-dark);
-}
 
 .leaderboard-section {
     margin-top: 1rem;
@@ -60,23 +28,16 @@
 }
 
 /* ==========================================================================
-   2. USERNAME SUBMISSION AREA
+   2. USERNAME SUBMISSION AREA - Using styled-box
    ========================================================================== */
 
 .username-area {
-    background-color: var(--lilac-light);
-    border: 2px solid var(--lilac-dark);
-    border-radius: 6px;
-    padding: 4px 8px 4px;
-    margin-bottom: 10px;
-    max-width: 400px;
-    margin-left: auto;
-    margin-right: auto;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
+    /* Base styles - most styling will come from styled-box class */
+    padding: 15px;
+    max-width: 340px;
+    margin: 0 auto;
+    position: relative;
+    width: 92%;
 }
 
 .username-form {
@@ -85,13 +46,19 @@
     gap: 5px;
     width: 100%;
     align-items: center;
+    text-align: center;
 }
 
 .username-prompt {
-    margin: 0;
-    font-weight: bold;
-    font-size: 0.9rem;
-    color: var(--text-dark-gray);
+    font-family: 'Black Ops One', 'Trebuchet MS', Arial, sans-serif;
+    font-weight: normal;
+    font-size: 1rem;
+    margin-bottom: 12px;
+    text-align: center;
+    text-transform: uppercase;
+    color: var(--btn-text-color);
+    text-shadow: 0px 1px 1px var(--btn-text-shadow-light),
+                 0px -1px 1px var(--btn-text-shadow-dark);
 }
 
 .input-wrapper {
@@ -104,44 +71,24 @@
 
 #username-input {
     flex: 1;
-    padding: 6px 10px;
-    border: 1px solid var(--input-border);
+    padding: 8px 10px;
+    border: 1px solid var(--btn-metal-border);
     border-radius: 4px;
     max-width: 200px;
     font-family: 'Trebuchet MS', Arial, sans-serif;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
+    background-color: var(--btn-metal-lighter);
 }
 
 #username-input:focus {
-    outline: 1px solid var(--input-border);
-    box-shadow: 0 0 2px var(--input-focus);
+    outline: 1px solid var(--btn-metal-border-top);
+    box-shadow: 0 0 3px var(--btn-metal-inner-highlight);
 }
 
-/* Submit Username Button - With Graduated Styling */
+/* Submit Username Button - Uses metallic-button class */
 #submit-username {
-    padding: 6px 12px;
-    background: var(--btn-gradient);
-    color: white;
-    border: 2px solid var(--btn-border);
-    border-bottom-width: 3px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 0.85rem;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-#submit-username:hover {
-    background: var(--btn-gradient-hover);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    transform: translateY(-2px);
-}
-
-#submit-username:active {
-    transform: translateY(1px);
-    border-bottom-width: 1px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    padding: 8px 12px;
+    font-size: 0.9rem;
 }
 
 /* Status messages */
@@ -149,31 +96,66 @@
     font-size: 0.8rem;
     padding: 2px 0;
     min-height: 0.5rem;
+    font-family: 'Trebuchet MS', Arial, sans-serif;
 }
 
 .status-message.error {
-    color: var(--status-error-text);
+    color: var(--danger-color);
 }
 
 .status-message.checking {
-    color: #3b82f6;
+    color: var(--primary-color);
 }
 
 .status-message.success {
-    color: #22c55e;
+    color: var(--success-color);
+}
+
+/* Return button */
+#return-to-record-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: var(--btn-metal-lighter);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--btn-metal-border);
+    color: var(--text-blue);
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+#return-to-record-btn:hover {
+    background-color: var(--btn-metal-light);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+}
+
+#return-to-record-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 /* ==========================================================================
-   3. LEADERBOARD TABLE & HEADER
+   3. LEADERBOARD TABLE & HEADER - Using styled-box
    ========================================================================== */
 
-/* Leaderboard title & controls */
+/* Leaderboard title */
 .leaderboard-title {
     text-align: center;
-    font-size: 1.2rem;
-    margin: 8px 0;
-    font-family: 'Trebuchet MS', Arial, sans-serif;
-    font-weight: bold;
+    font-size: 1.4rem;
+    margin: 15px 0;
+    font-family: 'Black Ops One', 'Trebuchet MS', Arial, sans-serif;
+    font-weight: normal;
+    color: white;
+    text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.5);
+    text-transform: uppercase;
     letter-spacing: 0.05em;
 }
 
@@ -183,60 +165,62 @@
     padding: 8px;
     border-radius: 4px;
     margin-bottom: 10px;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     font-weight: bold;
+    font-family: 'Trebuchet MS', Arial, sans-serif;
 }
 
 .leaderboard-status.info {
-    background-color: var(--lilac-light);
+    background-color: var(--btn-metal-light);
     color: var(--text-blue);
 }
 
 .leaderboard-status.success {
-    background-color: var(--lilac-light);
-    color: var(--text-green);
+    background-color: var(--btn-metal-light);
+    color: var(--success-color);
 }
 
 .leaderboard-status.error {
-    background-color: var(--lilac-light);
-    color: var(--status-error-text);
+    background-color: var(--btn-metal-light);
+    color: var(--danger-color);
 }
 
-/* Leaderboard table container */
+/* Leaderboard table - will leverage styled-box */
 .leaderboard-table {
-    background-color: var(--lilac-light);
-    border: 2px solid var(--lilac-dark);
-    border-radius: 6px;
-    overflow: hidden;
-    max-height: 400px;
-    overflow-y: auto;
+    width: 92%;
     max-width: 368px;
     margin-left: auto;
     margin-right: auto;
-    width: 92%;
+    max-height: 400px;
+    overflow-y: auto;
 }
 
-/* Grid rows and cells */
+/* Leaderboard rows and cells */
 .leaderboard-row {
     display: grid;
     grid-template-columns: 40px minmax(80px, 1fr) 70px 80px;
     column-gap: 10px;
     padding: 6px 8px;
-    border-bottom: 1px solid var(--row-border);
+    border-bottom: 1px solid var(--btn-metal-light);
 }
 
 .leaderboard-row:last-child {
     border-bottom: none;
 }
 
-/* Header row */
 .leaderboard-row.header {
-    background-color: var(--lilac-medium);
+    background-color: var(--btn-metal-medium);
     font-weight: bold;
     font-size: 0.8rem;
     position: sticky;
     top: 0;
     z-index: 10;
+    font-family: 'Black Ops One', 'Trebuchet MS', Arial, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--btn-text-color);
+    text-shadow: 0px 1px 1px var(--btn-text-shadow-light), 
+                 0px -1px 1px var(--btn-text-shadow-dark);
 }
 
 .leaderboard-row.header .leaderboard-cell.rank {
@@ -248,18 +232,17 @@
     padding-left: 5px;
 }
 
-/* Current user highlighting */
 .leaderboard-row.current-user {
-    background-color: var(--highlight-green);
+    background-color: var(--btn-metal-lighter);
     font-weight: bold;
 }
 
-/* Cell styling */
 .leaderboard-cell {
     font-size: 0.85rem;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    font-family: 'Trebuchet MS', Arial, sans-serif;
 }
 
 .leaderboard-cell.name {
@@ -281,12 +264,22 @@
     padding-right: 5px;
 }
 
-/* Empty state */
 .leaderboard-row.empty {
     text-align: center;
     padding: 20px;
-    color: var(--lilac-light);
+    color: var(--text-blue);
     grid-column: 1 / -1;
+}
+
+/* Animation for new entries */
+@keyframes highlight-pulse {
+    0% { background-color: var(--btn-metal-lighter); }
+    50% { background-color: var(--btn-metal-light); }
+    100% { background-color: var(--btn-metal-lighter); }
+}
+
+.leaderboard-row.current-user.new-entry {
+    animation: highlight-pulse 2s ease-in-out 1;
 }
 
 /* Scrollbar styling */
@@ -295,271 +288,21 @@
 }
 
 .leaderboard-table::-webkit-scrollbar-track {
-    background: var(--lilac-light);
+    background: var(--btn-metal-light);
     border-radius: 0 6px 6px 0;
 }
 
 .leaderboard-table::-webkit-scrollbar-thumb {
-    background: var(--input-border);
+    background: var(--btn-metal-dark);
     border-radius: 4px;
 }
 
 .leaderboard-table::-webkit-scrollbar-thumb:hover {
-    background: var(--lilac-light);
-}
-
-/* Animation for new entries */
-@keyframes highlight-pulse {
-    0% { background-color: var(--highlight-green); }
-    50% { background-color: var(--highlight-green-pulse); }
-    100% { background-color: var(--highlight-green); }
-}
-
-.leaderboard-row.current-user.new-entry {
-    animation: highlight-pulse 2s ease-in-out 1;
+    background: var(--btn-metal-darker);
 }
 
 /* ==========================================================================
-   4. BUTTONS & INTERACTIVE ELEMENTS
-   ========================================================================== */
-
-/* Bottom buttons styling with metallic silver effect */
-.bottom-buttons {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    margin-top: 10px;
-    width: 100%;
-}
-
-.bottom-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 10px 15px;
-    font-size: 0.85rem;
-    /* Silver metallic gradient background */
-    background: linear-gradient(180deg, #f0f0f0 0%, #d0d0d0 50%, #a8a8a8 100%);
-    /* Remove color property as we'll use text-shadow for indented effect */
-    color: transparent;
-    text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.7), 
-                 0px -1px 1px rgba(0, 0, 0, 0.4);
-    /* Metallic border */
-    border: 1px solid #999;
-    border-top: 1px solid #bbb;
-    border-bottom: 3px solid #777;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-family: 'Trebuchet MS', Arial, sans-serif;
-    font-weight: bold;
-    text-transform: uppercase;
-    max-width: 300px;
-    width: 100%;
-    /* Enhanced 3D appearance */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2),
-                inset 0 1px 2px rgba(255, 255, 255, 0.8),
-                inset 0 -1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.bottom-btn:hover {
-    background: linear-gradient(180deg, #f5f5f5 0%, #d8d8d8 50%, #b0b0b0 100%);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25),
-                inset 0 1px 3px rgba(255, 255, 255, 0.9),
-                inset 0 -1px 2px rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);
-}
-
-.bottom-btn:active {
-    /* Pressed effect */
-    transform: translateY(1px);
-    border-bottom-width: 1px;
-    background: linear-gradient(180deg, #d0d0d0 0%, #c0c0c0 50%, #a0a0a0 100%);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2),
-                inset 0 1px 1px rgba(0, 0, 0, 0.2);
-    text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.5),
-                 0px -1px 1px rgba(0, 0, 0, 0.3);
-}
-
-.bottom-btn svg {
-    width: 16px;
-    height: 16px;
-    /* SVG filter to match metallic theme */
-    filter: drop-shadow(0px 1px 1px rgba(255, 255, 255, 0.5));
-}
-
-/* Button highlight animation - modified for metallic effect */
-@keyframes pulse {
-    0%, 100% { 
-        background: linear-gradient(180deg, #f0f0f0 0%, #d0d0d0 50%, #a8a8a8 100%);
-    }
-    50% { 
-        background: linear-gradient(180deg, #e5e5e5 0%, #c5c5c5 50%, #999999 100%);
-        box-shadow: 0 0 10px rgba(255, 255, 255, 0.5),
-                    inset 0 1px 3px rgba(255, 255, 255, 0.9);
-    }
-}
-
-.bottom-btn.highlight {
-    animation: pulse 1s infinite;
-}
-
-/* Close leaderboard button with metallic styling */
-#close-leaderboard-btn {
-    margin-top: 15px;
-    padding: 8px 15px;
-    /* Silver metallic gradient background */
-    background: linear-gradient(180deg, #f0f0f0 0%, #d0d0d0 50%, #a8a8a8 100%);
-    color: transparent;
-    text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.7), 
-                 0px -1px 1px rgba(0, 0, 0, 0.4);
-    border: 1px solid #999;
-    border-top: 1px solid #bbb;
-    border-bottom: 3px solid #777;
-    border-radius: 4px;
-    font-family: 'Trebuchet MS', Arial, sans-serif;
-    font-weight: bold;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2),
-                inset 0 1px 2px rgba(255, 255, 255, 0.8),
-                inset 0 -1px 2px rgba(0, 0, 0, 0.1);
-}
-
-#close-leaderboard-btn:hover {
-    background: linear-gradient(180deg, #f5f5f5 0%, #d8d8d8 50%, #b0b0b0 100%);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25),
-                inset 0 1px 3px rgba(255, 255, 255, 0.9),
-                inset 0 -1px 2px rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);
-}
-
-#close-leaderboard-btn:active {
-    transform: translateY(1px);
-    border-bottom-width: 1px;
-    background: linear-gradient(180deg, #d0d0d0 0%, #c0c0c0 50%, #a0a0a0 100%);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2),
-                inset 0 1px 1px rgba(0, 0, 0, 0.2);
-    text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.5),
-                 0px -1px 1px rgba(0, 0, 0, 0.3);
-}
-
-/* Return buttons styling */
-#return-to-record-btn,
-#return-from-leaderboard-btn {
-    background: none;
-    border: none;
-    color: #3b82f6;
-    font-size: 24px;
-    cursor: pointer;
-    margin: 10px auto;
-    display: block;
-    text-align: center;
-    transition: color 0.2s ease;
-    padding: 5px;
-    width: 40px;
-    height: 40px;
-}
-
-#return-to-record-btn:hover,
-#return-from-leaderboard-btn:hover {
-    color: var(--text-blue);
-}
-
-/* Convert leaderboard title to button */
-.leaderboard-title-button {
-    text-align: center;
-    font-size: 1.2rem;
-    margin: 8px auto;
-    font-family: 'Trebuchet MS', Arial, sans-serif;
-    font-weight: bold;
-    letter-spacing: 0.05em;
-    background: transparent;
-    border: none;
-    width: 100%;
-    padding: 8px 0;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    color: var(--text-dark);
-    position: relative;
-    display: block;
-}
-
-.leaderboard-title-button:hover {
-    color: var(--leaderboard-border);
-}
-
-.leaderboard-title-button:active {
-    transform: translateY(1px);
-}
-
-/* Add a subtle indicator to show it's clickable */
-.leaderboard-title-button::after {
-    content: '▼';
-    font-size: 0.8rem;
-    margin-left: 8px;
-    vertical-align: middle;
-    transition: transform 0.3s ease;
-}
-
-/* When leaderboard is visible, flip the arrow */
-.leaderboard-title-button.active::after {
-    transform: rotate(180deg);
-}
-
-/* Update the subtitle style */
-.leaderboard-subtitle {
-    text-align: center;
-    font-size: 0.8rem;
-    margin-top: -8px;
-    margin-bottom: 6px;
-    color: #374151;
-    max-width: 400px;
-    margin-left: auto;
-    margin-right: auto;
-    width: 100%;
-}
-
-/* Transition effects */
-#score-bonus {
-    transition: color 0.3s ease;
-}
-
-.level-selector-title {
-    transition: opacity 0.5s ease-out;
-}
-
-/* ==========================================================================
-   5. CONNECTION STATUS
-   ========================================================================== */
-
-/* Connection status indicator */
-.connection-status {
-    position: absolute;
-    top: 0;
-    right: 0;
-    font-size: 0.75rem;
-    padding: 4px 8px;
-    border-radius: 0 0 0 4px;
-    background-color: rgba(0, 0, 0, 0.1);
-    color: #4b5563;
-}
-
-.connection-status.online {
-    background-color: var(--status-success-bg);
-    color: var(--text-green);
-}
-
-.connection-status.offline {
-    background-color: var(--status-error-bg);
-    color: var(--status-error-text);
-}
-
-/* ==========================================================================
-   6. CONTAINER ADJUSTMENTS
+   4. CONTAINER ADJUSTMENTS
    ========================================================================== */
 
 /* Adjust username area and leaderboard table containers */
@@ -592,69 +335,36 @@
 }
 
 /* ==========================================================================
-   7. RESPONSIVE DESIGN
+   5. RESPONSIVE DESIGN
    ========================================================================== */
 
-/* Touch device optimizations */
-.touch-device .leaderboard-title-button {
-    padding: 12px 0;
-    font-size: 1.3rem;
-}
-
-.touch-device #submit-username {
-    padding: 10px 16px;
-    min-height: 44px;
-}
-
-.touch-device #username-input {
-    padding: 10px;
-    min-height: 20px;
-    font-size: 16px; /* Prevent zoom on input focus in iOS */
-}
-
-.touch-device .leaderboard-row {
-    padding: 10px 12px;
-}
-
-/* Improve scrolling in leaderboard on touch devices */
-.touch-device .leaderboard-table {
-    -webkit-overflow-scrolling: touch;
-    overflow-y: scroll;
-}
-
-/* Tablet and small screens */
+/* Mobile adjustments */
 @media (max-width: 768px) {
-    /* Submit username button - mobile specific */
-    #submit-username {
-        width: 50% !important;
+    .leaderboard-row {
+        grid-template-columns: 45px minmax(80px, 1fr) 70px 70px !important;
+        column-gap: 8px !important;
+        padding: 8px 12px !important;
+    }
+    
+    .leaderboard-cell {
+        font-size: 0.9rem !important;
+    }
+    
+    /* Return Button Mobile Positioning */
+    #return-to-record-btn {
+        position: absolute !important;
+        bottom: 10px !important;
+        right: 10px !important;
+        top: auto !important;
+    }
+    
+    /* Input field adjustments */
+    #username-input {
+        width: 90% !important;
         padding: 12px;
-        font-size: 1.2rem !important;
-        font-weight: bold;
-        background: var(--btn-gradient);
-        color: white;
-        border: 2px solid var(--btn-border) !important;
-        border-bottom-width: 3px !important;
-        border-radius: 6px;
-        cursor: pointer;
+        font-size: 1.1rem !important;
         text-align: center;
-        margin: 0 auto !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        font-family: 'Trebuchet MS', Arial, sans-serif;
-        text-transform: uppercase;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    #submit-username:hover {
-        background: var(--btn-gradient-hover);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    }
-
-    #submit-username:active {
-        transform: translateY(2px);
-        border-bottom-width: 1px !important;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        max-width: 90% !important;
     }
     
     /* Rocket icon after Submit */
@@ -662,115 +372,6 @@
         content: " 🚀";
         margin-left: 5px;
         font-size: 1.2rem;
-    }
-    
-    /* Return Button Positioning */
-    #return-to-record-btn {
-        position: absolute !important;
-        bottom: 10px !important;
-        right: 10px !important;
-        top: auto !important;
-        left: auto !important;
-        background-color: rgba(255, 255, 255, 0.8);
-        border-radius: 50%;
-        width: 36px;
-        height: 36px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        z-index: 10000;
-        border: none;
-        color: var(--text-blue);
-        font-size: 24px;
-        cursor: pointer;
-    }
-    
-    /* Leaderboard title */
-    .leaderboard-title {
-        font-size: 1.4rem !important;
-        margin: 15px 0;
-        font-weight: bold;
-        font-family: 'Trebuchet MS', Arial, sans-serif !important;
-        color: white;
-    }
-    
-    /* Username Form */
-    .username-area {
-        width: 92% !important;
-        max-width: 340px !important;
-        background-color: var(--leaderboard-bg) !important;
-        border: 2px solid var(--btn-border) !important;
-        border-radius: 6px;
-        padding: 15px;
-        margin: 0 auto;
-        position: relative;
-    }
-    
-    .username-prompt {
-        font-size: 1rem !important;
-        font-family: 'Trebuchet MS', Arial, sans-serif;
-        font-weight: bold;
-        margin-bottom: 12px;
-        text-align: center;
-        text-transform: uppercase;
-    }
-    
-    .input-wrapper {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 90%;
-        max-width: 280px;
-        margin: 0 auto;
-        gap: 12px;
-    }
-    
-    #username-input {
-        width: 90% !important;
-        padding: 12px;
-        font-size: 1.1rem !important;
-        text-align: center;
-        border: 2px solid var(--input-border);
-        border-radius: 6px;
-        max-width: 90% !important;
-        margin: 0 auto !important;
-        display: block !important;
-        font-family: 'Trebuchet MS', Arial, sans-serif;
-        font-weight: bold;
-    }
-    
-    /* Hide welcome message on mobile */
-    .welcome-message {
-        display: none !important;
-    }
-
-    /* Fix for record button and bottom buttons - ADDED CODE */
-    #record-score-btn.hidden,
-    #record-score-btn[style*="display: none"] {
-        display: none !important;
-    }
-    
-    .bottom-buttons.single-button {
-        justify-content: center !important;
-        align-items: center !important;
-        flex-direction: row !important;
-    }
-    
-    .bottom-buttons.single-button #leaderboard-btn {
-        margin: 0 auto !important;
-        max-width: 50% !important;
-    }
-    
-    /* Bottom buttons layout */
-    .bottom-buttons {
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-    
-    .bottom-btn {
-        max-width: 45%;
     }
 }
 
@@ -788,82 +389,21 @@
     }
     
     .leaderboard-cell {
-        font-size: 0.75rem;
-    }
-    
-    .welcome-message {
         font-size: 0.8rem;
-        padding: 10px;
     }
     
-    #return-to-record-btn,
-    #return-from-leaderboard-btn {
+    #return-to-record-btn {
         font-size: 20px;
     }
     
-    /* Improved smaller screen specific styling - ADDED CODE */
     #submit-username {
         width: 80% !important; /* Wider button for very small screens */
         min-height: 44px; /* Better touch target */
     }
-    
-    .bottom-btn {
-        max-width: 80% !important; /* Make buttons wider for easier tapping */
-        min-height: 44px; /* Ensure good tap target size */
-        padding: 12px 10px;
-        margin-bottom: 8px;
-    }
-    
-    /* Stack buttons vertically on very small screens for better usability */
-    .bottom-buttons {
-        flex-direction: column !important;
-    }
-    
-    /* When record button is hidden, ensure leaderboard button is full width */
-    .bottom-buttons.single-button #leaderboard-btn {
-        max-width: 80% !important;
-    }
-    
-    /* Ensure record button stays hidden */
-    #record-score-btn.hidden,
-    #record-score-btn[style*="display: none"] {
-        display: none !important;
-        height: 0 !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        border: none !important;
-        opacity: 0 !important;
-        overflow: hidden !important;
-        visibility: hidden !important;
-    }
-    
-    /* Make sure the leaderboard table is visible and scrollable */
-    .leaderboard-table {
-        max-height: 70vh;
-    }
-    
-    /* Ensure text doesn't overflow on smallest screens */
-    .leaderboard-cell.name {
-        max-width: 70px;
-    }
 }
 
-/* Extra small screens like older smartphones */
+/* Extra small screens */
 @media (max-width: 320px) {
-    /* Further optimize for tiny screens */
-    .bottom-btn,
-    .bottom-buttons.single-button #leaderboard-btn,
-    #submit-username {
-        width: 95% !important;
-        max-width: 95% !important;
-        font-size: 0.9rem !important;
-    }
-    
-    .username-area {
-        width: 98% !important;
-        padding: 10px 5px !important;
-    }
-    
     .leaderboard-row {
         grid-template-columns: 25px minmax(60px, 1fr) 55px 60px;
         column-gap: 5px;
@@ -878,9 +418,14 @@
         font-size: 1.2rem !important;
     }
     
-    /* Ensure record button is definitely hidden */
-    #record-score-btn.hidden,
-    #record-score-btn[style*="display: none"] {
-        display: none !important;
+    .username-area {
+        width: 98% !important;
+        padding: 10px 5px !important;
+    }
+    
+    #submit-username {
+        width: 95% !important;
+        max-width: 95% !important;
+        font-size: 0.9rem !important;
     }
 }
