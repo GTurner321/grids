@@ -60,18 +60,28 @@ class GameController {
         document.dispatchEvent(new CustomEvent('gameControllerReady'));
     }
 
-    initializeEventListeners() {
-        console.log('Initializing game event listeners');
-        
-        // Level selection
-        document.querySelectorAll('.level-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const level = parseInt(btn.dataset.level);
-                console.log(`Level ${level} button clicked`);
-                this.startLevel(level);
-            });
+initializeEventListeners() {
+    console.log('Initializing game event listeners');
+    
+    // Original level button listeners (can keep these for direct buttons)
+    document.querySelectorAll('.level-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const level = parseInt(btn.dataset.level);
+            console.log(`Level ${level} button clicked`);
+            this.startLevel(level);
         });
-
+    });
+    
+    // ADD THE NEW EVENT DELEGATION CODE HERE
+    document.addEventListener('click', (event) => {
+        const levelBtn = event.target.closest('.level-btn, .level-btn-scrollable');
+        if (levelBtn && levelBtn.dataset.level) {
+            const level = parseInt(levelBtn.dataset.level);
+            console.log(`Level ${level} button clicked via delegation`);
+            this.startLevel(level);
+        }
+    });
+    
         // Game controls
         const checkButton = document.getElementById('check-solution');
         if (checkButton) {
