@@ -1,49 +1,24 @@
 /* ===========================================================================
-   LEVEL SELECTOR STYLING - FIXED VERSION
-   Uses styling from buttonsboxes.css for consistency
+   LEVEL SELECTOR STYLING - EFFICIENT VERSION
+   Leverages buttonsboxes.css classes for metallic styling
    =========================================================================== */
 
 /* ==========================================================================
-   1. LEVEL SELECTOR CONTAINER
+   1. LEVEL SELECTOR CONTAINER - extends styled-box
    ========================================================================== */
 
 .level-selector-container {
-  /* Use styled-box as the base */
-  background-color: var(--box-bg-color);
-  border: 2px solid var(--box-border-color);
-  border-radius: 8px;
-  padding: 15px;
-  margin: 15px auto;
-  
-  /* Shadow effects */
-  box-shadow: 0 3px 8px var(--box-shadow-color),
-              inset 0 1px 2px var(--box-inner-highlight),
-              inset 0 -1px 1px var(--box-inner-shadow);
-  
-  /* Text styling */
-  font-family: 'Trebuchet MS', Arial, sans-serif;
-  color: #333;
-  
-  /* Positioning */
-  position: relative;
-  width: 95%;
-  max-width: 640px;
-  box-sizing: border-box;
+  /* Apply styled-box class in HTML for base styling */
+  /* Add specific overrides */
+  padding: 15px 10px;
+  margin: 15px auto 10px;
 }
 
-/* Level selector title styling - use styled-box-title */
+/* Level selector title - extends styled-box-title */
 .level-selector-title {
-  font-family: 'Black Ops One', 'Trebuchet MS', Arial, sans-serif;
-  font-weight: normal;
-  font-size: 1.3rem;
-  text-align: center;
-  margin: 0 0 15px 0;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #333;
-  text-shadow: 0px 1px 1px white;
-  display: block;
-  width: 100%;
+  /* Apply styled-box-title class in HTML */
+  color: #00008B; /* Dark blue - override default color */
+  margin-bottom: 8px;
 }
 
 /* ==========================================================================
@@ -51,140 +26,73 @@
    ========================================================================== */
 
 .level-scroller-container {
-  /* Use a simple flex container with forced height */
+  /* Simple flex container */
   display: flex;
   align-items: center;
   justify-content: center;
   height: 70px;
   margin: 10px 0;
   position: relative;
-  
-  /* Debug visibility */
-  border: 1px dashed transparent; /* Helps visualize the container without affecting layout */
 }
 
 /* ==========================================================================
-   3. LEVEL BUTTON - Using metallic-button
+   3. LEVEL BUTTON - extends metallic-button
    ========================================================================== */
 
+/* Base level button - apply metallic-button class in HTML */
 .level-btn-scrollable {
-  /* Apply metallic-button styles directly */
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 15px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-family: 'Black Ops One', 'Trebuchet MS', Arial, sans-serif;
-  font-weight: normal;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  position: relative;
-  overflow: hidden;
-  
-  /* Metallic Effect - Silver diagonal gradient stripes */
-  background: repeating-linear-gradient(
-    120deg,
-    var(--btn-metal-light) 0px,
-    var(--btn-metal-medium) 15px,
-    var(--btn-metal-light) 30px,
-    var(--btn-metal-dark) 45px,
-    var(--btn-metal-medium) 60px,
-    var(--btn-metal-dark) 75px,
-    var(--btn-metal-light) 90px,
-    var(--btn-metal-dark) 105px
-  );
-  
-  /* Text styling with embossed effect */
-  color: var(--btn-text-color);
-  text-shadow: 0px 1px 1px var(--btn-text-shadow-light), 
-               0px -1px 1px var(--btn-text-shadow-dark);
-               
-  /* Border styling */
-  border: 1px solid var(--btn-metal-border);
-  border-top: 1px solid var(--btn-metal-border-top);
-  border-bottom: 3px solid var(--btn-metal-border-bottom);
-  
-  /* Shadow effects */
-  box-shadow: 0 2px 5px var(--btn-metal-shadow),
-              inset 0 1px 2px var(--btn-metal-inner-highlight),
-              inset 0 -1px 2px var(--btn-metal-inner-shadow);
-              
-  /* Smooth transitions */
-  transition: transform var(--transition-speed, 0.3s) ease,
-              box-shadow var(--transition-speed, 0.3s) ease,
-              background var(--transition-speed, 0.3s) ease,
-              border-bottom-width var(--transition-speed, 0.3s) ease,
-              opacity 0.3s ease;
-  
-  /* Level button specific styles */
+  /* Apply metallic-button class in HTML for base styling */
+  /* Specific level button styles */
   font-size: 2.2rem;
-  width: 100px; /* Fixed width */
-  height: 60px; /* Fixed height */
-  margin: 0 15px; /* Add margin on sides */
+  width: 100px; 
+  height: 60px;
+  margin: 0 15px;
   
   /* Position in the center */
   order: 2; /* Flexbox order - center item */
   
-  /* Begin with default visibility to debug */
+  /* Visibility handling */
   opacity: 0; /* Start invisible */
-  pointer-events: none; /* Disable interactions when invisible */
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+/* Screw elements - unique to level selector buttons */
+.level-btn-scrollable::before,
+.level-btn-scrollable::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background-color: #b0b0b0;
+  border-radius: 50%;
+  z-index: 1;
+  
+  /* Screw styling */
+  border-top: 2px solid rgba(255, 255, 255, 0.8);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.5);
+  box-shadow: 0 3px 4px rgba(0, 0, 0, 0.5),
+              inset 0 -1px 3px rgba(0, 0, 0, 0.3);
+  
+  /* Diagonal screw lines */
+  background-image: linear-gradient(135deg, transparent 45%, #555 45%, #555 55%, transparent 55%);
+}
+
+/* Position screws - use fixed positioning instead of transforms */
+.level-btn-scrollable::before {
+  left: 10px;
+  top: calc(50% - 8px); /* Half the screw height */
+}
+
+.level-btn-scrollable::after {
+  right: 10px;
+  top: calc(50% - 8px); /* Half the screw height */
 }
 
 /* Visible state */
 .level-btn-scrollable.visible {
   opacity: 1;
   pointer-events: auto;
-}
-
-/* Hover state */
-.level-btn-scrollable:hover:not(:disabled):not(.locked) {
-  /* Lighter metallic effect on hover */
-  background: repeating-linear-gradient(
-    120deg,
-    #f5f5f5 0px,
-    #d8d8d8 15px,
-    #f0f0f0 30px,
-    #b0b0b0 45px,
-    #e0e0e0 60px,
-    #c0c0c0 75px,
-    #f5f5f5 90px,
-    #b8b8b8 105px
-  );
-  
-  /* Lift up slightly with enhanced shadow - EXACTLY 1px as requested */
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px var(--btn-metal-shadow),
-              inset 0 1px 3px var(--btn-metal-inner-highlight),
-              inset 0 -1px 2px var(--btn-metal-inner-shadow);
-}
-
-/* Active/pressed state */
-.level-btn-scrollable:active:not(:disabled):not(.locked) {
-  /* Darker metallic effect when pressed */
-  background: repeating-linear-gradient(
-    120deg,
-    #d0d0d0 0px,
-    #b0b0b0 15px,
-    #c8c8c8 30px,
-    #a0a0a0 45px,
-    #b8b8b8 60px,
-    #989898 75px,
-    #c0c0c0 90px,
-    #909090 105px
-  );
-  
-  /* Press down effect */
-  transform: translateY(1px);
-  border-bottom-width: 1px;
-  
-  /* Reduced shadow when pressed */
-  box-shadow: 0 1px 2px var(--btn-metal-shadow),
-              inset 0 1px 1px var(--btn-metal-inner-shadow);
-              
-  /* Adjusted text shadow for pressed effect */
-  text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.5),
-               0px -1px 1px rgba(0, 0, 0, 0.3);
 }
 
 /* Locked state */
@@ -194,68 +102,33 @@
   cursor: not-allowed;
 }
 
+/* Hover state - override metallic-button for 1px movement */
+.level-btn-scrollable:hover:not(:disabled):not(.locked) {
+  transform: translateY(-1px) !important; /* Force 1px movement */
+}
+
 /* ==========================================================================
-   4. ARROW BUTTONS - using metallic-button
+   4. ARROW BUTTONS - extends metallic-button 
    ========================================================================== */
 
-/* Base arrow button */
+/* Base arrow button - apply metallic-button class in HTML */
 .level-arrow {
-  /* Apply metallic-button styles directly */
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0; /* Remove padding for circular button */
-  border-radius: 50%; /* Circular button */
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  
-  /* Metallic Effect - Silver diagonal gradient stripes */
-  background: repeating-linear-gradient(
-    120deg,
-    var(--btn-metal-light) 0px,
-    var(--btn-metal-medium) 15px,
-    var(--btn-metal-light) 30px,
-    var(--btn-metal-dark) 45px,
-    var(--btn-metal-medium) 60px,
-    var(--btn-metal-dark) 75px,
-    var(--btn-metal-light) 90px,
-    var(--btn-metal-dark) 105px
-  );
-  
-  /* Border styling */
-  border: 1px solid var(--btn-metal-border);
-  border-top: 1px solid var(--btn-metal-border-top);
-  border-bottom: 3px solid var(--btn-metal-border-bottom);
-  
-  /* Shadow effects */
-  box-shadow: 0 2px 5px var(--btn-metal-shadow),
-              inset 0 1px 2px var(--btn-metal-inner-highlight),
-              inset 0 -1px 2px var(--btn-metal-inner-shadow);
-              
-  /* Smooth transitions */
-  transition: transform var(--transition-speed, 0.3s) ease,
-              box-shadow var(--transition-speed, 0.3s) ease,
-              background var(--transition-speed, 0.3s) ease,
-              border-bottom-width var(--transition-speed, 0.3s) ease;
-  
-  /* Arrow button specific dimensions */
+  /* Apply metallic-button class in HTML */
+  /* Arrow-specific styles */
   width: 44px;
   height: 44px;
-  min-width: 44px;
-  min-height: 44px;
-  
-  /* Position in flexbox */
+  border-radius: 50%; /* Circular button */
+  padding: 0;
   flex: 0 0 auto;
   z-index: 10;
 }
 
-/* Left arrow specific positioning */
+/* Left arrow */
 .level-arrow.left-arrow {
   order: 1; /* Flexbox order - first item */
 }
 
-/* Right arrow specific positioning */
+/* Right arrow */
 .level-arrow.right-arrow {
   order: 3; /* Flexbox order - last item */
 }
@@ -269,52 +142,7 @@
   fill: #444;
   stroke: #444;
   stroke-width: 1px;
-}
-
-/* Hover state */
-.level-arrow:hover:not(:disabled) {
-  /* Lighter metallic effect on hover */
-  background: repeating-linear-gradient(
-    120deg,
-    #f5f5f5 0px,
-    #d8d8d8 15px,
-    #f0f0f0 30px,
-    #b0b0b0 45px,
-    #e0e0e0 60px,
-    #c0c0c0 75px,
-    #f5f5f5 90px,
-    #b8b8b8 105px
-  );
-  
-  /* Lift up slightly with enhanced shadow */
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px var(--btn-metal-shadow),
-              inset 0 1px 3px var(--btn-metal-inner-highlight),
-              inset 0 -1px 2px var(--btn-metal-inner-shadow);
-}
-
-/* Active/pressed state */
-.level-arrow:active:not(:disabled) {
-  /* Darker metallic effect when pressed */
-  background: repeating-linear-gradient(
-    120deg,
-    #d0d0d0 0px,
-    #b0b0b0 15px,
-    #c8c8c8 30px,
-    #a0a0a0 45px,
-    #b8b8b8 60px,
-    #989898 75px,
-    #c0c0c0 90px,
-    #909090 105px
-  );
-  
-  /* Press down effect */
-  transform: translateY(1px);
-  border-bottom-width: 1px;
-  
-  /* Reduced shadow when pressed */
-  box-shadow: 0 1px 2px var(--btn-metal-shadow),
-              inset 0 1px 1px var(--btn-metal-inner-shadow);
+  margin: 0 !important; /* Override metallic-button margin */
 }
 
 /* ==========================================================================
@@ -350,8 +178,6 @@
   .level-arrow {
     width: 38px;
     height: 38px;
-    min-width: 38px;
-    min-height: 38px;
   }
   
   .level-arrow svg {
@@ -359,9 +185,21 @@
     height: 26px;
   }
   
-  .level-selector-title {
-    font-size: 1.1rem;
-    margin-bottom: 8px;
+  /* Adjust the screw size for smaller screens */
+  .level-btn-scrollable::before,
+  .level-btn-scrollable::after {
+    width: 12px;
+    height: 12px;
+  }
+  
+  .level-btn-scrollable::before {
+    left: 8px;
+    top: calc(50% - 6px); /* Half of 12px */
+  }
+  
+  .level-btn-scrollable::after {
+    right: 8px;
+    top: calc(50% - 6px); /* Half of 12px */
   }
 }
 
@@ -382,12 +220,26 @@
   .level-arrow {
     width: 34px;
     height: 34px;
-    min-width: 34px;
-    min-height: 34px;
   }
   
   .level-arrow svg {
     width: 22px;
     height: 22px;
+  }
+  
+  .level-btn-scrollable::before,
+  .level-btn-scrollable::after {
+    width: 10px;
+    height: 10px;
+  }
+  
+  .level-btn-scrollable::before {
+    left: 6px;
+    top: calc(50% - 5px); /* Half of 10px */
+  }
+  
+  .level-btn-scrollable::after {
+    right: 6px;
+    top: calc(50% - 5px); /* Half of 10px */
   }
 }
