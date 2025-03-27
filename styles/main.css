@@ -1132,12 +1132,11 @@ approach throughout this consolidated stylesheet.
   background-color: transparent !important;
 }
 
-/* Ensure grid container has no visible elements before game is active */
 .game-container:not(.game-active) #grid-container {
-  border: none !important;
-  padding: 0 !important;
-  background-color: transparent !important;
-  visibility: hidden !important;
-  height: 0 !important;
-  overflow: hidden !important;
+    border: none;
+    padding: 0;
+    background-color: transparent;
+    visibility: hidden;
+    height: 0;
+    overflow: hidden;
 }
