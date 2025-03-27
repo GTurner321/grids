@@ -255,9 +255,7 @@ handleLevelSelection(level) {
     // Make grid container visible immediately
     const gridContainer = document.getElementById('grid-container');
     if (gridContainer) {
-        gridContainer.style.visibility = 'visible';
-        gridContainer.style.height = 'auto';
-        gridContainer.style.backgroundColor = '#94a3b8';
+        gridContainer.style.cssText = "visibility: visible !important; height: auto !important; background-color: #94a3b8 !important;";
     }
     
     // Activate the game container before trying to use game controller
