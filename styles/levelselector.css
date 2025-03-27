@@ -62,7 +62,7 @@
   order: 2;
   position: relative;
   width: 200px; /* Increased width for text and screws */
-  height: 60px;
+  height: 50px;
   /* Ensure this container doesn't move or resize */
   flex: 0 0 170px;
   display: flex;
