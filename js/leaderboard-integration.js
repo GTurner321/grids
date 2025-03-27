@@ -284,7 +284,7 @@ createBottomButtons() {
         
         // Create the table div
         const leaderboardTable = document.createElement('div');
-        leaderboardTable.className = 'leaderboard-table';
+        leaderboardTable.className = 'leaderboard-table styled-box';
         leaderboardTable.id = 'leaderboard-table';
         leaderboardTable.style.cssText = `
             width: 90%;
@@ -302,6 +302,7 @@ createBottomButtons() {
         // Create close button
         const closeButton = document.createElement('button');
         closeButton.id = 'close-leaderboard-btn';
+        closeButton.className = 'metallic-button';
         closeButton.textContent = 'CLOSE';
         closeButton.style.cssText = `
             margin-top: 15px;
