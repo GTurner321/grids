@@ -19,6 +19,10 @@
   /* Apply styled-box-title class in HTML */
   color: #00008B; /* Dark blue - override default color */
   margin-bottom: 8px;
+  font-family: 'Trebuchet MS', sans-serif;
+  font-weight: bold;
+  text-align: center;
+  text-shadow: 0px 1px 2px rgba(255, 255, 255, 0.8);
 }
 
 /* ==========================================================================
