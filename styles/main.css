@@ -473,7 +473,7 @@ body {
 }
 
 /* ==========================================================================
-   9. BOTTOM BUTTONS (RECORD NAME & LEADERBOARD) - UPDATED WITH GRADUATED STYLING
+   9. BOTTOM BUTTONS (RECORD NAME & LEADERBOARD) - UPDATED WITH METALLIC STYLING
    ========================================================================== */
 
 /* Bottom buttons - container */
@@ -500,44 +500,21 @@ body {
   margin: 15px auto !important;
 }
 
-/* Bottom buttons - button styles with graduated styling */
+/* Bottom buttons specific styling */
 #record-score-btn, 
 #leaderboard-btn {
-  font-family: 'Trebuchet MS', Arial, sans-serif;
-  font-size: 1rem;
-  font-weight: bold;
-  padding: 8px 12px;
-  background: linear-gradient(to bottom, #60a5fa, #3b82f6, #2563eb); /* Graduated blue */
-  color: white;
-  border: 2px solid #60a5fa;
-  border-bottom-width: 3px;
-  border-radius: 5px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  /* Size and layout specific to these buttons */
   min-width: 140px;
-  text-transform: uppercase; /* UPPERCASE TEXT */
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: 44px;
+  font-size: 1rem;
+  padding: 8px 15px;
 }
 
-#record-score-btn:hover,
-#leaderboard-btn:hover {
-  background: linear-gradient(to bottom, #93c5fd, #60a5fa, #3b82f6); /* Lighter blue gradient on hover */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  transform: translateY(-2px);
-}
-
-#record-score-btn:active,
-#leaderboard-btn:active {
-  transform: translateY(1px);
-  border-bottom-width: 1px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
+/* SVG icons in buttons */
 #record-score-btn svg,
 #leaderboard-btn svg {
+  width: 16px;
+  height: 16px;
   margin-right: 6px;
 }
 
@@ -550,92 +527,49 @@ body {
   margin: 0 auto !important;
 }
 
+/* Button highlighting animation - build on top of metallic-button */
+@keyframes highlight-pulse {
+  0%, 100% { 
+    transform: scale(1);
+  }
+  50% { 
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px var(--btn-metal-shadow),
+                inset 0 1px 3px var(--btn-metal-inner-highlight),
+                inset 0 -1px 2px var(--btn-metal-inner-shadow);
+  }
+}
+
+.bottom-btn.highlight {
+  animation: highlight-pulse 1s infinite;
+}
+
 /* Mobile adjustments */
 @media (max-width: 768px) {
   .bottom-buttons {
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: center !important;
-    gap: 10px !important;
     width: calc(100vw - 20px) !important;
-    margin: 0px auto !important;
   }
   
-  .bottom-btn {
-    font-family: 'Trebuchet MS', Arial, sans-serif !important;
-    font-size: 1rem !important;
-    font-weight: bold !important;
-    height: 42px !important;
-    padding: 8px 12px !important;
-    background: linear-gradient(to bottom, #60a5fa, #3b82f6, #2563eb) !important; /* Graduated blue */
-    color: white !important;
-    border: 2px solid #60a5fa !important;
-    border-bottom-width: 3px !important;
-    border-radius: 5px !important;
-    cursor: pointer;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
-    transition: all 0.3s ease !important;
-  }
-  
-  .bottom-btn:hover {
-    background: linear-gradient(to bottom, #93c5fd, #60a5fa, #3b82f6) !important; /* Lighter blue gradient on hover */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
-    transform: translateY(-2px) !important;
-  }
-  
-  .bottom-btn:active {
-    transform: translateY(2px) !important;
-    border-bottom-width: 1px !important;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
-  }
-
-  /* Single button mode adjustments */
-  .bottom-buttons.single-button {
-    justify-content: center !important;
+  #record-score-btn, 
+  #leaderboard-btn {
+    width: calc((100vw - 20px) * 0.48 - 5px);
+    max-width: 160px;
+    font-size: 0.9rem;
+    padding: 8px 10px;
   }
   
   .bottom-buttons.single-button #leaderboard-btn {
     margin: 0 auto !important;
     min-width: 200px !important;
   }
-  
-  /* Button highlighting animation */
-  .bottom-btn.highlight {
-    animation: pulse 1s infinite;
-  }
-  
-  @keyframes pulse {
-    0%, 100% { 
-      background: linear-gradient(to bottom, #60a5fa, #3b82f6, #2563eb) !important; 
-    }
-    50% { 
-      background: linear-gradient(to bottom, #3b82f6, #2563eb, #1d4ed8) !important; 
-    }
-  }
-  
-  /* Specific button styling for record & leaderboard */
-  #record-score-btn, 
-  #leaderboard-btn {
-    width: calc((100vw - 20px) * 0.48 - 5px); /* WIDER BUTTONS */
-    max-width: 160px;
-    border: 2px solid #60a5fa;
-    border-bottom-width: 3px;
-  }
-  
-  #record-score-btn svg,
-  #leaderboard-btn svg {
-    margin-right: 6px;
-  }
 }
 
 /* Even smaller screens */
 @media (max-width: 375px) {
-  .bottom-btn {
-    font-size: 0.9rem !important;
-    padding: 6px 10px !important;
+  #record-score-btn, 
+  #leaderboard-btn {
+    font-size: 0.8rem;
+    padding: 6px 10px;
   }
 }
 
