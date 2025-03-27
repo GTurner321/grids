@@ -95,21 +95,43 @@
 }
 
 /* Position screws - FIXED vertical centering */
+.level-btn-scrollable::before,
+.level-btn-scrollable::after {
+  position: absolute;
+  top: calc(50% - 8px); /* Half of the screw height (16px/2) */
+  /* No transform here to avoid conflict with button hover */
+}
+
 .level-btn-scrollable::before {
   left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
 }
 
 .level-btn-scrollable::after {
   right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
 }
 
-/* Hover state */
+/* Hover state - using margin instead of transform */
 .level-btn-scrollable:hover:not(:disabled):not(.locked) {
-  transform: translateY(-1px) !important;
+  margin-top: -1px;
+  margin-bottom: 1px;
+  /* Remove the transform to prevent affecting screw positioning */
+  transform: none !important;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .level-btn-scrollable::before,
+  .level-btn-scrollable::after {
+    top: calc(50% - 6px); /* Half of the smaller screw height (12px/2) */
+  }
+}
+
+/* Even smaller screens */
+@media (max-width: 375px) {
+  .level-btn-scrollable::before,
+  .level-btn-scrollable::after {
+    top: calc(50% - 5px); /* Half of the smallest screw height (10px/2) */
+  }
 }
 
 /* ==========================================================================
