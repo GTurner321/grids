@@ -55,18 +55,17 @@ initializeUI() {
     // Add new scroller UI
     levelButtonsContainer.innerHTML = `
     <div class="level-scroller-container">
-        <!-- Left/Up Arrow Button -->
-        <button class="level-arrow left-arrow up-arrow metallic-button" aria-label="Previous level">
+        <button class="level-arrow up-arrow" aria-label="Previous level">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="18 15 12 9 6 15"></polyline>
             </svg>
         </button>
         
-        <!-- Level Buttons Container -->
-        ${this.createLevelButtons()}
+        <div class="level-display-container">
+            ${this.createLevelButtons()}
+        </div>
         
-        <!-- Right/Down Arrow Button -->
-        <button class="level-arrow right-arrow down-arrow metallic-button" aria-label="Next level">
+        <button class="level-arrow down-arrow" aria-label="Next level">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="6 9 12 15 18 9"></polyline>
             </svg>
@@ -98,8 +97,8 @@ createLevelButtons() {
 }
     
 attachEventListeners() {
-    // Up/Left arrow (decrements level, loops from 1 to 10)
-    const upArrow = document.querySelector('.up-arrow, .left-arrow');
+    // Up arrow (decrements level, loops from 1 to 10)
+    const upArrow = document.querySelector('.up-arrow');
     if (upArrow) {
         upArrow.addEventListener('click', () => {
             this.currentLevel = this.currentLevel === 1 ? this.maxLevels : this.currentLevel - 1;
@@ -107,8 +106,8 @@ attachEventListeners() {
         });
     }
     
-    // Down/Right arrow (increments level, loops from 10 to 1)
-    const downArrow = document.querySelector('.down-arrow, .right-arrow');
+    // Down arrow (increments level, loops from 10 to 1)
+    const downArrow = document.querySelector('.down-arrow');
     if (downArrow) {
         downArrow.addEventListener('click', () => {
             this.currentLevel = this.currentLevel === this.maxLevels ? 1 : this.currentLevel + 1;
@@ -117,10 +116,10 @@ attachEventListeners() {
     }
     
     // Level buttons - use event delegation for better performance
-    const levelBtnContainer = document.querySelector('.level-btn-container');
-    if (levelBtnContainer) {
-        levelBtnContainer.addEventListener('click', (event) => {
-            const levelBtn = event.target.closest('.level-btn-scrollable');
+    const levelDisplayContainer = document.querySelector('.level-display-container');
+    if (levelDisplayContainer) {
+        levelDisplayContainer.addEventListener('click', (event) => {
+            const levelBtn = event.target.closest('.level-btn');
             if (levelBtn) {
                 const level = parseInt(levelBtn.dataset.level);
                 // Only process if this is the visible button
@@ -221,91 +220,57 @@ updateVisibleLevel() {
             segment.style.backgroundColor = isUnlocked ? '#b7aec5': '#dfdbe5';
         });
     }
+
+    isLevelUnlocked(level) {
+        // Levels 1-3 are always unlocked
+        if (level >= 1 && level <= 3) {
+            return true;
+        }
+        // Levels 4-6 are unlocked if any level from 1-3 is completed
+        else if (level >= 4 && level <= 6) {
+            return window.levelTracker && 
+                [1, 2, 3].some(lvl => window.levelTracker.completedLevels.has(lvl));
+        }
+        // Levels 7-10 are unlocked if any level from 4-6 is completed
+        else if (level >= 7 && level <= 10) {
+            return window.levelTracker && 
+                [4, 5, 6].some(lvl => window.levelTracker.completedLevels.has(lvl));
+        }
+        return false;
+    }
     
 // Replace the handleLevelSelection method in levelscroller.js with this code:
 handleLevelSelection(level) {
-    if (!window.gameController && typeof initializeGameController === 'function') {
-    console.log('Game controller not found, attempting to initialize...');
-    initializeGameController();
-    }
-    
-    // Check if this level is unlocked using the same logic as updateVisibleLevel
-    let isUnlocked = false;
-    
-    // Levels 1-3 are always unlocked
-    if (level >= 1 && level <= 3) {
-        isUnlocked = true;
-    }
-    // Levels 4-6 are unlocked if any level from 1-3 is completed
-    else if (level >= 4 && level <= 6) {
-        isUnlocked = window.levelTracker && 
-            [1, 2, 3].some(lvl => window.levelTracker.completedLevels.has(lvl));
-    }
-    // Levels 7-10 are unlocked if any level from 4-6 is completed
-    else if (level >= 7 && level <= 10) {
-        isUnlocked = window.levelTracker && 
-            [4, 5, 6].some(lvl => window.levelTracker.completedLevels.has(lvl));
-    }
+    // Check if this level is unlocked
+    let isUnlocked = this.isLevelUnlocked(level);
     
     if (!isUnlocked) {
-        // Show message that level is locked
         if (window.gameController && window.gameController.showMessage) {
             window.gameController.showMessage(`Level ${level} is locked. Complete earlier levels to unlock it.`, 'error', 3000);
-        } else {
-            console.log(`Level ${level} is locked. Complete earlier levels to unlock it.`);
         }
         return;
     }
     
-    // Make grid container visible immediately
-    const gridContainer = document.getElementById('grid-container');
-    if (gridContainer) {
-        gridContainer.style.cssText = "visibility: visible !important; height: auto !important; background-color: #94a3b8 !important;";
-    }
-    
-    // Activate the game container before trying to use game controller
-    const gameContainer = document.querySelector('.game-container');
-    if (gameContainer) {
-        console.log('Adding game-active class to game container');
-        gameContainer.classList.add('game-active');
-    
-        // Add a console log to check if the class was actually applied
-        console.log('game-active class applied:', gameContainer.classList.contains('game-active'));
-    }
-    
-    // Enhanced retry mechanism for game controller access
-    let attempts = 0;
-    const maxAttempts = 20; // Increase max attempts
-    const retryInterval = 100; // Shorter interval for more attempts
-    
-    const tryStartLevel = () => {
-        attempts++;
-        console.log(`Attempt ${attempts} to find game controller...`);
-        
-        if (window.gameController && typeof window.gameController.startLevel === 'function') {
-            console.log(`Game controller found on attempt ${attempts}, starting level ${level}`);
-            window.gameController.startLevel(level);
-            this.updateVisibleLevel();
-            return true;
+    // Try to start the level with the game controller
+    if (window.gameController && typeof window.gameController.startLevel === 'function') {
+        // Activate game container
+        const gameContainer = document.querySelector('.game-container');
+        if (gameContainer) {
+            gameContainer.classList.add('game-active');
         }
         
-        if (attempts >= maxAttempts) {
-            console.error('Game controller not available after multiple attempts');
-            alert('Error starting level. Please refresh the page and try again.');
-            return true; // Stop retrying
+        // Make grid visible
+        const gridContainer = document.getElementById('grid-container');
+        if (gridContainer) {
+            gridContainer.style.cssText = "visibility: visible !important; height: auto !important;";
         }
         
-        return false; // Continue retrying
-    };
-    
-    // Try immediately first
-    if (!tryStartLevel()) {
-        // Set up interval for retries
-        const intervalId = setInterval(() => {
-            if (tryStartLevel()) {
-                clearInterval(intervalId);
-            }
-        }, retryInterval);
+        // Start the level
+        window.gameController.startLevel(level);
+        this.updateVisibleLevel();
+    } else {
+        console.error('Game controller not available');
+        alert('Error starting level. Please refresh the page and try again.');
     }
 }
     
