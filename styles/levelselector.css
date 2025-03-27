@@ -226,9 +226,9 @@
   }
   
   .level-btn-scrollable {
-    font-size: 1.6rem;
-    width: 140px; /* Adjusted for mobile but still wider than original */
-    height: 50px;
+    font-size: 1.1rem;
+    width: 170px; /* Adjusted for mobile but still wider than original */
+    height: 40px;
   }
   
   .level-arrow {
@@ -274,8 +274,8 @@
   }
   
   .level-btn-scrollable {
-    width: 120px;
-    font-size: 1.4rem;
+    width: 160px;
+    font-size: 1rem;
   }
   
   .level-arrow {
