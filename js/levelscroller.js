@@ -1,187 +1,177 @@
-// levelscroller.js - Modified to properly enforce level locking
+// levelscroller.js - Simplified and fixed for proper centering and visibility
 
 class LevelScroller {
     constructor() {
-    this.currentLevel = 1;
-    this.maxLevels = 10;
-    
-    // Initialize the UI once the DOM is loaded
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => this.init());
-    } else {
-        this.init();
-    }
-    
-    // Make available globally
-    window.levelScroller = this;
-    
-    // Listen for game controller ready event
-    document.addEventListener('gameControllerReady', () => {
-        console.log('Game controller is now ready - level scroller notified');
-    });
-    
-    // Listen for level tracker updates
-    document.addEventListener('levelTrackerReady', () => {
-        console.log('Level tracker is ready - updating level scroller');
-        this.updateVisibleLevel();
-    });
-    
-    // Add this to the LevelScroller constructor
-    window.addEventListener('scoreUpdated', (event) => {
-        if (event.detail && event.detail.roundComplete) {
-            console.log('Score updated with round complete - refreshing level scroller');
-            // Update the visible level to reflect new unlocks
-            setTimeout(() => this.updateVisibleLevel(), 100);
+        this.currentLevel = 1;
+        this.maxLevels = 10;
+        
+        // Initialize the UI once the DOM is loaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.init());
+        } else {
+            this.init();
         }
-    });
-}
+        
+        // Make available globally
+        window.levelScroller = this;
+        
+        // Listen for game controller ready event
+        document.addEventListener('gameControllerReady', () => {
+            console.log('Game controller is now ready - level scroller notified');
+        });
+        
+        // Listen for level tracker updates
+        document.addEventListener('levelTrackerReady', () => {
+            console.log('Level tracker is ready - updating level scroller');
+            this.updateVisibleLevel();
+        });
+        
+        // Add this to the LevelScroller constructor
+        window.addEventListener('scoreUpdated', (event) => {
+            if (event.detail && event.detail.roundComplete) {
+                console.log('Score updated with round complete - refreshing level scroller');
+                // Update the visible level to reflect new unlocks
+                setTimeout(() => this.updateVisibleLevel(), 100);
+            }
+        });
+    }
     
     init() {
         this.initializeUI();
         this.attachEventListeners();
     }
     
-initializeUI() {
-    // Get the level buttons container
-    const levelButtonsContainer = document.querySelector('.level-buttons');
-    if (!levelButtonsContainer) {
-        console.error('Could not find level buttons container');
-        return;
-    }
-    
-    // Clear existing buttons
-    levelButtonsContainer.innerHTML = '';
-    
-    // Add new scroller UI
-    levelButtonsContainer.innerHTML = `
-    <div class="level-scroller-container">
-        <button class="level-arrow up-arrow metallic-button" aria-label="Previous level">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="18 15 12 9 6 15"></polyline>
-            </svg>
-        </button>
+    initializeUI() {
+        // Get the level buttons container
+        const levelButtonsContainer = document.querySelector('.level-buttons');
+        if (!levelButtonsContainer) {
+            console.error('Could not find level buttons container');
+            return;
+        }
         
-        <div class="level-display-container">
-            ${this.createLevelButtons()}
+        // Clear existing buttons
+        levelButtonsContainer.innerHTML = '';
+        
+        // Add new scroller UI with the unified button group
+        levelButtonsContainer.innerHTML = `
+        <div class="level-scroller-container">
+            <div class="level-button-group">
+                <button class="level-arrow up-arrow metallic-button" aria-label="Previous level">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="18 15 12 9 6 15"></polyline>
+                    </svg>
+                </button>
+                
+                <div class="level-display-container">
+                    ${this.createLevelButtons()}
+                </div>
+                
+                <button class="level-arrow down-arrow metallic-button" aria-label="Next level">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
+            </div>
         </div>
-        
-        <button class="level-arrow down-arrow metallic-button" aria-label="Next level">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="6 9 12 15 18 9"></polyline>
-            </svg>
-        </button>
-    </div>
-    `;
-    
-    // Update the visible level (initially level 1)
-    this.updateVisibleLevel();
-}
-    
-createLevelButtons() {
-    let buttonsHtml = '';
-    
-    for (let i = 1; i <= this.maxLevels; i++) {
-        buttonsHtml += `
-            <button class="level-btn level-btn-scrollable metallic-button" data-level="${i}">
-                LEVEL ${i}
-            </button>
         `;
+        
+        // Update the visible level (initially level 1)
+        this.updateVisibleLevel();
     }
     
-    return buttonsHtml;
-}
-    
-attachEventListeners() {
-    // Up arrow (decrements level, loops from 1 to 10)
-    const upArrow = document.querySelector('.up-arrow');
-    if (upArrow) {
-        upArrow.addEventListener('click', () => {
-            this.currentLevel = this.currentLevel === 1 ? this.maxLevels : this.currentLevel - 1;
-            this.updateVisibleLevel();
-        });
+    createLevelButtons() {
+        let buttonsHtml = '';
+        
+        for (let i = 1; i <= this.maxLevels; i++) {
+            buttonsHtml += `
+                <button class="level-btn level-btn-scrollable metallic-button" data-level="${i}">
+                    LEVEL ${i}
+                </button>
+            `;
+        }
+        
+        return buttonsHtml;
     }
     
-    // Down arrow (increments level, loops from 10 to 1)
-    const downArrow = document.querySelector('.down-arrow');
-    if (downArrow) {
-        downArrow.addEventListener('click', () => {
-            this.currentLevel = this.currentLevel === this.maxLevels ? 1 : this.currentLevel + 1;
-            this.updateVisibleLevel();
-        });
-    }
-    
-    // Level buttons - use event delegation for better performance
-    const levelDisplayContainer = document.querySelector('.level-display-container');
-    if (levelDisplayContainer) {
-        levelDisplayContainer.addEventListener('click', (event) => {
-            const levelBtn = event.target.closest('.level-btn-scrollable');
-            if (levelBtn) {
-                const level = parseInt(levelBtn.dataset.level);
-                // Only process if this is the visible button
-                if (level === this.currentLevel) {
-                    this.handleLevelSelection(level);
+    attachEventListeners() {
+        // Up arrow (decrements level, loops from 1 to 10)
+        const upArrow = document.querySelector('.up-arrow');
+        if (upArrow) {
+            upArrow.addEventListener('click', () => {
+                this.currentLevel = this.currentLevel === 1 ? this.maxLevels : this.currentLevel - 1;
+                this.updateVisibleLevel();
+            });
+        }
+        
+        // Down arrow (increments level, loops from 10 to 1)
+        const downArrow = document.querySelector('.down-arrow');
+        if (downArrow) {
+            downArrow.addEventListener('click', () => {
+                this.currentLevel = this.currentLevel === this.maxLevels ? 1 : this.currentLevel + 1;
+                this.updateVisibleLevel();
+            });
+        }
+        
+        // Level buttons - use event delegation for better performance
+        const levelDisplayContainer = document.querySelector('.level-display-container');
+        if (levelDisplayContainer) {
+            levelDisplayContainer.addEventListener('click', (event) => {
+                const levelBtn = event.target.closest('.level-btn-scrollable');
+                if (levelBtn) {
+                    const level = parseInt(levelBtn.dataset.level);
+                    // Only process if this is the visible button
+                    if (level === this.currentLevel) {
+                        this.handleLevelSelection(level);
+                    }
                 }
-            }
+            });
+        }
+    }
+    
+    // Updated updateVisibleLevel method to properly handle locked states
+    updateVisibleLevel() {
+        const buttons = document.querySelectorAll('.level-btn-scrollable');
+        if (!buttons || buttons.length === 0) return;
+        
+        // First, hide all buttons and reset their classes
+        buttons.forEach(btn => {
+            btn.classList.remove('active', 'visible', 'locked');
+            btn.style.visibility = 'hidden';
+            btn.style.opacity = '0';
+            btn.style.pointerEvents = 'none';
         });
+        
+        // Show only the current level button
+        const currentButton = document.querySelector(`.level-btn-scrollable[data-level="${this.currentLevel}"]`);
+        if (currentButton) {
+            // Make the current button visible
+            currentButton.classList.add('visible');
+            currentButton.style.visibility = 'visible';
+            currentButton.style.opacity = '1';
+            currentButton.style.pointerEvents = 'auto';
+            
+            // Check if this level is unlocked
+            const level = this.currentLevel;
+            let isUnlocked = this.isLevelUnlocked(level);
+            
+            // Add locked class if needed
+            if (!isUnlocked) {
+                currentButton.classList.add('locked');
+                console.log(`Level ${level} is locked`);
+            } else {
+                console.log(`Level ${level} is unlocked`);
+            }
+            
+            // If this level is the active level in the game, add active class
+            if (window.gameController && window.gameController.state && 
+                window.gameController.state.currentLevel === this.currentLevel) {
+                currentButton.classList.add('active');
+            }
+        }
+        
+        // Update score bar segments 
+        this.updateScoreBarSegments();
     }
-}
-    
-// Updated updateVisibleLevel method to properly handle locked states
-updateVisibleLevel() {
-    const buttons = document.querySelectorAll('.level-btn-scrollable');
-    if (!buttons || buttons.length === 0) return;
-    
-    // First, hide all buttons and reset their classes
-    buttons.forEach(btn => {
-        btn.classList.remove('active', 'visible', 'locked');
-        btn.style.opacity = '0';
-        btn.style.visibility = 'hidden';
-        btn.style.pointerEvents = 'none';
-    });
-    
-    // Show only the current level button
-    const currentButton = document.querySelector(`.level-btn-scrollable[data-level="${this.currentLevel}"]`);
-    if (currentButton) {
-        // Make the current button visible
-        currentButton.classList.add('visible');
-        
-        // Check if this level is unlocked
-        const level = this.currentLevel;
-        let isUnlocked = false;
-        
-        // Levels 1-3 are always unlocked
-        if (level >= 1 && level <= 3) {
-            isUnlocked = true;
-        }
-        // Levels 4-6 are unlocked if any level from 1-3 is completed IN THIS SESSION
-        else if (level >= 4 && level <= 6) {
-            isUnlocked = window.levelTracker && 
-                [1, 2, 3].some(lvl => window.levelTracker.completedLevels.has(lvl));
-        }
-        // Levels 7-10 are unlocked if any level from 4-6 is completed IN THIS SESSION
-        else if (level >= 7 && level <= 10) {
-            isUnlocked = window.levelTracker && 
-                [4, 5, 6].some(lvl => window.levelTracker.completedLevels.has(lvl));
-        }
-        
-        // Add locked class if needed
-        if (!isUnlocked) {
-            currentButton.classList.add('locked');
-            console.log(`Level ${level} is locked`);
-        } else {
-            console.log(`Level ${level} is unlocked`);
-        }
-        
-        // If this level is the active level in the game, add active class
-        if (window.gameController && window.gameController.state && 
-            window.gameController.state.currentLevel === this.currentLevel) {
-            currentButton.classList.add('active');
-        }
-    }
-    
-    // Update score bar segments 
-    this.updateScoreBarSegments();
-}
     
     updateScoreBarSegments() {
         const segments = document.querySelectorAll('.level-segment');
@@ -194,22 +184,7 @@ updateVisibleLevel() {
             // Skip if already completed
             if (segment.classList.contains('completed')) return;
             
-            let isUnlocked = false;
-            
-            // Levels 1-3 are always unlocked
-            if (level >= 1 && level <= 3) {
-                isUnlocked = true;
-            }
-            // Levels 4-6 are unlocked if any level from 1-3 is completed
-            else if (level >= 4 && level <= 6) {
-                isUnlocked = window.levelTracker && 
-                    [1, 2, 3].some(lvl => window.levelTracker.completedLevels.has(lvl));
-            }
-            // Levels 7-10 are unlocked if any level from 4-6 is completed
-            else if (level >= 7 && level <= 10) {
-                isUnlocked = window.levelTracker && 
-                    [4, 5, 6].some(lvl => window.levelTracker.completedLevels.has(lvl));
-            }
+            let isUnlocked = this.isLevelUnlocked(level);
             
             // Apply background color based on unlock status
             segment.style.backgroundColor = isUnlocked ? '#b7aec5': '#dfdbe5';
@@ -234,40 +209,39 @@ updateVisibleLevel() {
         return false;
     }
     
-// Replace the handleLevelSelection method in levelscroller.js with this code:
-handleLevelSelection(level) {
-    // Check if this level is unlocked
-    let isUnlocked = this.isLevelUnlocked(level);
-    
-    if (!isUnlocked) {
-        if (window.gameController && window.gameController.showMessage) {
-            window.gameController.showMessage(`Level ${level} is locked. Complete earlier levels to unlock it.`, 'error', 3000);
-        }
-        return;
-    }
-    
-    // Try to start the level with the game controller
-    if (window.gameController && typeof window.gameController.startLevel === 'function') {
-        // Activate game container
-        const gameContainer = document.querySelector('.game-container');
-        if (gameContainer) {
-            gameContainer.classList.add('game-active');
+    handleLevelSelection(level) {
+        // Check if this level is unlocked
+        let isUnlocked = this.isLevelUnlocked(level);
+        
+        if (!isUnlocked) {
+            if (window.gameController && window.gameController.showMessage) {
+                window.gameController.showMessage(`Level ${level} is locked. Complete earlier levels to unlock it.`, 'error', 3000);
+            }
+            return;
         }
         
-        // Make grid visible
-        const gridContainer = document.getElementById('grid-container');
-        if (gridContainer) {
-            gridContainer.style.cssText = "visibility: visible !important; height: auto !important;";
+        // Try to start the level with the game controller
+        if (window.gameController && typeof window.gameController.startLevel === 'function') {
+            // Activate game container
+            const gameContainer = document.querySelector('.game-container');
+            if (gameContainer) {
+                gameContainer.classList.add('game-active');
+            }
+            
+            // Make grid visible
+            const gridContainer = document.getElementById('grid-container');
+            if (gridContainer) {
+                gridContainer.style.cssText = "visibility: visible !important; height: auto !important;";
+            }
+            
+            // Start the level
+            window.gameController.startLevel(level);
+            this.updateVisibleLevel();
+        } else {
+            console.error('Game controller not available');
+            alert('Error starting level. Please refresh the page and try again.');
         }
-        
-        // Start the level
-        window.gameController.startLevel(level);
-        this.updateVisibleLevel();
-    } else {
-        console.error('Game controller not available');
-        alert('Error starting level. Please refresh the page and try again.');
     }
-}
     
     // Set the current level from external sources (like game controller)
     setCurrentLevel(level) {
@@ -279,39 +253,39 @@ handleLevelSelection(level) {
     
     // Handle level completion - updates UI and returns appropriate message
     handleLevelCompletion(level) {
-    level = Number(level);
-    
-    // Update UI to reflect newly completed level
-    this.updateVisibleLevel();
-    
-    // Level tiers
-    const tier1 = [1, 2, 3];
-    const tier2 = [4, 5, 6];
-    
-    // Check if this completion unlocks new tiers
-    if (tier1.includes(level)) {
-        // Schedule follow-up message after 5 seconds
-        setTimeout(() => {
-            if (window.gameController && window.gameController.showMessage) {
-                window.gameController.showMessage('Scroll through and select a new level from 1 to 6 to continue.', 'info', 5000);
-            }
-        }, 5000);
+        level = Number(level);
         
-        // Return the combined message including the "complete all levels" encouragement
-        return 'Congratulations! Puzzle solved! You have unlocked levels 4 to 6. Complete all levels to turn the score bar green.';
-    } 
-    else if (tier2.includes(level)) {
-        // Schedule follow-up message after 5 seconds
-        setTimeout(() => {
-            if (window.gameController && window.gameController.showMessage) {
-                window.gameController.showMessage('Scroll through and select a new level from 1 to 10 to continue.', 'info', 5000);
-            }
-        }, 5000);
+        // Update UI to reflect newly completed level
+        this.updateVisibleLevel();
         
-        return 'Congratulations! Puzzle solved! You have unlocked levels 7 to 10.';
-    }
-    
-    return 'Congratulations! Puzzle solved!';
+        // Level tiers
+        const tier1 = [1, 2, 3];
+        const tier2 = [4, 5, 6];
+        
+        // Check if this completion unlocks new tiers
+        if (tier1.includes(level)) {
+            // Schedule follow-up message after 5 seconds
+            setTimeout(() => {
+                if (window.gameController && window.gameController.showMessage) {
+                    window.gameController.showMessage('Scroll through and select a new level from 1 to 6 to continue.', 'info', 5000);
+                }
+            }, 5000);
+            
+            // Return the combined message including the "complete all levels" encouragement
+            return 'Congratulations! Puzzle solved! You have unlocked levels 4 to 6. Complete all levels to turn the score bar green.';
+        } 
+        else if (tier2.includes(level)) {
+            // Schedule follow-up message after 5 seconds
+            setTimeout(() => {
+                if (window.gameController && window.gameController.showMessage) {
+                    window.gameController.showMessage('Scroll through and select a new level from 1 to 10 to continue.', 'info', 5000);
+                }
+            }, 5000);
+            
+            return 'Congratulations! Puzzle solved! You have unlocked levels 7 to 10.';
+        }
+        
+        return 'Congratulations! Puzzle solved!';
     }
 }
 
@@ -327,6 +301,11 @@ class LevelUnlocker {
     
     // Compatibility method - delegates to level scroller
     isLevelUnlocked(level) {
+        if (window.levelScroller) {
+            return window.levelScroller.isLevelUnlocked(level);
+        }
+        
+        // Fallback implementation if levelScroller isn't available
         level = Number(level);
         
         // Levels 1-3 are always unlocked
