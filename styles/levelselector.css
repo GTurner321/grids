@@ -1,0 +1,255 @@
+/* ===========================================================================
+   LEVEL SELECTOR STYLING
+   Extends the button styles from buttonsboxes.css with level selector specifics
+   =========================================================================== */
+
+/* ==========================================================================
+   1. LEVEL SELECTOR CONTAINER
+   ========================================================================== */
+
+.level-selector-container {
+    position: relative;
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto 10px;
+}
+
+.level-scroller-container {
+    position: relative;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    flex-wrap: nowrap;
+}
+
+/* Level selector title styling */
+.level-selector-title {
+    font-family: 'Trebuchet MS', Arial, sans-serif !important;
+    font-weight: bold !important;
+    font-size: 1.2rem;
+    color: #00008B; /* Dark blue */
+    text-align: center;
+    margin-bottom: 8px;
+    text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.8);
+    transition: opacity 0.5s ease-out;
+}
+
+/* ==========================================================================
+   2. SCROLLABLE LEVEL BUTTONS - Extends metallic-button
+   ========================================================================== */
+
+/* Base styling extends metallic-button */
+.level-btn-scrollable {
+    /* Inherit the metallic button styles but don't apply the class directly
+       as we need to set opacity:0 initially */
+    position: relative;
+    display: inline-block;
+    width: 25%; /* Width for level button */
+    height: 100%;
+    border-radius: 8px;
+    
+    /* Font styling specific to level buttons */
+    font-family: 'Black Ops One', cursive !important;
+    font-size: 2.2rem;
+    font-weight: normal !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    
+    /* Display settings */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* Initial state - invisible */
+    opacity: 0;
+    pointer-events: none;
+    
+    /* Transition effects */
+    transition: opacity 0.3s ease, transform 0.3s ease, 
+                background 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Screw elements - unique to level selector buttons */
+.level-btn-scrollable::before,
+.level-btn-scrollable::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background-color: #b0b0b0;
+    border-radius: 50%;
+    z-index: 1;
+    
+    /* Screw styling */
+    border-top: 2px solid rgba(255, 255, 255, 0.8);
+    border-bottom: 2px solid rgba(0, 0, 0, 0.5);
+    box-shadow: 0 3px 4px rgba(0, 0, 0, 0.5),
+                inset 0 -1px 3px rgba(0, 0, 0, 0.3);
+    
+    /* Diagonal screw lines */
+    background-image: linear-gradient(135deg, transparent 45%, #555 45%, #555 55%, transparent 55%);
+}
+
+.level-btn-scrollable::before {
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.level-btn-scrollable::after {
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Visible state */
+.level-btn-scrollable.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Locked state */
+.level-btn-scrollable.locked {
+    opacity: 0.4;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+/* ==========================================================================
+   3. ARROW BUTTONS - Extends metallic-button
+   ========================================================================== */
+
+/* Base arrow button extends metallic-button */
+.level-arrow {
+    /* Most styling comes from the metallic-button class */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px; /* Specific size for arrow */
+    height: 44px;
+    border-radius: 50%; /* Circular button */
+    margin: 0 10px; /* Space between arrows and level button */
+    z-index: 10;
+    position: relative;
+    vertical-align: middle;
+}
+
+/* Arrow SVG styling */
+.level-arrow svg {
+    width: 30px;
+    height: 30px;
+    filter: drop-shadow(0px 1px 1px rgba(255, 255, 255, 0.7))
+           drop-shadow(0px -1px 1px rgba(0, 0, 0, 0.4));
+    fill: #444;
+    stroke: #444;
+    stroke-width: 1px;
+}
+
+/* ==========================================================================
+   4. ANIMATION FOR LEVEL CHANGE
+   ========================================================================== */
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.level-btn-scrollable.visible.changing {
+    animation: pulse 0.3s ease-in-out;
+}
+
+/* ==========================================================================
+   5. MOBILE & RESPONSIVE ADJUSTMENTS
+   ========================================================================== */
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+    .level-scroller-container {
+        height: 55px;
+    }
+    
+    .level-btn-scrollable {
+        font-size: 1.6rem;
+        width: 40%; /* Wider button on mobile */
+    }
+    
+    /* Adjust the screw size for smaller screens */
+    .level-btn-scrollable::before,
+    .level-btn-scrollable::after {
+        width: 12px;
+        height: 12px;
+    }
+    
+    .level-btn-scrollable::before {
+        left: 8px;
+    }
+    
+    .level-btn-scrollable::after {
+        right: 8px;
+    }
+    
+    .level-arrow {
+        width: 38px;
+        height: 38px;
+    }
+    
+    .level-arrow svg {
+        width: 26px;
+        height: 26px;
+    }
+    
+    .level-selector-title {
+        font-size: 1rem;
+        margin-bottom: 8px;
+    }
+}
+
+/* Touch device optimizations */
+.touch-device .level-arrow {
+    min-height: 48px;
+    min-width: 48px;
+}
+
+/* Even smaller screens */
+@media (max-width: 375px) {
+    .level-btn-scrollable {
+        width: 45%;
+        font-size: 1.4rem;
+    }
+    
+    .level-btn-scrollable::before,
+    .level-btn-scrollable::after {
+        width: 10px;
+        height: 10px;
+    }
+    
+    .level-btn-scrollable::before {
+        left: 6px;
+    }
+    
+    .level-btn-scrollable::after {
+        right: 6px;
+    }
+    
+    .level-arrow {
+        width: 34px;
+        height: 34px;
+    }
+    
+    .level-arrow svg {
+        width: 22px;
+        height: 22px;
+    }
+}
+
+/* Ensure no border/shadow under level buttons */
+.level-selector-container, 
+.level-buttons,
+.game-header {
+    border-bottom: none !important;
+    box-shadow: none !important;
+    border-color: transparent !important;
+}
