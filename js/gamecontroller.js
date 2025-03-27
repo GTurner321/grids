@@ -1040,50 +1040,19 @@ resetPath() {
     }
 }
 
-// Replace the existing initializeGameController function with this one
+// Replace the initializeGameController function
 function initializeGameController() {
-    console.log('Ensuring game controller is available globally...');
+    console.log('Initializing game controller...');
     
-    // First check if controller already exists
-    if (window.gameController && typeof window.gameController.startLevel === 'function') {
-        console.log('Game controller already initialized and available.');
-        return;
+    // Create the controller
+    if (!window.gameController) {
+        window.gameController = new GameController();
+        console.log('Game controller initialized and stored globally');
     }
-    
-    console.log('Creating new game controller...');
-    
-    // Create controller and store globally regardless of document state
-    window.gameController = new GameController();
-    
-    // Also create a test function to verify it works
-    window.testGameController = function() {
-        if (window.gameController && typeof window.gameController.startLevel === 'function') {
-            console.log('Game controller test successful: Controller is available.');
-            return true;
-        } else {
-            console.log('Game controller test failed: Controller is not available.');
-            return false;
-        }
-    };
-    
-    // Announce that it's ready
-    console.log('Game controller initialized and available as window.gameController');
 }
 
-// Run initialization immediately
-initializeGameController();
-
-// Also add a fallback initialization after a delay to ensure it runs
-setTimeout(() => {
-    if (!window.gameController || typeof window.gameController.startLevel !== 'function') {
-        console.log('Fallback: Re-initializing game controller...');
-        initializeGameController();
-    }
-}, 1000);
-
-// Make initializeGameController available globally
+// Make initialization function globally available
 window.initializeGameController = initializeGameController;
 
-// Export the GameController class
-export { GameController };
-export default GameController;
+// Call initialization immediately
+initializeGameController();
