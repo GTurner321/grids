@@ -104,42 +104,42 @@ class LeaderboardManager {
     }
     
     // Create bottom buttons
-    createBottomButtons() {
-        const gameContainer = document.querySelector('.game-container');
-        if (!gameContainer) return;
-        
-        const buttonsContainer = document.createElement('div');
-        buttonsContainer.className = 'bottom-buttons';
-        buttonsContainer.id = 'bottom-buttons';
-        
-        // Record Name Button
-        const recordScoreButton = document.createElement('button');
-        recordScoreButton.id = 'record-score-btn';
-        recordScoreButton.className = 'bottom-btn';
-        recordScoreButton.innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 20h9"></path>
-                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-            </svg>
-            RECORD NAME
-        `;
-        
-        // Leaderboard Button
-        const leaderboardButton = document.createElement('button');
-        leaderboardButton.id = 'leaderboard-btn';
-        leaderboardButton.className = 'bottom-btn';
-        leaderboardButton.innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M6 9l6 6 6-6"></path>
-            </svg>
-            LEADERBOARD
-        `;
-        
-        buttonsContainer.appendChild(recordScoreButton);
-        buttonsContainer.appendChild(leaderboardButton);
-        
-        gameContainer.appendChild(buttonsContainer);
-    }
+createBottomButtons() {
+    const gameContainer = document.querySelector('.game-container');
+    if (!gameContainer) return;
+    
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.className = 'bottom-buttons';
+    buttonsContainer.id = 'bottom-buttons';
+    
+    // Record Name Button
+    const recordScoreButton = document.createElement('button');
+    recordScoreButton.id = 'record-score-btn';
+    recordScoreButton.className = 'bottom-btn metallic-button'; // Added metallic-button class
+    recordScoreButton.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+        </svg>
+        RECORD NAME
+    `;
+    
+    // Leaderboard Button
+    const leaderboardButton = document.createElement('button');
+    leaderboardButton.id = 'leaderboard-btn';
+    leaderboardButton.className = 'bottom-btn metallic-button'; // Added metallic-button class
+    leaderboardButton.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 9l6 6 6-6"></path>
+        </svg>
+        LEADERBOARD
+    `;
+    
+    buttonsContainer.appendChild(recordScoreButton);
+    buttonsContainer.appendChild(leaderboardButton);
+    
+    gameContainer.appendChild(buttonsContainer);
+}
     
     // Create username submission area
     createUsernameSubmissionArea() {
