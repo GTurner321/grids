@@ -41,90 +41,96 @@ class LevelScroller {
         this.attachEventListeners();
     }
     
-    initializeUI() {
-        // Get the level buttons container
-        const levelButtonsContainer = document.querySelector('.level-buttons');
-        if (!levelButtonsContainer) {
-            console.error('Could not find level buttons container');
-            return;
-        }
-        
-        // Clear existing buttons
-        levelButtonsContainer.innerHTML = '';
-        
-        // Add new scroller UI
-        levelButtonsContainer.innerHTML = `
+initializeUI() {
+    // Get the level buttons container
+    const levelButtonsContainer = document.querySelector('.level-buttons');
+    if (!levelButtonsContainer) {
+        console.error('Could not find level buttons container');
+        return;
+    }
+    
+    // Clear existing buttons
+    levelButtonsContainer.innerHTML = '';
+    
+    // Add new scroller UI
+    levelButtonsContainer.innerHTML = `
     <div class="level-scroller-container">
-        <button class="level-arrow up-arrow metallic-button" aria-label="Previous level">
+        <!-- Left/Up Arrow Button -->
+        <button class="level-arrow left-arrow up-arrow metallic-button" aria-label="Previous level">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="18 15 12 9 6 15"></polyline>
             </svg>
         </button>
         
-        <div class="level-display-container">
-            ${this.createLevelButtons()}
-        </div>
+        <!-- Level Buttons Container -->
+        ${this.createLevelButtons()}
         
-        <button class="level-arrow down-arrow metallic-button" aria-label="Next level">
+        <!-- Right/Down Arrow Button -->
+        <button class="level-arrow right-arrow down-arrow metallic-button" aria-label="Next level">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="6 9 12 15 18 9"></polyline>
             </svg>
         </button>
     </div>
-        `;
-        
-        // Update the visible level (initially level 1)
-        this.updateVisibleLevel();
-    }
+    `;
+    
+    // Update the visible level (initially level 1)
+    this.updateVisibleLevel();
+}
     
 createLevelButtons() {
-    let buttonsHtml = '';
+    // Create a container for the level buttons
+    let html = '<div class="level-btn-container">';
     
+    // Create the level buttons
     for (let i = 1; i <= this.maxLevels; i++) {
-        buttonsHtml += `
+        html += `
             <button class="level-btn level-btn-scrollable metallic-button" data-level="${i}">
                 LEVEL ${i}
             </button>
         `;
     }
     
-    return buttonsHtml;
+    // Close the container
+    html += '</div>';
+    
+    return html;
 }
     
-    attachEventListeners() {
-        // Up arrow (decrements level, loops from 1 to 10)
-        const upArrow = document.querySelector('.up-arrow');
-        if (upArrow) {
-            upArrow.addEventListener('click', () => {
-                this.currentLevel = this.currentLevel === 1 ? this.maxLevels : this.currentLevel - 1;
-                this.updateVisibleLevel();
-            });
-        }
-        
-        // Down arrow (increments level, loops from 10 to 1)
-        const downArrow = document.querySelector('.down-arrow');
-        if (downArrow) {
-            downArrow.addEventListener('click', () => {
-                this.currentLevel = this.currentLevel === this.maxLevels ? 1 : this.currentLevel + 1;
-                this.updateVisibleLevel();
-            });
-        }
-        
-        // Level buttons - use event delegation for better performance
-        const levelDisplayContainer = document.querySelector('.level-display-container');
-        if (levelDisplayContainer) {
-            levelDisplayContainer.addEventListener('click', (event) => {
-                const levelBtn = event.target.closest('.level-btn');
-                if (levelBtn) {
-                    const level = parseInt(levelBtn.dataset.level);
-                    // Only process if this is the visible button
-                    if (level === this.currentLevel) {
-                        this.handleLevelSelection(level);
-                    }
-                }
-            });
-        }
+attachEventListeners() {
+    // Up/Left arrow (decrements level, loops from 1 to 10)
+    const upArrow = document.querySelector('.up-arrow, .left-arrow');
+    if (upArrow) {
+        upArrow.addEventListener('click', () => {
+            this.currentLevel = this.currentLevel === 1 ? this.maxLevels : this.currentLevel - 1;
+            this.updateVisibleLevel();
+        });
     }
+    
+    // Down/Right arrow (increments level, loops from 10 to 1)
+    const downArrow = document.querySelector('.down-arrow, .right-arrow');
+    if (downArrow) {
+        downArrow.addEventListener('click', () => {
+            this.currentLevel = this.currentLevel === this.maxLevels ? 1 : this.currentLevel + 1;
+            this.updateVisibleLevel();
+        });
+    }
+    
+    // Level buttons - use event delegation for better performance
+    const levelBtnContainer = document.querySelector('.level-btn-container');
+    if (levelBtnContainer) {
+        levelBtnContainer.addEventListener('click', (event) => {
+            const levelBtn = event.target.closest('.level-btn-scrollable');
+            if (levelBtn) {
+                const level = parseInt(levelBtn.dataset.level);
+                // Only process if this is the visible button
+                if (level === this.currentLevel) {
+                    this.handleLevelSelection(level);
+                }
+            }
+        });
+    }
+}
     
     updateVisibleLevel() {
         const buttons = document.querySelectorAll('.level-btn-scrollable');
