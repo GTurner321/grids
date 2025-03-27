@@ -72,7 +72,7 @@
   position: relative;
   flex: 1;
   height: 100%;
-  max-width: 153px; /* Reduced by ~15% more (total reduction ~40%) */
+  max-width: 168px; /* Increased by 10% from 153px */
   overflow: hidden;
 }
 
@@ -175,6 +175,8 @@
   fill: #444;
   stroke: #444;
   stroke-width: 1px;
+  margin: 0 auto; /* Center horizontally */
+  display: block; /* Needed for margin auto to work */
 }
 
 /* ==========================================================================
@@ -193,7 +195,7 @@
   }
   
   .level-display-container {
-    max-width: 120px; /* Reduced by ~25% for small screens */
+    max-width: 132px; /* Increased by 10% from 120px */
   }
   
   .level-btn-scrollable {
@@ -222,7 +224,7 @@
   }
   
   .level-display-container {
-    max-width: 100px; /* Even smaller for very small screens */
+    max-width: 110px; /* Increased by 10% from 100px */
   }
   
   .level-btn-scrollable {
@@ -252,5 +254,21 @@
 .level-btn-scrollable.clicked,
 .level-arrow.clicked {
   animation: button-pulse 0.2s ease-in-out;
-  /* No residual hover effects after animation */
+  /* Reset any hover styles after the animation */
+  background: repeating-linear-gradient(
+    120deg,
+    var(--btn-metal-light, #f0f0f0) 0px,
+    var(--btn-metal-medium, #d0d0d0) 10px,
+    var(--btn-metal-light, #f0f0f0) 30px,
+    var(--btn-metal-mediumlight, #e0e0e0) 55px,
+    var(--btn-metal-medium, #d0d0d0) 80px,
+    var(--btn-metal-mediumlight, #e0e0e0) 95px,
+    var(--btn-metal-light, #f0f0f0) 120px,
+    var(--btn-metal-medium, #d0d0d0) 135px
+  ) !important;
+  transform: none !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2),
+              inset 0 1px 2px rgba(255, 255, 255, 0.8),
+              inset 0 -1px 2px rgba(0, 0, 0, 0.1) !important;
+  border-bottom-width: 3px !important;
 }
