@@ -1,10 +1,13 @@
-// rules.js - Clean version without inline styles
+// rules.js - Combined with title visibility control
 document.addEventListener('DOMContentLoaded', function() {
     // Create the rules box
     createRulesBox();
     
     // Set up event handlers
     setupEventHandlers();
+    
+    // Set up title visibility control
+    setupTitleVisibility();
 });
 
 /**
@@ -112,6 +115,47 @@ function showRulesBox() {
     } else {
         // If the rules box doesn't exist, recreate it
         createRulesBox();
+    }
+}
+
+/**
+ * Sets up title visibility control
+ * Hides the game title when level buttons are clicked
+ */
+function setupTitleVisibility() {
+    // Find all level selection buttons and the game header
+    const levelButtons = document.querySelectorAll('.level-btn');
+    const scrollableLevelButtons = document.querySelectorAll('.level-btn-scrollable');
+    const gameHeader = document.querySelector('.game-header');
+    
+    if (!gameHeader) return;
+    
+    // Function to handle title hiding
+    const hideGameTitle = () => {
+        // Add a fade out animation to the header
+        gameHeader.style.transition = 'opacity 0.5s ease-out, margin 0.5s ease-out';
+        gameHeader.style.opacity = '0';
+        
+        // After fade out, hide the element completely and remove its margin
+        setTimeout(() => {
+            gameHeader.style.display = 'none';
+            gameHeader.style.margin = '0';
+            gameHeader.style.height = '0';
+        }, 500);
+    };
+    
+    // Add event listeners to regular level buttons
+    if (levelButtons.length > 0) {
+        levelButtons.forEach(button => {
+            button.addEventListener('click', hideGameTitle, { once: true });
+        });
+    }
+    
+    // Add event listeners to scrollable level buttons
+    if (scrollableLevelButtons.length > 0) {
+        scrollableLevelButtons.forEach(button => {
+            button.addEventListener('click', hideGameTitle, { once: true });
+        });
     }
 }
 
