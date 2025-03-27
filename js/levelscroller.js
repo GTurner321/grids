@@ -222,7 +222,8 @@ updateVisibleLevel() {
         });
     }
     
-    handleLevelSelection(level) {
+// Replace the handleLevelSelection method in levelscroller.js with this code:
+handleLevelSelection(level) {
     // Check if this level is unlocked using the same logic as updateVisibleLevel
     let isUnlocked = false;
     
@@ -251,53 +252,54 @@ updateVisibleLevel() {
         return;
     }
     
-    // Critical fix: Handle game controller access with retries
-    const startSelectedLevel = () => {
-        if (window.gameController && typeof window.gameController.startLevel === 'function') {
-            // Activate the game
-            const gameContainer = document.querySelector('.game-container');
-            if (gameContainer) {
-                gameContainer.classList.add('game-active');
-            }
-            
-            // Make grid container visible
-            const gridContainer = document.getElementById('grid-container');
-            if (gridContainer) {
-                gridContainer.style.visibility = 'visible';
-                gridContainer.style.height = 'auto';
-                gridContainer.style.backgroundColor = '#94a3b8';
-            }
-            
-            // Start the level
-            window.gameController.startLevel(level);
-            
-            // Update appearance
-            this.updateVisibleLevel();
-            return true;
-        }
-        return false;
-    };
-    
-    // Try immediately first
-    if (startSelectedLevel()) {
-        console.log('Level started successfully, exiting retry loop'); // ADD THIS LINE
-        return;
+    // Make grid container visible immediately
+    const gridContainer = document.getElementById('grid-container');
+    if (gridContainer) {
+        gridContainer.style.visibility = 'visible';
+        gridContainer.style.height = 'auto';
+        gridContainer.style.backgroundColor = '#94a3b8';
     }
     
-    // If not available, try a few more times with short delays
+    // Activate the game container before trying to use game controller
+    const gameContainer = document.querySelector('.game-container');
+    if (gameContainer) {
+        gameContainer.classList.add('game-active');
+    }
+    
+    // Enhanced retry mechanism for game controller access
     let attempts = 0;
-    const retryInterval = setInterval(() => {
+    const maxAttempts = 20; // Increase max attempts
+    const retryInterval = 100; // Shorter interval for more attempts
+    
+    const tryStartLevel = () => {
         attempts++;
         console.log(`Attempt ${attempts} to find game controller...`);
         
-        if (startSelectedLevel() || attempts >= 10) { // Max 10 attempts
-            clearInterval(retryInterval);
-            if (attempts >= 10) {
-                console.error('Game controller not available after multiple attempts');
-                alert('Error starting level. Please refresh the page and try again.');
-            }
+        if (window.gameController && typeof window.gameController.startLevel === 'function') {
+            console.log(`Game controller found on attempt ${attempts}, starting level ${level}`);
+            window.gameController.startLevel(level);
+            this.updateVisibleLevel();
+            return true;
         }
-    }, 200);
+        
+        if (attempts >= maxAttempts) {
+            console.error('Game controller not available after multiple attempts');
+            alert('Error starting level. Please refresh the page and try again.');
+            return true; // Stop retrying
+        }
+        
+        return false; // Continue retrying
+    };
+    
+    // Try immediately first
+    if (!tryStartLevel()) {
+        // Set up interval for retries
+        const intervalId = setInterval(() => {
+            if (tryStartLevel()) {
+                clearInterval(intervalId);
+            }
+        }, retryInterval);
+    }
 }
     
     // Set the current level from external sources (like game controller)
