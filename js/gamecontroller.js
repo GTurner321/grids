@@ -1056,3 +1056,6 @@ window.initializeGameController = initializeGameController;
 
 // Call initialization immediately
 initializeGameController();
+
+// Export the GameController class
+export default GameController;
