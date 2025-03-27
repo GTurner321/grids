@@ -910,13 +910,39 @@ body {
    14. LEADERBOARD STYLING
    ========================================================================== */
 
+/* Modal Container */
+#leaderboard-table-container {
+  display: none;
+}
+
+#leaderboard-table-container.visible {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
 /* Leaderboard title */
 .leaderboard-title {
   text-align: center;
-  font-size: 1.2rem;
-  margin: 8px 0;
-  font-family: 'Courier New', monospace;
-  font-weight: bold;
+  font-size: 1.4rem;
+  margin: 15px 0;
+  font-family: 'Black Ops One', 'Trebuchet MS', Arial, sans-serif;
+  font-weight: normal;
+  color: white;
+  text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.5);
+  text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
@@ -926,45 +952,43 @@ body {
   padding: 8px;
   border-radius: 4px;
   margin-bottom: 10px;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: bold;
+  font-family: 'Trebuchet MS', Arial, sans-serif;
 }
 
 .leaderboard-status.info {
-  background-color: #dbeafe;
+  background-color: var(--btn-metal-light);
   color: var(--text-blue);
 }
 
 .leaderboard-status.success {
-  background-color: #dcfce7;
-  color: var(--dark-green);
+  background-color: var(--btn-metal-light);
+  color: var(--success-color);
 }
 
 .leaderboard-status.error {
-  background-color: #fee2e2;
-  color: #b91c1c;
+  background-color: var(--btn-metal-light);
+  color: var(--danger-color);
 }
 
-/* Leaderboard table */
+/* Leaderboard table - will leverage styled-box */
 .leaderboard-table {
-  background-color: #ede9fe;
-  border: 2px solid var(--dark-green);
-  border-radius: 6px;
-  overflow: hidden;
-  max-height: 400px;
-  overflow-y: auto;
+  width: 92%;
   max-width: 368px;
   margin-left: auto;
   margin-right: auto;
-  width: 92%;
+  max-height: 400px;
+  overflow-y: auto;
 }
 
+/* Leaderboard rows and cells */
 .leaderboard-row {
   display: grid;
   grid-template-columns: 40px minmax(80px, 1fr) 70px 80px;
   column-gap: 10px;
   padding: 6px 8px;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--btn-metal-light);
 }
 
 .leaderboard-row:last-child {
@@ -972,12 +996,18 @@ body {
 }
 
 .leaderboard-row.header {
-  background-color: #f3f4f6;
+  background-color: var(--btn-metal-medium);
   font-weight: bold;
   font-size: 0.8rem;
   position: sticky;
   top: 0;
   z-index: 10;
+  font-family: 'Black Ops One', 'Trebuchet MS', Arial, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--btn-text-color);
+  text-shadow: 0px 1px 1px var(--btn-text-shadow-light), 
+                0px -1px 1px var(--btn-text-shadow-dark);
 }
 
 .leaderboard-row.header .leaderboard-cell.rank {
@@ -990,7 +1020,7 @@ body {
 }
 
 .leaderboard-row.current-user {
-  background-color: #f0fdf4;
+  background-color: var(--btn-metal-lighter);
   font-weight: bold;
 }
 
@@ -999,6 +1029,7 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-family: 'Trebuchet MS', Arial, sans-serif;
 }
 
 .leaderboard-cell.name {
@@ -1023,110 +1054,66 @@ body {
 .leaderboard-row.empty {
   text-align: center;
   padding: 20px;
-  color: #6b7280;
+  color: var(--text-blue);
   grid-column: 1 / -1;
+}
+
+/* Close button will use metallic-button class */
+#close-leaderboard-btn {
+  margin-top: 15px;
+  padding: 8px 15px;
+  font-size: 1rem;
 }
 
 /* Animation for new entries */
 @keyframes highlight-pulse {
-  0% { background-color: #f0fdf4; }
-  50% { background-color: #dcfce7; }
-  100% { background-color: #f0fdf4; }
+  0% { background-color: var(--btn-metal-lighter); }
+  50% { background-color: var(--btn-metal-light); }
+  100% { background-color: var(--btn-metal-lighter); }
 }
 
 .leaderboard-row.current-user.new-entry {
   animation: highlight-pulse 2s ease-in-out 1;
 }
 
-/* Mobile adjustments for leaderboard */
+/* Scrollbar styling */
+.leaderboard-table::-webkit-scrollbar {
+  width: 8px;
+}
+
+.leaderboard-table::-webkit-scrollbar-track {
+  background: var(--btn-metal-light);
+  border-radius: 0 6px 6px 0;
+}
+
+.leaderboard-table::-webkit-scrollbar-thumb {
+  background: var(--btn-metal-dark);
+  border-radius: 4px;
+}
+
+.leaderboard-table::-webkit-scrollbar-thumb:hover {
+  background: var(--btn-metal-darker);
+}
+
+/* Mobile adjustments */
 @media (max-width: 768px) {
-  .leaderboard-title {
-    font-size: 1.4rem !important;
-    margin: 15px 0;
-    font-weight: bold;
-    font-family: 'Trebuchet MS', Arial, sans-serif !important;
-    color: white;
-  }
-  
-  /* Leaderboard Table Styling */
-  .leaderboard-table {
-    width: 100% !important;
-    max-width: 385px !important;
-    background-color: var(--form-bg-color) !important;
-    border: 2px solid var(--secondary-color) !important;
-    border-radius: 6px;
-    overflow: hidden;
-    max-height: 70vh;
-    overflow-y: auto;
-    margin: 0 auto;
-    position: relative;
-  }
-  
-  /* Leaderboard Row Styling */
   .leaderboard-row {
-    display: grid;
     grid-template-columns: 45px minmax(80px, 1fr) 70px 70px !important;
     column-gap: 8px !important;
     padding: 8px 12px !important;
   }
   
-  /* Leaderboard Cell Styling */
   .leaderboard-cell {
     font-size: 0.9rem !important;
-    font-family: 'Trebuchet MS', Arial, sans-serif;
-  }
-
-  /* Rank Column */
-  .leaderboard-cell.rank {
-    width: 45px !important;
-    text-align: center;
-  }
-
-  /* Header Row */
-  .leaderboard-row.header {
-    background-color: #f3f4f6;
-    font-weight: bold;
-    font-size: 0.9rem !important;
-    padding: 8px;
   }
   
-  /* Current User Highlight */
-  .leaderboard-row.current-user {
-    background-color: #dbeafe;
-    font-weight: bold;
-  }
-  
-  /* Date Column */
-  .leaderboard-cell.date {
-    text-align: right;
-    padding-right: 10px !important;
-  }
-  
-  /* Empty Leaderboard State */
-  .leaderboard-row.empty {
-    text-align: center;
-    padding: 20px;
-    color: #6b7280;
-    grid-column: 1 / -1;
-    font-family: 'Trebuchet MS', Arial, sans-serif;
-  }
-  
-  /* Close button */
   #close-leaderboard-btn {
-    margin-top: 15px;
-    padding: 8px 15px;
-    background-color: linear-gradient(to bottom, var(--lilac-light), var(--lilac-medium), var(--lilac-dark)); /* Graduated lilac */
-    color: white;
-    border: 2px solid var(--lilac-dark);
-    border-radius: 4px;
-    font-family: 'Trebuchet MS', Arial, sans-serif;
-    font-weight: bold;
-    font-size: 1rem;
-    cursor: pointer;
+    padding: 10px 20px;
+    font-size: 1.1rem;
   }
 }
 
-/* Responsive adjustments for smaller screens */
+/* Smaller screens */
 @media (max-width: 480px) {
   .leaderboard-row {
     grid-template-columns: 35px minmax(70px, 1fr) 60px 70px;
@@ -1136,36 +1123,13 @@ body {
   }
   
   .leaderboard-cell {
-    font-size: 0.75rem;
+    font-size: 0.8rem;
   }
   
-  /* Adjust input wrapper for smaller screens */
-  .input-wrapper {
-    flex-direction: column;
+  #close-leaderboard-btn {
+    padding: 8px 15px;
+    font-size: 1rem;
   }
-  
-  #submit-username {
-    width: 100%;
-  }
-}
-
-/* Leaderboard scrollbar styling */
-.leaderboard-table::-webkit-scrollbar {
-  width: 8px;
-}
-
-.leaderboard-table::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 0 6px 6px 0;
-}
-
-.leaderboard-table::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
-}
-
-.leaderboard-table::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
 }
 
 /* ==========================================================================
