@@ -45,7 +45,7 @@
   /* Keep centered in the flex layout */
   order: 2;
   position: relative;
-  width: 170px; /* Increased width for text and screws */
+  width: 200px; /* Increased width for text and screws */
   height: 60px;
   /* Ensure this container doesn't move or resize */
   flex: 0 0 170px;
