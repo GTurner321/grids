@@ -1,6 +1,6 @@
 /* ===========================================================================
-   LEVEL SELECTOR STYLING
-   Extends the button styles from buttonsboxes.css with level selector specifics
+   LEVEL SELECTOR STYLING - FIXED VERSION
+   Fixes position issues with level buttons
    =========================================================================== */
 
 /* ==========================================================================
@@ -12,6 +12,8 @@
     width: 100%;
     max-width: 640px;
     margin: 0 auto 10px;
+    /* Prevent overflow issues */
+    overflow: visible;
 }
 
 .level-scroller-container {
@@ -22,6 +24,8 @@
     justify-content: center;
     flex-direction: row;
     flex-wrap: nowrap;
+    /* Ensure container doesn't collapse or hide content */
+    overflow: visible;
 }
 
 /* Level selector title styling */
@@ -37,16 +41,22 @@
 }
 
 /* ==========================================================================
-   2. SCROLLABLE LEVEL BUTTONS - Extends metallic-button
+   2. SCROLLABLE LEVEL BUTTONS - POSITION FIXES
    ========================================================================== */
 
-/* Base styling extends metallic-button */
+/* Base styling for level buttons */
 .level-btn-scrollable {
-    /* Inherit the metallic button styles but don't apply the class directly
-       as we need to set opacity:0 initially */
+    /* Essential for visibility */
     position: relative;
     display: inline-block;
-    width: 25%; /* Width for level button */
+    
+    /* Set initial position to be static/center - IMPORTANT FIX */
+    transform: none;
+    left: auto;
+    right: auto;
+    
+    /* Dimensions */
+    width: 25%; 
     height: 100%;
     border-radius: 8px;
     
@@ -57,21 +67,28 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
     
-    /* Display settings */
+    /* Center content */
     display: flex;
     align-items: center;
     justify-content: center;
     
-    /* Initial state - invisible */
+    /* Initial state - invisible but no transform */
     opacity: 0;
     pointer-events: none;
     
-    /* Transition effects */
-    transition: opacity 0.3s ease, transform 0.3s ease, 
-                background 0.3s ease, box-shadow 0.3s ease;
+    /* Transition WITHOUT transform */
+    transition: opacity 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Screw elements - unique to level selector buttons */
+/* Visible state - IMPORTANT: No transforms here */
+.level-btn-scrollable.visible {
+    opacity: 1;
+    pointer-events: auto;
+    /* Explicitly override any transforms */
+    transform: none;
+}
+
+/* Screw elements - FIXED to avoid position issues */
 .level-btn-scrollable::before,
 .level-btn-scrollable::after {
     content: '';
@@ -92,22 +109,15 @@
     background-image: linear-gradient(135deg, transparent 45%, #555 45%, #555 55%, transparent 55%);
 }
 
+/* FIXED: Use top/margin for positioning instead of transform */
 .level-btn-scrollable::before {
     left: 10px;
-    top: 50%;
-    transform: translateY(-50%);
+    top: calc(50% - 8px); /* Half the height of the screw (16px/2 = 8px) */
 }
 
 .level-btn-scrollable::after {
     right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-/* Visible state */
-.level-btn-scrollable.visible {
-    opacity: 1;
-    pointer-events: auto;
+    top: calc(50% - 8px); /* Half the height of the screw (16px/2 = 8px) */
 }
 
 /* Locked state */
@@ -117,23 +127,35 @@
     cursor: not-allowed;
 }
 
+/* HOVER: Only use very small transform for subtle hover effect */
+.level-btn-scrollable.visible:hover:not(.locked) {
+    transform: translateY(-1px);
+}
+
+/* ACTIVE: Only use very small transform for pressed effect */
+.level-btn-scrollable.visible:active:not(.locked) {
+    transform: translateY(1px);
+}
+
 /* ==========================================================================
-   3. ARROW BUTTONS - Extends metallic-button
+   3. ARROW BUTTONS - POSITION FIXES
    ========================================================================== */
 
-/* Base arrow button extends metallic-button */
+/* Base arrow button */
 .level-arrow {
-    /* Most styling comes from the metallic-button class */
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 44px; /* Specific size for arrow */
+    width: 44px;
     height: 44px;
-    border-radius: 50%; /* Circular button */
-    margin: 0 10px; /* Space between arrows and level button */
+    border-radius: 50%;
+    margin: 0 10px;
     z-index: 10;
     position: relative;
     vertical-align: middle;
+    
+    /* Ensure no movement unless explicitly hovered/clicked */
+    transform: none;
 }
 
 /* Arrow SVG styling */
@@ -147,10 +169,21 @@
     stroke-width: 1px;
 }
 
+/* HOVER: Only use very small transform for subtle hover effect */
+.level-arrow:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+/* ACTIVE: Only use very small transform for pressed effect */
+.level-arrow:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
 /* ==========================================================================
-   4. ANIMATION FOR LEVEL CHANGE
+   4. ANIMATION FOR LEVEL CHANGE - FIXED VERSION
    ========================================================================== */
 
+/* FIXED: Use scale animation instead of transform animation */
 @keyframes pulse {
     0% { transform: scale(1); }
     50% { transform: scale(1.05); }
@@ -183,12 +216,15 @@
         height: 12px;
     }
     
+    /* FIXED: Use top/margin positioning */
     .level-btn-scrollable::before {
         left: 8px;
+        top: calc(50% - 6px); /* Half of 12px */
     }
     
     .level-btn-scrollable::after {
         right: 8px;
+        top: calc(50% - 6px); /* Half of 12px */
     }
     
     .level-arrow {
@@ -226,12 +262,15 @@
         height: 10px;
     }
     
+    /* FIXED: Use top/margin positioning */
     .level-btn-scrollable::before {
         left: 6px;
+        top: calc(50% - 5px); /* Half of 10px */
     }
     
     .level-btn-scrollable::after {
         right: 6px;
+        top: calc(50% - 5px); /* Half of 10px */
     }
     
     .level-arrow {
