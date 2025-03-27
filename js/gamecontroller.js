@@ -63,6 +63,9 @@ class GameController {
 initializeEventListeners() {
     console.log('Initializing game event listeners');
     
+    const levelButtons = document.querySelectorAll('.level-btn');
+    console.log(`Found ${levelButtons.length} level buttons to attach listeners to`);
+    
     // Original level button listeners (can keep these for direct buttons)
     document.querySelectorAll('.level-btn').forEach(btn => {
         btn.addEventListener('click', () => {
