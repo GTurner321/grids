@@ -28,7 +28,7 @@
     /* Box styling variables */
     --box-bg-color: #f8f8f8;
     --box-border-color: #a0a0a0;
-    --box-shadow-color: rgba(0, 0, 0, 0.15);
+    --box-shadow: 0 4px 8px 2px rgba(0, 0, 0, 0.15);
     --box-inner-shadow: rgba(0, 0, 0, 0.05);
     --box-inner-highlight: rgba(255, 255, 255, 0.7);
     
@@ -127,15 +127,14 @@
     background: repeating-linear-gradient(
         120deg,
         var(--btn-metal-medium) 0px,
-        var(--btn-metal-dark) 12px,
         var(--btn-metal-mediumlight) 32px,
-        var(--btn-metal-darker) 57px,
-        var(--btn-metal-dark) 82px,
-        var(--btn-metal-medium) 97px,
-        var(--btn-metal-dark) 122px,
-        var(--btn-metal-darker) 137px
+        var(--btn-metal-dark) 57px,
+        var(--btn-metal-medium) 66px,
+        var(--btn-metal-mediumlight) 97px,
+        var(--btn-metal-medium) 122px,
+        var(--btn-metal-dark) 137px
     );
-    
+
     /* Press down effect */
     transform: translateY(1px);
     border-bottom-width: 1px;
