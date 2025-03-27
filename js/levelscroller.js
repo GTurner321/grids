@@ -102,6 +102,8 @@ class LevelScroller {
                 upArrow.classList.add('clicked');
                 setTimeout(() => {
                     upArrow.classList.remove('clicked');
+                    // Force reset of any hover styles
+                    void upArrow.offsetWidth; // Trigger reflow
                 }, 200);
                 
                 this.currentLevel = this.currentLevel === 1 ? this.maxLevels : this.currentLevel - 1;
@@ -117,6 +119,8 @@ class LevelScroller {
                 downArrow.classList.add('clicked');
                 setTimeout(() => {
                     downArrow.classList.remove('clicked');
+                    // Force reset of any hover styles
+                    void downArrow.offsetWidth; // Trigger reflow
                 }, 200);
                 
                 this.currentLevel = this.currentLevel === this.maxLevels ? 1 : this.currentLevel + 1;
@@ -134,6 +138,8 @@ class LevelScroller {
                     levelBtn.classList.add('clicked');
                     setTimeout(() => {
                         levelBtn.classList.remove('clicked');
+                        // Force reset of any hover styles
+                        void levelBtn.offsetWidth; // Trigger reflow
                     }, 200);
                     
                     const level = parseInt(levelBtn.dataset.level);
