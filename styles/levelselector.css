@@ -58,7 +58,7 @@
 .level-btn-scrollable {
   /* Apply metallic-button class in HTML for base styling */
   /* Specific level button styles */
-  font-size: 2.2rem;
+  font-size: 1.2rem;
   width: 170px; /* Increased from 100px (70% wider) */
   height: 60px;
   margin: 0;
