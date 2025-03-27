@@ -341,51 +341,73 @@ body {
    ========================================================================== */
 
 /* ==========================================================================
-   7. GAME MESSAGES
+   7. GAME MESSAGES - UPDATED WITH STYLED BOX
    ========================================================================== */
 
 #game-messages {
-  text-align: center;
-  margin: 5px auto;
-  padding: 6px;
-  border-radius: 4px;
-  font-weight: bold;
-  font-size: 1.4rem; /* Increased font size */
-  color: var(--text-blue) !important;
-  font-family: 'Lucida Handwriting', 'Brush Script MT', cursive;
-  width: 60%;
+  /* Basic box properties */
+  width: 90%;
   max-width: 640px;
+  margin: 10px auto;
+  padding: 12px;
+  box-sizing: border-box;
+  
+  /* Text styling - keep cursive font */
+  font-family: 'Lucida Handwriting', 'Brush Script MT', cursive;
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: var(--text-blue) !important;
+  text-align: center;
+  
+  /* Layout */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  
+  /* Ensure line breaks work properly */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  
+  /* Visibility (will be controlled by JS) */
+  opacity: 0;
+  visibility: hidden;
+  height: 0;
+  overflow: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* When game is active - show game messages */
+.game-container.game-active #game-messages {
+  opacity: 1;
+  visibility: visible;
+  height: auto;
+  overflow: visible;
+  margin: 10px auto !important;
+}
+
+/* Penalty Messages */
+#game-messages .penalty-message {
+  font-size: 1.1rem;
+  margin-top: 5px;
+  color: var(--text-blue);
 }
 
 /* Mobile adjustments */
 @media (max-width: 768px) {
   #game-messages {
     width: calc(100vw - 20px) !important;
-    margin: 2px auto 2px !important; /* Reduced space underneath */
-    padding: 6px 0;
-    font-size: 1.6rem !important; /* Even larger on mobile */
+    margin: 8px auto !important;
+    padding: 10px 0;
+    font-size: 1.5rem !important;
     min-height: 45px !important;
-    text-align: center;
-    line-height: 1.3;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    white-space: normal;
-    color: var(--text-blue);
-    font-weight: bold;
-    text-shadow: 0 0 15px white, 0 0 25px white, 0 0 35px white, 0 0 40px white, 0 0 45px white !important;
   }
 
-  /* Penalty Messages */
   #game-messages .penalty-message {
-    font-size: 1.2rem !important;
-    margin-top: 5px;
-    color: var(--text-blue);
-    font-weight: bold;
-    text-shadow: 0 0 15px white, 0 0 25px white, 0 0 35px white, 0 0 40px white !important;
+    font-size: 1.1rem !important;
+    margin-top: 3px;
   }
 }
 
