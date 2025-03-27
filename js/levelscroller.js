@@ -132,58 +132,62 @@ attachEventListeners() {
     }
 }
     
-    updateVisibleLevel() {
-        const buttons = document.querySelectorAll('.level-btn-scrollable');
-        if (!buttons || buttons.length === 0) return;
+// Updated updateVisibleLevel method to properly handle locked states
+updateVisibleLevel() {
+    const buttons = document.querySelectorAll('.level-btn-scrollable');
+    if (!buttons || buttons.length === 0) return;
+    
+    // First, hide all buttons and reset their classes
+    buttons.forEach(btn => {
+        btn.classList.remove('active', 'visible', 'locked');
+        btn.style.opacity = '0';
+        btn.style.visibility = 'hidden';
+        btn.style.pointerEvents = 'none';
+    });
+    
+    // Show only the current level button
+    const currentButton = document.querySelector(`.level-btn-scrollable[data-level="${this.currentLevel}"]`);
+    if (currentButton) {
+        // Make the current button visible
+        currentButton.classList.add('visible');
         
-        // First, hide all buttons and reset their classes
-        buttons.forEach(btn => {
-            btn.classList.remove('active', 'visible', 'locked');
-        });
+        // Check if this level is unlocked
+        const level = this.currentLevel;
+        let isUnlocked = false;
         
-        // Show only the current level button
-        const currentButton = document.querySelector(`.level-btn-scrollable[data-level="${this.currentLevel}"]`);
-        if (currentButton) {
-            // Make the current button visible
-            currentButton.classList.add('visible');
-            
-            // Check if this level is unlocked
-            const level = this.currentLevel;
-            let isUnlocked = false;
-            
-            // Levels 1-3 are always unlocked
-            if (level >= 1 && level <= 3) {
-                isUnlocked = true;
-            }
-            // Levels 4-6 are unlocked if any level from 1-3 is completed IN THIS SESSION
-            else if (level >= 4 && level <= 6) {
-                isUnlocked = window.levelTracker && 
-                    [1, 2, 3].some(lvl => window.levelTracker.completedLevels.has(lvl));
-            }
-            // Levels 7-10 are unlocked if any level from 4-6 is completed IN THIS SESSION
-            else if (level >= 7 && level <= 10) {
-                isUnlocked = window.levelTracker && 
-                    [4, 5, 6].some(lvl => window.levelTracker.completedLevels.has(lvl));
-            }
-            
-            // Add locked class if needed
-            if (!isUnlocked) {
-                currentButton.classList.add('locked');
-                console.log(`Level ${level} is locked`);
-            } else {
-                console.log(`Level ${level} is unlocked`);
-            }
-            
-            // If this level is the active level in the game, add active class
-            if (window.gameController && window.gameController.state && 
-                window.gameController.state.currentLevel === this.currentLevel) {
-                currentButton.classList.add('active');
-            }
+        // Levels 1-3 are always unlocked
+        if (level >= 1 && level <= 3) {
+            isUnlocked = true;
+        }
+        // Levels 4-6 are unlocked if any level from 1-3 is completed IN THIS SESSION
+        else if (level >= 4 && level <= 6) {
+            isUnlocked = window.levelTracker && 
+                [1, 2, 3].some(lvl => window.levelTracker.completedLevels.has(lvl));
+        }
+        // Levels 7-10 are unlocked if any level from 4-6 is completed IN THIS SESSION
+        else if (level >= 7 && level <= 10) {
+            isUnlocked = window.levelTracker && 
+                [4, 5, 6].some(lvl => window.levelTracker.completedLevels.has(lvl));
         }
         
-        // Update score bar segments 
-        this.updateScoreBarSegments();
+        // Add locked class if needed
+        if (!isUnlocked) {
+            currentButton.classList.add('locked');
+            console.log(`Level ${level} is locked`);
+        } else {
+            console.log(`Level ${level} is unlocked`);
+        }
+        
+        // If this level is the active level in the game, add active class
+        if (window.gameController && window.gameController.state && 
+            window.gameController.state.currentLevel === this.currentLevel) {
+            currentButton.classList.add('active');
+        }
     }
+    
+    // Update score bar segments 
+    this.updateScoreBarSegments();
+}
     
     updateScoreBarSegments() {
         const segments = document.querySelectorAll('.level-segment');
