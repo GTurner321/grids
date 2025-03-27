@@ -226,7 +226,7 @@ body {
 /* Image container styling */
 .rules-image-container {
   width: 98%;
-  margin: 0 auto 15px;
+  margin: 0 auto 10px;
   display: block;
 }
 
@@ -260,14 +260,14 @@ body {
 /* Rules section container */
 .rules-section {
   border-radius: 6px;
-  padding: 10px;
-  margin: 15px 0;
+  padding: 5px;
+  margin: 5px 0;
 }
 
 /* Close button container */
 .close-button-container {
   text-align: center;
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 /* CLOSE BUTTON */
