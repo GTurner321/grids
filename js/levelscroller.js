@@ -261,7 +261,11 @@ handleLevelSelection(level) {
     // Activate the game container before trying to use game controller
     const gameContainer = document.querySelector('.game-container');
     if (gameContainer) {
+        console.log('Adding game-active class to game container');
         gameContainer.classList.add('game-active');
+    
+        // Add a console log to check if the class was actually applied
+        console.log('game-active class applied:', gameContainer.classList.contains('game-active'));
     }
     
     // Enhanced retry mechanism for game controller access
