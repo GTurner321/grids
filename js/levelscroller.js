@@ -78,22 +78,17 @@ initializeUI() {
 }
     
 createLevelButtons() {
-    // Create a container for the level buttons
-    let html = '<div class="level-btn-container">';
+    let buttonsHtml = '';
     
-    // Create the level buttons
     for (let i = 1; i <= this.maxLevels; i++) {
-        html += `
+        buttonsHtml += `
             <button class="level-btn level-btn-scrollable metallic-button" data-level="${i}">
                 LEVEL ${i}
             </button>
         `;
     }
     
-    // Close the container
-    html += '</div>';
-    
-    return html;
+    return buttonsHtml;
 }
     
 attachEventListeners() {
@@ -119,7 +114,7 @@ attachEventListeners() {
     const levelDisplayContainer = document.querySelector('.level-display-container');
     if (levelDisplayContainer) {
         levelDisplayContainer.addEventListener('click', (event) => {
-            const levelBtn = event.target.closest('.level-btn');
+            const levelBtn = event.target.closest('.level-btn-scrollable');
             if (levelBtn) {
                 const level = parseInt(levelBtn.dataset.level);
                 // Only process if this is the visible button
