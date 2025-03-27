@@ -9,7 +9,9 @@
 
 :root {
     /* Metallic button color variables */
+    --btn-metal-lighter: #f8f8f8;
     --btn-metal-light: #f0f0f0;
+    --btn-metal-mediumlight: #e0e0e0;
     --btn-metal-medium: #d0d0d0;
     --btn-metal-dark: #a8a8a8;
     --btn-metal-darker: #888888;
@@ -24,7 +26,7 @@
     --btn-text-shadow-dark: rgba(0, 0, 0, 0.4);
     
     /* Box styling variables */
-    --box-bg-color: #e8e8e8;
+    --box-bg-color: #f8f8f8;
     --box-border-color: #a0a0a0;
     --box-shadow-color: rgba(0, 0, 0, 0.15);
     --box-inner-shadow: rgba(0, 0, 0, 0.05);
@@ -58,13 +60,13 @@
     background: repeating-linear-gradient(
         120deg,
         var(--btn-metal-light) 0px,
-        var(--btn-metal-medium) 15px,
+        var(--btn-metal-medium) 10px,
         var(--btn-metal-light) 30px,
-        var(--btn-metal-dark) 45px,
-        var(--btn-metal-medium) 60px,
-        var(--btn-metal-dark) 75px,
-        var(--btn-metal-light) 90px,
-        var(--btn-metal-dark) 105px
+        var(--btn-metal-mediumlight) 55px,
+        var(--btn-metal-medium) 80px,
+        var(--btn-metal-mediumlight) 95px,
+        var(--btn-metal-light) 120px,
+        var(--btn-metal-medium) 135px
     );
     
     /* Additional gradient overlay for depth */
@@ -102,14 +104,14 @@
     /* Lighter metallic effect on hover */
     background: repeating-linear-gradient(
         120deg,
-        #f5f5f5 0px,
-        #d8d8d8 15px,
-        #f0f0f0 30px,
-        #b0b0b0 45px,
-        #e0e0e0 60px,
-        #c0c0c0 75px,
-        #f5f5f5 90px,
-        #b8b8b8 105px
+        var(--btn-metal-lighter) 0px,
+        var(--btn-metal-light) 15px,
+        var(--btn-metal-lighter) 35px,
+        var(--btn-metal-mediumlight) 60px,
+        var(--btn-metal-light) 85px,
+        var(--btn-metal-mediumlight) 100px,
+        var(--btn-metal-lighter) 125px,
+        var(--btn-metal-light) 140px
     );
     
     /* Lift up slightly with enhanced shadow */
@@ -124,14 +126,14 @@
     /* Darker metallic effect when pressed */
     background: repeating-linear-gradient(
         120deg,
-        #d0d0d0 0px,
-        #b0b0b0 15px,
-        #c8c8c8 30px,
-        #a0a0a0 45px,
-        #b8b8b8 60px,
-        #989898 75px,
-        #c0c0c0 90px,
-        #909090 105px
+        var(--btn-metal-medium) 0px,
+        var(--btn-metal-dark) 12px,
+        var(--btn-metal-mediumlight) 32px,
+        var(--btn-metal-darker) 57px,
+        var(--btn-metal-dark) 82px,
+        var(--btn-metal-medium) 97px,
+        var(--btn-metal-dark) 122px,
+        var(--btn-metal-darker) 137px
     );
     
     /* Press down effect */
