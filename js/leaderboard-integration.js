@@ -148,6 +148,7 @@ createBottomButtons() {
         
         // Create container
         const usernameAreaContainer = document.createElement('div');
+        usernameArea.className = 'username-area styled-box'; // Add styled-box class
         usernameAreaContainer.id = 'username-area-container';
         usernameAreaContainer.style.cssText = `
             position: fixed;
@@ -199,6 +200,7 @@ createBottomButtons() {
         
         const submitButton = document.createElement('button');
         submitButton.id = 'submit-username';
+        submitButton.className = 'metallic-button'; // Add metallic-button class
         submitButton.textContent = 'Submit';
         
         const returnButton = document.createElement('button');
