@@ -55,7 +55,7 @@ initializeUI() {
     // Add new scroller UI
     levelButtonsContainer.innerHTML = `
     <div class="level-scroller-container">
-        <button class="level-arrow up-arrow" aria-label="Previous level">
+        <button class="level-arrow up-arrow metallic-button" aria-label="Previous level">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="18 15 12 9 6 15"></polyline>
             </svg>
@@ -65,7 +65,7 @@ initializeUI() {
             ${this.createLevelButtons()}
         </div>
         
-        <button class="level-arrow down-arrow" aria-label="Next level">
+        <button class="level-arrow down-arrow metallic-button" aria-label="Next level">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="6 9 12 15 18 9"></polyline>
             </svg>
