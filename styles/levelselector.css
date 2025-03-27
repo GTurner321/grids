@@ -1,5 +1,6 @@
 /* ==========================================================================
-   LEVEL SELECTOR FIXES - Comprehensive fixes for visibility issues
+   LEVEL SCROLLER - SIMPLIFIED & FIXED
+   Removes screws, makes buttons narrower, and ensures proper alignment
    ========================================================================== */
 
 /* Level selector container - centered */
@@ -26,119 +27,85 @@
 
 .level-scroller-container {
   display: flex;
-  align-items: center; /* Vertical centering */
+  align-items: center;
   justify-content: center;
-  height: 70px;
-  margin: 10px auto;
-  position: relative;
-  overflow: visible;
+  height: 60px;
+  margin: 15px auto;
   width: 100%;
-  max-width: 320px; /* Add max-width to constrain container */
-  gap: 8px; /* Use gap instead of margins for consistent spacing */
+  max-width: 320px;
+  position: relative;
 }
 
 /* ==========================================================================
-   LEVEL BUTTON - Fixed positioning and visibility handling
+   UNIFIED LEVEL BUTTON GROUP - New approach with flex layout
    ========================================================================== */
 
-/* Fixed positioning container for level buttons */
-.level-btn-container {
-  order: 2;
-  position: relative;
-  width: 180px; /* Reduce width */
-  height: 60px;
-  margin: 0; /* Remove margins */
-  flex: 0 0 180px; /* Match the width */
+.level-button-group {
   display: flex;
+  align-items: stretch;
   justify-content: center;
-  align-items: center;
+  height: 50px;
+  width: 100%;
+  max-width: 280px;
 }
 
-/* Base level button - fixed positioning */
+/* ==========================================================================
+   LEVEL BUTTON - Fixed width and positioning
+   ========================================================================== */
+
+/* Level button container */
+.level-display-container {
+  position: relative;
+  flex: 1;
+  height: 100%;
+  max-width: 180px; /* Reduced by ~30% from original */
+  overflow: hidden;
+}
+
+/* Base level button styles */
 .level-btn-scrollable {
-  font-size: 1.2rem;
-  width: 170px;
-  height: 60px;
-  margin: 0;
-  
-  /* Position absolutely in the center of the container */
   position: absolute;
   top: 0;
-  left: 15px; /* (container width - button width)/2 */
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
   
-  /* Visibility handling - completely hide by default with opacity AND display */
+  /* Hide by default */
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
-  visibility: hidden; /* Add explicit visibility property */
   transition: opacity 0.3s ease, visibility 0.3s ease;
   
-  /* IMPORTANT: Remove all transforms from default state */
-  transform: none !important;
+  /* Remove screws - no ::before, ::after */
   
-  /* Ensure proper stacking context */
+  /* Ensure proper z-index */
   z-index: 1;
+  
+  /* Adjust border radius - only round left/right corners based on position */
+  border-radius: 0;
 }
 
-/* VISIBLE STATE - Make button visible when .visible class is added */
+/* VISIBLE STATE - Make button visible */
 .level-btn-scrollable.visible {
   opacity: 1 !important;
-  pointer-events: auto !important;
   visibility: visible !important;
-  z-index: 10 !important; /* Ensure it's above other buttons */
-  display: inline-flex !important; /* Explicitly set display to match metallic-button */
+  pointer-events: auto !important;
+  z-index: 10 !important;
 }
 
-/* Screw elements - fixed vertical centering without transforms */
-.level-btn-scrollable::before,
-.level-btn-scrollable::after {
-  content: '';
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  background-color: #b0b0b0;
-  border-radius: 50%;
-  z-index: 1;
-  
-  /* Screw styling */
-  border-top: 2px solid rgba(255, 255, 255, 0.8);
-  border-bottom: 2px solid rgba(0, 0, 0, 0.5);
-  box-shadow: 0 3px 4px rgba(0, 0, 0, 0.5),
-              inset 0 -1px 3px rgba(0, 0, 0, 0.3);
-  
-  /* Diagonal screw lines */
-  background-image: linear-gradient(135deg, transparent 45%, #555 45%, #555 55%, transparent 55%);
-}
-
-/* Position screws - FIXED vertical centering without transforms */
-.level-btn-scrollable::before,
-.level-btn-scrollable::after {
-  position: absolute;
-  top: calc(50% - 8px); /* Half of the screw height (16px/2) */
-}
-
-.level-btn-scrollable::before {
-  left: 10px;
-}
-
-.level-btn-scrollable::after {
-  right: 10px;
-}
-
-/* Hover state - using margin instead of transform */
-.level-btn-scrollable:hover:not(:disabled):not(.locked) {
-  margin-top: -1px;
-  margin-bottom: 1px;
-}
-
-/* Make locked levels semi-transparent */
+/* Make locked levels semi-transparent with lock icon */
 .level-btn-scrollable.locked {
-  opacity: 0.6 !important; /* Override the !important from .visible */
-  pointer-events: auto !important; /* Still allow clicks to show locked message */
+  opacity: 0.7 !important;
+  pointer-events: auto !important;
   position: relative;
 }
 
-/* Add a lock icon overlay */
-.level-btn-scrollable.locked::before {
+/* Add lock icon for locked levels */
+.level-btn-scrollable.locked::after {
   content: '🔒';
   position: absolute;
   top: 50%;
@@ -146,151 +113,111 @@
   transform: translate(-50%, -50%);
   font-size: 1.2rem;
   z-index: 2;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Active state for the selected level */
+.level-btn-scrollable.active {
+  background-blend-mode: overlay;
+  background-color: rgba(0, 0, 255, 0.1);
 }
 
 /* ==========================================================================
-   ARROW BUTTONS - Fixed alignment
+   ARROW BUTTONS - Squared and attached to the level button
    ========================================================================== */
 
 /* Base arrow button */
 .level-arrow {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
+  width: 40px;
+  height: 100%;
   padding: 0;
-  flex: 0 0 auto;
-  z-index: 10;
-  margin: 0;
-  /* Ensure arrow buttons maintain aspect ratio */
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  
+  /* Square corners except for outer edges */
+  border-radius: 0;
 }
 
-/* Left arrow */
-.level-arrow.left-arrow {
-  order: 1;
+/* Up/left arrow - round left corners only */
+.level-arrow.up-arrow {
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
 }
 
-/* Right arrow */
-.level-arrow.right-arrow {
-  order: 3;
+/* Down/right arrow - round right corners only */
+.level-arrow.down-arrow {
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
 }
 
-/* Arrow SVG styling - center content */
+/* Arrow SVG styling */
 .level-arrow svg {
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
   filter: drop-shadow(0px 1px 1px rgba(255, 255, 255, 0.7))
          drop-shadow(0px -1px 1px rgba(0, 0, 0, 0.4));
   fill: #444;
   stroke: #444;
   stroke-width: 1px;
-  margin: 0 !important;
 }
 
 /* ==========================================================================
-   RESPONSIVE ADJUSTMENTS - Fixed positioning and alignment
+   RESPONSIVE ADJUSTMENTS
    ========================================================================== */
 
 /* Mobile Optimizations */
 @media (max-width: 768px) {
   .level-scroller-container {
-    height: 60px; /* Match container height to content */
+    height: 50px;
+    max-width: 280px;
   }
   
-  .level-btn-container {
-    width: 170px;
-    height: 40px; /* Match button height */
-    flex: 0 0 170px;
+  .level-button-group {
+    height: 44px;
   }
   
   .level-btn-scrollable {
     font-size: 1.1rem;
-    width: 170px;
-    height: 40px;
-    left: 0; /* Center by aligning with container */
   }
   
-  /* Preserve aspect ratio for arrow buttons */
   .level-arrow {
-    width: 38px;
-    height: 38px;
-    margin: 0 10px;
-    /* Ensure arrows stay centered vertically */
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    width: 36px;
   }
   
   .level-arrow svg {
-    width: 26px;
-    height: 26px;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* Even smaller screens */
+@media (max-width: 375px) {
+  .level-scroller-container {
+    height: 44px;
+    max-width: 240px;
   }
   
-  /* Adjust the screw size and position - NO TRANSFORMS */
-  .level-btn-scrollable::before,
-  .level-btn-scrollable::after {
-    width: 12px;
-    height: 12px;
+  .level-button-group {
+    height: 40px;
   }
   
-  /* Fixed vertical positioning without transform */
-  .level-btn-scrollable::before {
-    left: 8px;
-    top: calc(50% - 6px); /* Half of the smaller screw height */
+  .level-btn-scrollable {
+    font-size: 1rem;
   }
   
-  .level-btn-scrollable::after {
-    right: 8px;
-    top: calc(50% - 6px); /* Half of the smaller screw height */
+  .level-arrow {
+    width: 32px;
+  }
+  
+  .level-arrow svg {
+    width: 18px;
+    height: 18px;
   }
 }
 
 /* Touch device optimizations */
 .touch-device .level-arrow {
-  min-height: 48px;
-  min-width: 48px;
-}
-
-/* Even smaller screens */
-@media (max-width: 375px) {
-  .level-btn-container {
-    width: 160px;
-    flex: 0 0 160px;
-  }
-  
-  .level-btn-scrollable {
-    width: 160px;
-    font-size: 1rem;
-  }
-  
-  .level-arrow {
-    width: 34px;
-    height: 34px;
-    margin: 0 8px;
-  }
-  
-  .level-arrow svg {
-    width: 22px;
-    height: 22px;
-  }
-  
-  .level-btn-scrollable::before,
-  .level-btn-scrollable::after {
-    width: 10px;
-    height: 10px;
-  }
-  
-  /* Fixed vertical positioning without transform */
-  .level-btn-scrollable::before {
-    left: 6px;
-    top: calc(50% - 5px); /* Half of the smallest screw height */
-  }
-  
-  .level-btn-scrollable::after {
-    right: 6px;
-    top: calc(50% - 5px); /* Half of the smallest screw height */
-  }
+  min-height: 44px;
+  min-width: 40px;
 }
