@@ -1,99 +1,79 @@
-/* ===========================================================================
-   LEVEL SELECTOR STYLING - FIXED VERSION
-   Leverages buttonsboxes.css classes for metallic styling
-   =========================================================================== */
-
 /* ==========================================================================
-   1. LEVEL SELECTOR CONTAINER - extends styled-box
+   LEVEL SELECTOR FIXES - Complete alignment and positioning
    ========================================================================== */
 
+/* Level selector container - centered */
 .level-selector-container {
-  /* Apply styled-box class in HTML for base styling */
-  /* Add specific overrides */
   padding: 15px 10px;
   margin: 15px auto 10px;
+  text-align: center;
 }
 
-/* Level selector title - extends styled-box-title */
+/* Level selector title - centered */
 .level-selector-title {
-  /* Apply styled-box-title class in HTML */
-  color: #00008B; /* Dark blue - override default color */
+  color: #00008B;
   margin-bottom: 8px;
   font-family: 'Trebuchet MS', sans-serif;
   font-weight: bold;
   text-align: center;
   text-shadow: 0px 1px 2px rgba(255, 255, 255, 0.8);
-}
-
-.flashing-arrow {
-  animation: flash 1s infinite;
-  display: inline-block;
-  font-weight: bold;
-  font-size: 1.2em; /* Makes the arrows slightly larger than the text */
-}
-
-@keyframes flash {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+  width: 100%;
 }
 
 /* ==========================================================================
-   2. LEVEL SCROLLER CONTAINER
+   LEVEL SCROLLER CONTAINER - Improved alignment
    ========================================================================== */
 
 .level-scroller-container {
-  /* Simple flex container */
   display: flex;
-  align-items: center;
+  align-items: center; /* Vertical centering */
   justify-content: center;
   height: 70px;
-  margin: 10px 0;
+  margin: 10px auto;
   position: relative;
-  overflow: visible; /* Ensure elements aren't accidentally hidden */
+  overflow: visible;
+  width: 100%;
 }
 
 /* ==========================================================================
-   3. LEVEL BUTTON - extends metallic-button
+   LEVEL BUTTON - Fixed positioning and screw alignment
    ========================================================================== */
 
 /* Fixed positioning container for level buttons */
 .level-btn-container {
-  /* Keep centered in the flex layout */
   order: 2;
   position: relative;
-  width: 200px; /* Increased width for text and screws */
-  height: 50px;
-  /* Ensure this container doesn't move or resize */
-  flex: 0 0 170px;
+  width: 200px;
+  height: 60px; /* Match button height */
+  margin: 0 auto;
+  flex: 0 0 200px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-/* Base level button - apply metallic-button class in HTML */
+/* Base level button - fixed positioning */
 .level-btn-scrollable {
-  /* Apply metallic-button class in HTML for base styling */
-  /* Specific level button styles */
   font-size: 1.2rem;
-  width: 170px; /* Increased from 100px (70% wider) */
+  width: 170px;
   height: 60px;
   margin: 0;
   
   /* Position absolutely in the center of the container */
   position: absolute;
   top: 0;
-  left: 0;
+  left: 15px; /* (container width - button width)/2 */
   
   /* Visibility handling */
-  opacity: 0; /* Start invisible */
+  opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;
   
-  /* IMPORTANT: Keep transforms only for hover state, not for positioning */
+  /* IMPORTANT: No transforms for initial positioning */
   transform: none;
 }
 
-/* Screw elements - unique to level selector buttons */
+/* Screw elements - fixed vertical centering */
 .level-btn-scrollable::before,
 .level-btn-scrollable::after {
   content: '';
@@ -114,71 +94,54 @@
   background-image: linear-gradient(135deg, transparent 45%, #555 45%, #555 55%, transparent 55%);
 }
 
-/* Position screws */
+/* Position screws - FIXED vertical centering */
 .level-btn-scrollable::before {
   left: 10px;
-  top: calc(50% - 8px); /* Half the screw height */
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .level-btn-scrollable::after {
   right: 10px;
-  top: calc(50% - 8px); /* Half the screw height */
+  top: 50%;
+  transform: translateY(-50%);
 }
 
-/* Visible state */
-.level-btn-scrollable.visible {
-  opacity: 1;
-  pointer-events: auto;
-  /* Ensure no transform is applied here */
-  transform: none;
-}
-
-/* Locked state */
-.level-btn-scrollable.locked {
-  opacity: 0.4;
-  pointer-events: none;
-  cursor: not-allowed;
-}
-
-/* Hover state - only apply 1px movement on hover and nothing else */
+/* Hover state */
 .level-btn-scrollable:hover:not(:disabled):not(.locked) {
-  transform: translateY(-1px) !important; /* Force 1px movement, override other transforms */
-}
-
-/* Active state - return to normal position when clicked */
-.level-btn-scrollable:active:not(:disabled):not(.locked),
-.level-btn-scrollable.active:not(.locked) {
-  transform: none !important; /* Force back to normal position */
+  transform: translateY(-1px) !important;
 }
 
 /* ==========================================================================
-   4. ARROW BUTTONS - extends metallic-button 
+   ARROW BUTTONS - Fixed alignment
    ========================================================================== */
 
-/* Base arrow button - apply metallic-button class in HTML */
+/* Base arrow button */
 .level-arrow {
-  /* Apply metallic-button class in HTML */
-  /* Arrow-specific styles */
   width: 44px;
   height: 44px;
-  border-radius: 50%; /* Circular button */
+  border-radius: 50%;
   padding: 0;
   flex: 0 0 auto;
   z-index: 10;
-  margin: 0 15px; /* Add margin for spacing from the center */
+  margin: 0 15px;
+  /* Ensure arrow buttons maintain aspect ratio */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /* Left arrow */
 .level-arrow.left-arrow {
-  order: 1; /* Flexbox order - first item */
+  order: 1;
 }
 
 /* Right arrow */
 .level-arrow.right-arrow {
-  order: 3; /* Flexbox order - last item */
+  order: 3;
 }
 
-/* Arrow SVG styling */
+/* Arrow SVG styling - center content */
 .level-arrow svg {
   width: 30px;
   height: 30px;
@@ -187,68 +150,41 @@
   fill: #444;
   stroke: #444;
   stroke-width: 1px;
-  margin: 0 !important; /* Override metallic-button margin */
+  margin: 0 !important;
 }
 
 /* ==========================================================================
-   5. ANIMATION FOR LEVEL CHANGE (MODIFIED)
-   ========================================================================== */
-
-/* Replace the pulse animation with a fade transition */
-.level-btn-scrollable.changing {
-  /* No animation that moves the button */
-  /* Just a subtle opacity effect */
-  opacity: 0.9;
-  transition: opacity 0.2s ease-in-out;
-}
-
-.level-btn-scrollable.visible.changing::after,
-.level-btn-scrollable.visible.changing::before {
-  /* Optional: Slightly rotate screws for change indication */
-  transform: rotate(45deg);
-  transition: transform 0.3s ease-in-out;
-}
-
-/* ==========================================================================
-   6. RESPONSIVE ADJUSTMENTS - FIXED VERSION
+   RESPONSIVE ADJUSTMENTS - Fixed positioning and alignment
    ========================================================================== */
 
 /* Mobile Optimizations */
 @media (max-width: 768px) {
   .level-scroller-container {
-    height: 55px;
+    height: 60px; /* Match container height to content */
   }
   
   .level-btn-container {
-    width: 170px; /* Match the width of the button */
-    height: 50px;
-    flex: 0 0 170px; /* Match the width of the button */
+    width: 170px;
+    height: 40px; /* Match button height */
+    flex: 0 0 170px;
   }
   
   .level-btn-scrollable {
     font-size: 1.1rem;
     width: 170px;
     height: 40px;
-    /* Center the button within the container */
-    left: 50%;
-    transform: translateX(-50%);
+    left: 0; /* Center by aligning with container */
   }
   
-  /* Reset hover state to apply correct transform */
-  .level-btn-scrollable:hover:not(:disabled):not(.locked) {
-    transform: translateX(-50%) translateY(-1px) !important;
-  }
-  
-  /* Reset active state */
-  .level-btn-scrollable:active:not(:disabled):not(.locked),
-  .level-btn-scrollable.active:not(.locked) {
-    transform: translateX(-50%) !important;
-  }
-  
+  /* Preserve aspect ratio for arrow buttons */
   .level-arrow {
     width: 38px;
     height: 38px;
     margin: 0 10px;
+    /* Ensure arrows stay centered vertically */
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
   
   .level-arrow svg {
@@ -256,7 +192,7 @@
     height: 26px;
   }
   
-  /* Adjust the screw size for smaller screens */
+  /* Adjust the screw size and position */
   .level-btn-scrollable::before,
   .level-btn-scrollable::after {
     width: 12px;
@@ -265,12 +201,16 @@
   
   .level-btn-scrollable::before {
     left: 8px;
-    top: calc(50% - 6px); /* Half of 12px */
+    /* Fixed vertical positioning with transform */
+    top: 50%;
+    transform: translateY(-50%);
   }
   
   .level-btn-scrollable::after {
     right: 8px;
-    top: calc(50% - 6px); /* Half of 12px */
+    /* Fixed vertical positioning with transform */
+    top: 50%;
+    transform: translateY(-50%);
   }
 }
 
@@ -283,14 +223,13 @@
 /* Even smaller screens */
 @media (max-width: 375px) {
   .level-btn-container {
-    width: 160px; /* Match the width of the button */
-    flex: 0 0 160px; /* Match the width of the button */
+    width: 160px;
+    flex: 0 0 160px;
   }
   
   .level-btn-scrollable {
     width: 160px;
     font-size: 1rem;
-    /* No need to change left/transform as they're already set to center in the previous media query */
   }
   
   .level-arrow {
@@ -312,11 +251,15 @@
   
   .level-btn-scrollable::before {
     left: 6px;
-    top: calc(50% - 5px); /* Half of 10px */
+    /* Keep using transform for vertical centering */
+    top: 50%;
+    transform: translateY(-50%);
   }
   
   .level-btn-scrollable::after {
     right: 6px;
-    top: calc(50% - 5px); /* Half of 10px */
+    /* Keep using transform for vertical centering */
+    top: 50%;
+    transform: translateY(-50%);
   }
 }
