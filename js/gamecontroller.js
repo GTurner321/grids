@@ -1040,24 +1040,45 @@ resetPath() {
     }
 }
 
-// Initialize game and store reference - with retries for reliability
+// Replace the existing initializeGameController function with this one
 function initializeGameController() {
-    console.log('Attempting to initialize game controller...');
+    console.log('Ensuring game controller is available globally...');
     
-    if (document.readyState === 'loading') {
-        // If document is still loading, wait for it to be ready
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('DOM fully loaded, creating game controller');
-            window.gameController = new GameController();
-        });
-    } else {
-        // Document is already ready, create controller immediately
-        console.log('DOM already loaded, creating game controller');
-        window.gameController = new GameController();
+    // First check if controller already exists
+    if (window.gameController && typeof window.gameController.startLevel === 'function') {
+        console.log('Game controller already initialized and available.');
+        return;
     }
+    
+    console.log('Creating new game controller...');
+    
+    // Create controller and store globally regardless of document state
+    window.gameController = new GameController();
+    
+    // Also create a test function to verify it works
+    window.testGameController = function() {
+        if (window.gameController && typeof window.gameController.startLevel === 'function') {
+            console.log('Game controller test successful: Controller is available.');
+            return true;
+        } else {
+            console.log('Game controller test failed: Controller is not available.');
+            return false;
+        }
+    };
+    
+    // Announce that it's ready
+    console.log('Game controller initialized and available as window.gameController');
 }
 
-// Start initialization
+// Run initialization immediately
 initializeGameController();
+
+// Also add a fallback initialization after a delay to ensure it runs
+setTimeout(() => {
+    if (!window.gameController || typeof window.gameController.startLevel !== 'function') {
+        console.log('Fallback: Re-initializing game controller...');
+        initializeGameController();
+    }
+}, 1000);
 
 export default GameController;
