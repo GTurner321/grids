@@ -77,19 +77,19 @@ class LevelScroller {
         this.updateVisibleLevel();
     }
     
-    createLevelButtons() {
-        let buttonsHtml = '';
-        
-        for (let i = 1; i <= this.maxLevels; i++) {
-            buttonsHtml += `
-                <button class="level-btn level-btn-scrollable" data-level="${i}">
-                    LEVEL ${i}
-                </button>
-            `;
-        }
-        
-        return buttonsHtml;
+createLevelButtons() {
+    let buttonsHtml = '';
+    
+    for (let i = 1; i <= this.maxLevels; i++) {
+        buttonsHtml += `
+            <button class="level-btn level-btn-scrollable metallic-button" data-level="${i}">
+                LEVEL ${i}
+            </button>
+        `;
     }
+    
+    return buttonsHtml;
+}
     
     attachEventListeners() {
         // Up arrow (decrements level, loops from 1 to 10)
