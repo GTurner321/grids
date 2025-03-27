@@ -91,13 +91,13 @@
         </main>
     </div>
     
-    <!-- Game Scripts --><!-- Module scripts that depend on each other -->
-    <script type="module" src="js/rules.js"></script>
-    <script type="module" src="js/leveltracker.js"></script>
-    <script type="module" src="js/scoremanager.js"></script>
-    <script type="module" src="js/levelscroller.js"></script>
-    <script type="module" src="js/gamecontroller.js"></script>
-    <script type="module" src="js/leaderboard-integration.js"></script>
+    <!-- Game Scripts -->
+<script type="module" src="js/rules.js"></script>
+<script type="module" src="js/leveltracker.js"></script>
+<script type="module" src="js/scoremanager.js"></script>
+<script type="module" src="js/gamecontroller.js"></script>  <!-- Load this BEFORE levelscroller.js -->
+<script type="module" src="js/levelscroller.js"></script>
+<script type="module" src="js/leaderboard-integration.js"></script>
 
     <!-- Non-module scripts that enhance the UI -->
     <script src="js/button-effects.js"></script>
