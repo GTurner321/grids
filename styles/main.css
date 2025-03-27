@@ -390,7 +390,7 @@ body {
 }
 
 /* ==========================================================================
-   8. GAME CONTROLS - UPDATED WITH LILAC STYLING & FIXES
+   8. GAME CONTROLS - UPDATED WITH METALLIC STYLING
    ========================================================================== */
 
 .game-controls {
@@ -400,73 +400,31 @@ body {
   justify-content: center;
   gap: 8px;
   width: 100%;
-  max-width: var(--grid-total-width); /* Match the grid width instead of fixed 640px */
+  max-width: var(--grid-total-width); /* Match the grid width */
   margin-left: auto;
   margin-right: auto;
 }
 
-/* Base button styling with lilac gradient */
+/* Apply metallic button base style from buttonsboxes.css */
 .game-controls button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 12px;
+  /* Add metallic-button class via JavaScript or directly in HTML */
   font-size: 0.9rem;
-  font-family: 'Trebuchet MS', Arial, sans-serif;
-  font-weight: bold;
-  background: linear-gradient(to bottom, var(--lilac-light), var(--lilac-medium), var(--lilac-dark)); /* Graduated lilac */
-  color: white;
-  border: 2px solid var(--lilac-border); /* Lighter lilac border */
-  border-bottom-width: 3px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  padding: 8px 12px;
   height: 40px;
-  text-transform: uppercase; /* UPPERCASE TEXT */
-  letter-spacing: 0.03em; /* Better letter spacing */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  /* Ensure initial state is consistent */
-  transform: translateY(0);
 }
 
-/* Only apply hover effects to non-disabled buttons */
-.game-controls button:hover:not(:disabled) {
-  background: linear-gradient(to bottom, var(--lilac-medium), var(--lilac-light), var(--lilac-medium)); /* Graduated lilac */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  transform: translateY(-2px);
-}
-
-/* Only apply active effects to non-disabled buttons */
-.game-controls button:active:not(:disabled) {
-  transform: translateY(1px);
-  border-bottom-width: 1px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-/* Ensure buttons return to normal state after being released */
-.game-controls button:not(:active) {
-  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
-}
-
-.game-controls button svg {
-  width: 14px;
-  height: 14px;
-  margin-right: 6px;
-  stroke: white;
-}
-
-/* Button layout for specific controls - adjusted proportions */
+/* Button layout for specific controls */
 #check-solution {
-  width: 28%; /* Reduced from 30% */
+  width: 28%;
 }
 
 #remove-spare {
-  width: 44%; /* Increased from 40% to be 10% wider */
-  transition: opacity 1s ease, visibility 1s ease, position 0.5s ease; /* Smooth transition */
+  width: 44%;
+  transition: opacity 1s ease, visibility 1s ease, position 0.5s ease;
 }
 
 #reset-path {
-  width: 28%; /* Reduced from 30% */
+  width: 28%;
 }
 
 /* Hide Remove Spares button when used */
@@ -483,60 +441,17 @@ body {
 .game-controls.two-buttons #check-solution,
 .game-controls.two-buttons #reset-path {
   width: 45%;
-  transition: width 1s ease; /* Smooth transition for width change */
+  transition: width 1s ease;
 }
 
-/* Mobile adjustment for two-button layout */
-@media (max-width: 768px) {
-  .game-controls.two-buttons #check-solution,
-  .game-controls.two-buttons #reset-path {
-    width: 49% !important;
-  }
+/* SVG icons in buttons */
+.game-controls button svg {
+  width: 14px;
+  height: 14px;
+  margin-right: 6px;
 }
 
-/* Button animation - PULSE ONLY */
-@keyframes buttonPulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
-}
-
-.game-controls button.clicked {
-  animation: buttonPulse 0.3s ease-in-out;
-}
-
-/* Reset button after animation completes to prevent persistent states */
-.game-controls button.clicked:not(:active) {
-  transform: translateY(0);
-  border-bottom-width: 3px;
-}
-
-/* REMOVE persistent active/focus/selected states */
-.game-controls button:focus,
-.game-controls button.active,
-.game-controls button.selected {
-  background: linear-gradient(to bottom, var(--lilac-light), var(--lilac-medium), var(--lilac-dark));
-  color: white;
-  /* Don't change position on focus/active/selected - only on :active state */
-  transform: translateY(0);
-  border-bottom-width: 3px;
-}
-
-/* Disabled button state - make it translucent lilac instead of gray */
-.game-controls button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  background: linear-gradient(to bottom, var(--lilac-light), var(--lilac-medium), var(--lilac-dark));
-  border-color: var(--lilac-border);
-  /* Force normal position for disabled buttons */
-  transform: translateY(0) !important;
-  border-bottom-width: 3px !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
-  /* Don't allow hover or active effects */
-  pointer-events: none;
-}
-
-/* Specific adjustments for smaller screens */
+/* Mobile adjustments */
 @media (max-width: 768px) {
   .game-controls {
     width: calc(100vw - 20px);
@@ -544,17 +459,19 @@ body {
     margin: 12px auto !important;
   }
   
-  .game-controls button {
-    font-size: 1rem; /* Larger text for mobile */
+  .game-controls.two-buttons #check-solution,
+  .game-controls.two-buttons #reset-path {
+    width: 49% !important;
   }
 }
 
 @media (max-width: 480px) {
   .game-controls button {
-    font-size: 0.9rem; /* Slightly larger than original */
+    font-size: 0.8rem;
     padding: 6px 8px;
   }
 }
+
 /* ==========================================================================
    9. BOTTOM BUTTONS (RECORD NAME & LEADERBOARD) - UPDATED WITH GRADUATED STYLING
    ========================================================================== */
