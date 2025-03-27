@@ -58,7 +58,7 @@
   position: relative;
   flex: 1;
   height: 100%;
-  max-width: 180px; /* Reduced by ~30% from original */
+  max-width: 153px; /* Reduced by ~15% more (total reduction ~40%) */
   overflow: hidden;
 }
 
@@ -127,8 +127,9 @@
 
 /* Base arrow button */
 .level-arrow {
-  width: 40px;
+  aspect-ratio: 1/1; /* Make it a perfect square */
   height: 100%;
+  width: auto; /* Width will be determined by aspect-ratio */
   padding: 0;
   display: flex;
   align-items: center;
@@ -170,11 +171,15 @@
 @media (max-width: 768px) {
   .level-scroller-container {
     height: 50px;
-    max-width: 280px;
+    max-width: 260px;
   }
   
   .level-button-group {
     height: 44px;
+  }
+  
+  .level-display-container {
+    max-width: 120px; /* Reduced by ~25% for small screens */
   }
   
   .level-btn-scrollable {
@@ -182,7 +187,7 @@
   }
   
   .level-arrow {
-    width: 36px;
+    /* Width will be determined by aspect-ratio */
   }
   
   .level-arrow svg {
@@ -195,19 +200,19 @@
 @media (max-width: 375px) {
   .level-scroller-container {
     height: 44px;
-    max-width: 240px;
+    max-width: 220px;
   }
   
   .level-button-group {
     height: 40px;
   }
   
-  .level-btn-scrollable {
-    font-size: 1rem;
+  .level-display-container {
+    max-width: 100px; /* Even smaller for very small screens */
   }
   
-  .level-arrow {
-    width: 32px;
+  .level-btn-scrollable {
+    font-size: 1rem;
   }
   
   .level-arrow svg {
@@ -219,5 +224,19 @@
 /* Touch device optimizations */
 .touch-device .level-arrow {
   min-height: 44px;
-  min-width: 40px;
+  /* No min-width needed, will be set by aspect-ratio */
+}
+
+/* Animation for button click */
+@keyframes button-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+/* Use the animation but ensure it returns to normal state */
+.level-btn-scrollable.clicked,
+.level-arrow.clicked {
+  animation: button-pulse 0.2s ease-in-out;
+  /* No residual hover effects after animation */
 }
