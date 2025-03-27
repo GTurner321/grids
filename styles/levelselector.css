@@ -28,6 +28,8 @@
 .flashing-arrow {
   animation: flash 1s infinite;
   display: inline-block;
+  font-weight: bold;
+  font-size: 1.2em; /* Makes the arrows slightly larger than the text */
 }
 
 @keyframes flash {
