@@ -1,5 +1,5 @@
 /* ===========================================================================
-   LEVEL SELECTOR STYLING - EFFICIENT VERSION
+   LEVEL SELECTOR STYLING - FIXED VERSION
    Leverages buttonsboxes.css classes for metallic styling
    =========================================================================== */
 
@@ -33,28 +33,48 @@
   height: 70px;
   margin: 10px 0;
   position: relative;
+  overflow: visible; /* Ensure elements aren't accidentally hidden */
 }
 
 /* ==========================================================================
    3. LEVEL BUTTON - extends metallic-button
    ========================================================================== */
 
+/* Fixed positioning container for level buttons */
+.level-btn-container {
+  /* Keep centered in the flex layout */
+  order: 2;
+  position: relative;
+  width: 170px; /* Increased width for text and screws */
+  height: 60px;
+  /* Ensure this container doesn't move or resize */
+  flex: 0 0 170px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 /* Base level button - apply metallic-button class in HTML */
 .level-btn-scrollable {
   /* Apply metallic-button class in HTML for base styling */
   /* Specific level button styles */
   font-size: 2.2rem;
-  width: 100px; 
+  width: 170px; /* Increased from 100px (70% wider) */
   height: 60px;
-  margin: 0 15px;
+  margin: 0;
   
-  /* Position in the center */
-  order: 2; /* Flexbox order - center item */
+  /* Position absolutely in the center of the container */
+  position: absolute;
+  top: 0;
+  left: 0;
   
   /* Visibility handling */
   opacity: 0; /* Start invisible */
   pointer-events: none;
   transition: opacity 0.3s ease;
+  
+  /* IMPORTANT: Keep transforms only for hover state, not for positioning */
+  transform: none;
 }
 
 /* Screw elements - unique to level selector buttons */
@@ -78,7 +98,7 @@
   background-image: linear-gradient(135deg, transparent 45%, #555 45%, #555 55%, transparent 55%);
 }
 
-/* Position screws - use fixed positioning instead of transforms */
+/* Position screws */
 .level-btn-scrollable::before {
   left: 10px;
   top: calc(50% - 8px); /* Half the screw height */
@@ -93,6 +113,8 @@
 .level-btn-scrollable.visible {
   opacity: 1;
   pointer-events: auto;
+  /* Ensure no transform is applied here */
+  transform: none;
 }
 
 /* Locked state */
@@ -102,9 +124,15 @@
   cursor: not-allowed;
 }
 
-/* Hover state - override metallic-button for 1px movement */
+/* Hover state - only apply 1px movement on hover and nothing else */
 .level-btn-scrollable:hover:not(:disabled):not(.locked) {
-  transform: translateY(-1px) !important; /* Force 1px movement */
+  transform: translateY(-1px) !important; /* Force 1px movement, override other transforms */
+}
+
+/* Active state - return to normal position when clicked */
+.level-btn-scrollable:active:not(:disabled):not(.locked),
+.level-btn-scrollable.active:not(.locked) {
+  transform: none !important; /* Force back to normal position */
 }
 
 /* ==========================================================================
@@ -121,6 +149,7 @@
   padding: 0;
   flex: 0 0 auto;
   z-index: 10;
+  margin: 0 15px; /* Add margin for spacing from the center */
 }
 
 /* Left arrow */
@@ -146,17 +175,22 @@
 }
 
 /* ==========================================================================
-   5. ANIMATION FOR LEVEL CHANGE
+   5. ANIMATION FOR LEVEL CHANGE (MODIFIED)
    ========================================================================== */
 
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+/* Replace the pulse animation with a fade transition */
+.level-btn-scrollable.changing {
+  /* No animation that moves the button */
+  /* Just a subtle opacity effect */
+  opacity: 0.9;
+  transition: opacity 0.2s ease-in-out;
 }
 
-.level-btn-scrollable.visible.changing {
-  animation: pulse 0.3s ease-in-out;
+.level-btn-scrollable.visible.changing::after,
+.level-btn-scrollable.visible.changing::before {
+  /* Optional: Slightly rotate screws for change indication */
+  transform: rotate(45deg);
+  transition: transform 0.3s ease-in-out;
 }
 
 /* ==========================================================================
@@ -169,15 +203,22 @@
     height: 55px;
   }
   
+  .level-btn-container {
+    width: 140px;
+    height: 50px;
+    flex: 0 0 140px;
+  }
+  
   .level-btn-scrollable {
     font-size: 1.6rem;
-    width: 80px;
+    width: 140px; /* Adjusted for mobile but still wider than original */
     height: 50px;
   }
   
   .level-arrow {
     width: 38px;
     height: 38px;
+    margin: 0 10px;
   }
   
   .level-arrow svg {
@@ -211,15 +252,20 @@
 
 /* Even smaller screens */
 @media (max-width: 375px) {
+  .level-btn-container {
+    width: 120px;
+    flex: 0 0 120px;
+  }
+  
   .level-btn-scrollable {
-    width: 70px;
+    width: 120px;
     font-size: 1.4rem;
-    margin: 0 10px;
   }
   
   .level-arrow {
     width: 34px;
     height: 34px;
+    margin: 0 8px;
   }
   
   .level-arrow svg {
