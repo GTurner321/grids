@@ -1050,10 +1050,6 @@ function initializeGameController() {
             console.log('DOM fully loaded, creating game controller');
             window.gameController = new GameController();
         });
-    } else {
-        // Document is already ready, create controller immediately
-        console.log('DOM already loaded, creating game controller');
-        window.gameController = new GameController();
     }
 }
 
