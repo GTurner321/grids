@@ -148,7 +148,6 @@ createBottomButtons() {
         
         // Create container
         const usernameAreaContainer = document.createElement('div');
-        usernameArea.className = 'username-area styled-box'; // Add styled-box class
         usernameAreaContainer.id = 'username-area-container';
         usernameAreaContainer.style.cssText = `
             position: fixed;
@@ -170,6 +169,7 @@ createBottomButtons() {
         
         // Username submission area
         const usernameArea = document.createElement('div');
+        usernameArea.className = 'username-area styled-box';
         usernameArea.className = 'username-area';
         usernameArea.style.cssText = `
             width: 85%;
