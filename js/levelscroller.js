@@ -97,7 +97,13 @@ class LevelScroller {
         // Up arrow (decrements level, loops from 1 to 10)
         const upArrow = document.querySelector('.up-arrow');
         if (upArrow) {
-            upArrow.addEventListener('click', () => {
+            upArrow.addEventListener('click', (e) => {
+                // Add clicked class and remove after animation completes
+                upArrow.classList.add('clicked');
+                setTimeout(() => {
+                    upArrow.classList.remove('clicked');
+                }, 200);
+                
                 this.currentLevel = this.currentLevel === 1 ? this.maxLevels : this.currentLevel - 1;
                 this.updateVisibleLevel();
             });
@@ -107,6 +113,12 @@ class LevelScroller {
         const downArrow = document.querySelector('.down-arrow');
         if (downArrow) {
             downArrow.addEventListener('click', () => {
+                // Add clicked class and remove after animation completes
+                downArrow.classList.add('clicked');
+                setTimeout(() => {
+                    downArrow.classList.remove('clicked');
+                }, 200);
+                
                 this.currentLevel = this.currentLevel === this.maxLevels ? 1 : this.currentLevel + 1;
                 this.updateVisibleLevel();
             });
@@ -118,6 +130,12 @@ class LevelScroller {
             levelDisplayContainer.addEventListener('click', (event) => {
                 const levelBtn = event.target.closest('.level-btn-scrollable');
                 if (levelBtn) {
+                    // Add clicked class and remove after animation completes
+                    levelBtn.classList.add('clicked');
+                    setTimeout(() => {
+                        levelBtn.classList.remove('clicked');
+                    }, 200);
+                    
                     const level = parseInt(levelBtn.dataset.level);
                     // Only process if this is the visible button
                     if (level === this.currentLevel) {
