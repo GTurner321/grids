@@ -1027,93 +1027,114 @@ handleButtonsAfterSubmission() {
         console.log('Loaded leaderboard data from Supabase:', this.leaderboardData.length, 'entries');
     }
     
-    // Render leaderboard UI
-    renderLeaderboard() {
-        const tableBody = document.getElementById('leaderboard-table');
-        if (!tableBody) return;
-        
-        // Clear existing content
-        tableBody.innerHTML = '';
-        
-        // Create header row
-        const headerRow = document.createElement('div');
-        headerRow.className = 'leaderboard-row header';
-        
-        const rankHeader = document.createElement('div');
-        rankHeader.className = 'leaderboard-cell rank';
-        rankHeader.textContent = 'RANK';
-        
-        const nameHeader = document.createElement('div');
-        nameHeader.className = 'leaderboard-cell name';
-        nameHeader.textContent = 'NAME';
-        
-        const scoreHeader = document.createElement('div');
-        scoreHeader.className = 'leaderboard-cell score';
-        scoreHeader.textContent = 'SCORE';
-        
-        const dateHeader = document.createElement('div');
-        dateHeader.className = 'leaderboard-cell date';
-        dateHeader.textContent = 'DATE';
-        
-        headerRow.appendChild(rankHeader);
-        headerRow.appendChild(nameHeader);
-        headerRow.appendChild(scoreHeader);
-        headerRow.appendChild(dateHeader);
-        
-        tableBody.appendChild(headerRow);
-        
-        // Add data rows
-        this.leaderboardData.forEach((entry, index) => {
-            const row = document.createElement('div');
-            row.className = 'leaderboard-row';
-            
-            // Highlight current user
-            if (entry.name === this.username) {
-                row.classList.add('current-user');
-                // Add animation for new entries
-                if (entry.score === this.sessionHighScore) {
-                    row.classList.add('new-entry');
-                    
-                    // Remove the animation class after it's done
-                    setTimeout(() => {
-                        row.classList.remove('new-entry');
-                    }, 2000);
-                }
-            }
-
-            const rankCell = document.createElement('div');
-            rankCell.className = 'leaderboard-cell rank';
-            rankCell.textContent = `${index + 1}`;
-            
-            const nameCell = document.createElement('div');
-            nameCell.className = 'leaderboard-cell name';
-            nameCell.textContent = entry.name;
-            
-            const scoreCell = document.createElement('div');
-            scoreCell.className = 'leaderboard-cell score';
-            scoreCell.textContent = entry.score.toString();
-            
-            const date = new Date(entry.date);
-            const dateCell = document.createElement('div');
-            dateCell.className = 'leaderboard-cell date';
-            dateCell.textContent = `${date.toLocaleDateString()}`;
-            
-            row.appendChild(rankCell);
-            row.appendChild(nameCell);
-            row.appendChild(scoreCell);
-            row.appendChild(dateCell);
-            
-            tableBody.appendChild(row);
-        });
-        
-        // If no entries, show a message
-        if (this.leaderboardData.length === 0) {
-            const emptyRow = document.createElement('div');
-            emptyRow.className = 'leaderboard-row empty';
-            emptyRow.textContent = 'No scores yet. Start playing to get on the leaderboard!';
-            tableBody.appendChild(emptyRow);
-        }
+// Updated LeaderboardManager renderLeaderboard method
+renderLeaderboard() {
+    const leaderboardTable = document.getElementById('leaderboard-table');
+    const loadingIndicator = document.getElementById('leaderboard-loading');
+    
+    if (!leaderboardTable) return;
+    
+    // Add styled-box class to ensure it inherits styles from buttonsboxes.css
+    leaderboardTable.classList.add('styled-box');
+    
+    // Hide loading indicator if it exists
+    if (loadingIndicator) {
+        loadingIndicator.style.display = 'none';
     }
+    
+    // Store previous score for the current user
+    let previousUserScore = null;
+    const existingEntry = this.leaderboardData.find(item => item.name === this.username);
+    if (existingEntry) {
+        previousUserScore = existingEntry.score;
+    }
+    
+    // Clear existing content
+    leaderboardTable.innerHTML = '';
+    
+    // Create header row
+    const headerRow = document.createElement('div');
+    headerRow.className = 'leaderboard-row header';
+    
+    const rankHeader = document.createElement('div');
+    rankHeader.className = 'leaderboard-cell rank';
+    rankHeader.textContent = 'RANK';
+    
+    const nameHeader = document.createElement('div');
+    nameHeader.className = 'leaderboard-cell name';
+    nameHeader.textContent = 'NAME';
+    
+    const scoreHeader = document.createElement('div');
+    scoreHeader.className = 'leaderboard-cell score';
+    scoreHeader.textContent = 'SCORE';
+    
+    const dateHeader = document.createElement('div');
+    dateHeader.className = 'leaderboard-cell date';
+    dateHeader.textContent = 'DATE';
+    
+    headerRow.appendChild(rankHeader);
+    headerRow.appendChild(nameHeader);
+    headerRow.appendChild(scoreHeader);
+    headerRow.appendChild(dateHeader);
+    
+    leaderboardTable.appendChild(headerRow);
+    
+    // Add data rows
+    this.leaderboardData.forEach((entry, index) => {
+        const row = document.createElement('div');
+        row.className = 'leaderboard-row';
+        
+        // Highlight current user
+        if (entry.name === this.username) {
+            row.classList.add('current-user');
+            
+            // Add animation if score changed
+            if (previousUserScore !== null && previousUserScore !== entry.score) {
+                row.classList.add('new-entry');
+                
+                // Remove the animation class after it's done
+                setTimeout(() => {
+                    row.classList.remove('new-entry');
+                }, 2000);
+            }
+        }
+        
+        const rankCell = document.createElement('div');
+        rankCell.className = 'leaderboard-cell rank';
+        rankCell.textContent = `${index + 1}`;
+        
+        const nameCell = document.createElement('div');
+        nameCell.className = 'leaderboard-cell name';
+        nameCell.textContent = entry.name;
+        
+        const scoreCell = document.createElement('div');
+        scoreCell.className = 'leaderboard-cell score';
+        scoreCell.textContent = entry.score.toString();
+        
+        const date = new Date(entry.date);
+        const dateCell = document.createElement('div');
+        dateCell.className = 'leaderboard-cell date';
+        
+        // Format date to be compact but readable
+        const formattedDate = `${date.getMonth()+1}/${date.getDate()}/${date.getFullYear().toString().substr(-2)}`;
+        dateCell.textContent = formattedDate;
+        
+        row.appendChild(rankCell);
+        row.appendChild(nameCell);
+        row.appendChild(scoreCell);
+        row.appendChild(dateCell);
+        
+        leaderboardTable.appendChild(row);
+    });
+    
+    // If no entries, show a message
+    if (this.leaderboardData.length === 0) {
+        const emptyRow = document.createElement('div');
+        emptyRow.className = 'leaderboard-row empty';
+        emptyRow.textContent = 'No scores yet. Start playing to get on the leaderboard!';
+        leaderboardTable.appendChild(emptyRow);
+    }
+}
     
     // Force check of button visibility
     checkButtonVisibility() {
