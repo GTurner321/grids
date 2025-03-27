@@ -185,7 +185,7 @@
     color: var(--danger-color);
 }
 
-/* Leaderboard table - will leverage styled-box */
+/* Leaderboard table - with styled-box styling */
 .leaderboard-table {
     width: 92%;
     max-width: 368px;
@@ -193,6 +193,12 @@
     margin-right: auto;
     max-height: 400px;
     overflow-y: auto;
+    background-color: var(--btn-metal-light);
+    border: 1px solid var(--btn-metal-border);
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    padding: 3px;
 }
 
 /* Leaderboard rows and cells */
@@ -201,7 +207,8 @@
     grid-template-columns: 40px minmax(80px, 1fr) 70px 80px;
     column-gap: 10px;
     padding: 6px 8px;
-    border-bottom: 1px solid var(--btn-metal-light);
+    border-bottom: 1px solid var(--btn-metal-medium);
+    align-items: center;
 }
 
 .leaderboard-row:last-child {
@@ -221,6 +228,7 @@
     color: var(--btn-text-color);
     text-shadow: 0px 1px 1px var(--btn-text-shadow-light), 
                  0px -1px 1px var(--btn-text-shadow-dark);
+    border-radius: 3px 3px 0 0;
 }
 
 .leaderboard-row.header .leaderboard-cell.rank {
@@ -282,13 +290,13 @@
     animation: highlight-pulse 2s ease-in-out 1;
 }
 
-/* Scrollbar styling */
+/* Improved scrollbar styling */
 .leaderboard-table::-webkit-scrollbar {
     width: 8px;
 }
 
 .leaderboard-table::-webkit-scrollbar-track {
-    background: var(--btn-metal-light);
+    background: var(--btn-metal-lighter);
     border-radius: 0 6px 6px 0;
 }
 
@@ -299,6 +307,29 @@
 
 .leaderboard-table::-webkit-scrollbar-thumb:hover {
     background: var(--btn-metal-darker);
+}
+
+/* Mobile adjustments for leaderboard */
+@media (max-width: 768px) {
+    .leaderboard-row {
+        grid-template-columns: 40px minmax(80px, 1fr) 70px 70px;
+        column-gap: 8px;
+        padding: 8px 12px;
+    }
+}
+
+/* Even smaller screens */
+@media (max-width: 480px) {
+    .leaderboard-row {
+        grid-template-columns: 35px minmax(70px, 1fr) 60px 65px;
+        column-gap: 4px;
+        font-size: 0.8rem;
+        padding: 6px;
+    }
+    
+    .leaderboard-cell {
+        font-size: 0.8rem;
+    }
 }
 
 /* ==========================================================================
