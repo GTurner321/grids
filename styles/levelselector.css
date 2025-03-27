@@ -210,7 +210,7 @@
 }
 
 /* ==========================================================================
-   6. RESPONSIVE ADJUSTMENTS
+   6. RESPONSIVE ADJUSTMENTS - FIXED VERSION
    ========================================================================== */
 
 /* Mobile Optimizations */
@@ -220,15 +220,29 @@
   }
   
   .level-btn-container {
-    width: 140px;
+    width: 170px; /* Match the width of the button */
     height: 50px;
-    flex: 0 0 140px;
+    flex: 0 0 170px; /* Match the width of the button */
   }
   
   .level-btn-scrollable {
     font-size: 1.1rem;
-    width: 170px; /* Adjusted for mobile but still wider than original */
+    width: 170px;
     height: 40px;
+    /* Center the button within the container */
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  /* Reset hover state to apply correct transform */
+  .level-btn-scrollable:hover:not(:disabled):not(.locked) {
+    transform: translateX(-50%) translateY(-1px) !important;
+  }
+  
+  /* Reset active state */
+  .level-btn-scrollable:active:not(:disabled):not(.locked),
+  .level-btn-scrollable.active:not(.locked) {
+    transform: translateX(-50%) !important;
   }
   
   .level-arrow {
@@ -269,13 +283,14 @@
 /* Even smaller screens */
 @media (max-width: 375px) {
   .level-btn-container {
-    width: 120px;
-    flex: 0 0 120px;
+    width: 160px; /* Match the width of the button */
+    flex: 0 0 160px; /* Match the width of the button */
   }
   
   .level-btn-scrollable {
     width: 160px;
     font-size: 1rem;
+    /* No need to change left/transform as they're already set to center in the previous media query */
   }
   
   .level-arrow {
