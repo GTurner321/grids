@@ -183,7 +183,7 @@ class GameController {
             // For level 2, show suggestion to remove spare cells
             if (level === 2) {
                 setTimeout(() => {
-                    this.showMessage('Hint: Consider removing some of the spare cells to make the puzzle easier!', 'info', 10000);
+                    this.showMessage('Hint: the 'X SPARES' button removes some of the spare cells and makes the puzzle easier!', 'info', 10000);
                 }, 0);
             }
 
