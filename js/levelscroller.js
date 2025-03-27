@@ -224,6 +224,11 @@ updateVisibleLevel() {
     
 // Replace the handleLevelSelection method in levelscroller.js with this code:
 handleLevelSelection(level) {
+    if (!window.gameController && typeof initializeGameController === 'function') {
+    console.log('Game controller not found, attempting to initialize...');
+    initializeGameController();
+    }
+    
     // Check if this level is unlocked using the same logic as updateVisibleLevel
     let isUnlocked = false;
     
