@@ -123,8 +123,8 @@
   content: '🔒';
   position: absolute;
   top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  left: 0.5rem; /* Adjust this value to position it closer or further from the left edge */
+  transform: translate(0, -50%); /* Remove horizontal centering */
   font-size: 1.2rem;
   z-index: 2;
 }
