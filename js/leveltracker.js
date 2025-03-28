@@ -1,17 +1,26 @@
-// leveltracker.js - Updated to reset visual green progress on page load
+// leveltracker.js - Enhanced with 3D segment styling and improved level tracking
 
 class LevelTracker {
     constructor() {
         // Store which levels have been completed in THIS session
         this.completedLevels = new Set();
         
+        // Track unlocked levels (start with level 1 always unlocked)
+        this.unlockedLevels = new Set([1]);
+        
+        // Track current active level
+        this.currentLevel = 1;
+        
         // Flag to track if all levels have been completed before
         this.hasCompletedAllLevels = false;
         
-        // Find and initialize the score bar
+        // Level just completed (for celebration animation)
+        this.justCompletedLevel = null;
+        
+        // Initialize the score bar segments
         this.findScoreBar();
         
-        // Listen for score updates
+        // Listen for score updates and other game events
         this.setupEventListeners();
         
         // Make available globally
@@ -23,24 +32,23 @@ class LevelTracker {
     findScoreBar() {
         console.log('Looking for score bar...');
         
-        // Look for exact score bar elements
+        // Look for score bar elements
         const scoreRow = document.querySelector('.score-row');
         
         if (scoreRow) {
             console.log('Score bar found, initializing segments');
             this.initializeScoreBar(scoreRow);
             
-            // Start with NO completed level segments (clear any green backgrounds)
-            // But still have blue backgrounds for unlockable levels
-            
-            // Dispatch levelTrackerReady event with empty completedLevels
+            // Dispatch levelTrackerReady event
             setTimeout(() => {
                 document.dispatchEvent(new CustomEvent('levelTrackerReady', {
                     detail: {
-                        completedLevels: []
+                        completedLevels: Array.from(this.completedLevels),
+                        unlockedLevels: Array.from(this.unlockedLevels),
+                        currentLevel: this.currentLevel
                     }
                 }));
-                console.log('Level tracker ready event dispatched with empty completed levels');
+                console.log('Level tracker ready event dispatched');
             }, 200);
         } else {
             console.log('Score bar not found, will try again in 500ms');
@@ -51,27 +59,49 @@ class LevelTracker {
     
     initializeScoreBar(scoreRow) {
         // Make sure we don't add segments twice
-        if (scoreRow.querySelector('.level-segment-container')) {
-            console.log('Score bar segments already exist');
-            return;
+        let segmentContainer = scoreRow.querySelector('.level-segment-container');
+        if (!segmentContainer) {
+            console.log('Creating segment container');
+            // Create container for level segments
+            segmentContainer = document.createElement('div');
+            segmentContainer.className = 'level-segment-container';
+            
+            // Insert at beginning of score row to be behind text
+            scoreRow.insertBefore(segmentContainer, scoreRow.firstChild);
+        } else {
+            console.log('Score bar segments container already exists');
         }
         
-        console.log('Adding level segments to score bar');
+        // Clear any existing segments
+        segmentContainer.innerHTML = '';
         
-        // Create container for level segments
-        const segmentContainer = document.createElement('div');
-        segmentContainer.className = 'level-segment-container';
-        
-        // Create 10 level segments
+        // Create 10 level segments with enhanced 3D styling
         for (let i = 1; i <= 10; i++) {
             const segment = document.createElement('div');
             segment.className = 'level-segment';
+            
+            // Add appropriate classes based on level status
+            if (this.completedLevels.has(i)) {
+                segment.classList.add('completed');
+                segment.setAttribute('title', `Level ${i} completed`);
+            } else if (this.unlockedLevels.has(i)) {
+                segment.classList.add('unlocked');
+                segment.setAttribute('title', `Level ${i} unlocked`);
+            } else {
+                segment.setAttribute('title', `Level ${i} locked`);
+            }
+            
+            // Add current level indicator if applicable
+            if (i === this.currentLevel && !this.completedLevels.has(i)) {
+                segment.classList.add('current');
+            }
+            
+            // Store level number as data attribute
             segment.dataset.level = i;
+            
+            // Append to container
             segmentContainer.appendChild(segment);
         }
-        
-        // Insert at beginning of score row to be behind text
-        scoreRow.insertBefore(segmentContainer, scoreRow.firstChild);
         
         // Make sure text is on top
         const leftText = scoreRow.querySelector('.score-left');
@@ -79,6 +109,48 @@ class LevelTracker {
         
         if (leftText) leftText.style.zIndex = '2';
         if (rightText) rightText.style.zIndex = '2';
+    }
+    
+    updateScoreBarSegments() {
+        console.log('Updating score bar segments');
+        
+        // Get the container for level segments
+        const segmentContainer = document.querySelector('.level-segment-container');
+        if (!segmentContainer) {
+            console.warn('Level segment container not found, will try to initialize');
+            this.findScoreBar();
+            return;
+        }
+        
+        // Update each segment based on current status
+        for (let i = 1; i <= 10; i++) {
+            const segment = segmentContainer.querySelector(`[data-level="${i}"]`);
+            if (!segment) continue;
+            
+            // Reset classes
+            segment.className = 'level-segment';
+            
+            // Add appropriate classes based on level status
+            if (this.completedLevels.has(i)) {
+                segment.classList.add('completed');
+                segment.setAttribute('title', `Level ${i} completed`);
+            } else if (this.unlockedLevels.has(i)) {
+                segment.classList.add('unlocked');
+                segment.setAttribute('title', `Level ${i} unlocked`);
+            } else {
+                segment.setAttribute('title', `Level ${i} locked`);
+            }
+            
+            // Add current level indicator if applicable
+            if (i === this.currentLevel && !this.completedLevels.has(i)) {
+                segment.classList.add('current');
+            }
+            
+            // Add celebration animation for just completed level
+            if (i === this.justCompletedLevel) {
+                segment.classList.add('celebrate');
+            }
+        }
     }
     
     setupEventListeners() {
@@ -89,13 +161,27 @@ class LevelTracker {
                 
                 if (level >= 1 && level <= 10) {
                     this.markLevelCompleted(level);
-                                      
+                    
                     // Check if all levels are complete
                     if (this.completedLevels.size === 10 && !this.hasCompletedAllLevels) {
                         this.handleAllLevelsComplete();
                         this.hasCompletedAllLevels = true;
                     }
                 }
+            }
+        });
+        
+        // Listen for level changes
+        window.addEventListener('levelChanged', (event) => {
+            if (event.detail && event.detail.level) {
+                this.setCurrentLevel(event.detail.level);
+            }
+        });
+        
+        // Listen for level unlocks
+        window.addEventListener('levelUnlocked', (event) => {
+            if (event.detail && event.detail.level) {
+                this.unlockLevel(event.detail.level);
             }
         });
         
@@ -107,16 +193,6 @@ class LevelTracker {
                     const scoreRow = document.querySelector('.score-row');
                     if (scoreRow && !scoreRow.querySelector('.level-segment-container')) {
                         this.initializeScoreBar(scoreRow);
-                        
-                        // Dispatch levelTrackerReady event with empty completedLevels
-                        setTimeout(() => {
-                            document.dispatchEvent(new CustomEvent('levelTrackerReady', {
-                                detail: {
-                                    completedLevels: []
-                                }
-                            }));
-                            console.log('Level tracker ready event dispatched (from observer)');
-                        }, 200);
                     }
                 }
             });
@@ -127,6 +203,12 @@ class LevelTracker {
             childList: true,
             subtree: true
         });
+        
+        // Listen for game controller ready event
+        document.addEventListener('gameControllerReady', () => {
+            // Check if we need to update the level unlocker
+            this.updateLevelUnlocker();
+        });
     }
     
     markLevelCompleted(level) {
@@ -135,18 +217,58 @@ class LevelTracker {
         // Add to our set of completed levels for THIS session
         this.completedLevels.add(level);
         
-        // Update visual segment - turn it green
-        const segment = document.querySelector(`.level-segment[data-level="${level}"]`);
-        if (segment) {
-            segment.classList.add('completed');
-            segment.style.backgroundColor = '#22c55e'; // Green color to ensure it overrides any blue
-        } else {
-            console.warn(`Segment for level ${level} not found`);
+        // Track this level as the just completed one for animation
+        this.justCompletedLevel = level;
+        
+        // Unlock the next level if not already unlocked
+        if (level < 10) {
+            this.unlockLevel(level + 1);
         }
+        
+        // Update visual segments
+        this.updateScoreBarSegments();
+        
+        // After 5 seconds, clear the celebration animation
+        setTimeout(() => {
+            this.justCompletedLevel = null;
+            this.updateScoreBarSegments();
+        }, 5000);
         
         // Ensure level scroller updates to reflect newly unlocked levels
         if (window.levelScroller) {
             window.levelScroller.updateVisibleLevel();
+        }
+        
+        // Dispatch levelCompleted event
+        document.dispatchEvent(new CustomEvent('levelCompleted', {
+            detail: {
+                level: level,
+                completedLevels: Array.from(this.completedLevels),
+                unlockedLevels: Array.from(this.unlockedLevels)
+            }
+        }));
+    }
+    
+    unlockLevel(level) {
+        if (level >= 1 && level <= 10 && !this.unlockedLevels.has(level)) {
+            console.log(`Unlocking level ${level}`);
+            this.unlockedLevels.add(level);
+            this.updateScoreBarSegments();
+            
+            // Dispatch levelUnlocked event
+            document.dispatchEvent(new CustomEvent('levelsUnlocked', {
+                detail: {
+                    unlockedLevels: Array.from(this.unlockedLevels)
+                }
+            }));
+        }
+    }
+    
+    setCurrentLevel(level) {
+        if (level >= 1 && level <= 10) {
+            console.log(`Setting current level to ${level}`);
+            this.currentLevel = level;
+            this.updateScoreBarSegments();
         }
     }
     
@@ -160,9 +282,6 @@ class LevelTracker {
             }
         }, 3000);
     }
-    
-    // We no longer need saveProgress and loadProgress methods
-    // since we want to start fresh on page reload
     
     updateLevelUnlocker() {
         // Check if level scroller exists
@@ -180,14 +299,24 @@ class LevelTracker {
     resetProgress() {
         // Clear stored progress
         this.completedLevels.clear();
+        this.unlockedLevels = new Set([1]); // Keep level 1 unlocked
         this.hasCompletedAllLevels = false;
+        this.justCompletedLevel = null;
         
         // Reset visual indicators
-        document.querySelectorAll('.level-segment').forEach(segment => {
-            segment.classList.remove('completed');
-        });
+        this.updateScoreBarSegments();
         
         console.log('Progress reset');
+    }
+    
+    // Helper method to check if a level is unlocked
+    isLevelUnlocked(level) {
+        return this.unlockedLevels.has(level);
+    }
+    
+    // Helper method to check if a level is completed
+    isLevelCompleted(level) {
+        return this.completedLevels.has(level);
     }
 }
 
@@ -195,5 +324,8 @@ class LevelTracker {
 document.addEventListener('DOMContentLoaded', () => {
     window.levelTracker = new LevelTracker();
 });
+
+// Make it available globally
+window.LevelTracker = LevelTracker;
 
 export default LevelTracker;
