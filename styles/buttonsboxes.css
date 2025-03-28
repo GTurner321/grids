@@ -245,11 +245,12 @@
     background: linear-gradient(
         to bottom,
         var(--btn-metal-medium) 0%,
-        var(--btn-metal-light) 1.5%,
-        var(--btn-metal-lighter) 3%,
-        var(--box-bg-color) 6%,
-        var(--box-bg-color) 94%,
-        var(--btn-metal-medium) 97%,
+        var(--btn-metal-light) 0.5%,
+        var(--btn-metal-lighter) 0.5%,
+        var(--box-bg-color) 0.5%,
+        var(--box-bg-color) 97%,
+        var(--btn-metal-medium) 99%,
+        var(--btn-metal-dark) 99.5%
         var(--btn-metal-dark) 100%
     );
     
