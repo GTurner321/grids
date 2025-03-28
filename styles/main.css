@@ -394,10 +394,10 @@ body {
     box-sizing: border-box;
     
     /* Text styling */
-    font-family: 'Trebuchet MS', Arial, sans-serif;
+    font-family: 'Lucida Handwriting', 'Brush Script MT', cursive;
     font-style: italic;
     font-size: 1rem;
-    color: #00008B; /* Keep the blue color */
+    color: var(--text-blue); /* Keep the blue color */
     text-align: center;
     
     /* Remove text shadow */
