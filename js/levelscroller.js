@@ -77,12 +77,12 @@ class LevelScroller {
         this.updateVisibleLevel();
     }
     
-    createLevelButtons() {
+createLevelButtons() {
         let buttonsHtml = '';
         
         for (let i = 1; i <= this.maxLevels; i++) {
             buttonsHtml += `
-                <button class="level-btn level-btn-scrollable" data-level="${i}">
+                <button class="level-btn level-btn-scrollable metallic-button" data-level="${i}">
                     LEVEL ${i}
                 </button>
             `;
