@@ -54,10 +54,27 @@
         <!-- Main Game Area -->
         <main class="game-board">
             <!-- Score Row (Will appear above the grid) -->
-            <div class="score-row">
-                <div class="score-left" id="score-bonus"></div>
-                <div class="score-right" id="score-total">TOTAL: 0</div>
-            </div>
+<div class="score-row">
+  <!-- Left side: Shows username or round score -->
+  <div class="score-left">
+    <div id="score-bonus"></div>
+  </div>
+  
+  <!-- Right side: Shows total score -->
+  <div class="score-right">
+    <div id="score-total">TOTAL: 0</div>
+  </div>
+  
+  <!-- Level segments container - will be populated by JavaScript -->
+  <div class="level-segment-container">
+    <!-- Segments will be added dynamically via JS -->
+    <!-- Example segment structure:
+    <div class="level-segment"></div>
+    <div class="level-segment unlocked"></div>
+    <div class="level-segment completed"></div>
+    -->
+  </div>
+</div>
             
             <!-- Grid Container -->
             <div id="grid-container"></div>
