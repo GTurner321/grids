@@ -133,6 +133,36 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 </script>
-    
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Function to fix grid layout issues
+    function fixGridLayout() {
+        const gridContainer = document.getElementById('grid-container');
+        if (gridContainer && gridContainer.classList.contains('grid-size-6')) {
+            gridContainer.style.gridTemplateColumns = 'repeat(6, 1fr)';
+        } else if (gridContainer) {
+            gridContainer.style.gridTemplateColumns = 'repeat(10, 1fr)';
+        }
+    }
+
+    // Watch for changes to the game container's active state
+    const gameContainer = document.querySelector('.game-container');
+    if (gameContainer) {
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'attributes' && 
+                    mutation.attributeName === 'class' &&
+                    gameContainer.classList.contains('game-active')) {
+                    
+                    // Fix grid layout after a short delay
+                    setTimeout(fixGridLayout, 100);
+                }
+            });
+        });
+
+        observer.observe(gameContainer, { attributes: true });
+    }
+});
+</script>    
 </body>
 </html>
