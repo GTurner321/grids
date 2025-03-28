@@ -152,7 +152,18 @@ gridContainer.style.gridTemplateColumns = `repeat(${gridSize}, ${options.cellSiz
     } else {
         gridContainer.style.width = 'calc(100vw - 20px)';
     }
-    
+
+setTimeout(() => {
+    // Reapply width after any competing CSS has been applied
+    if (window.innerWidth > 768) {
+        gridContainer.style.width = gridSize === 6 ? 
+            'calc(6 * 67.5px + 7px)' : 
+            'calc(10 * 40px + 11px)';
+    } else {
+        gridContainer.style.width = 'calc(100vw - 20px)';
+    }
+}, 50);
+  
     // Create and append cells
     gridEntries.forEach((entry, index) => {
         // Skip cells beyond the grid size
