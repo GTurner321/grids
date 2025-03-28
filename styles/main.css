@@ -147,6 +147,15 @@ body {
   overflow: visible;
 }
 
+/* Ensure grid is visible when game is active */
+.game-container.game-active #grid-container {
+    visibility: visible !important;
+    display: grid !important;
+    height: auto !important;
+    background-color: #94a3b8 !important;
+    border: 1px solid #94a3b8 !important;
+}
+
 /* Specific margin restoration */
 .game-container.game-active .score-row {
   margin-bottom: 1px !important;
