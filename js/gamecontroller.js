@@ -130,27 +130,38 @@ initializeEventListeners() {
         console.log('Game event listeners initialized');
     }
     
-    async startLevel(level) {
-        console.log(`Starting level ${level}`);
-        
-        // Reset state for the new level
-        this.state.currentLevel = level;
-        this.state.userPath = [];
-        
-        // Get grid size from config
-        const config = getLevelConfig(level);
-        const gridSize = config.gridSize || 10;
-        
-        // Create appropriate sized grid entries array
-        this.state.gridEntries = new Array(gridSize * gridSize).fill(null);
-        this.state.removedCells.clear();
-        this.state.gameActive = true;
-        
-        // Mark the game container as active
-        document.querySelector('.game-container')?.classList.add('game-active');
-        
-        // Initialize scoring for the level
-        scoreManager.startLevel(level);
+async startLevel(level) {
+    console.log(`Starting level ${level}`);
+    
+    // Reset state for the new level
+    this.state.currentLevel = level;
+    this.state.userPath = [];
+    
+    // Get grid size from config
+    const config = getLevelConfig(level);
+    const gridSize = config.gridSize || 10;
+    
+    // Create appropriate sized grid entries array
+    this.state.gridEntries = new Array(gridSize * gridSize).fill(null);
+    this.state.removedCells.clear();
+    this.state.gameActive = true;
+    
+    // Mark the game container as active
+    const gameContainer = document.querySelector('.game-container');
+    if (gameContainer) {
+        gameContainer.classList.add('game-active');
+        console.log('Game container marked as active');
+    }
+    
+    // CRITICAL: Force grid container visibility early
+    const gridContainer = document.getElementById('grid-container');
+    if (gridContainer) {
+        gridContainer.style.cssText = "visibility: visible !important; height: auto !important; display: grid !important; background-color: #94a3b8 !important; border: 1px solid #94a3b8 !important;";
+        console.log('Grid container visibility forced');
+    }
+    
+    // Initialize scoring for the level
+    scoreManager.startLevel(level);
 
         // Reset the remove-spare button state
         const removeButton = document.getElementById('remove-spare');
@@ -228,6 +239,14 @@ initializeEventListeners() {
             console.error('Error starting level:', error);
             this.showMessage('Error starting game. Please try again.', 'error');
         }
+
+        setTimeout(() => {
+        const gridContainer = document.getElementById('grid-container');
+        if (gridContainer) {
+            gridContainer.style.cssText = "visibility: visible !important; height: auto !important; display: grid !important; background-color: #94a3b8 !important; border: 1px solid #94a3b8 !important;";
+            console.log('Grid container visibility forced after rendering');
+        }
+    }, 100);
     }
     
     placeMathSequence() {
