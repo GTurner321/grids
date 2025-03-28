@@ -213,6 +213,7 @@
 }
 
 
+
 /* ==========================================================================
    3. CONTENT BOX STYLING - ENHANCED 3D EFFECT
    ========================================================================== */
@@ -232,21 +233,23 @@
     padding: 15px;
     margin: 15px auto;
     
-    /* Enhanced shadow effects for 3D appearance - more pronounced underneath */
-    box-shadow: 0 6px 10px 2px var(--box-shadow),
-                0 2px 5px var(--btn-metal-shadow),
+    /* Enhanced shadow effects for 3D appearance - darker and more expansive on all sides, larger on bottom */
+    box-shadow: 0 8px 15px 3px rgba(0, 0, 0, 0.25),
+                0 2px 8px 2px var(--btn-metal-shadow),
+                2px 0 6px rgba(0, 0, 0, 0.15),
+                -2px 0 6px rgba(0, 0, 0, 0.15),
                 inset 0 1px 2px var(--box-inner-highlight),
                 inset 0 -1px 2px var(--box-inner-shadow);
     
-    /* Enhanced gradient background with darker top and bottom edges */
+    /* Enhanced gradient background with thinner darker top and bottom edges */
     background: linear-gradient(
         to bottom,
         var(--btn-metal-medium) 0%,
-        var(--btn-metal-light) 3%,
-        var(--btn-metal-lighter) 8%,
-        var(--box-bg-color) 15%,
-        var(--box-bg-color) 85%,
-        var(--btn-metal-medium) 95%,
+        var(--btn-metal-light) 1.5%,
+        var(--btn-metal-lighter) 3%,
+        var(--box-bg-color) 6%,
+        var(--box-bg-color) 94%,
+        var(--btn-metal-medium) 97%,
         var(--btn-metal-dark) 100%
     );
     
@@ -264,13 +267,13 @@
     transition: all 0.3s ease;
 }
 
-/* Box heading with enhanced embossed text effect */
+/* Box heading with enhanced embossed text effect and reduced padding */
 .styled-box-title {
     font-family: 'Black Ops One', 'Trebuchet MS', Arial, sans-serif;
     font-weight: normal;
     font-size: 1.3rem;
     text-align: center;
-    margin: 0 0 15px 0;
+    margin: 0 0 10px 0; /* Reduced bottom margin */
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: var(--btn-text-color);
@@ -278,17 +281,17 @@
     text-shadow: 0px 1px 1px var(--btn-text-shadow-light), 
                  0px -1px 1px var(--btn-text-shadow-dark),
                  0px 2px 3px rgba(255, 255, 255, 0.3);
-    padding-bottom: 10px;
+    padding-bottom: 8px; /* Reduced padding */
     border-bottom: 1px solid var(--btn-metal-medium);
     position: relative;
 }
 
-/* Box subtitle with enhanced embossed effect */
+/* Box subtitle with enhanced embossed effect and reduced spacing */
 .styled-box-subtitle {
     font-family: 'Trebuchet MS', Arial, sans-serif;
     font-weight: bold;
     font-size: 1.1rem;
-    margin: 15px 0 10px 0;
+    margin: 10px 0 8px 0; /* Reduced top/bottom margins */
     color: var(--btn-text-color);
     /* Enhanced embossing */
     text-shadow: 0px 1px 1px var(--btn-text-shadow-light), 
@@ -306,6 +309,29 @@
     text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.7),
                  0px -0.5px 0px rgba(0, 0, 0, 0.1);
     line-height: 1.5;
+}
+
+/* Style for images within the box */
+.styled-box img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 10px auto;
+    border-radius: 4px;
+}
+
+/* Add divider line after images */
+.styled-box img + * {
+    margin-top: 8px;
+    padding-top: 10px;
+    border-top: 1px solid var(--btn-metal-medium);
+}
+
+/* Specific styling for image section dividers */
+.styled-box .image-section {
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--btn-metal-medium);
 }
 
 /* Box footer */
@@ -370,7 +396,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize button effects
     setupButtonClickEffects();
 });
-*/
 
 /* ==========================================================================
    5. RESPONSIVE ADJUSTMENTS
@@ -387,15 +412,19 @@ document.addEventListener('DOMContentLoaded', function() {
     .styled-box {
         padding: 12px;
         width: 90%;
-        /* Reduced shadow for better appearance on medium screens */
-        box-shadow: 0 5px 8px 2px var(--box-shadow),
-                    0 2px 4px var(--btn-metal-shadow),
+        /* Adjusted shadow for medium screens */
+        box-shadow: 0 6px 12px 2px rgba(0, 0, 0, 0.25),
+                    0 2px 6px 1px var(--btn-metal-shadow),
+                    1px 0 4px rgba(0, 0, 0, 0.12),
+                    -1px 0 4px rgba(0, 0, 0, 0.12),
                     inset 0 1px 2px var(--box-inner-highlight),
                     inset 0 -1px 2px var(--box-inner-shadow);
     }
     
     .styled-box-title {
         font-size: 1.2rem;
+        margin-bottom: 8px;
+        padding-bottom: 6px;
         /* Slightly reduced embossing for medium screens */
         text-shadow: 0px 1px 1px var(--btn-text-shadow-light), 
                      0px -1px 1px var(--btn-text-shadow-dark),
@@ -404,6 +433,21 @@ document.addEventListener('DOMContentLoaded', function() {
     
     .styled-box-subtitle {
         font-size: 1rem;
+        margin: 8px 0 6px 0;
+    }
+    
+    .styled-box img {
+        margin: 8px auto;
+    }
+    
+    .styled-box img + * {
+        margin-top: 6px;
+        padding-top: 8px;
+    }
+    
+    .styled-box .image-section {
+        margin-bottom: 8px;
+        padding-bottom: 6px;
     }
 }
 
@@ -430,16 +474,17 @@ document.addEventListener('DOMContentLoaded', function() {
         border-width: 1px;
         border-top-width: 2px;
         border-bottom-width: 2px;
-        /* Further reduced shadow for better mobile appearance */
-        box-shadow: 0 4px 6px 1px var(--box-shadow),
-                    0 1px 3px var(--btn-metal-shadow),
+        /* Simplified shadow system for mobile */
+        box-shadow: 0 5px 10px 2px rgba(0, 0, 0, 0.22),
+                    0 1px 5px 1px var(--btn-metal-shadow),
                     inset 0 1px 1px var(--box-inner-highlight),
                     inset 0 -1px 1px var(--box-inner-shadow);
     }
     
     .styled-box-title {
         font-size: 1.1rem;
-        margin-bottom: 10px;
+        margin-bottom: 6px;
+        padding-bottom: 5px;
         /* Simplified embossing for small screens */
         text-shadow: 0px 1px 1px var(--btn-text-shadow-light), 
                      0px -1px 1px var(--btn-text-shadow-dark);
@@ -447,13 +492,27 @@ document.addEventListener('DOMContentLoaded', function() {
     
     .styled-box-subtitle {
         font-size: 0.9rem;
-        margin: 10px 0 8px 0;
+        margin: 6px 0 5px 0;
     }
     
     .styled-box-content {
         font-size: 0.95rem;
         /* Simplified embossing for small screens */
         text-shadow: 0px 1px 0px rgba(255, 255, 255, 0.5);
+    }
+    
+    .styled-box img {
+        margin: 6px auto;
+    }
+    
+    .styled-box img + * {
+        margin-top: 5px;
+        padding-top: 6px;
+    }
+    
+    .styled-box .image-section {
+        margin-bottom: 6px;
+        padding-bottom: 5px;
     }
 }
 
