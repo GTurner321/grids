@@ -130,11 +130,6 @@
   filter: brightness(1.4); /* Boost brightness to counteract transparency */
 }
 
-/* Active state for the selected level */
-.level-btn-scrollable.active {
-  background-blend-mode: overlay;
-  background-color: rgba(0, 0, 255, 0.1);
-}
 
 /* ==========================================================================
    ARROW BUTTONS - Squared and attached to the level button
