@@ -271,19 +271,10 @@
     padding-right: 10px !important;
   }
   
-#grid-container {
-  /* Width will be set by JS */
-  display: grid !important;
-  gap: var(--grid-cell-gap) !important;
-}
-
-#grid-container.grid-size-6 {
-  grid-template-columns: repeat(6, 1fr) !important;
-}
-
-#grid-container.grid-size-10 {
-  grid-template-columns: repeat(10, 1fr) !important;
-}
+  /* Mobile grid container - don't set specific width properties */
+  #grid-container {
+    /* Width will be set by JS */
+  }
   
   /* Mobile grid cells - improved fonts but don't set dimensions */
   #grid-container.grid-size-10 .grid-cell:not(.symbol-container) {
