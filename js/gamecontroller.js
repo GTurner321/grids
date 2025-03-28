@@ -446,19 +446,30 @@ async startLevel(level) {
     });
 }
     
-    initializeGridInteractions() {
-
-        console.log('Adding grid visibility debug check');
-setInterval(() => {
-    const gridContainer = document.getElementById('grid-container');
-    if (gridContainer) {
-        const computedStyle = window.getComputedStyle(gridContainer);
-        console.log('Grid visibility:', computedStyle.visibility, 
-                   'Display:', computedStyle.display,
-                   'Height:', computedStyle.height,
-                   'Background:', computedStyle.backgroundColor);
-    }
-}, 2000); 
+initializeGridInteractions() {
+    console.log('Initializing grid interactions');
+    
+    // Clear any existing debug interval
+    clearInterval(this.gridVisibilityInterval);
+    
+    // Set up debug interval for grid visibility
+    console.log('Adding grid visibility debug check');
+    this.gridVisibilityInterval = setInterval(() => {
+        const gridContainer = document.getElementById('grid-container');
+        if (gridContainer) {
+            const computedStyle = window.getComputedStyle(gridContainer);
+            console.log('Grid visibility:', computedStyle.visibility, 
+                       'Display:', computedStyle.display,
+                       'Height:', computedStyle.height,
+                       'Background:', computedStyle.backgroundColor);
+        }
+    }, 2000);
+    
+    // Stop logging after 10 seconds
+    setTimeout(() => {
+        clearInterval(this.gridVisibilityInterval);
+        console.log('Grid visibility debugging stopped after 10 seconds');
+    }, 10000);
         
         const gridContainer = document.getElementById('grid-container');
         if (!gridContainer) {
