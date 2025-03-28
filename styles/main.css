@@ -162,6 +162,19 @@ body {
     border: 1px solid #94a3b8 !important;
     width: auto !important; /* This prevents the grid from becoming massive */
     max-width: var(--grid-total-width) !important; /* Use the CSS variable for consistent sizing */
+    
+    /* Critical grid layout properties */
+    grid-template-columns: repeat(10, 1fr) !important; /* Default to 10 columns */
+    gap: var(--grid-cell-gap) !important;
+}
+
+/* Grid size specific overrides */
+.game-container.game-active #grid-container.grid-size-6 {
+    grid-template-columns: repeat(6, 1fr) !important;
+}
+
+.game-container.game-active #grid-container.grid-size-10 {
+    grid-template-columns: repeat(10, 1fr) !important;
 }
 
 /* Specific margin restoration */
