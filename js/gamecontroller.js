@@ -153,11 +153,11 @@ async startLevel(level) {
         console.log('Game container marked as active');
     }
     
-    // CRITICAL: Force grid container visibility early
+    // CRITICAL: Force grid container visibility early with stronger overrides
     const gridContainer = document.getElementById('grid-container');
     if (gridContainer) {
         gridContainer.style.cssText = "visibility: visible !important; height: auto !important; display: grid !important; background-color: #94a3b8 !important; border: 1px solid #94a3b8 !important;";
-        console.log('Grid container visibility forced');
+        console.log('Grid container visibility forced early');
     }
     
     // Initialize scoring for the level
@@ -186,68 +186,70 @@ async startLevel(level) {
             }
         }
 
-        try {
-            // Generate path with appropriate grid size
-            this.state.path = await generatePath(gridSize);
-            this.state.sequence = await generateSequence(level);
-            this.state.sequenceEntries = sequenceToEntries(this.state.sequence);
+    try {
+        // Generate path with appropriate grid size
+        this.state.path = await generatePath(gridSize);
+        this.state.sequence = await generateSequence(level);
+        this.state.sequenceEntries = sequenceToEntries(this.state.sequence);
 
-            // Place sequence on path
-            this.placeMathSequence();
-            
-            // Level-specific setup
-            if (level === 1) {
-                // For level 1, remove all spare cells automatically
-                this.removeAllSpareCells(true); // true for remove ALL
-            } else {
-                // For other levels, fill remaining cells with numbers
-                this.fillRemainingCells();
-            }
-
-            // For level 2, show suggestion to remove spare cells
-            if (level === 2) {
-                setTimeout(() => {
-                    this.showMessage('Hint: the 'X SPARES' button removes some of the spare cells and makes the puzzle easier!', 'info', 10000);
-                }, 0);
-            }
-
-            // Make grid visible with important to override any CSS
-            const gridContainer = document.getElementById('grid-container');
-            if (gridContainer) {
-            gridContainer.style.cssText = "visibility: visible !important; height: auto !important; background-color: #94a3b8 !important; border: 1px solid #94a3b8 !important;";
-            }
-
-            // Render grid with appropriate size
-            renderGrid(this.state.gridEntries, {
-                startCoord: this.state.path[0],
-                endCoord: this.state.path[this.state.path.length - 1],
-                gridSize: gridSize
-            });
-
-            // Update UI elements and buttons
-            this.updateUI();
-            this.showMessage('Find the path by following the mathematical sequence.');
-            
-            console.log(`Level ${level} started successfully`);
-            
-            // Update level scroller if available
-            if (window.levelScroller && typeof window.levelScroller.setCurrentLevel === 'function') {
-                window.levelScroller.setCurrentLevel(level);
-            }
-
-        } catch (error) {
-            console.error('Error starting level:', error);
-            this.showMessage('Error starting game. Please try again.', 'error');
+        // Place sequence on path
+        this.placeMathSequence();
+        
+        // Level-specific setup
+        if (level === 1) {
+            // For level 1, remove all spare cells automatically
+            this.removeAllSpareCells(true); // true for remove ALL
+        } else {
+            // For other levels, fill remaining cells with numbers
+            this.fillRemainingCells();
         }
 
-        setTimeout(() => {
+        // For level 2, show suggestion to remove spare cells
+        if (level === 2) {
+            setTimeout(() => {
+                this.showMessage('Hint: the 'X SPARES' button removes some of the spare cells and makes the puzzle easier!', 'info', 10000);
+            }, 0);
+        }
+
+        // CRITICAL: Force grid visibility again right before rendering
         const gridContainer = document.getElementById('grid-container');
         if (gridContainer) {
             gridContainer.style.cssText = "visibility: visible !important; height: auto !important; display: grid !important; background-color: #94a3b8 !important; border: 1px solid #94a3b8 !important;";
-            console.log('Grid container visibility forced after rendering');
+            console.log('Grid container visibility forced before rendering');
         }
-    }, 100);
+
+        // Render grid with appropriate size
+        renderGrid(this.state.gridEntries, {
+            startCoord: this.state.path[0],
+            endCoord: this.state.path[this.state.path.length - 1],
+            gridSize: gridSize
+        });
+
+        // CRITICAL: Force grid visibility AGAIN after rendering
+        setTimeout(() => {
+            const gridContainer = document.getElementById('grid-container');
+            if (gridContainer) {
+                gridContainer.style.cssText = "visibility: visible !important; height: auto !important; display: grid !important; background-color: #94a3b8 !important; border: 1px solid #94a3b8 !important;";
+                console.log('Grid container visibility forced after rendering');
+            }
+        }, 100);
+
+        // Update UI elements and buttons
+        this.updateUI();
+        this.showMessage('Find the path by following the mathematical sequence.');
+        
+        console.log(`Level ${level} started successfully`);
+        
+        // Update level scroller if available
+        if (window.levelScroller && typeof window.levelScroller.setCurrentLevel === 'function') {
+            window.levelScroller.setCurrentLevel(level);
+        }
+
+    } catch (error) {
+        console.error('Error starting level:', error);
+        this.showMessage('Error starting game. Please try again.', 'error');
     }
+}
     
     placeMathSequence() {
         // Get the current grid size
