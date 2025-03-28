@@ -123,40 +123,46 @@ function showRulesBox() {
  * Hides the game title when level buttons are clicked
  */
 function setupTitleVisibility() {
-    // Find all level selection buttons and the game header
-    const levelButtons = document.querySelectorAll('.level-btn');
-    const scrollableLevelButtons = document.querySelectorAll('.level-btn-scrollable');
-    const gameHeader = document.querySelector('.game-header');
+    console.log('Setting up title visibility control');
     
-    if (!gameHeader) return;
+    // Use event delegation instead of direct button listeners
+    document.addEventListener('click', (event) => {
+        // Check if clicked element is or is inside a level button
+        const levelButton = event.target.closest('.level-btn, .level-btn-scrollable');
+        if (levelButton) {
+            console.log('Level button clicked, hiding title');
+            const gameHeader = document.querySelector('.game-header');
+            if (gameHeader) {
+                // Add a fade out animation to the header
+                gameHeader.style.transition = 'opacity 0.5s ease-out, margin 0.5s ease-out';
+                gameHeader.style.opacity = '0';
+                
+                // After fade out, hide the element completely
+                setTimeout(() => {
+                    gameHeader.style.display = 'none';
+                    gameHeader.style.margin = '0';
+                    gameHeader.style.height = '0';
+                }, 500);
+            }
+            
+            // Ensure game is active
+            const gameContainer = document.querySelector('.game-container');
+            if (gameContainer) {
+                gameContainer.classList.add('game-active');
+            }
+            
+            // Force grid visibility
+            setTimeout(() => {
+                const gridContainer = document.getElementById('grid-container');
+                if (gridContainer) {
+                    console.log('Forcing grid visibility');
+                    gridContainer.style.cssText = "visibility: visible !important; height: auto !important; display: grid !important; background-color: #94a3b8 !important; border: 1px solid #94a3b8 !important;";
+                }
+            }, 600); // Wait a bit longer than the title fade
+        }
+    });
     
-    // Function to handle title hiding
-    const hideGameTitle = () => {
-        // Add a fade out animation to the header
-        gameHeader.style.transition = 'opacity 0.5s ease-out, margin 0.5s ease-out';
-        gameHeader.style.opacity = '0';
-        
-        // After fade out, hide the element completely and remove its margin
-        setTimeout(() => {
-            gameHeader.style.display = 'none';
-            gameHeader.style.margin = '0';
-            gameHeader.style.height = '0';
-        }, 500);
-    };
-    
-    // Add event listeners to regular level buttons
-    if (levelButtons.length > 0) {
-        levelButtons.forEach(button => {
-            button.addEventListener('click', hideGameTitle, { once: true });
-        });
-    }
-    
-    // Add event listeners to scrollable level buttons
-    if (scrollableLevelButtons.length > 0) {
-        scrollableLevelButtons.forEach(button => {
-            button.addEventListener('click', hideGameTitle, { once: true });
-        });
-    }
+    console.log('Title visibility control set up');
 }
 
 // Export functions to be used by other modules
