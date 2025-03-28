@@ -200,12 +200,10 @@ initializeEventListeners() {
                 }, 0);
             }
 
-            // Ensure grid container visibility is set properly
+            // Make grid visible with important to override any CSS
             const gridContainer = document.getElementById('grid-container');
             if (gridContainer) {
-                gridContainer.style.visibility = 'visible';
-                gridContainer.style.height = 'auto';
-                gridContainer.style.backgroundColor = '#94a3b8';
+            gridContainer.style.cssText = "visibility: visible !important; height: auto !important; background-color: #94a3b8 !important; border: 1px solid #94a3b8 !important;";
             }
 
             // Render grid with appropriate size
