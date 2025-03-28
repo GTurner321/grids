@@ -101,5 +101,38 @@
 
     <!-- Non-module scripts that enhance the UI -->
     <script src="js/button-effects.js"></script>
+
+    <script>
+// Force correct grid sizing on any game state change
+const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+        if (mutation.target.classList.contains('game-active')) {
+            const gridContainer = document.getElementById('grid-container');
+            if (gridContainer) {
+                const gridSize = gridContainer.classList.contains('grid-size-6') ? 6 : 10;
+                
+                setTimeout(() => {
+                    if (window.innerWidth > 768) {
+                        gridContainer.style.width = gridSize === 6 ? 
+                            'calc(6 * 67.5px + 7px)' : 
+                            'calc(10 * 40px + 11px)';
+                    } else {
+                        gridContainer.style.width = 'calc(100vw - 20px)';
+                    }
+                }, 50);
+            }
+        }
+    });
+});
+
+// Start observing the game container for class changes
+document.addEventListener('DOMContentLoaded', () => {
+    const gameContainer = document.querySelector('.game-container');
+    if (gameContainer) {
+        observer.observe(gameContainer, { attributes: true, attributeFilter: ['class'] });
+    }
+});
+</script>
+    
 </body>
 </html>
