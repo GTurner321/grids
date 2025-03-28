@@ -1006,23 +1006,24 @@ body {
 }
 
 /* ==========================================================================
-   16. SCORE BAR
+   16. SCORE BAR - ENHANCED 3D STYLING
    ========================================================================== */
-/* Score row */
+
+/* Score row - Main container */
 .score-row {
   display: flex !important;
   align-items: center !important;
   width: var(--grid-total-width);
-  height: 25px !important;
-  background-color: #e6f2ff !important;
-  border: 1px solid #94a3b8 !important;
-  border-bottom: none !important;
+  height: 28px !important; /* 20% less high than original */
   margin: 0 auto;
-  border-radius: 0;
+  border-radius: 4px;
   box-sizing: border-box;
   position: relative; /* For level indicators */
   font-family: 'Trebuchet MS', Arial, sans-serif !important;
   font-weight: bold !important;
+  font-size: 0.9rem !important; /* Standardized smaller text size */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important; /* Shadow around entire box */
+  overflow: hidden; /* Keep segments within rounded corners */
 }
 
 /* Level Segments Container */
@@ -1038,38 +1039,67 @@ body {
   pointer-events: none;
 }
 
-/* Individual Level Segment */
+/* Individual Level Segment - Base styling for all segments */
 .level-segment {
   height: 100%;
-  /* Default matching the score row background */
-  background-color: #e6f2ff;
-  border-right: 1px solid rgba(148, 163, 184, 0.3);
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  transition: background-color 0.2s ease;
+  /* 3D effect with inset shadow for depressed look */
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  background-color: var(--btn-metal-medium); /* Medium gray from buttonsboxes */
 }
 
+/* Unlocked segments - lighter, raised appearance */
+.level-segment.unlocked {
+  /* Metallic gradient for raised appearance */
+  background: linear-gradient(
+    to bottom,
+    var(--btn-metal-light) 0%,
+    var(--btn-metal-mediumlight) 100%
+  );
+  box-shadow: 
+    inset 0 1px 1px var(--btn-metal-inner-highlight),
+    inset 0 -1px 1px var(--btn-metal-inner-shadow);
+  border-top: 1px solid var(--btn-metal-lighter);
+  border-bottom: 1px solid var(--btn-metal-dark);
+}
+
+/* Completed segments - green but still with 3D button styling */
+.level-segment.completed {
+  /* Green metallic gradient */
+  background: linear-gradient(
+    to bottom,
+    #92c895 0%, /* Lighter dull green */
+    #6ba96e 100% /* Darker dull green */
+  );
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 0.6),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.1);
+  border-top: 1px solid #a8d8ab;
+  border-bottom: 1px solid #5a8e5d;
+}
+
+/* Last segment has no right border */
 .level-segment:last-child {
   border-right: none;
 }
 
-.level-segment.completed {
-  background-color: #22c55e;
-}
-
-/* Score left (name and score in red) */
+/* Score left (name and score) */
 .score-left {
-  width: 60% !important;
+  width: 50% !important; /* Can extend to middle */
   display: flex !important;
   flex-direction: column !important;
   justify-content: center !important;
   padding-left: 15px !important;
-  color: #ef4444 !important; /* Red for score */
   text-align: left !important;
   position: relative;
   z-index: 2; /* Above level indicators */
+  /* No margin or padding on right side */
 }
 
-/* Score right (total justified right - DARK BLUE) */
+/* Score right (total) */
 .score-right {
-  width: 40% !important;
+  width: 50% !important; /* Can extend to middle */
   display: flex !important;
   align-items: center !important;
   justify-content: flex-end !important;
@@ -1077,7 +1107,7 @@ body {
   text-align: right !important;
   position: relative;
   z-index: 2; /* Above level indicators */
-  color: #1e40af !important; /* DARK BLUE for total */
+  /* No margin or padding on left side */
 }
 
 /* Total label */
@@ -1086,30 +1116,47 @@ body {
   justify-content: flex-end !important;
   width: 100% !important;
   font-weight: bold !important;
-  color: #1e40af !important; /* DARK BLUE for total */
+  color: var(--text-blue) !important; /* Dark blue for total from main.css */
+  font-size: 0.9rem !important; /* Same size as other text */
 }
 
 /* Bonus score info */
 #score-bonus {
   visibility: visible !important;
-  color: #ef4444 !important; /* Red for round score */
+  color: var(--danger-color) !important; /* Red for round score */
+  font-size: 0.9rem !important; /* Same size as other text */
 }
 
-/* Username in score bar should also be bold */
-#score-bonus:not(:empty) {
+/* Username styling */
+#score-bonus:not(:empty):not(:contains("+")) {
   visibility: visible !important;
   font-weight: bold !important;
-  font-family: 'Trebuchet MS', Arial, sans-serif !important;
+  color: var(--dark-green) !important; /* Dark green for username */
+  font-size: 0.9rem !important; /* Same size as other text */
 }
 
-/* MOBILE: Larger text for score bar */
+/* Animation for level completion */
+@keyframes pulse-green {
+  0% { background-color: #92c895; }
+  100% { background-color: #6ba96e; }
+}
+
+.level-segment.celebrate {
+  animation: pulse-green 2s infinite alternate;
+}
+
+/* MOBILE: Adjustments for mobile */
 @media (max-width: 768px) {
   .score-row {
-    height: 25px !important;
+    font-size: 0.9rem !important; /* Keep consistent text size */
   }
   
-  .score-left, .score-right {
-    font-size: 1.1rem !important; /* LARGER TEXT */
+  .score-left {
+    padding-left: 10px !important;
+  }
+  
+  .score-right {
+    padding-right: 10px !important;
   }
 }
 
