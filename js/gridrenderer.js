@@ -122,6 +122,13 @@ export function renderGrid(gridEntries, options = {}) {
     // Add the appropriate grid size class
     gridContainer.classList.add(`grid-size-${gridSize}`);
     
+    // Force visibility - important to override CSS
+    gridContainer.style.visibility = 'visible';
+    gridContainer.style.height = 'auto';
+    gridContainer.style.opacity = '1';
+    gridContainer.style.display = 'grid';
+    gridContainer.style.backgroundColor = '#94a3b8';
+    
     // Determine appropriate cell size
     let cellSize;
     if (gridSize === 6) {
