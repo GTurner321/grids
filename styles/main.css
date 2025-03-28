@@ -371,48 +371,73 @@ body {
    ========================================================================== */
 
 /* ==========================================================================
-   7. GAME MESSAGES - UPDATED WITH STYLED BOX
+   7. GAME MESSAGES - LEVERAGING STYLED BOX
    ========================================================================== */
 
-/* Game Messages Styling */
+/* Game Messages Container */
 #game-messages-container {
     width: 100%;
     display: flex;
     justify-content: center;
     margin: 15px auto;
+    /* Ensure it matches the grid container width */
+    max-width: var(--grid-total-width, var(--grid-width, 480px));
 }
 
-#game-messages {
+/* 
+ * Game Messages Box - leveraging .styled-box
+ * Only add specific overrides needed for the message box
+ */
+#game-messages.styled-box {
     width: 100%;
-    max-width: var(--grid-width, 480px); /* Match grid width */
+    /* Use grid-total-width as first choice, then fall back to grid-width, then to 480px */
+    max-width: var(--grid-total-width, var(--grid-width, 480px));
     min-height: 60px; /* Height for two lines of text */
     padding: 10px 15px;
     margin: 0;
+    
+    /* Flexbox for vertical centering - important difference from standard styled-box */
     display: flex;
+    flex-direction: column; /* For stacking penalty messages */
     align-items: center;
     justify-content: center;
-    box-sizing: border-box;
     
-    /* Text styling */
+    /* Text styling overrides */
     font-family: 'Lucida Handwriting', 'Brush Script MT', cursive;
     font-style: italic;
     font-size: 1rem;
-    color: var(--text-blue); /* Keep the blue color */
+    color: var(--text-blue, #1e40af); /* Use variable with fallback */
     text-align: center;
-    
-    /* Remove text shadow */
-    text-shadow: none;
+    text-shadow: none; /* Override any text shadow from styled-box */
     
     /* Auto-height for longer messages */
     height: auto;
-    
-    /* Use grid width variable if it exists */
-    width: var(--grid-width, 100%);
+}
+
+/* Message Type Variations */
+#game-messages.styled-box.info {
+    border-color: #4a90e2;
+}
+
+#game-messages.styled-box.success {
+    border-color: var(--success-color, #22c55e);
+}
+
+#game-messages.styled-box.error {
+    border-color: var(--danger-color, #ef4444);
+}
+
+/* Penalty Message Styling */
+.penalty-message {
+    margin-top: 5px;
+    font-size: 0.9em;
+    color: var(--danger-color, #ef4444); /* Red color for penalty */
+    font-weight: bold;
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    #game-messages {
+    #game-messages.styled-box {
         font-size: 0.9rem;
         min-height: 54px;
         padding: 8px 12px;
@@ -420,7 +445,7 @@ body {
 }
 
 @media (max-width: 480px) {
-    #game-messages {
+    #game-messages.styled-box {
         font-size: 0.85rem;
         min-height: 50px;
         padding: 6px 10px;
