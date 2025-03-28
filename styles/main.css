@@ -147,6 +147,12 @@ body {
   overflow: visible;
 }
 
+.game-container.game-active #grid-container {
+  background-color: #94a3b8 !important;
+  border-color: #94a3b8 !important;
+  box-shadow: none !important;
+}
+
 /* Ensure grid is visible when game is active */
 .game-container.game-active #grid-container {
     visibility: visible !important;
@@ -154,6 +160,8 @@ body {
     height: auto !important;
     background-color: #94a3b8 !important;
     border: 1px solid #94a3b8 !important;
+    width: auto !important; /* This prevents the grid from becoming massive */
+    max-width: var(--grid-total-width) !important; /* Use the CSS variable for consistent sizing */
 }
 
 /* Specific margin restoration */
