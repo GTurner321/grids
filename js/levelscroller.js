@@ -234,38 +234,45 @@ class LevelScroller {
     }
     
     handleLevelSelection(level) {
-        // Check if this level is unlocked
-        let isUnlocked = this.isLevelUnlocked(level);
-        
-        if (!isUnlocked) {
-            if (window.gameController && window.gameController.showMessage) {
-                window.gameController.showMessage(`Level ${level} is locked. Complete earlier levels to unlock it.`, 'error', 3000);
-            }
-            return;
+    // Check if this level is unlocked
+    let isUnlocked = this.isLevelUnlocked(level);
+    
+    if (!isUnlocked) {
+        if (window.gameController && window.gameController.showMessage) {
+            window.gameController.showMessage(`Level ${level} is locked. Complete earlier levels to unlock it.`, 'error', 3000);
         }
-        
-        // Try to start the level with the game controller
-        if (window.gameController && typeof window.gameController.startLevel === 'function') {
-            // Activate game container
-            const gameContainer = document.querySelector('.game-container');
-            if (gameContainer) {
-                gameContainer.classList.add('game-active');
-            }
-            
-            // Make grid visible
-            const gridContainer = document.getElementById('grid-container');
-            if (gridContainer) {
-                gridContainer.style.cssText = "visibility: visible !important; height: auto !important;";
-            }
-            
-            // Start the level
-            window.gameController.startLevel(level);
-            this.updateVisibleLevel();
-        } else {
-            console.error('Game controller not available');
-            alert('Error starting level. Please refresh the page and try again.');
-        }
+        return;
     }
+    
+    // Try to start the level with the game controller
+    if (window.gameController && typeof window.gameController.startLevel === 'function') {
+        // Activate game container
+        const gameContainer = document.querySelector('.game-container');
+        if (gameContainer) {
+            gameContainer.classList.add('game-active');
+        }
+        
+        // Make grid visible
+        const gridContainer = document.getElementById('grid-container');
+        if (gridContainer) {
+            gridContainer.style.cssText = "visibility: visible !important; height: auto !important;";
+        }
+        
+        // Start the level
+        window.gameController.startLevel(level);
+        this.updateVisibleLevel();
+    } else {
+        console.error('Game controller not available');
+        // Instead of alert, try to wait for game controller
+        setTimeout(() => {
+            if (window.gameController && typeof window.gameController.startLevel === 'function') {
+                this.handleLevelSelection(level);
+            } else {
+                alert('Error starting level. Please refresh the page and try again.');
+            }
+        }, 500);
+    }
+}
     
     // Set the current level from external sources (like game controller)
     setCurrentLevel(level) {
