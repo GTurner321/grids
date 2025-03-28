@@ -26,7 +26,7 @@
     --btn-text-shadow-dark: rgba(0, 0, 0, 0.4);
     
     /* Box styling variables */
-    --box-bg-color: #f8f8f8;
+    --box-bg-color: #f0f0f0;
     --box-border-color: #a0a0a0;
     --box-shadow: 0 4px 8px 2px rgba(0, 0, 0, 0.15);
     --box-inner-shadow: rgba(0, 0, 0, 0.05);
@@ -213,25 +213,41 @@
 }
 
 /* ==========================================================================
-   3. CONTENT BOX STYLING - UNIVERSAL
+   3. CONTENT BOX STYLING - ENHANCED 3D EFFECT
    ========================================================================== */
 
 .styled-box {
     /* Base styling */
     background-color: var(--box-bg-color);
-    border: 2px solid var(--box-border-color);
+    
+    /* Enhanced 3D border effect with lighter top/left and darker bottom/right */
+    border: 1px solid var(--box-border-color);
+    border-top: 2px solid var(--btn-metal-lighter);
+    border-left: 2px solid var(--btn-metal-light);
+    border-right: 2px solid var(--btn-metal-dark);
+    border-bottom: 3px solid var(--btn-metal-darker);
+    
     border-radius: 8px;
     padding: 15px;
     margin: 15px auto;
     
-    /* Shadow effects */
-    box-shadow: 0 3px 8px var(--box-shadow-color),
+    /* Enhanced shadow effects for 3D appearance */
+    box-shadow: 0 4px 8px 2px var(--box-shadow),
                 inset 0 1px 2px var(--box-inner-highlight),
-                inset 0 -1px 1px var(--box-inner-shadow);
+                inset 0 -1px 2px var(--box-inner-shadow);
+    
+    /* Subtle gradient background like buttons */
+    background: linear-gradient(
+        to bottom,
+        var(--btn-metal-lighter) 0%,
+        var(--box-bg-color) 15%,
+        var(--box-bg-color) 85%,
+        var(--btn-metal-medium) 100%
+    );
     
     /* Text styling */
     font-family: 'Trebuchet MS', Arial, sans-serif;
-    color: #333;
+    color: #444; /* Dark grey instead of black */
     
     /* Positioning */
     position: relative;
@@ -243,7 +259,7 @@
     transition: all 0.3s ease;
 }
 
-/* Box heading */
+/* Box heading with embossed text effect like buttons */
 .styled-box-title {
     font-family: 'Black Ops One', 'Trebuchet MS', Arial, sans-serif;
     font-weight: normal;
@@ -252,22 +268,41 @@
     margin: 0 0 15px 0;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: #333;
-    text-shadow: 0px 1px 1px white;
+    color: var(--btn-text-color);
+    text-shadow: 0px 1px 1px var(--btn-text-shadow-light), 
+                 0px -1px 1px var(--btn-text-shadow-dark);
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--btn-metal-medium);
 }
 
-/* Box content */
+/* Box subtitle with embossed effect */
+.styled-box-subtitle {
+    font-family: 'Trebuchet MS', Arial, sans-serif;
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin: 15px 0 10px 0;
+    color: var(--btn-text-color);
+    text-shadow: 0px 1px 0px var(--btn-text-shadow-light), 
+                 0px -1px 0px rgba(0, 0, 0, 0.2);
+}
+
+/* Box content with subtle embossed text */
 .styled-box-content {
     width: 100%;
     background-color: transparent;
     padding: 0;
     border: none;
+    color: #444; /* Dark grey instead of black */
+    text-shadow: 0px 1px 0px rgba(255, 255, 255, 0.5); /* Subtle emboss */
+    line-height: 1.5;
 }
 
 /* Box footer */
 .styled-box-footer {
     margin-top: 20px;
     text-align: center;
+    padding-top: 10px;
+    border-top: 1px solid var(--btn-metal-medium);
 }
 
 /* ==========================================================================
@@ -340,6 +375,14 @@ document.addEventListener('DOMContentLoaded', function() {
         padding: 12px;
         width: 90%;
     }
+    
+    .styled-box-title {
+        font-size: 1.2rem;
+    }
+    
+    .styled-box-subtitle {
+        font-size: 1rem;
+    }
 }
 
 /* Small screens */
@@ -362,10 +405,23 @@ document.addEventListener('DOMContentLoaded', function() {
     .styled-box {
         padding: 10px;
         margin: 10px auto;
+        border-width: 1px;
+        border-top-width: 2px;
+        border-bottom-width: 2px;
     }
     
     .styled-box-title {
         font-size: 1.1rem;
+        margin-bottom: 10px;
+    }
+    
+    .styled-box-subtitle {
+        font-size: 0.9rem;
+        margin: 10px 0 8px 0;
+    }
+    
+    .styled-box-content {
+        font-size: 0.95rem;
     }
 }
 
