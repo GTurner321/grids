@@ -128,7 +128,10 @@ export function renderGrid(gridEntries, options = {}) {
     gridContainer.style.opacity = '1';
     gridContainer.style.display = 'grid';
     gridContainer.style.backgroundColor = '#94a3b8';
-    
+
+// THE CRITICAL LINE:
+gridContainer.style.gridTemplateColumns = `repeat(${gridSize}, ${options.cellSize || cellSize})`;
+  
     // Determine appropriate cell size
     let cellSize;
     if (gridSize === 6) {
