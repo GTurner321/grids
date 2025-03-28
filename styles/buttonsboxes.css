@@ -242,17 +242,15 @@
                 inset 0 -1px 2px var(--box-inner-shadow);
     
     /* Enhanced gradient background with thinner darker top and bottom edges */
-    background: linear-gradient(
-        to bottom,
-        var(--btn-metal-medium) 0%,
-        var(--btn-metal-light) 0.5%,
-        var(--btn-metal-lighter) 0.5%,
-        var(--box-bg-color) 0.5%,
-        var(--box-bg-color) 97%,
-        var(--btn-metal-medium) 99%,
-        var(--btn-metal-dark) 99.5%
-        var(--btn-metal-dark) 100%
-    );
+background: linear-gradient(
+    to bottom,
+    var(--btn-metal-medium) 0%,
+    var(--btn-metal-light) 0.5%,
+    var(--box-bg-color) 2%,
+    var(--box-bg-color) 98%,
+    var(--btn-metal-medium) 99%,
+    var(--btn-metal-dark) 100%
+);
     
     /* Text styling */
     font-family: 'Trebuchet MS', Arial, sans-serif;
