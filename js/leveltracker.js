@@ -1,34 +1,34 @@
 // leveltracker.js - Enhanced with 3D segment styling and improved level tracking
 
 class LevelTracker {
-    constructor() {
-        // Store which levels have been completed in THIS session
-        this.completedLevels = new Set();
-        
-        // Track unlocked levels (start with level 1 always unlocked)
-        this.unlockedLevels = new Set([1]);
-        
-        // Track current active level
-        this.currentLevel = 1;
-        
-        // Flag to track if all levels have been completed before
-        this.hasCompletedAllLevels = false;
-        
-        // Level just completed (for celebration animation)
-        this.justCompletedLevel = null;
-        
-        // Initialize the score bar segments
-        this.findScoreBar();
-        
-        // Listen for score updates and other game events
-        this.setupEventListeners();
-        
-        // Make available globally
-        window.levelTracker = this;
-        
-        console.log('Level tracker initialized');
-    }
+constructor() {
+    // Store which levels have been completed in THIS session
+    this.completedLevels = new Set();
     
+    // Track unlocked levels (start with level 1 always unlocked)
+    this.unlockedLevels = new Set([1]);
+    
+    // Track current active level
+    this.currentLevel = 1;
+    
+    // Flag to track if all levels have been completed before
+    this.hasCompletedAllLevels = false;
+    
+    // Level just completed (for celebration animation)
+    this.justCompletedLevel = null;
+    
+    // Initialize the score bar segments
+    this.findScoreBar();
+    
+    // Listen for score updates and other game events
+    this.setupEventListeners();
+    
+    // Make available globally
+    window.levelTracker = this;
+    
+    console.log('Level tracker initialized');
+}
+  
     findScoreBar() {
         console.log('Looking for score bar...');
         
@@ -258,20 +258,28 @@ updateScoreBarSegments() {
         }));
     }
     
-    unlockLevel(level) {
-        if (level >= 1 && level <= 10 && !this.unlockedLevels.has(level)) {
-            console.log(`Unlocking level ${level}`);
-            this.unlockedLevels.add(level);
-            this.updateScoreBarSegments();
-            
-            // Dispatch levelUnlocked event
-            document.dispatchEvent(new CustomEvent('levelsUnlocked', {
-                detail: {
-                    unlockedLevels: Array.from(this.unlockedLevels)
-                }
-            }));
+unlockLevel(level) {
+    if (level >= 1 && level <= 10 && !this.unlockedLevels.has(level)) {
+        console.log(`Unlocking level ${level}`);
+        
+        // Unlock the specified level
+        this.unlockedLevels.add(level);
+        
+        // Important: Also unlock any previous levels that might not be unlocked yet
+        for (let i = 1; i < level; i++) {
+            this.unlockedLevels.add(i);
         }
+        
+        this.updateScoreBarSegments();
+        
+        // Dispatch levelUnlocked event
+        document.dispatchEvent(new CustomEvent('levelsUnlocked', {
+            detail: {
+                unlockedLevels: Array.from(this.unlockedLevels)
+            }
+        }));
     }
+}
     
     setCurrentLevel(level) {
         if (level >= 1 && level <= 10) {
