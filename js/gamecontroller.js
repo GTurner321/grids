@@ -447,6 +447,19 @@ async startLevel(level) {
 }
     
     initializeGridInteractions() {
+
+        console.log('Adding grid visibility debug check');
+setInterval(() => {
+    const gridContainer = document.getElementById('grid-container');
+    if (gridContainer) {
+        const computedStyle = window.getComputedStyle(gridContainer);
+        console.log('Grid visibility:', computedStyle.visibility, 
+                   'Display:', computedStyle.display,
+                   'Height:', computedStyle.height,
+                   'Background:', computedStyle.backgroundColor);
+    }
+}, 2000); 
+        
         const gridContainer = document.getElementById('grid-container');
         if (!gridContainer) {
             console.warn('Grid container not found, will try to initialize later');
