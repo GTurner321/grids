@@ -25,8 +25,8 @@ startLevel(level) {
     // Updated level point values
     const levelPoints = {
         1: 100,
-        2: 300,
-        3: 500,
+        2: 250,
+        3: 400,
         4: 2000,
         5: 2500,
         6: 3000,
