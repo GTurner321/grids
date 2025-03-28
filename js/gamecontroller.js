@@ -188,32 +188,12 @@ class GameController {
             }
 
             // Ensure grid container visibility is set properly
-const gridContainer = document.getElementById('grid-container');
-if (gridContainer) {
-    // First remove grid size classes, then add the right one
-    gridContainer.classList.remove('grid-size-6', 'grid-size-10');
-    gridContainer.classList.add(`grid-size-${gridSize}`);
-    
-    // Set visibility properties
-    gridContainer.style.visibility = 'visible';
-    gridContainer.style.height = 'auto';
-    
-    // Set appropriate background color
-    gridContainer.style.backgroundColor = '#94a3b8';
-    
-    // Ensure border is visible
-    gridContainer.style.border = '1px solid #94a3b8';
-    gridContainer.style.boxSizing = 'content-box';
-    
-    // Make sure grid has the right width
-    if (window.innerWidth > 768) {
-        gridContainer.style.width = gridSize === 6 ? 
-            'calc(6 * 67.5px + 7px)' : 
-            'calc(10 * 40px + 11px)';
-    } else {
-        gridContainer.style.width = 'calc(100vw - 20px)';
-    }
-}
+            const gridContainer = document.getElementById('grid-container');
+            if (gridContainer) {
+                gridContainer.style.visibility = 'visible';
+                gridContainer.style.height = 'auto';
+                gridContainer.style.backgroundColor = '#94a3b8';
+            }
 
             // Render grid with appropriate size
             renderGrid(this.state.gridEntries, {
@@ -222,19 +202,6 @@ if (gridContainer) {
                 gridSize: gridSize
             });
 
-            // ADD THE NEW CODE HERE:
-// Ensure all buttons have metallic-button class
-document.querySelectorAll('.game-controls button').forEach(button => {
-    if (!button.classList.contains('metallic-button')) {
-        button.classList.add('metallic-button');
-    }
-});
-            // Ensure score row has correct width
-const scoreRow = document.querySelector('.score-row');
-if (gridContainer && scoreRow) {
-    scoreRow.style.width = gridContainer.style.width;
-}
-            
             // Update UI elements and buttons
             this.updateUI();
             this.showMessage('Find the path by following the mathematical sequence.');
