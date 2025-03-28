@@ -1014,7 +1014,7 @@ resetPath() {
                 messageElement.textContent = text;
             }
             
-            messageElement.className = type ? `message-box ${type}` : 'message-box';
+            messageElement.className = type ? `styled-box ${type}` : 'styled-box';
             
             if (duration) {
                 this.messageTimeout = setTimeout(() => {
