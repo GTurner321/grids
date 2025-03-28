@@ -233,7 +233,7 @@ class LevelScroller {
         return false;
     }
     
-    handleLevelSelection(level) {
+handleLevelSelection(level) {
     // Check if this level is unlocked
     let isUnlocked = this.isLevelUnlocked(level);
     
@@ -244,34 +244,55 @@ class LevelScroller {
         return;
     }
     
-    // Try to start the level with the game controller
-    if (window.gameController && typeof window.gameController.startLevel === 'function') {
+    // Function to actually start the level once controller is available
+    const startSelectedLevel = () => {
+        console.log(`Starting level ${level} with game controller`);
+        
         // Activate game container
         const gameContainer = document.querySelector('.game-container');
         if (gameContainer) {
             gameContainer.classList.add('game-active');
         }
         
-        // Make grid visible
+        // CRITICAL: Force grid visibility with stronger overrides
         const gridContainer = document.getElementById('grid-container');
         if (gridContainer) {
-            gridContainer.style.cssText = "visibility: visible !important; height: auto !important;";
+            gridContainer.style.cssText = "visibility: visible !important; height: auto !important; display: grid !important; background-color: #94a3b8 !important; border: 1px solid #94a3b8 !important;";
+            console.log('Grid visibility forced by level scroller');
         }
         
         // Start the level
         window.gameController.startLevel(level);
+        
+        // Update appearance
         this.updateVisibleLevel();
-    } else {
-        console.error('Game controller not available');
-        // Instead of alert, try to wait for game controller
-        setTimeout(() => {
-            if (window.gameController && typeof window.gameController.startLevel === 'function') {
-                this.handleLevelSelection(level);
-            } else {
-                alert('Error starting level. Please refresh the page and try again.');
-            }
-        }, 500);
+        return true;
+    };
+    
+    // Try to start level immediately if controller is available
+    if (window.gameController && typeof window.gameController.startLevel === 'function') {
+        startSelectedLevel();
+        return;
     }
+    
+    console.log('Game controller not available, will retry...');
+    
+    // Use increasing retry intervals (more robust approach from previous version)
+    let attempts = 0;
+    const maxAttempts = 10;
+    const waitInterval = setInterval(() => {
+        attempts++;
+        console.log(`Attempt ${attempts} to access game controller...`);
+        
+        if (window.gameController && typeof window.gameController.startLevel === 'function') {
+            clearInterval(waitInterval);
+            startSelectedLevel();
+        } else if (attempts >= maxAttempts) {
+            clearInterval(waitInterval);
+            console.error('Game controller not available after multiple attempts');
+            alert('Error starting level. Please refresh the page and try again.');
+        }
+    }, 200); // Try every 200ms
 }
     
     // Set the current level from external sources (like game controller)
