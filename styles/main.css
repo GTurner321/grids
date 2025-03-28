@@ -374,71 +374,57 @@ body {
    7. GAME MESSAGES - UPDATED WITH STYLED BOX
    ========================================================================== */
 
+/* Game Messages Styling */
+#game-messages-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 15px auto;
+}
+
 #game-messages {
-  /* Basic box properties */
-  width: 90%;
-  max-width: 640px;
-  margin: 10px auto;
-  padding: 12px;
-  box-sizing: border-box;
-  
-  /* Text styling - keep cursive font */
-  font-family: 'Lucida Handwriting', 'Brush Script MT', cursive;
-  font-size: 1.4rem;
-  font-weight: bold;
-  color: var(--text-blue) !important;
-  text-align: center;
-  
-  /* Layout */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 40px;
-  
-  /* Ensure line breaks work properly */
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  white-space: normal;
-  
-  /* Visibility (will be controlled by JS) */
-  opacity: 0;
-  visibility: hidden;
-  height: 0;
-  overflow: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
+    width: 100%;
+    max-width: var(--grid-width, 480px); /* Match grid width */
+    min-height: 60px; /* Height for two lines of text */
+    padding: 10px 15px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    
+    /* Text styling */
+    font-family: 'Trebuchet MS', Arial, sans-serif;
+    font-style: italic;
+    font-size: 1rem;
+    color: #00008B; /* Keep the blue color */
+    text-align: center;
+    
+    /* Remove text shadow */
+    text-shadow: none;
+    
+    /* Auto-height for longer messages */
+    height: auto;
+    
+    /* Use grid width variable if it exists */
+    width: var(--grid-width, 100%);
 }
 
-/* When game is active - show game messages */
-.game-container.game-active #game-messages {
-  opacity: 1;
-  visibility: visible;
-  height: auto;
-  overflow: visible;
-  margin: 10px auto !important;
-}
-
-/* Penalty Messages */
-#game-messages .penalty-message {
-  font-size: 1.1rem;
-  margin-top: 5px;
-  color: var(--text-blue);
-}
-
-/* Mobile adjustments */
+/* Responsive adjustments */
 @media (max-width: 768px) {
-  #game-messages {
-    width: calc(100vw - 20px) !important;
-    margin: 8px auto !important;
-    padding: 10px 0;
-    font-size: 1.5rem !important;
-    min-height: 45px !important;
-  }
+    #game-messages {
+        font-size: 0.9rem;
+        min-height: 54px;
+        padding: 8px 12px;
+    }
+}
 
-  #game-messages .penalty-message {
-    font-size: 1.1rem !important;
-    margin-top: 3px;
-  }
+@media (max-width: 480px) {
+    #game-messages {
+        font-size: 0.85rem;
+        min-height: 50px;
+        padding: 6px 10px;
+    }
 }
 
 /* ==========================================================================
