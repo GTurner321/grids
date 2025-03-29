@@ -173,17 +173,15 @@ syncWithLevelScroller() {
     // Update our unlockedLevels based on the game's progression rules
     this.unlockedLevels.clear();
     
-    // Level 1 is always unlocked
-    this.unlockedLevels.add(1);
+    // Levels 1-3 are ALWAYS unlocked from the start
+    for (let i = 1; i <= 3; i++) {
+        this.unlockedLevels.add(i);
+    }
     
-    // Apply the same logic as levelscroller.js
-    for (let level = 2; level <= 10; level++) {
-        // Levels 1-3 are always unlocked
-        if (level <= 3) {
-            this.unlockedLevels.add(level);
-        }
+    // Apply the same logic as levelscroller.js for levels 4+
+    for (let level = 4; level <= 10; level++) {
         // Levels 4-6 are unlocked if any level from 1-3 is completed
-        else if (level <= 6 && [1, 2, 3].some(lvl => this.completedLevels.has(lvl))) {
+        if (level <= 6 && [1, 2, 3].some(lvl => this.completedLevels.has(lvl))) {
             this.unlockedLevels.add(level);
         }
         // Levels 7-10 are unlocked if any level from 4-6 is completed
