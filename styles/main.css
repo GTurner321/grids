@@ -1026,7 +1026,7 @@ body {
 }
 
 /* ==========================================================================
-   16. SCORE BAR - ENHANCED 3D STYLING (CHOCOLATE BAR STYLE)
+   16. SCORE BAR - ENHANCED 3D STYLING
    ========================================================================== */
 
 /* Score row - Main container */
@@ -1046,7 +1046,6 @@ body {
   overflow: hidden !important; /* Keep segments within rounded corners */
   background: none !important; /* Remove any background since segments will provide it */
   border: none !important; /* Remove border since segments will create the visual structure */
-  padding: 2px !important; /* Add padding to create space for segment shadows */
 }
 
 /* Level Segments Container */
@@ -1058,84 +1057,79 @@ body {
   height: 100% !important;
   display: grid !important;
   grid-template-columns: repeat(10, 1fr) !important;
-  grid-gap: 2px !important; /* Add gap between segments for chocolate bar effect */
   z-index: 0 !important; /* Below the text */
   pointer-events: none !important;
-  padding: 2px !important; /* Match the padding on score-row */
+  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.3) !important; /* Shadow around all segments */
+  border-radius: 4px !important; /* Match the score-row border radius */
 }
 
-/* Individual Level Segment - Base styling for locked/depressed segments */
+/* Individual Level Segment - Base styling for all segments */
 .level-segment {
   height: 100% !important;
   width: 100% !important;
+  border-right: 1px solid rgba(0, 0, 0, 0.1) !important;
   transition: background-color 0.3s ease, box-shadow 0.3s ease !important;
-  /* Chocolate chunk style with shadow all around */
-  box-shadow: 
-    0 0 2px rgba(0, 0, 0, 0.3),
-    inset 0 0 0 1px rgba(0, 0, 0, 0.1),
-    inset 0 2px 4px rgba(0, 0, 0, 0.2) !important;
-  background: linear-gradient(
-    to bottom,
-    var(--btn-metal-medium, #c0c0c0) 10%,
-    var(--btn-metal-dark, #a8a8a8) 90%
-  ) !important;
-  border-radius: 2px !important; /* Slightly rounded corners for chocolate pieces */
   position: relative !important;
 }
 
-/* Unlocked segments - enhanced raised appearance */
-.level-segment.unlocked {
-  /* Enhanced metallic gradient for raised appearance */
+/* Locked segments - depressed appearance */
+.level-segment:not(.unlocked):not(.completed) {
+  /* Depressed look with inset shadows */
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.25),
+    inset 0 1px 2px rgba(0, 0, 0, 0.2) !important;
   background: linear-gradient(
     to bottom,
-    var(--btn-metal-lighter, #f8f8f8) 10%,
-    var(--btn-metal-light, #e8e8e8) 90%
+    var(--btn-metal-medium, #c0c0c0) 0%,
+    var(--btn-metal-dark, #a8a8a8) 100%
   ) !important;
-  /* Enhanced outward shadow for "popping up" effect */
+  border-top: 1px solid var(--btn-metal-medium, #c0c0c0) !important;
+  border-bottom: 1px solid var(--btn-metal-dark, #888888) !important;
+}
+
+/* Unlocked segments - raised appearance but same height */
+.level-segment.unlocked {
+  /* Lighter gradient for raised appearance */
+  background: linear-gradient(
+    to bottom,
+    var(--btn-metal-lighter, #f8f8f8) 0%,
+    var(--btn-metal-light, #e8e8e8) 100%
+  ) !important;
+  /* Different shadow for raised appearance but no transform */
   box-shadow: 
-    0 0 3px rgba(0, 0, 0, 0.2),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.5),
-    inset 0 1px 2px rgba(255, 255, 255, 0.7) !important;
-  transform: translateY(-1px) !important; /* Slight upward shift for raised appearance */
+    inset 0 -2px 4px rgba(0, 0, 0, 0.15),
+    inset 0 1px 2px var(--btn-metal-inner-highlight, rgba(255, 255, 255, 0.9)) !important;
+  border-top: 1px solid var(--btn-metal-lighter, #ffffff) !important;
+  border-bottom: 1px solid var(--btn-metal-medium, #c0c0c0) !important;
   z-index: 1 !important; /* Ensure unlocked appears above locked */
 }
 
-/* Completed segments - enhanced 3D green styling */
+/* Completed segments - green styling at same height */
 .level-segment.completed {
-  /* Enhanced green metallic gradient */
+  /* Green gradient */
   background: linear-gradient(
     to bottom,
-    #9cd59f 10%, /* Lighter dull green */
-    #5a9a5d 90% /* Darker dull green */
+    #9cd59f 0%, /* Lighter dull green */
+    #5a9a5d 100% /* Darker dull green */
   ) !important;
   box-shadow: 
-    0 0 3px rgba(0, 0, 0, 0.2),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.5),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.15),
     inset 0 1px 2px rgba(255, 255, 255, 0.7) !important;
-  transform: translateY(-1px) !important;
+  border-top: 1px solid #aae6ad !important;
+  border-bottom: 1px solid #498c4c !important;
 }
 
-/* Current level indicator - shouldn't override unlocked styling */
-.level-segment.current:not(.unlocked):not(.completed) {
-  background: linear-gradient(
-    to bottom,
-    var(--btn-metal-lighter, #f8f8f8) 10%,
-    var(--btn-metal-light, #e8e8e8) 90%
-  ) !important;
+/* Current level indicator - blue glow */
+.level-segment.current {
   box-shadow: 
     0 0 5px rgba(59, 130, 246, 0.5),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.5),
-    inset 0 1px 2px rgba(255, 255, 255, 0.7) !important;
-  transform: translateY(-1px) !important;
+    inset 0 1px 2px rgba(255, 255, 255, 0.9),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.15) !important;
 }
 
-/* Current level that is also unlocked */
-.level-segment.current.unlocked {
-  /* Use the unlocked styling but add the blue glow */
-  box-shadow: 
-    0 0 6px rgba(59, 130, 246, 0.7),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.5),
-    inset 0 1px 2px rgba(255, 255, 255, 0.7) !important;
+/* Last segment has no right border */
+.level-segment:last-child {
+  border-right: none !important;
 }
 
 /* Score left (name and score) */
@@ -1198,15 +1192,15 @@ body {
   0% { 
     background: linear-gradient(
       to bottom,
-      #9cd59f 10%,
-      #5a9a5d 90%
+      #9cd59f 0%,
+      #5a9a5d 100%
     ) !important;
   }
   100% { 
     background: linear-gradient(
       to bottom,
-      #5a9a5d 10%,
-      #498c4c 90%
+      #5a9a5d 0%,
+      #498c4c 100%
     ) !important;
   }
 }
