@@ -29,27 +29,21 @@ constructor() {
     console.log('Level tracker initialized');
 }
   
-    findScoreBar() {
-        console.log('Looking for score bar...');
+findScoreBar() {
+    console.log('Looking for score bar...');
+    
+    // Look for score bar elements
+    const scoreRow = document.querySelector('.score-row');
+    
+    if (scoreRow) {
+        console.log('Score bar found, initializing segments');
+        this.initializeScoreBar(scoreRow);
+        this.syncWithLevelScroller(); // Add this line here
         
-        // Look for score bar elements
-        const scoreRow = document.querySelector('.score-row');
-        
-        if (scoreRow) {
-            console.log('Score bar found, initializing segments');
-            this.initializeScoreBar(scoreRow);
-            
-            // Dispatch levelTrackerReady event
-            setTimeout(() => {
-                document.dispatchEvent(new CustomEvent('levelTrackerReady', {
-                    detail: {
-                        completedLevels: Array.from(this.completedLevels),
-                        unlockedLevels: Array.from(this.unlockedLevels),
-                        currentLevel: this.currentLevel
-                    }
-                }));
-                console.log('Level tracker ready event dispatched');
-            }, 200);
+        // Dispatch levelTrackerReady event
+        setTimeout(() => {
+            // existing code...
+        }, 200);
         } else {
             console.log('Score bar not found, will try again in 500ms');
             // Try again after a delay
@@ -163,87 +157,127 @@ updateScoreBarSegments() {
         }
     }
 }
+
+// Add this method to leveltracker.js
+syncWithLevelScroller() {
+    // Only proceed if levelScroller exists
+    if (!window.levelScroller) return;
     
-    setupEventListeners() {
-        // Listen for score updates
-        window.addEventListener('scoreUpdated', (event) => {
-            if (event.detail && event.detail.roundComplete) {
-                const level = event.detail.level;
-                
-                if (level >= 1 && level <= 10) {
-                    this.markLevelCompleted(level);
-                    
-                    // Check if all levels are complete
-                    if (this.completedLevels.size === 10 && !this.hasCompletedAllLevels) {
-                        this.handleAllLevelsComplete();
-                        this.hasCompletedAllLevels = true;
-                    }
-                }
-            }
-        });
-        
-        // Listen for level changes
-        window.addEventListener('levelChanged', (event) => {
-            if (event.detail && event.detail.level) {
-                this.setCurrentLevel(event.detail.level);
-            }
-        });
-        
-        // Listen for level unlocks
-        window.addEventListener('levelUnlocked', (event) => {
-            if (event.detail && event.detail.level) {
-                this.unlockLevel(event.detail.level);
-            }
-        });
-        
-        // Observer to detect when score row is added to the DOM
-        const observer = new MutationObserver(mutations => {
-            mutations.forEach(mutation => {
-                if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-                    // Check if the score row was added
-                    const scoreRow = document.querySelector('.score-row');
-                    if (scoreRow && !scoreRow.querySelector('.level-segment-container')) {
-                        this.initializeScoreBar(scoreRow);
-                    }
-                }
-            });
-        });
-        
-        // Start observing the document body
-        observer.observe(document.body, {
-            childList: true,
-            subtree: true
-        });
-        
-        // Listen for game controller ready event
-        document.addEventListener('gameControllerReady', () => {
-            // Check if we need to update the level unlocker
-            this.updateLevelUnlocker();
-        });
+    // Clear any direct styling on segments that might conflict with our CSS classes
+    const segments = document.querySelectorAll('.level-segment');
+    segments.forEach(segment => {
+        // Remove any inline background color styling
+        segment.style.removeProperty('background-color');
+    });
+    
+    // Update our unlockedLevels based on the game's progression rules
+    this.unlockedLevels.clear();
+    
+    // Level 1 is always unlocked
+    this.unlockedLevels.add(1);
+    
+    // Apply the same logic as levelscroller.js
+    for (let level = 2; level <= 10; level++) {
+        // Levels 1-3 are always unlocked
+        if (level <= 3) {
+            this.unlockedLevels.add(level);
+        }
+        // Levels 4-6 are unlocked if any level from 1-3 is completed
+        else if (level <= 6 && [1, 2, 3].some(lvl => this.completedLevels.has(lvl))) {
+            this.unlockedLevels.add(level);
+        }
+        // Levels 7-10 are unlocked if any level from 4-6 is completed
+        else if (level <= 10 && [4, 5, 6].some(lvl => this.completedLevels.has(lvl))) {
+            this.unlockedLevels.add(level);
+        }
     }
     
-    markLevelCompleted(level) {
-        console.log(`Marking level ${level} as completed`);
-        
-        // Add to our set of completed levels for THIS session
-        this.completedLevels.add(level);
-        
-        // Track this level as the just completed one for animation
-        this.justCompletedLevel = level;
-        
-        // Unlock the next level if not already unlocked
-        if (level < 10) {
-            this.unlockLevel(level + 1);
+    // Update the segments
+    this.updateScoreBarSegments();
+}
+    
+setupEventListeners() {
+    // Listen for score updates
+    window.addEventListener('scoreUpdated', (event) => {
+        if (event.detail && event.detail.roundComplete) {
+            const level = event.detail.level;
+            
+            if (level >= 1 && level <= 10) {
+                this.markLevelCompleted(level);
+                
+                // Check if all levels are complete
+                if (this.completedLevels.size === 10 && !this.hasCompletedAllLevels) {
+                    this.handleAllLevelsComplete();
+                    this.hasCompletedAllLevels = true;
+                }
+            }
         }
-        
-        // Update visual segments
-        this.updateScoreBarSegments();
-        
-        // After 5 seconds, clear the celebration animation
-        setTimeout(() => {
-            this.justCompletedLevel = null;
-            this.updateScoreBarSegments();
-        }, 5000);
+    });
+    
+    // Listen for level changes
+    window.addEventListener('levelChanged', (event) => {
+        if (event.detail && event.detail.level) {
+            this.setCurrentLevel(event.detail.level);
+        }
+    });
+    
+    // Listen for level unlocks
+    window.addEventListener('levelUnlocked', (event) => {
+        if (event.detail && event.detail.level) {
+            this.unlockLevel(event.detail.level);
+        }
+    });
+    
+    // Observer to detect when score row is added to the DOM
+    const observer = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+            if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                // Check if the score row was added
+                const scoreRow = document.querySelector('.score-row');
+                if (scoreRow && !scoreRow.querySelector('.level-segment-container')) {
+                    this.initializeScoreBar(scoreRow);
+                }
+            }
+        });
+    });
+    
+    // Start observing the document body
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+    
+    // Listen for game controller ready event
+    document.addEventListener('gameControllerReady', () => {
+        // Check if we need to update the level unlocker
+        this.updateLevelUnlocker();
+        // Sync with level scroller to ensure segments match game rules
+        this.syncWithLevelScroller();
+    });
+}
+    
+markLevelCompleted(level) {
+    console.log(`Marking level ${level} as completed`);
+    
+    // Add to our set of completed levels for THIS session
+    this.completedLevels.add(level);
+    
+    // Track this level as the just completed one for animation
+    this.justCompletedLevel = level;
+    
+    // Unlock the next level if not already unlocked
+    if (level < 10) {
+        this.unlockLevel(level + 1);
+    }
+    
+    // Update visual segments
+    this.updateScoreBarSegments();
+    this.syncWithLevelScroller(); // Add this line here
+    
+    // After 5 seconds, clear the celebration animation
+    setTimeout(() => {
+        // existing code...
+    }, 5000);
         
         // Ensure level scroller updates to reflect newly unlocked levels
         if (window.levelScroller) {
