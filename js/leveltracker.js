@@ -5,8 +5,8 @@ constructor() {
     // Store which levels have been completed in THIS session
     this.completedLevels = new Set();
     
-    // Track unlocked levels (ensure level 1 is always unlocked)
-    this.unlockedLevels = new Set([1]);
+    // Track unlocked levels (ensure levels 1-3 are always unlocked)
+    this.unlockedLevels = new Set([1, 2, 3]);
     
     // Track current active level
     this.currentLevel = 1;
@@ -28,7 +28,7 @@ constructor() {
     
     console.log('Level tracker initialized');
 }
-  
+    
 findScoreBar() {
     console.log('Looking for score bar...');
     
@@ -347,18 +347,19 @@ unlockLevel(level) {
         }
     }
     
-    resetProgress() {
-        // Clear stored progress
-        this.completedLevels.clear();
-        this.unlockedLevels = new Set([1]); // Keep level 1 unlocked
-        this.hasCompletedAllLevels = false;
-        this.justCompletedLevel = null;
-        
-        // Reset visual indicators
-        this.updateScoreBarSegments();
-        
-        console.log('Progress reset');
-    }
+resetProgress() {
+    // Clear stored progress
+    this.completedLevels.clear();
+    // Keep levels 1-3 unlocked
+    this.unlockedLevels = new Set([1, 2, 3]); 
+    this.hasCompletedAllLevels = false;
+    this.justCompletedLevel = null;
+    
+    // Reset visual indicators
+    this.updateScoreBarSegments();
+    
+    console.log('Progress reset');
+}
     
     // Helper method to check if a level is unlocked
     isLevelUnlocked(level) {
