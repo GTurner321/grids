@@ -1020,7 +1020,7 @@ body {
 }
 
 /* ==========================================================================
-   16. SCORE BAR - ENHANCED 3D STYLING
+   16. SCORE BAR - ENHANCED 3D STYLING (CHOCOLATE BAR STYLE)
    ========================================================================== */
 
 /* Score row - Main container */
@@ -1040,6 +1040,7 @@ body {
   overflow: hidden !important; /* Keep segments within rounded corners */
   background: none !important; /* Remove any background since segments will provide it */
   border: none !important; /* Remove border since segments will create the visual structure */
+  padding: 2px !important; /* Add padding to create space for segment shadows */
 }
 
 /* Level Segments Container */
@@ -1051,40 +1052,29 @@ body {
   height: 100% !important;
   display: grid !important;
   grid-template-columns: repeat(10, 1fr) !important;
+  grid-gap: 2px !important; /* Add gap between segments for chocolate bar effect */
   z-index: 0 !important; /* Below the text */
   pointer-events: none !important;
+  padding: 2px !important; /* Match the padding on score-row */
 }
 
 /* Individual Level Segment - Base styling for locked/depressed segments */
 .level-segment {
   height: 100% !important;
   width: 100% !important;
-  border-right: 1px solid rgba(0, 0, 0, 0.1) !important;
   transition: background-color 0.3s ease, box-shadow 0.3s ease !important;
-  /* Enhanced 3D effect with deeper inset shadow for depressed look */
+  /* Chocolate chunk style with shadow all around */
   box-shadow: 
-    inset 0 2px 4px rgba(0, 0, 0, 0.25),
-    inset 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+    0 0 2px rgba(0, 0, 0, 0.3),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.1),
+    inset 0 2px 4px rgba(0, 0, 0, 0.2) !important;
   background: linear-gradient(
     to bottom,
-    var(--btn-metal-medium, #c0c0c0) 0%,
-    var(--btn-metal-dark, #a8a8a8) 100%
+    var(--btn-metal-medium, #c0c0c0) 10%,
+    var(--btn-metal-dark, #a8a8a8) 90%
   ) !important;
-  border-top: 1px solid var(--btn-metal-medium, #c0c0c0) !important;
-  border-bottom: 1px solid var(--btn-metal-dark, #888888) !important;
+  border-radius: 2px !important; /* Slightly rounded corners for chocolate pieces */
   position: relative !important;
-}
-
-/* Add shadow edge effect for depth */
-.level-segment::after {
-  content: "" !important;
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2) !important;
-  pointer-events: none !important;
 }
 
 /* Unlocked segments - enhanced raised appearance */
@@ -1092,23 +1082,16 @@ body {
   /* Enhanced metallic gradient for raised appearance */
   background: linear-gradient(
     to bottom,
-    var(--btn-metal-lighter, #f8f8f8) 0%,
-    var(--btn-metal-light, #e8e8e8) 100%
+    var(--btn-metal-lighter, #f8f8f8) 10%,
+    var(--btn-metal-light, #e8e8e8) 90%
   ) !important;
   /* Enhanced outward shadow for "popping up" effect */
   box-shadow: 
-    0 1px 1px rgba(0, 0, 0, 0.1),
-    inset 0 1px 2px var(--btn-metal-inner-highlight, rgba(255, 255, 255, 0.9)),
-    inset 0 -1px 1px var(--btn-metal-inner-shadow, rgba(0, 0, 0, 0.1)) !important;
-  border-top: 2px solid var(--btn-metal-lighter, #ffffff) !important;
-  border-bottom: 2px solid var(--btn-metal-medium, #c0c0c0) !important;
+    0 0 3px rgba(0, 0, 0, 0.2),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5),
+    inset 0 1px 2px rgba(255, 255, 255, 0.7) !important;
   transform: translateY(-1px) !important; /* Slight upward shift for raised appearance */
   z-index: 1 !important; /* Ensure unlocked appears above locked */
-}
-
-/* Remove the inset shadow for unlocked segments */
-.level-segment.unlocked::after {
-  box-shadow: none !important;
 }
 
 /* Completed segments - enhanced 3D green styling */
@@ -1116,36 +1099,27 @@ body {
   /* Enhanced green metallic gradient */
   background: linear-gradient(
     to bottom,
-    #9cd59f 0%, /* Lighter dull green */
-    #5a9a5d 100% /* Darker dull green */
+    #9cd59f 10%, /* Lighter dull green */
+    #5a9a5d 90% /* Darker dull green */
   ) !important;
   box-shadow: 
-    0 1px 2px rgba(0, 0, 0, 0.15),
-    inset 0 1px 2px rgba(255, 255, 255, 0.7),
-    inset 0 -1px 1px rgba(0, 0, 0, 0.15) !important;
-  border-top: 2px solid #aae6ad !important;
-  border-bottom: 2px solid #498c4c !important;
+    0 0 3px rgba(0, 0, 0, 0.2),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5),
+    inset 0 1px 2px rgba(255, 255, 255, 0.7) !important;
   transform: translateY(-1px) !important;
-}
-
-/* Remove inset shadow for completed segments too */
-.level-segment.completed::after {
-  box-shadow: none !important;
 }
 
 /* Current level indicator - shouldn't override unlocked styling */
 .level-segment.current:not(.unlocked):not(.completed) {
   background: linear-gradient(
     to bottom,
-    var(--btn-metal-lighter, #f8f8f8) 0%,
-    var(--btn-metal-light, #e8e8e8) 100%
+    var(--btn-metal-lighter, #f8f8f8) 10%,
+    var(--btn-metal-light, #e8e8e8) 90%
   ) !important;
   box-shadow: 
     0 0 5px rgba(59, 130, 246, 0.5),
-    inset 0 1px 2px var(--btn-metal-inner-highlight, rgba(255, 255, 255, 0.9)),
-    inset 0 -1px 1px var(--btn-metal-inner-shadow, rgba(0, 0, 0, 0.1)) !important;
-  border-top: 2px solid var(--btn-metal-lighter, #ffffff) !important;
-  border-bottom: 2px solid var(--btn-metal-medium, #c0c0c0) !important;
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5),
+    inset 0 1px 2px rgba(255, 255, 255, 0.7) !important;
   transform: translateY(-1px) !important;
 }
 
@@ -1154,13 +1128,8 @@ body {
   /* Use the unlocked styling but add the blue glow */
   box-shadow: 
     0 0 6px rgba(59, 130, 246, 0.7),
-    inset 0 1px 2px var(--btn-metal-inner-highlight, rgba(255, 255, 255, 0.9)),
-    inset 0 -1px 1px var(--btn-metal-inner-shadow, rgba(0, 0, 0, 0.1)) !important;
-}
-
-/* Last segment has no right border */
-.level-segment:last-child {
-  border-right: none !important;
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5),
+    inset 0 1px 2px rgba(255, 255, 255, 0.7) !important;
 }
 
 /* Score left (name and score) */
@@ -1223,15 +1192,15 @@ body {
   0% { 
     background: linear-gradient(
       to bottom,
-      #9cd59f 0%,
-      #5a9a5d 100%
+      #9cd59f 10%,
+      #5a9a5d 90%
     ) !important;
   }
   100% { 
     background: linear-gradient(
       to bottom,
-      #5a9a5d 0%,
-      #498c4c 100%
+      #5a9a5d 10%,
+      #498c4c 90%
     ) !important;
   }
 }
