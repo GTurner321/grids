@@ -161,7 +161,7 @@ export function addBorderStyles() {
     const style = document.createElement('style');
     style.id = 'path-border-styles';
     style.textContent = `
-        /* Path border styles - thicker dark blue borders */
+        /* Path border styles - default 3px borders for 10x10 grid */
         .border-top {
             border-top: 3px solid #1e40af !important;
         }
@@ -176,6 +176,23 @@ export function addBorderStyles() {
         
         .border-left {
             border-left: 3px solid #1e40af !important;
+        }
+        
+        /* Thicker borders specifically for 6x6 grid */
+        .grid-size-6 .border-top {
+            border-top: 4px solid #1e40af !important;
+        }
+        
+        .grid-size-6 .border-right {
+            border-right: 4px solid #1e40af !important;
+        }
+        
+        .grid-size-6 .border-bottom {
+            border-bottom: 4px solid #1e40af !important;
+        }
+        
+        .grid-size-6 .border-left {
+            border-left: 4px solid #1e40af !important;
         }
         
         /* Ensure borders appear above other content */
