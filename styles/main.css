@@ -473,14 +473,14 @@ body {
 }
 
 /* ==========================================================================
-   8. GAME CONTROLS - UPDATED WITH METALLIC STYLING
+   8. GAME CONTROLS - UPDATED WITH FULL-WIDTH LAYOUT
    ========================================================================== */
 
 .game-controls {
   margin-top: 12px;
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: space-between;
   gap: 8px;
   width: 100%;
   max-width: var(--grid-total-width); /* Match the grid width */
@@ -494,20 +494,14 @@ body {
   font-size: 0.9rem;
   padding: 8px 12px;
   height: 40px;
+  flex: 1; /* Equal widths for all buttons */
 }
 
-/* Button layout for specific controls */
-#check-solution {
-  width: 28%;
-}
-
-#remove-spare {
-  width: 44%;
-  transition: opacity 1s ease, visibility 1s ease, position 0.5s ease;
-}
-
+/* Equal width distribution for all three buttons */
+#check-solution,
+#remove-spare,
 #reset-path {
-  width: 28%;
+  width: calc(33.333% - 6px); /* Equal width minus gap */
 }
 
 /* Hide Remove Spares button when used */
@@ -517,14 +511,14 @@ body {
   pointer-events: none;
   position: absolute;
   z-index: -1;
-  transition: opacity 1s ease, visibility 1s ease;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
 }
 
 /* Two-button layout when Remove Spares is hidden */
 .game-controls.two-buttons #check-solution,
 .game-controls.two-buttons #reset-path {
-  width: 45%;
-  transition: width 1s ease;
+  width: calc(50% - 4px); /* Equal width with small gap */
+  transition: width 0.5s ease;
 }
 
 /* SVG icons in buttons */
@@ -537,26 +531,44 @@ body {
 /* Mobile adjustments */
 @media (max-width: 768px) {
   .game-controls {
-    width: calc(100vw - 20px);
+    width: 95%; /* Match the 95% width of game grid on mobile */
     gap: 5px;
     margin: 12px auto !important;
   }
   
+  .game-controls button {
+    font-size: 0.85rem;
+    padding: 6px 8px;
+  }
+  
+  /* Ensure equal width distribution on mobile too */
+  #check-solution,
+  #remove-spare,
+  #reset-path {
+    width: calc(33.333% - 4px); /* Equal width minus smaller gap */
+  }
+  
   .game-controls.two-buttons #check-solution,
   .game-controls.two-buttons #reset-path {
-    width: 49% !important;
+    width: calc(50% - 3px); /* Equal width with smaller gap */
   }
 }
 
 @media (max-width: 480px) {
   .game-controls button {
     font-size: 0.8rem;
-    padding: 6px 8px;
+    padding: 6px 4px;
+  }
+  
+  .game-controls button svg {
+    width: 12px;
+    height: 12px;
+    margin-right: 4px;
   }
 }
 
 /* ==========================================================================
-   9. BOTTOM BUTTONS (RECORD NAME & LEADERBOARD) - UPDATED WITH METALLIC STYLING
+   9. BOTTOM BUTTONS (RECORD NAME & LEADERBOARD) - UPDATED WITH FULL-WIDTH LAYOUT
    ========================================================================== */
 
 /* Bottom buttons - container */
@@ -568,7 +580,7 @@ body {
   position: relative;
   z-index: 10;
   width: 100%;
-  max-width: 400px;
+  max-width: var(--grid-total-width); /* Match the grid width */
   margin: 0 auto;
 }
 
@@ -578,19 +590,20 @@ body {
   visibility: visible !important;
   height: auto !important;
   overflow: visible !important;
-  justify-content: center;
+  justify-content: space-between;
   gap: 10px;
   margin: 15px auto !important;
 }
 
-/* Bottom buttons specific styling */
+/* Bottom buttons specific styling - make them span full width */
 #record-score-btn, 
 #leaderboard-btn {
-  /* Size and layout specific to these buttons */
-  min-width: 140px;
+  flex: 1; /* Equal width for both buttons */
   height: 44px;
   font-size: 1rem;
   padding: 8px 15px;
+  min-width: 0; /* Remove min-width to allow full flexibility */
+  width: calc(50% - 5px); /* Equal width with small gap */
 }
 
 /* SVG icons in buttons */
@@ -607,6 +620,8 @@ body {
 }
 
 .bottom-buttons.single-button #leaderboard-btn {
+  width: 100% !important;
+  max-width: 300px !important; /* Limit width when it's the only button */
   margin: 0 auto !important;
 }
 
@@ -630,20 +645,20 @@ body {
 /* Mobile adjustments */
 @media (max-width: 768px) {
   .bottom-buttons {
-    width: calc(100vw - 20px) !important;
+    width: 95% !important; /* Match the 95% width of game grid on mobile */
+    gap: 8px;
   }
   
   #record-score-btn, 
   #leaderboard-btn {
-    width: calc((100vw - 20px) * 0.48 - 5px);
-    max-width: 160px;
     font-size: 0.9rem;
     padding: 8px 10px;
+    width: calc(50% - 4px); /* Equal width with smaller gap */
   }
   
   .bottom-buttons.single-button #leaderboard-btn {
-    margin: 0 auto !important;
-    min-width: 200px !important;
+    width: 100% !important;
+    max-width: 250px !important;
   }
 }
 
@@ -652,7 +667,14 @@ body {
   #record-score-btn, 
   #leaderboard-btn {
     font-size: 0.8rem;
-    padding: 6px 10px;
+    padding: 6px 8px;
+  }
+  
+  #record-score-btn svg,
+  #leaderboard-btn svg {
+    width: 14px;
+    height: 14px;
+    margin-right: 4px;
   }
 }
 
