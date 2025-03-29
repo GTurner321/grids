@@ -121,7 +121,8 @@ body {
 /* Hide/show elements based on game active state */
 .score-row,
 .game-controls,
-#game-messages {
+#game-messages,
+#game-messages-container {  /* Add this line */
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s ease, visibility 0.3s ease;
@@ -139,7 +140,8 @@ body {
 
 .game-container.game-active .score-row,
 .game-container.game-active .game-controls,
-.game-container.game-active #game-messages {
+.game-container.game-active #game-messages,
+.game-container.game-active #game-messages-container {  /* Add this line */
   opacity: 1;
   visibility: visible;
   height: auto;
@@ -188,6 +190,10 @@ body {
 
 .game-container.game-active #game-messages {
   margin: 5px 0 !important;
+}
+
+.game-container.game-active #game-messages-container {
+  margin: 15px auto !important;
 }
 
 /* ==========================================================================
