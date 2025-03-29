@@ -5,7 +5,7 @@ constructor() {
     // Store which levels have been completed in THIS session
     this.completedLevels = new Set();
     
-    // Track unlocked levels (start with level 1 always unlocked)
+    // Track unlocked levels (ensure level 1 is always unlocked)
     this.unlockedLevels = new Set([1]);
     
     // Track current active level
@@ -75,30 +75,33 @@ initializeScoreBar(scoreRow) {
     // Clear any existing segments
     segmentContainer.innerHTML = '';
     
-    // Get max unlocked level to determine which segments should be unlocked
-    const maxUnlockedLevel = Math.max(...Array.from(this.unlockedLevels));
-    
     // Create 10 level segments with enhanced 3D styling
     for (let i = 1; i <= 10; i++) {
         const segment = document.createElement('div');
+        // IMPORTANT: Always add the base class
         segment.className = 'level-segment';
         
-        // Always apply proper styling class - THIS IS THE KEY CHANGE
-        // All segments up to max unlocked level get 'unlocked' class
+        // Always apply proper styling class
         if (this.completedLevels.has(i)) {
             segment.classList.add('completed');
             segment.setAttribute('title', `Level ${i} completed`);
-        } else if (i <= maxUnlockedLevel) {
+        } else if (i === 1 || this.unlockedLevels.has(i)) { 
+            // IMPORTANT: Ensure level 1 is always unlocked
             segment.classList.add('unlocked');
             segment.setAttribute('title', `Level ${i} unlocked`);
         } else {
-            // Locked segments get no additional class
+            // Locked segments don't need an additional class
             segment.setAttribute('title', `Level ${i} locked`);
         }
         
         // Add current level indicator if applicable
         if (i === this.currentLevel && !this.completedLevels.has(i)) {
             segment.classList.add('current');
+        }
+        
+        // Add the celebrate class if it's the just completed level
+        if (i === this.justCompletedLevel) {
+            segment.classList.add('celebrate');
         }
         
         // Store level number as data attribute
@@ -115,7 +118,8 @@ initializeScoreBar(scoreRow) {
     if (leftText) leftText.style.zIndex = '2';
     if (rightText) rightText.style.zIndex = '2';
 }
-    
+
+// Similarly, update the updateScoreBarSegments method:
 updateScoreBarSegments() {
     console.log('Updating score bar segments');
     
@@ -127,26 +131,24 @@ updateScoreBarSegments() {
         return;
     }
     
-    // Get max unlocked level to determine which segments should be unlocked
-    const maxUnlockedLevel = Math.max(...Array.from(this.unlockedLevels));
-    
     // Update each segment based on current status
     for (let i = 1; i <= 10; i++) {
         const segment = segmentContainer.querySelector(`[data-level="${i}"]`);
         if (!segment) continue;
         
-        // Reset classes
+        // Reset classes but KEEP the base class
         segment.className = 'level-segment';
         
         // Apply proper styling class for each segment's state
         if (this.completedLevels.has(i)) {
             segment.classList.add('completed');
             segment.setAttribute('title', `Level ${i} completed`);
-        } else if (i <= maxUnlockedLevel) {
+        } else if (i === 1 || this.unlockedLevels.has(i)) {
+            // IMPORTANT: Ensure level 1 is always unlocked
             segment.classList.add('unlocked');
             segment.setAttribute('title', `Level ${i} unlocked`);
         } else {
-            // Locked segments get no additional class
+            // Locked segments don't need an additional class
             segment.setAttribute('title', `Level ${i} locked`);
         }
         
