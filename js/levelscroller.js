@@ -179,38 +179,47 @@ createLevelButtons() {
         this.updateScoreBarSegments();
     }
     
-    updateScoreBarSegments() {
-        const segments = document.querySelectorAll('.level-segment');
-        if (!segments.length) return;
+updateScoreBarSegments() {
+    const segments = document.querySelectorAll('.level-segment');
+    if (!segments.length) return;
+    
+    // For each segment, check if level should be unlocked
+    segments.forEach(segment => {
+        const level = parseInt(segment.dataset.level);
         
-        // For each segment, check if level should be unlocked
-        segments.forEach(segment => {
-            const level = parseInt(segment.dataset.level);
-            
-            // Skip if already completed
-            if (segment.classList.contains('completed')) return;
-            
-            let isUnlocked = false;
-            
-            // Levels 1-3 are always unlocked
-            if (level >= 1 && level <= 3) {
-                isUnlocked = true;
-            }
-            // Levels 4-6 are unlocked if any level from 1-3 is completed
-            else if (level >= 4 && level <= 6) {
-                isUnlocked = window.levelTracker && 
-                    [1, 2, 3].some(lvl => window.levelTracker.completedLevels.has(lvl));
-            }
-            // Levels 7-10 are unlocked if any level from 4-6 is completed
-            else if (level >= 7 && level <= 10) {
-                isUnlocked = window.levelTracker && 
-                    [4, 5, 6].some(lvl => window.levelTracker.completedLevels.has(lvl));
-            }
-            
-            // Apply background color based on unlock status
-            segment.style.backgroundColor = isUnlocked ? '#b7aec5': '#dfdbe5';
-        });
-    }
+        // Skip if already completed
+        if (segment.classList.contains('completed')) return;
+        
+        let isUnlocked = false;
+        
+        // Levels 1-3 are always unlocked
+        if (level >= 1 && level <= 3) {
+            isUnlocked = true;
+        }
+        // Levels 4-6 are unlocked if any level from 1-3 is completed
+        else if (level >= 4 && level <= 6) {
+            isUnlocked = window.levelTracker && 
+                [1, 2, 3].some(lvl => window.levelTracker.completedLevels.has(lvl));
+        }
+        // Levels 7-10 are unlocked if any level from 4-6 is completed
+        else if (level >= 7 && level <= 10) {
+            isUnlocked = window.levelTracker && 
+                [4, 5, 6].some(lvl => window.levelTracker.completedLevels.has(lvl));
+        }
+        
+        // MODIFIED: Don't apply inline styles, use classes instead
+        if (isUnlocked) {
+            segment.classList.add('unlocked');
+            segment.classList.remove('locked');
+        } else {
+            segment.classList.remove('unlocked');
+            segment.classList.add('locked');
+        }
+        
+        // Remove any inline background color that might have been set previously
+        segment.style.removeProperty('backgroundColor');
+    });
+}
     
     handleLevelSelection(level) {
         // Check if this level is unlocked using the same logic as updateVisibleLevel
