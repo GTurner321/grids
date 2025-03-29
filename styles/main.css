@@ -1096,13 +1096,22 @@ body {
   border-bottom: 1px solid #5a8e5d !important;
 }
 
-/* Current level indicator */
-.level-segment.current {
+/* Current level indicator - shouldn't override unlocked styling */
+.level-segment.current:not(.unlocked):not(.completed) {
   background: linear-gradient(
     to bottom,
     var(--btn-metal-lighter, #f8f8f8) 0%,
     var(--btn-metal-light, #f0f0f0) 100%
   ) !important;
+  box-shadow: 
+    inset 0 1px 1px var(--btn-metal-inner-highlight, rgba(255, 255, 255, 0.8)),
+    inset 0 -1px 1px var(--btn-metal-inner-shadow, rgba(0, 0, 0, 0.1)),
+    0 0 5px rgba(59, 130, 246, 0.5) !important; /* Blue glow for current level */
+}
+
+/* Current level that is also unlocked */
+.level-segment.current.unlocked {
+  /* Use the unlocked styling but add the blue glow */
   box-shadow: 
     inset 0 1px 1px var(--btn-metal-inner-highlight, rgba(255, 255, 255, 0.8)),
     inset 0 -1px 1px var(--btn-metal-inner-shadow, rgba(0, 0, 0, 0.1)),
