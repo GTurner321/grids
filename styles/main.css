@@ -370,10 +370,6 @@ body {
    6. LEVEL SELECTOR - WITH INTEGRATED LEVEL SCROLLER - now in levelselector.css
    ========================================================================== */
 
-/* ==========================================================================
-   7. GAME MESSAGES - LEVERAGING STYLED BOX
-   ========================================================================== */
-
 /* Game Messages Container */
 #game-messages-container {
     width: 100%;
@@ -412,6 +408,19 @@ body {
     
     /* Auto-height for longer messages */
     height: auto;
+    
+    /* Ensure the box is always visible, even when empty */
+    min-height: 60px !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    display: flex !important;
+}
+
+/* Ensure empty box remains visible with min content */
+#game-messages.styled-box:empty::before {
+    content: " ";
+    display: block;
+    min-height: 1em;
 }
 
 /* Message Type Variations */
@@ -437,18 +446,23 @@ body {
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
+    #game-messages-container {
+        width: 95%; /* Set to 95% of game-container on small screens */
+    }
+    
     #game-messages.styled-box {
-        font-size: 0.9rem;
-        min-height: 54px;
-        padding: 8px 12px;
+        width: 100%;
+        font-size: 1.2rem; /* Two sizes larger than original 0.9rem */
+        min-height: 72px; /* 20% higher than original 60px */
+        padding: 10px 12px;
     }
 }
 
 @media (max-width: 480px) {
     #game-messages.styled-box {
-        font-size: 0.85rem;
-        min-height: 50px;
-        padding: 6px 10px;
+        font-size: 1.1rem; /* Still larger, but slightly adjusted for very small screens */
+        min-height: 70px;
+        padding: 8px 10px;
     }
 }
 
