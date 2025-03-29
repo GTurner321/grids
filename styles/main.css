@@ -1055,45 +1055,82 @@ body {
   pointer-events: none !important;
 }
 
-/* Individual Level Segment - Base styling for all segments */
+/* Individual Level Segment - Base styling for locked/depressed segments */
 .level-segment {
   height: 100% !important;
   width: 100% !important;
   border-right: 1px solid rgba(0, 0, 0, 0.1) !important;
-  transition: background-color 0.2s ease, box-shadow 0.2s ease !important;
-  /* 3D effect with inset shadow for depressed look */
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1) !important;
-  background-color: var(--btn-metal-medium, #d0d0d0) !important; /* Medium gray from buttonsboxes */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease !important;
+  /* Enhanced 3D effect with deeper inset shadow for depressed look */
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.25),
+    inset 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+  background: linear-gradient(
+    to bottom,
+    var(--btn-metal-medium, #c0c0c0) 0%,
+    var(--btn-metal-dark, #a8a8a8) 100%
+  ) !important;
+  border-top: 1px solid var(--btn-metal-medium, #c0c0c0) !important;
+  border-bottom: 1px solid var(--btn-metal-dark, #888888) !important;
+  position: relative !important;
 }
 
-/* Unlocked segments - lighter, raised appearance */
+/* Add shadow edge effect for depth */
+.level-segment::after {
+  content: "" !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+  pointer-events: none !important;
+}
+
+/* Unlocked segments - enhanced raised appearance */
 .level-segment.unlocked {
-  /* Metallic gradient for raised appearance */
+  /* Enhanced metallic gradient for raised appearance */
   background: linear-gradient(
     to bottom,
-    var(--btn-metal-light, #f0f0f0) 0%,
-    var(--btn-metal-mediumlight, #e0e0e0) 100%
+    var(--btn-metal-lighter, #f8f8f8) 0%,
+    var(--btn-metal-light, #e8e8e8) 100%
   ) !important;
+  /* Enhanced outward shadow for "popping up" effect */
   box-shadow: 
-    inset 0 1px 1px var(--btn-metal-inner-highlight, rgba(255, 255, 255, 0.8)),
+    0 1px 1px rgba(0, 0, 0, 0.1),
+    inset 0 1px 2px var(--btn-metal-inner-highlight, rgba(255, 255, 255, 0.9)),
     inset 0 -1px 1px var(--btn-metal-inner-shadow, rgba(0, 0, 0, 0.1)) !important;
-  border-top: 1px solid var(--btn-metal-lighter, #f8f8f8) !important;
-  border-bottom: 1px solid var(--btn-metal-dark, #a8a8a8) !important;
+  border-top: 2px solid var(--btn-metal-lighter, #ffffff) !important;
+  border-bottom: 2px solid var(--btn-metal-medium, #c0c0c0) !important;
+  transform: translateY(-1px) !important; /* Slight upward shift for raised appearance */
+  z-index: 1 !important; /* Ensure unlocked appears above locked */
 }
 
-/* Completed segments - green but still with 3D button styling */
+/* Remove the inset shadow for unlocked segments */
+.level-segment.unlocked::after {
+  box-shadow: none !important;
+}
+
+/* Completed segments - enhanced 3D green styling */
 .level-segment.completed {
-  /* Green metallic gradient */
+  /* Enhanced green metallic gradient */
   background: linear-gradient(
     to bottom,
-    #92c895 0%, /* Lighter dull green */
-    #6ba96e 100% /* Darker dull green */
+    #9cd59f 0%, /* Lighter dull green */
+    #5a9a5d 100% /* Darker dull green */
   ) !important;
   box-shadow: 
-    inset 0 1px 1px rgba(255, 255, 255, 0.6),
-    inset 0 -1px 1px rgba(0, 0, 0, 0.1) !important;
-  border-top: 1px solid #a8d8ab !important;
-  border-bottom: 1px solid #5a8e5d !important;
+    0 1px 2px rgba(0, 0, 0, 0.15),
+    inset 0 1px 2px rgba(255, 255, 255, 0.7),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.15) !important;
+  border-top: 2px solid #aae6ad !important;
+  border-bottom: 2px solid #498c4c !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Remove inset shadow for completed segments too */
+.level-segment.completed::after {
+  box-shadow: none !important;
 }
 
 /* Current level indicator - shouldn't override unlocked styling */
@@ -1101,21 +1138,24 @@ body {
   background: linear-gradient(
     to bottom,
     var(--btn-metal-lighter, #f8f8f8) 0%,
-    var(--btn-metal-light, #f0f0f0) 100%
+    var(--btn-metal-light, #e8e8e8) 100%
   ) !important;
   box-shadow: 
-    inset 0 1px 1px var(--btn-metal-inner-highlight, rgba(255, 255, 255, 0.8)),
-    inset 0 -1px 1px var(--btn-metal-inner-shadow, rgba(0, 0, 0, 0.1)),
-    0 0 5px rgba(59, 130, 246, 0.5) !important; /* Blue glow for current level */
+    0 0 5px rgba(59, 130, 246, 0.5),
+    inset 0 1px 2px var(--btn-metal-inner-highlight, rgba(255, 255, 255, 0.9)),
+    inset 0 -1px 1px var(--btn-metal-inner-shadow, rgba(0, 0, 0, 0.1)) !important;
+  border-top: 2px solid var(--btn-metal-lighter, #ffffff) !important;
+  border-bottom: 2px solid var(--btn-metal-medium, #c0c0c0) !important;
+  transform: translateY(-1px) !important;
 }
 
 /* Current level that is also unlocked */
 .level-segment.current.unlocked {
   /* Use the unlocked styling but add the blue glow */
   box-shadow: 
-    inset 0 1px 1px var(--btn-metal-inner-highlight, rgba(255, 255, 255, 0.8)),
-    inset 0 -1px 1px var(--btn-metal-inner-shadow, rgba(0, 0, 0, 0.1)),
-    0 0 5px rgba(59, 130, 246, 0.5) !important; /* Blue glow for current level */
+    0 0 6px rgba(59, 130, 246, 0.7),
+    inset 0 1px 2px var(--btn-metal-inner-highlight, rgba(255, 255, 255, 0.9)),
+    inset 0 -1px 1px var(--btn-metal-inner-shadow, rgba(0, 0, 0, 0.1)) !important;
 }
 
 /* Last segment has no right border */
@@ -1183,15 +1223,15 @@ body {
   0% { 
     background: linear-gradient(
       to bottom,
-      #92c895 0%,
-      #6ba96e 100%
+      #9cd59f 0%,
+      #5a9a5d 100%
     ) !important;
   }
   100% { 
     background: linear-gradient(
       to bottom,
-      #6ba96e 0%,
-      #5a8e5d 100%
+      #5a9a5d 0%,
+      #498c4c 100%
     ) !important;
   }
 }
