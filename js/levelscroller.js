@@ -338,26 +338,32 @@ class LevelUnlocker {
     }
     
     // Compatibility method - delegates to level scroller
-    isLevelUnlocked(level) {
-        level = Number(level);
-        
-        // Levels 1-3 are always unlocked
-        if (level >= 1 && level <= 3) {
-            return true;
-        }
-        // Levels 4-6 are unlocked if any level from 1-3 is completed
-        else if (level >= 4 && level <= 6) {
-            return window.levelTracker && 
-                [1, 2, 3].some(lvl => window.levelTracker.completedLevels.has(lvl));
-        }
-        // Levels 7-10 are unlocked if any level from 4-6 is completed
-        else if (level >= 7 && level <= 10) {
-            return window.levelTracker && 
-                [4, 5, 6].some(lvl => window.levelTracker.completedLevels.has(lvl));
-        }
-        
-        return false;
+isLevelUnlocked(level) {
+    // First check if LevelTracker is available
+    if (window.levelTracker && typeof window.levelTracker.isLevelUnlocked === 'function') {
+        return window.levelTracker.isLevelUnlocked(level);
     }
+    
+    // Fallback logic if LevelTracker is not available
+    level = Number(level);
+    
+    // Levels 1-3 are always unlocked
+    if (level >= 1 && level <= 3) {
+        return true;
+    }
+    // Levels 4-6 are unlocked if any level from 1-3 is completed
+    else if (level >= 4 && level <= 6) {
+        return window.levelTracker && 
+            [1, 2, 3].some(lvl => window.levelTracker.completedLevels.has(lvl));
+    }
+    // Levels 7-10 are unlocked if any level from 4-6 is completed
+    else if (level >= 7 && level <= 10) {
+        return window.levelTracker && 
+            [4, 5, 6].some(lvl => window.levelTracker.completedLevels.has(lvl));
+    }
+    
+    return false;
+}
     
     // Compatibility method - delegates to level scroller
     handleLevelCompletion(level) {
