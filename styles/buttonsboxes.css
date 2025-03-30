@@ -97,11 +97,14 @@
     /* No text selection */
     user-select: none;
     -webkit-tap-highlight-color: transparent;
+    
+    /* Prevent any default browser touch behaviors that might interfere */
+    touch-action: manipulation;
 }
 
 /* Hover state - Only apply on non-touch devices */
 @media (hover: hover) and (pointer: fine) {
-    .metallic-button:hover:not(:disabled) {
+    .metallic-button:hover:not(:disabled):not(.clicked) {
         /* Lighter metallic effect on hover */
         background: repeating-linear-gradient(
             120deg,
@@ -165,6 +168,26 @@
     100% { transform: scale(1); }
 }
 
+/* More complete animation that ensures styles are reset */
+@keyframes button-pulse-and-reset {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { 
+        transform: scale(1);
+        background: repeating-linear-gradient(
+            120deg,
+            var(--btn-metal-light) 0px,
+            var(--btn-metal-medium) 10px,
+            var(--btn-metal-light) 30px,
+            var(--btn-metal-mediumlight) 55px,
+            var(--btn-metal-medium) 80px,
+            var(--btn-metal-mediumlight) 95px,
+            var(--btn-metal-light) 120px,
+            var(--btn-metal-medium) 135px
+        );
+    }
+}
+
 /* Clicked state - ensuring it resets properly */
 .metallic-button.clicked {
     animation: button-pulse 0.2s ease-in-out;
@@ -212,7 +235,64 @@
     padding: 6px 12px;
 }
 
-/* These are additional responsive adjustments for buttons to be added to section 2 */
+/* TOUCH DEVICE SPECIFIC STYLES */
+/* Ensure touch devices don't keep the :hover state */
+.touch-device .metallic-button:hover:not(:active):not(.clicked) {
+    /* Reset to default state when not actually being pressed */
+    background: repeating-linear-gradient(
+        120deg,
+        var(--btn-metal-light) 0px,
+        var(--btn-metal-medium) 10px,
+        var(--btn-metal-light) 30px,
+        var(--btn-metal-mediumlight) 55px,
+        var(--btn-metal-medium) 80px,
+        var(--btn-metal-mediumlight) 95px,
+        var(--btn-metal-light) 120px,
+        var(--btn-metal-medium) 135px
+    ) !important;
+    
+    transform: none !important;
+    box-shadow: 0 2px 5px var(--btn-metal-shadow),
+                inset 0 1px 2px var(--btn-metal-inner-highlight),
+                inset 0 -1px 2px var(--btn-metal-inner-shadow) !important;
+    border-bottom-width: 3px !important;
+}
+
+/* Special case for level buttons */
+.level-btn-scrollable.clicked {
+    animation: button-pulse 0.2s ease-in-out forwards;
+}
+
+/* Touch optimizations with reduced animation duration */
+.touch-device .metallic-button {
+    transition: transform 0.15s ease,
+                box-shadow 0.15s ease,
+                background 0.15s ease,
+                border-bottom-width 0.15s ease;
+}
+
+/* This helps prevent iOS from maintaining hover state */
+@media (hover: none) {
+    .metallic-button:hover:not(:active):not(.clicked) {
+        background: repeating-linear-gradient(
+            120deg,
+            var(--btn-metal-light) 0px,
+            var(--btn-metal-medium) 10px,
+            var(--btn-metal-light) 30px,
+            var(--btn-metal-mediumlight) 55px,
+            var(--btn-metal-medium) 80px,
+            var(--btn-metal-mediumlight) 95px,
+            var(--btn-metal-light) 120px,
+            var(--btn-metal-medium) 135px
+        ) !important;
+        transform: none !important;
+        box-shadow: 0 2px 5px var(--btn-metal-shadow),
+                inset 0 1px 2px var(--btn-metal-inner-highlight),
+                inset 0 -1px 2px var(--btn-metal-inner-shadow) !important;
+    }
+}
+
+/* Medium screens */
 @media (max-width: 768px) {
     .metallic-button {
         /* Adjusted diagonal gradient pattern for medium screens */
@@ -238,7 +318,7 @@
     
     /* Hover state on medium screens - adjusted lighter gradient */
     @media (hover: hover) and (pointer: fine) {
-        .metallic-button:hover:not(:disabled) {
+        .metallic-button:hover:not(:disabled):not(.clicked) {
             background: repeating-linear-gradient(
                 120deg,
                 var(--btn-metal-lighter) 0px,
@@ -266,8 +346,24 @@
             var(--btn-metal-dark) 130px
         );
     }
+    
+    /* Reset state for touch devices at medium screen size */
+    .touch-device .metallic-button:hover:not(:active):not(.clicked) {
+        background: repeating-linear-gradient(
+            120deg,
+            var(--btn-metal-light) 0px,
+            var(--btn-metal-medium) 8px,
+            var(--btn-metal-light) 25px,
+            var(--btn-metal-mediumlight) 45px,
+            var(--btn-metal-medium) 70px,
+            var(--btn-metal-mediumlight) 85px,
+            var(--btn-metal-light) 110px,
+            var(--btn-metal-medium) 125px
+        ) !important;
+    }
 }
 
+/* Small screens */
 @media (max-width: 480px) {
     .metallic-button {
         /* Adjusted diagonal gradient pattern for small screens */
@@ -291,7 +387,7 @@
     
     /* Hover state on small screens */
     @media (hover: hover) and (pointer: fine) {
-        .metallic-button:hover:not(:disabled) {
+        .metallic-button:hover:not(:disabled):not(.clicked) {
             /* Smaller transform to prevent UI issues on small screens */
             transform: translateY(-1px);
             box-shadow: 0 3px 6px var(--btn-metal-shadow),
@@ -311,16 +407,22 @@
             );
         }
     }
+    
+    /* Reset state for touch devices at small screen size */
+    .touch-device .metallic-button:hover:not(:active):not(.clicked) {
+        background: repeating-linear-gradient(
+            120deg,
+            var(--btn-metal-light) 0px,
+            var(--btn-metal-medium) 6px,
+            var(--btn-metal-light) 20px,
+            var(--btn-metal-mediumlight) 35px,
+            var(--btn-metal-medium) 60px,
+            var(--btn-metal-mediumlight) 75px,
+            var(--btn-metal-light) 100px,
+            var(--btn-metal-medium) 115px
+        ) !important;
+    }
 }
-
-/* Touch optimizations with reduced animation duration */
-.touch-device .metallic-button {
-    transition: transform 0.15s ease,
-                box-shadow 0.15s ease,
-                background 0.15s ease,
-                border-bottom-width 0.15s ease;
-}
-
 
 /* ==========================================================================
    3. CONTENT BOX STYLING - ENHANCED 3D EFFECT WITH DIAGONAL METALLIC SHADING
