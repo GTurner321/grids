@@ -212,10 +212,118 @@
     padding: 6px 12px;
 }
 
+/* These are additional responsive adjustments for buttons to be added to section 2 */
+@media (max-width: 768px) {
+    .metallic-button {
+        /* Adjusted diagonal gradient pattern for medium screens */
+        background: repeating-linear-gradient(
+            120deg,
+            var(--btn-metal-light) 0px,
+            var(--btn-metal-medium) 8px,
+            var(--btn-metal-light) 25px,
+            var(--btn-metal-mediumlight) 45px,
+            var(--btn-metal-medium) 70px,
+            var(--btn-metal-mediumlight) 85px,
+            var(--btn-metal-light) 110px,
+            var(--btn-metal-medium) 125px
+        );
+        
+        /* Better touch targets for medium screens */
+        min-height: 44px;
+        min-width: 100px;
+        
+        /* Improved text readability */
+        letter-spacing: 0.04em;
+    }
+    
+    /* Hover state on medium screens - adjusted lighter gradient */
+    @media (hover: hover) and (pointer: fine) {
+        .metallic-button:hover:not(:disabled) {
+            background: repeating-linear-gradient(
+                120deg,
+                var(--btn-metal-lighter) 0px,
+                var(--btn-metal-light) 12px,
+                var(--btn-metal-lighter) 30px,
+                var(--btn-metal-mediumlight) 50px,
+                var(--btn-metal-light) 75px,
+                var(--btn-metal-mediumlight) 90px,
+                var(--btn-metal-lighter) 115px,
+                var(--btn-metal-light) 130px
+            );
+        }
+    }
+    
+    /* Active state on medium screens - adjusted darker gradient */
+    .metallic-button:active:not(:disabled) {
+        background: repeating-linear-gradient(
+            120deg,
+            var(--btn-metal-medium) 0px,
+            var(--btn-metal-mediumlight) 28px,
+            var(--btn-metal-dark) 50px,
+            var(--btn-metal-medium) 60px,
+            var(--btn-metal-mediumlight) 90px,
+            var(--btn-metal-medium) 115px,
+            var(--btn-metal-dark) 130px
+        );
+    }
+}
+
+@media (max-width: 480px) {
+    .metallic-button {
+        /* Adjusted diagonal gradient pattern for small screens */
+        background: repeating-linear-gradient(
+            120deg,
+            var(--btn-metal-light) 0px,
+            var(--btn-metal-medium) 6px,
+            var(--btn-metal-light) 20px,
+            var(--btn-metal-mediumlight) 35px,
+            var(--btn-metal-medium) 60px,
+            var(--btn-metal-mediumlight) 75px,
+            var(--btn-metal-light) 100px,
+            var(--btn-metal-medium) 115px
+        );
+        
+        /* Adjusted shadows for smaller screens */
+        box-shadow: 0 2px 4px var(--btn-metal-shadow),
+                    inset 0 1px 1px var(--btn-metal-inner-highlight),
+                    inset 0 -1px 1px var(--btn-metal-inner-shadow);
+    }
+    
+    /* Hover state on small screens */
+    @media (hover: hover) and (pointer: fine) {
+        .metallic-button:hover:not(:disabled) {
+            /* Smaller transform to prevent UI issues on small screens */
+            transform: translateY(-1px);
+            box-shadow: 0 3px 6px var(--btn-metal-shadow),
+                        inset 0 1px 2px var(--btn-metal-inner-highlight),
+                        inset 0 -1px 1px var(--btn-metal-inner-shadow);
+                        
+            background: repeating-linear-gradient(
+                120deg,
+                var(--btn-metal-lighter) 0px,
+                var(--btn-metal-light) 10px,
+                var(--btn-metal-lighter) 25px,
+                var(--btn-metal-mediumlight) 40px,
+                var(--btn-metal-light) 65px,
+                var(--btn-metal-mediumlight) 80px,
+                var(--btn-metal-lighter) 105px,
+                var(--btn-metal-light) 120px
+            );
+        }
+    }
+}
+
+/* Touch optimizations with reduced animation duration */
+.touch-device .metallic-button {
+    transition: transform 0.15s ease,
+                box-shadow 0.15s ease,
+                background 0.15s ease,
+                border-bottom-width 0.15s ease;
+}
 
 
 /* ==========================================================================
-   3. CONTENT BOX STYLING - ENHANCED 3D EFFECT
+   3. CONTENT BOX STYLING - ENHANCED 3D EFFECT WITH DIAGONAL METALLIC SHADING
    ========================================================================== */
 
 .styled-box {
@@ -241,16 +349,22 @@
                 inset 0 1px 2px var(--box-inner-highlight),
                 inset 0 -1px 2px var(--box-inner-shadow);
     
-    /* Enhanced gradient background with thinner darker top and bottom edges */
-background: linear-gradient(
-    to bottom,
-    var(--btn-metal-medium) 0%,
-    var(--btn-metal-light) 1%,
-    var(--box-bg-color) 2%,
-    var(--box-bg-color) 99%,
-    var(--btn-metal-medium) 99.5%,
-    var(--btn-metal-dark) 100%
-);
+    /* NEW: Diagonal metallic gradient background using only the 3 lightest shades with wider sections */
+    background: repeating-linear-gradient(
+        135deg,
+        var(--btn-metal-lighter) 0px,
+        var(--btn-metal-light) 60px,
+        var(--btn-metal-mediumlight) 120px,
+        var(--btn-metal-light) 180px,
+        var(--btn-metal-lighter) 240px,
+        var(--btn-metal-light) 300px,
+        var(--btn-metal-mediumlight) 360px,
+        var(--btn-metal-light) 420px
+    );
+    
+    /* Additional gradient overlay for thin edges at top/bottom */
+    background-blend-mode: overlay;
+    box-decoration-break: clone;
     
     /* Text styling */
     font-family: 'Trebuchet MS', Arial, sans-serif;
@@ -264,6 +378,58 @@ background: linear-gradient(
     
     /* Transitions for animations */
     transition: all 0.3s ease;
+    
+    /* RESPONSIVE ADJUSTMENTS INTEGRATED IN SECTION 3 */
+    /* Medium screens */
+    @media (max-width: 768px) {
+        padding: 12px;
+        width: 90%;
+        /* Adjusted shadow for medium screens */
+        box-shadow: 0 6px 12px 2px rgba(0, 0, 0, 0.25),
+                    0 2px 6px 1px var(--btn-metal-shadow),
+                    1px 0 4px rgba(0, 0, 0, 0.12),
+                    -1px 0 4px rgba(0, 0, 0, 0.12),
+                    inset 0 1px 2px var(--box-inner-highlight),
+                    inset 0 -1px 2px var(--box-inner-shadow);
+        /* Adjusted gradient for medium screens - slightly smaller sections */
+        background: repeating-linear-gradient(
+            135deg,
+            var(--btn-metal-lighter) 0px,
+            var(--btn-metal-light) 50px,
+            var(--btn-metal-mediumlight) 100px,
+            var(--btn-metal-light) 150px,
+            var(--btn-metal-lighter) 200px,
+            var(--btn-metal-light) 250px,
+            var(--btn-metal-mediumlight) 300px,
+            var(--btn-metal-light) 350px
+        );
+    }
+    
+    /* Small screens */
+    @media (max-width: 480px) {
+        padding: 10px;
+        margin: 10px auto;
+        border-width: 1px;
+        border-top-width: 2px;
+        border-bottom-width: 2px;
+        /* Simplified shadow system for mobile */
+        box-shadow: 0 5px 10px 2px rgba(0, 0, 0, 0.22),
+                    0 1px 5px 1px var(--btn-metal-shadow),
+                    inset 0 1px 1px var(--box-inner-highlight),
+                    inset 0 -1px 1px var(--box-inner-shadow);
+        /* Adjusted gradient for small screens - even smaller sections */
+        background: repeating-linear-gradient(
+            135deg,
+            var(--btn-metal-lighter) 0px,
+            var(--btn-metal-light) 40px,
+            var(--btn-metal-mediumlight) 80px,
+            var(--btn-metal-light) 120px,
+            var(--btn-metal-lighter) 160px,
+            var(--btn-metal-light) 200px,
+            var(--btn-metal-mediumlight) 240px,
+            var(--btn-metal-light) 280px
+        );
+    }
 }
 
 /* Box heading with enhanced embossed text effect and reduced padding */
@@ -283,6 +449,26 @@ background: linear-gradient(
     padding-bottom: 8px; /* Reduced padding */
     border-bottom: 1px solid var(--btn-metal-medium);
     position: relative;
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        font-size: 1.2rem;
+        margin-bottom: 8px;
+        padding-bottom: 6px;
+        /* Slightly reduced embossing for medium screens */
+        text-shadow: 0px 1px 1px var(--btn-text-shadow-light), 
+                     0px -1px 1px var(--btn-text-shadow-dark),
+                     0px 1px 2px rgba(255, 255, 255, 0.3);
+    }
+    
+    @media (max-width: 480px) {
+        font-size: 1.1rem;
+        margin-bottom: 6px;
+        padding-bottom: 5px;
+        /* Simplified embossing for small screens */
+        text-shadow: 0px 1px 1px var(--btn-text-shadow-light), 
+                     0px -1px 1px var(--btn-text-shadow-dark);
+    }
 }
 
 /* Box subtitle with enhanced embossed effect and reduced spacing */
@@ -295,6 +481,17 @@ background: linear-gradient(
     /* Enhanced embossing */
     text-shadow: 0px 1px 1px var(--btn-text-shadow-light), 
                  0px -1px 1px rgba(0, 0, 0, 0.25);
+                 
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        font-size: 1rem;
+        margin: 8px 0 6px 0;
+    }
+    
+    @media (max-width: 480px) {
+        font-size: 0.9rem;
+        margin: 6px 0 5px 0;
+    }
 }
 
 /* Box content with more pronounced embossed text */
@@ -308,6 +505,13 @@ background: linear-gradient(
     text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.7),
                  0px -0.5px 0px rgba(0, 0, 0, 0.1);
     line-height: 1.5;
+    
+    /* Responsive adjustments */
+    @media (max-width: 480px) {
+        font-size: 0.95rem;
+        /* Simplified embossing for small screens */
+        text-shadow: 0px 1px 0px rgba(255, 255, 255, 0.5);
+    }
 }
 
 /* Style for images within the box */
@@ -317,6 +521,15 @@ background: linear-gradient(
     height: auto;
     margin: 10px auto;
     border-radius: 4px;
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        margin: 8px auto;
+    }
+    
+    @media (max-width: 480px) {
+        margin: 6px auto;
+    }
 }
 
 /* Add divider line after images */
@@ -324,6 +537,17 @@ background: linear-gradient(
     margin-top: 8px;
     padding-top: 10px;
     border-top: 1px solid var(--btn-metal-medium);
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        margin-top: 6px;
+        padding-top: 8px;
+    }
+    
+    @media (max-width: 480px) {
+        margin-top: 5px;
+        padding-top: 6px;
+    }
 }
 
 /* Specific styling for image section dividers */
@@ -331,6 +555,17 @@ background: linear-gradient(
     margin-bottom: 10px;
     padding-bottom: 8px;
     border-bottom: 1px solid var(--btn-metal-medium);
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        margin-bottom: 8px;
+        padding-bottom: 6px;
+    }
+    
+    @media (max-width: 480px) {
+        margin-bottom: 6px;
+        padding-bottom: 5px;
+    }
 }
 
 /* Box footer */
@@ -339,9 +574,18 @@ background: linear-gradient(
     text-align: center;
     padding-top: 10px;
     border-top: 1px solid var(--btn-metal-medium);
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        margin-top: 16px;
+        padding-top: 8px;
+    }
+    
+    @media (max-width: 480px) {
+        margin-top: 12px;
+        padding-top: 6px;
+    }
 }
-
-/* No hover effect for box to maintain consistency */
 
 /* ==========================================================================
    4. JAVASCRIPT FOR BUTTON CLICK EFFECTS
@@ -396,127 +640,3 @@ document.addEventListener('DOMContentLoaded', function() {
     setupButtonClickEffects();
 });
 
-/* ==========================================================================
-   5. RESPONSIVE ADJUSTMENTS
-   ========================================================================== */
-
-/* Medium screens */
-@media (max-width: 768px) {
-    .metallic-button {
-        padding: 10px 15px;
-        font-size: 1.1rem;
-        min-height: 44px; /* Better touch target */
-    }
-    
-    .styled-box {
-        padding: 12px;
-        width: 90%;
-        /* Adjusted shadow for medium screens */
-        box-shadow: 0 6px 12px 2px rgba(0, 0, 0, 0.25),
-                    0 2px 6px 1px var(--btn-metal-shadow),
-                    1px 0 4px rgba(0, 0, 0, 0.12),
-                    -1px 0 4px rgba(0, 0, 0, 0.12),
-                    inset 0 1px 2px var(--box-inner-highlight),
-                    inset 0 -1px 2px var(--box-inner-shadow);
-    }
-    
-    .styled-box-title {
-        font-size: 1.2rem;
-        margin-bottom: 8px;
-        padding-bottom: 6px;
-        /* Slightly reduced embossing for medium screens */
-        text-shadow: 0px 1px 1px var(--btn-text-shadow-light), 
-                     0px -1px 1px var(--btn-text-shadow-dark),
-                     0px 1px 2px rgba(255, 255, 255, 0.3);
-    }
-    
-    .styled-box-subtitle {
-        font-size: 1rem;
-        margin: 8px 0 6px 0;
-    }
-    
-    .styled-box img {
-        margin: 8px auto;
-    }
-    
-    .styled-box img + * {
-        margin-top: 6px;
-        padding-top: 8px;
-    }
-    
-    .styled-box .image-section {
-        margin-bottom: 8px;
-        padding-bottom: 6px;
-    }
-}
-
-/* Small screens */
-@media (max-width: 480px) {
-    .metallic-button {
-        padding: 8px 12px;
-        font-size: 1rem;
-    }
-    
-    .metallic-button.large {
-        font-size: 1.1rem;
-        padding: 10px 15px;
-    }
-    
-    .metallic-button.small {
-        font-size: 0.8rem;
-        padding: 6px 10px;
-    }
-    
-    .styled-box {
-        padding: 10px;
-        margin: 10px auto;
-        border-width: 1px;
-        border-top-width: 2px;
-        border-bottom-width: 2px;
-        /* Simplified shadow system for mobile */
-        box-shadow: 0 5px 10px 2px rgba(0, 0, 0, 0.22),
-                    0 1px 5px 1px var(--btn-metal-shadow),
-                    inset 0 1px 1px var(--box-inner-highlight),
-                    inset 0 -1px 1px var(--box-inner-shadow);
-    }
-    
-    .styled-box-title {
-        font-size: 1.1rem;
-        margin-bottom: 6px;
-        padding-bottom: 5px;
-        /* Simplified embossing for small screens */
-        text-shadow: 0px 1px 1px var(--btn-text-shadow-light), 
-                     0px -1px 1px var(--btn-text-shadow-dark);
-    }
-    
-    .styled-box-subtitle {
-        font-size: 0.9rem;
-        margin: 6px 0 5px 0;
-    }
-    
-    .styled-box-content {
-        font-size: 0.95rem;
-        /* Simplified embossing for small screens */
-        text-shadow: 0px 1px 0px rgba(255, 255, 255, 0.5);
-    }
-    
-    .styled-box img {
-        margin: 6px auto;
-    }
-    
-    .styled-box img + * {
-        margin-top: 5px;
-        padding-top: 6px;
-    }
-    
-    .styled-box .image-section {
-        margin-bottom: 6px;
-        padding-bottom: 5px;
-    }
-}
-
-/* Touch device optimizations */
-.touch-device .metallic-button {
-    /* Ensure touch devices have proper button reset after click */
-    transition: transform 0.1s ease, background 0.1s ease; /* Faster transition for touch */
-}
