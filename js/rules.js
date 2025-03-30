@@ -65,8 +65,18 @@ function setupEventHandlers() {
     
     // Monitor level buttons to hide rules when a level is selected
     document.addEventListener('click', function(event) {
-        if (event.target.classList.contains('level-btn') || 
-            event.target.classList.contains('level-btn-scrollable')) {
+        // Check if the clicked element is a level button
+        const levelButton = event.target.closest('.level-btn, .level-btn-scrollable');
+        if (!levelButton) return;
+        
+        const level = parseInt(levelButton.dataset.level);
+        if (isNaN(level)) return;
+        
+        // Use LevelTracker to check if level is unlocked
+        const isUnlocked = window.levelTracker && window.levelTracker.isLevelUnlocked(level);
+        
+        // Only hide rules and activate game mode if level is unlocked
+        if (isUnlocked) {
             hideRulesBox();
             activateGameMode();
         }
@@ -129,37 +139,46 @@ function setupTitleVisibility() {
     document.addEventListener('click', (event) => {
         // Check if clicked element is or is inside a level button
         const levelButton = event.target.closest('.level-btn, .level-btn-scrollable');
-        if (levelButton) {
-            console.log('Level button clicked, hiding title');
-            const gameHeader = document.querySelector('.game-header');
-            if (gameHeader) {
-                // Add a fade out animation to the header
-                gameHeader.style.transition = 'opacity 0.5s ease-out, margin 0.5s ease-out';
-                gameHeader.style.opacity = '0';
-                
-                // After fade out, hide the element completely
-                setTimeout(() => {
-                    gameHeader.style.display = 'none';
-                    gameHeader.style.margin = '0';
-                    gameHeader.style.height = '0';
-                }, 500);
-            }
+        if (!levelButton) return;
+        
+        const level = parseInt(levelButton.dataset.level);
+        if (isNaN(level)) return;
+        
+        // Use LevelTracker to check if level is unlocked
+        const isUnlocked = window.levelTracker && window.levelTracker.isLevelUnlocked(level);
+        
+        // Only proceed with hiding title if level is unlocked
+        if (!isUnlocked) return;
+        
+        console.log('Level button clicked, hiding title');
+        const gameHeader = document.querySelector('.game-header');
+        if (gameHeader) {
+            // Add a fade out animation to the header
+            gameHeader.style.transition = 'opacity 0.5s ease-out, margin 0.5s ease-out';
+            gameHeader.style.opacity = '0';
             
-            // Ensure game is active
-            const gameContainer = document.querySelector('.game-container');
-            if (gameContainer) {
-                gameContainer.classList.add('game-active');
-            }
-            
-            // Force grid visibility
+            // After fade out, hide the element completely
             setTimeout(() => {
-                const gridContainer = document.getElementById('grid-container');
-                if (gridContainer) {
-                    console.log('Forcing grid visibility');
-                    gridContainer.style.cssText = "visibility: visible !important; height: auto !important; display: grid !important; background-color: #94a3b8 !important; border: 1px solid #94a3b8 !important;";
-                }
-            }, 600); // Wait a bit longer than the title fade
+                gameHeader.style.display = 'none';
+                gameHeader.style.margin = '0';
+                gameHeader.style.height = '0';
+            }, 500);
         }
+        
+        // Ensure game is active
+        const gameContainer = document.querySelector('.game-container');
+        if (gameContainer) {
+            gameContainer.classList.add('game-active');
+        }
+        
+        // Force grid visibility
+        setTimeout(() => {
+            const gridContainer = document.getElementById('grid-container');
+            if (gridContainer) {
+                console.log('Forcing grid visibility');
+                gridContainer.style.cssText = "visibility: visible !important; height: auto !important; display: grid !important; background-color: #94a3b8 !important; border: 1px solid #94a3b8 !important;";
+            }
+        }, 600); // Wait a bit longer than the title fade
     });
     
     console.log('Title visibility control set up');
