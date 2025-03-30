@@ -91,40 +91,125 @@ createLevelButtons() {
         return buttonsHtml;
     }
     
-    attachEventListeners() {
-        // Up arrow (decrements level, loops from 1 to 10)
-        const upArrow = document.querySelector('.up-arrow');
-        if (upArrow) {
-            upArrow.addEventListener('click', () => {
-                this.currentLevel = this.currentLevel === 1 ? this.maxLevels : this.currentLevel - 1;
-                this.updateVisibleLevel();
-            });
-        }
+// Modified section in the LevelScroller class
+
+// This replaces the existing attachEventListeners method in the LevelScroller class
+attachEventListeners() {
+    // Up arrow (decrements level, loops from 1 to 10)
+    const upArrow = document.querySelector('.up-arrow');
+    if (upArrow) {
+        upArrow.addEventListener('click', (e) => {
+            // Add clicked class for animation
+            e.currentTarget.classList.add('clicked');
+            
+            // Remove clicked class after animation completes
+            setTimeout(() => {
+                e.currentTarget.classList.remove('clicked');
+                // Force repaint to clear any lingering hover/active states
+                void e.currentTarget.offsetWidth;
+            }, 200);
+            
+            this.currentLevel = this.currentLevel === 1 ? this.maxLevels : this.currentLevel - 1;
+            this.updateVisibleLevel();
+        });
         
-        // Down arrow (increments level, loops from 10 to 1)
-        const downArrow = document.querySelector('.down-arrow');
-        if (downArrow) {
-            downArrow.addEventListener('click', () => {
-                this.currentLevel = this.currentLevel === this.maxLevels ? 1 : this.currentLevel + 1;
-                this.updateVisibleLevel();
-            });
-        }
-        
-        // Level buttons - use event delegation for better performance
-        const levelDisplayContainer = document.querySelector('.level-display-container');
-        if (levelDisplayContainer) {
-            levelDisplayContainer.addEventListener('click', (event) => {
-                const levelBtn = event.target.closest('.level-btn');
-                if (levelBtn) {
-                    const level = parseInt(levelBtn.dataset.level);
-                    // Only process if this is the visible button
-                    if (level === this.currentLevel) {
-                        this.handleLevelSelection(level);
-                    }
-                }
-            });
-        }
+        // Handle touchend event explicitly to clear states on touch devices
+        upArrow.addEventListener('touchend', (e) => {
+            // Wait slightly to ensure click event completes
+            setTimeout(() => {
+                e.currentTarget.classList.remove('clicked');
+                // Force repaint to clear any lingering states
+                void e.currentTarget.offsetWidth;
+            }, 300);
+        });
     }
+    
+    // Down arrow (increments level, loops from 10 to 1)
+    const downArrow = document.querySelector('.down-arrow');
+    if (downArrow) {
+        downArrow.addEventListener('click', (e) => {
+            // Add clicked class for animation
+            e.currentTarget.classList.add('clicked');
+            
+            // Remove clicked class after animation completes
+            setTimeout(() => {
+                e.currentTarget.classList.remove('clicked');
+                // Force repaint to clear any lingering hover/active states
+                void e.currentTarget.offsetWidth;
+            }, 200);
+            
+            this.currentLevel = this.currentLevel === this.maxLevels ? 1 : this.currentLevel + 1;
+            this.updateVisibleLevel();
+        });
+        
+        // Handle touchend event explicitly to clear states on touch devices
+        downArrow.addEventListener('touchend', (e) => {
+            // Wait slightly to ensure click event completes
+            setTimeout(() => {
+                e.currentTarget.classList.remove('clicked');
+                // Force repaint to clear any lingering states
+                void e.currentTarget.offsetWidth;
+            }, 300);
+        });
+    }
+    
+    // Level buttons - use event delegation for better performance
+    const levelDisplayContainer = document.querySelector('.level-display-container');
+    if (levelDisplayContainer) {
+        levelDisplayContainer.addEventListener('click', (event) => {
+            const levelBtn = event.target.closest('.level-btn');
+            if (levelBtn) {
+                // Add clicked class for animation
+                levelBtn.classList.add('clicked');
+                
+                // Remove clicked class after animation completes
+                setTimeout(() => {
+                    levelBtn.classList.remove('clicked');
+                    // Force repaint
+                    void levelBtn.offsetWidth;
+                }, 200);
+                
+                const level = parseInt(levelBtn.dataset.level);
+                // Only process if this is the visible button
+                if (level === this.currentLevel) {
+                    this.handleLevelSelection(level);
+                }
+            }
+        });
+        
+        // Handle touchend for level buttons with event delegation
+        levelDisplayContainer.addEventListener('touchend', (event) => {
+            const levelBtn = event.target.closest('.level-btn');
+            if (levelBtn) {
+                // Wait slightly to ensure click event completes
+                setTimeout(() => {
+                    levelBtn.classList.remove('clicked');
+                    // Force repaint
+                    void levelBtn.offsetWidth;
+                }, 300);
+            }
+        });
+    }
+    
+    // Add specific handler for touch devices to detect and handle touch interactions
+    if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+        // Add a class to body to identify touch devices for styling
+        document.body.classList.add('touch-device');
+        
+        // Add event listener to clear all button states when touching elsewhere
+        document.addEventListener('touchstart', (e) => {
+            // Only proceed if we're not touching a button
+            if (!e.target.closest('.metallic-button')) {
+                // Clear any stuck button states
+                document.querySelectorAll('.metallic-button').forEach(button => {
+                    button.classList.remove('clicked');
+                    // Force repaint
+                    void button.offsetWidth;
+                });
+            }
+        });
+    }
+}
     
     updateVisibleLevel() {
         const buttons = document.querySelectorAll('.level-btn-scrollable');
