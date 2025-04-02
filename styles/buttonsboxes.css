@@ -84,9 +84,12 @@
     border-bottom: 3px solid var(--btn-metal-border-bottom);
     
     /* Shadow effects */
-    box-shadow: 0 2px 5px var(--btn-metal-shadow),
-                inset 0 1px 2px var(--btn-metal-inner-highlight),
-                inset 0 -1px 2px var(--btn-metal-inner-shadow);
+   box-shadow: 0 6px 12px 2px rgba(0, 0, 0, 0.22),
+   0 2px 6px 1px var(--btn-metal-shadow),
+   1px 0 4px rgba(0, 0, 0, 0.12),
+   -1px 0 4px rgba(0, 0, 0, 0.12),
+   inset 0 1px 2px var(--btn-metal-inner-highlight),
+   inset 0 -1px 2px var(--btn-metal-inner-shadow);
                 
     /* Smooth transitions */
     transition: transform var(--transition-speed) ease,
@@ -120,7 +123,10 @@
         
         /* Lift up slightly with enhanced shadow */
         transform: translateY(-2px);
-        box-shadow: 0 4px 8px var(--btn-metal-shadow),
+        box-shadow: 0 8px 15px 3px rgba(0, 0, 0, 0.25),
+                    0 2px 8px 2px var(--btn-metal-shadow),
+                    2px 0 6px rgba(0, 0, 0, 0.15),
+                    -2px 0 6px rgba(0, 0, 0, 0.15),
                     inset 0 1px 3px var(--btn-metal-inner-highlight),
                     inset 0 -1px 2px var(--btn-metal-inner-shadow);
     }
@@ -145,8 +151,9 @@
     border-bottom-width: 1px;
     
     /* Reduced shadow when pressed */
-    box-shadow: 0 1px 2px var(--btn-metal-shadow),
-                inset 0 1px 1px var(--btn-metal-inner-shadow);
+    box-shadow: 0 3px 5px 1px rgba(0, 0, 0, 0.2),
+                0 1px 3px var(--btn-metal-shadow),
+                inset 0 1px 2px var(--btn-metal-inner-shadow);
                 
     /* Adjusted text shadow for pressed effect */
     text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.5),
@@ -206,10 +213,12 @@
     ) !important;
     
     transform: none !important;
-    box-shadow: 0 2px 5px var(--btn-metal-shadow),
+    box-shadow: 0 6px 12px 2px rgba(0, 0, 0, 0.22),
+                0 2px 6px 1px var(--btn-metal-shadow),
+                1px 0 4px rgba(0, 0, 0, 0.12),
+                -1px 0 4px rgba(0, 0, 0, 0.12),
                 inset 0 1px 2px var(--btn-metal-inner-highlight),
                 inset 0 -1px 2px var(--btn-metal-inner-shadow) !important;
-    border-bottom-width: 3px !important;
 }
 
 /* Button with icons */
@@ -453,15 +462,15 @@
     
     /* NEW: Diagonal metallic gradient background using only the 3 lightest shades with wider sections */
     background: repeating-linear-gradient(
-        135deg,
+        120deg,
         var(--btn-metal-lighter) 0px,
-        var(--btn-metal-light) 60px,
-        var(--btn-metal-mediumlight) 120px,
-        var(--btn-metal-light) 180px,
-        var(--btn-metal-lighter) 240px,
-        var(--btn-metal-light) 300px,
-        var(--btn-metal-mediumlight) 360px,
-        var(--btn-metal-light) 420px
+        var(--btn-metal-lighter) 40px,
+        var(--btn-metal-light) 100px,
+        var(--btn-metal-mediumlight) 160px,
+        var(--btn-metal-lighter) 220px,
+        var(--btn-metal-lighter) 280px,
+        var(--btn-metal-light) 340px,
+        var(--btn-metal-mediumlight) 400px
     );
     
     /* Additional gradient overlay for thin edges at top/bottom */
@@ -495,15 +504,15 @@
                     inset 0 -1px 2px var(--box-inner-shadow);
         /* Adjusted gradient for medium screens - slightly smaller sections */
         background: repeating-linear-gradient(
-            135deg,
+            120deg,
             var(--btn-metal-lighter) 0px,
-            var(--btn-metal-light) 50px,
-            var(--btn-metal-mediumlight) 100px,
-            var(--btn-metal-light) 150px,
-            var(--btn-metal-lighter) 200px,
-            var(--btn-metal-light) 250px,
-            var(--btn-metal-mediumlight) 300px,
-            var(--btn-metal-light) 350px
+            var(--btn-metal-lighter) 30px,
+            var(--btn-metal-light) 80px,
+            var(--btn-metal-mediumlight) 130px,
+            var(--btn-metal-lighter) 180px,
+            var(--btn-metal-lighter) 230px,
+            var(--btn-metal-light) 280px,
+            var(--btn-metal-mediumlight) 330px
         );
     }
     
@@ -521,15 +530,15 @@
                     inset 0 -1px 1px var(--box-inner-shadow);
         /* Adjusted gradient for small screens - even smaller sections */
         background: repeating-linear-gradient(
-            135deg,
+            120deg,
             var(--btn-metal-lighter) 0px,
-            var(--btn-metal-light) 40px,
-            var(--btn-metal-mediumlight) 80px,
-            var(--btn-metal-light) 120px,
-            var(--btn-metal-lighter) 160px,
-            var(--btn-metal-light) 200px,
-            var(--btn-metal-mediumlight) 240px,
-            var(--btn-metal-light) 280px
+            var(--btn-metal-lighter) 20px,
+            var(--btn-metal-light) 60px,
+            var(--btn-metal-mediumlight) 100px,
+            var(--btn-metal-lighter) 140px,
+            var(--btn-metal-lighter) 180px,
+            var(--btn-metal-light) 220px,
+            var(--btn-metal-mediumlight) 260px
         );
     }
 }
@@ -549,7 +558,7 @@
                  0px -1px 1px var(--btn-text-shadow-dark),
                  0px 2px 3px rgba(255, 255, 255, 0.3);
     padding-bottom: 8px; /* Reduced padding */
-    border-bottom: 1px solid var(--btn-metal-medium);
+    border-bottom: none;
     position: relative;
     
     /* Responsive adjustments */
@@ -604,8 +613,8 @@
     border: none;
     color: #444; /* Dark grey instead of black */
     /* Enhanced text embossing */
-    text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.7),
-                 0px -0.5px 0px rgba(0, 0, 0, 0.1);
+   text-shadow: 0px 1.5px 1.5px rgba(255, 255, 255, 0.8),
+                0px -1px 1px rgba(0, 0, 0, 0.15);
     line-height: 1.5;
     
     /* Responsive adjustments */
@@ -638,7 +647,7 @@
 .styled-box img + * {
     margin-top: 8px;
     padding-top: 10px;
-    border-top: 1px solid var(--btn-metal-medium);
+    border-top: none;
     
     /* Responsive adjustments */
     @media (max-width: 768px) {
@@ -656,7 +665,7 @@
 .styled-box .image-section {
     margin-bottom: 10px;
     padding-bottom: 8px;
-    border-bottom: 1px solid var(--btn-metal-medium);
+    border-bottom: none;
     
     /* Responsive adjustments */
     @media (max-width: 768px) {
@@ -675,7 +684,7 @@
     margin-top: 20px;
     text-align: center;
     padding-top: 10px;
-    border-top: 1px solid var(--btn-metal-medium);
+    border-top: none;
     
     /* Responsive adjustments */
     @media (max-width: 768px) {
