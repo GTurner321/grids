@@ -1,6 +1,6 @@
 /* ===========================================================================
    LEADERBOARD STYLES
-   Updated to leverage buttonsboxes.css for consistent styling
+   Leveraging buttonsboxes.css for consistent styling
    =========================================================================== */
 
 /* ==========================================================================
@@ -27,23 +27,49 @@
     display: none;
 }
 
+/* Modal backdrop overlay for username area and leaderboard table */
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.75);
+    z-index: 9000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
 /* ==========================================================================
-   2. USERNAME SUBMISSION AREA - Using styled-box
+   2. USERNAME SUBMISSION AREA
    ========================================================================== */
 
 .username-area {
-    /* Base styles - most styling will come from styled-box class */
-    padding: 15px;
+    /* Use styled-box from buttonsboxes.css */
+    width: 92%;
     max-width: 340px;
     margin: 0 auto;
     position: relative;
-    width: 92%;
+    padding: 15px;
+    box-sizing: border-box;
+    z-index: 9100;
+}
+
+/* Apply styled-box class to username-area through JS */
+.username-area.styled-box {
+    padding: 15px;
 }
 
 .username-form {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 8px;
     width: 100%;
     align-items: center;
     text-align: center;
@@ -78,6 +104,7 @@
     font-family: 'Trebuchet MS', Arial, sans-serif;
     font-size: 0.9rem;
     background-color: var(--btn-metal-lighter);
+    color: var(--btn-text-color);
 }
 
 #username-input:focus {
@@ -89,6 +116,7 @@
 #submit-username {
     padding: 8px 12px;
     font-size: 0.9rem;
+    min-width: 80px;
 }
 
 /* Status messages */
@@ -100,50 +128,86 @@
 }
 
 .status-message.error {
-    color: var(--danger-color);
+    color: #ef4444; /* Red */
 }
 
 .status-message.checking {
-    color: var(--primary-color);
+    color: #3b82f6; /* Blue */
 }
 
 .status-message.success {
-    color: var(--success-color);
+    color: #10b981; /* Green */
 }
 
-/* Return button */
+/* Welcome message that replaces the form after username is set */
+.welcome-message {
+    font-family: 'Trebuchet MS', Arial, sans-serif;
+    font-size: 1rem;
+    text-align: center;
+    padding: 10px;
+    color: var(--btn-text-color);
+}
+
+/* Return button - now uses metallic styling */
 #return-to-record-btn {
     position: absolute;
     top: 10px;
     right: 10px;
-    background-color: var(--btn-metal-lighter);
-    border-radius: 50%;
     width: 36px;
     height: 36px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    border: 1px solid var(--btn-metal-border);
-    color: var(--text-blue);
     font-size: 24px;
     cursor: pointer;
+    z-index: 1;
+    
+    /* Apply metallic button styles */
+    background: repeating-linear-gradient(
+        120deg,
+        var(--btn-metal-light) 0px,
+        var(--btn-metal-medium) 10px,
+        var(--btn-metal-light) 30px,
+        var(--btn-metal-mediumlight) 55px
+    );
+    border: 1px solid var(--btn-metal-border);
+    border-top: 1px solid var(--btn-metal-border-top);
+    border-bottom: 2px solid var(--btn-metal-border-bottom);
+    
+    color: var(--btn-text-color);
+    text-shadow: 0px 1px 1px var(--btn-text-shadow-light),
+                 0px -1px 1px var(--btn-text-shadow-dark);
+    
+    box-shadow: 0 2px 5px var(--btn-metal-shadow),
+                inset 0 1px 1px var(--btn-metal-inner-highlight),
+                inset 0 -1px 1px var(--btn-metal-inner-shadow);
     transition: all 0.2s ease;
 }
 
 #return-to-record-btn:hover {
-    background-color: var(--btn-metal-light);
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25),
+                inset 0 1px 2px var(--btn-metal-inner-highlight),
+                inset 0 -1px 1px var(--btn-metal-inner-shadow);
+    background: repeating-linear-gradient(
+        120deg,
+        var(--btn-metal-lighter) 0px,
+        var(--btn-metal-light) 15px,
+        var(--btn-metal-lighter) 35px,
+        var(--btn-metal-mediumlight) 60px
+    );
 }
 
 #return-to-record-btn:active {
     transform: translateY(1px);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2),
+                inset 0 1px 1px var(--btn-metal-inner-shadow);
+    border-bottom-width: 1px;
 }
 
 /* ==========================================================================
-   3. LEADERBOARD TABLE & HEADER - Using styled-box
+   3. LEADERBOARD TABLE & HEADER
    ========================================================================== */
 
 /* Leaderboard title */
@@ -172,49 +236,79 @@
 
 .leaderboard-status.info {
     background-color: var(--btn-metal-light);
-    color: var(--text-blue);
+    color: #3b82f6; /* Blue */
 }
 
 .leaderboard-status.success {
     background-color: var(--btn-metal-light);
-    color: var(--success-color);
+    color: #10b981; /* Green */
 }
 
 .leaderboard-status.error {
     background-color: var(--btn-metal-light);
-    color: var(--danger-color);
+    color: #ef4444; /* Red */
 }
 
-/* Leaderboard table - with styled-box styling */
-.leaderboard-table {
+/* Loading indicator */
+.leaderboard-loading {
+    text-align: center;
+    padding: 10px;
+    font-family: 'Trebuchet MS', Arial, sans-serif;
+    font-size: 0.9rem;
+    color: var(--btn-text-color);
+}
+
+.leaderboard-loading.error {
+    color: #ef4444; /* Red */
+}
+
+/* Leaderboard container - use styled-box */
+.leaderboard-container {
     width: 92%;
     max-width: 368px;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 auto;
+    position: relative;
+    z-index: 9100;
+}
+
+/* Apply styled-box class to this element through JS */
+.leaderboard-container.styled-box {
+    padding: 10px;
+}
+
+/* Leaderboard table */
+.leaderboard-table {
+    width: 100%;
     max-height: 400px;
     overflow-y: auto;
     background-color: var(--btn-metal-light);
-    border: 1px solid var(--btn-metal-border);
-    border-radius: 6px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.25);
-    padding: 3px;
+    border-radius: 4px;
 }
 
-/* Leaderboard rows and cells */
+/* Row styling with alternating backgrounds */
 .leaderboard-row {
     display: grid;
     grid-template-columns: 40px minmax(80px, 1fr) 70px 80px;
     column-gap: 10px;
-    padding: 6px 8px;
-    border-bottom: 1px solid var(--btn-metal-medium);
+    padding: 8px;
     align-items: center;
+    border-bottom: 1px solid var(--btn-metal-medium);
 }
 
 .leaderboard-row:last-child {
     border-bottom: none;
 }
 
+/* Alternating row colors */
+.leaderboard-row:nth-child(even):not(.header) {
+    background-color: var(--btn-metal-mediumlight);
+}
+
+.leaderboard-row:nth-child(odd):not(.header) {
+    background-color: var(--btn-metal-lighter);
+}
+
+/* Header row styling */
 .leaderboard-row.header {
     background-color: var(--btn-metal-medium);
     font-weight: bold;
@@ -229,8 +323,10 @@
     text-shadow: 0px 1px 1px var(--btn-text-shadow-light), 
                  0px -1px 1px var(--btn-text-shadow-dark);
     border-radius: 3px 3px 0 0;
+    padding: 10px 8px;
 }
 
+/* Header cell alignment */
 .leaderboard-row.header .leaderboard-cell.rank {
     text-align: center;
 }
@@ -240,22 +336,28 @@
     padding-left: 5px;
 }
 
+/* Current user highlight */
 .leaderboard-row.current-user {
     background-color: var(--btn-metal-lighter);
     font-weight: bold;
+    box-shadow: inset 0 0 0 2px rgba(59, 130, 246, 0.5); /* Blue highlight */
 }
 
+/* Cell styling */
 .leaderboard-cell {
     font-size: 0.85rem;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     font-family: 'Trebuchet MS', Arial, sans-serif;
+    color: var(--btn-text-color);
 }
 
+/* Specific cell types */
 .leaderboard-cell.name {
+    text-align: left;
     max-width: 120px;
-    min-width: 100px;
+    min-width: 80px;
 }
 
 .leaderboard-cell.rank {
@@ -272,18 +374,20 @@
     padding-right: 5px;
 }
 
+/* Empty leaderboard message */
 .leaderboard-row.empty {
     text-align: center;
     padding: 20px;
-    color: var(--text-blue);
+    color: var(--btn-text-color);
     grid-column: 1 / -1;
+    background-color: var(--btn-metal-lighter);
 }
 
 /* Animation for new entries */
 @keyframes highlight-pulse {
-    0% { background-color: var(--btn-metal-lighter); }
-    50% { background-color: var(--btn-metal-light); }
-    100% { background-color: var(--btn-metal-lighter); }
+    0% { background-color: rgba(59, 130, 246, 0.3); }
+    50% { background-color: rgba(59, 130, 246, 0.1); }
+    100% { background-color: rgba(59, 130, 246, 0.3); }
 }
 
 .leaderboard-row.current-user.new-entry {
@@ -309,96 +413,45 @@
     background: var(--btn-metal-darker);
 }
 
-/* Mobile adjustments for leaderboard */
+/* ==========================================================================
+   4. RESPONSIVE DESIGN
+   ========================================================================== */
+
+/* Medium screens */
 @media (max-width: 768px) {
+    /* Leaderboard table adjustments */
     .leaderboard-row {
         grid-template-columns: 40px minmax(80px, 1fr) 70px 70px;
         column-gap: 8px;
-        padding: 8px 12px;
-    }
-}
-
-/* Even smaller screens */
-@media (max-width: 480px) {
-    .leaderboard-row {
-        grid-template-columns: 35px minmax(70px, 1fr) 60px 65px;
-        column-gap: 4px;
-        font-size: 0.8rem;
-        padding: 6px;
-    }
-    
-    .leaderboard-cell {
-        font-size: 0.8rem;
-    }
-}
-
-/* ==========================================================================
-   4. CONTAINER ADJUSTMENTS
-   ========================================================================== */
-
-/* Adjust username area and leaderboard table containers */
-#username-area-container,
-#leaderboard-table-container {
-    margin-top: 10px;
-    width: 100%;
-    max-width: 400px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-#username-area-container.visible,
-#leaderboard-table-container.visible {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 9999;
-    background-color: rgba(0, 0, 0, 0.8);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    box-sizing: border-box;
-}
-
-/* ==========================================================================
-   5. RESPONSIVE DESIGN
-   ========================================================================== */
-
-/* Mobile adjustments */
-@media (max-width: 768px) {
-    .leaderboard-row {
-        grid-template-columns: 45px minmax(80px, 1fr) 70px 70px !important;
-        column-gap: 8px !important;
-        padding: 8px 12px !important;
-    }
-    
-    .leaderboard-cell {
-        font-size: 0.9rem !important;
+        padding: 8px;
     }
     
     /* Return Button Mobile Positioning */
     #return-to-record-btn {
-        position: absolute !important;
-        bottom: 10px !important;
-        right: 10px !important;
-        top: auto !important;
+        top: auto;
+        bottom: 10px;
+        right: 10px;
+        width: 44px;
+        height: 44px;
+        font-size: 26px;
     }
     
     /* Input field adjustments */
     #username-input {
-        width: 90% !important;
+        width: 90%;
         padding: 12px;
-        font-size: 1.1rem !important;
+        font-size: 1.1rem;
         text-align: center;
-        max-width: 90% !important;
+        max-width: 90%;
     }
     
-    /* Rocket icon after Submit */
+    /* Submit button adjustments */
+    #submit-username {
+        padding: 10px 15px;
+        font-size: 1rem;
+    }
+    
+    /* Rocket icon after Submit on mobile */
     #submit-username::after {
         content: " 🚀";
         margin-left: 5px;
@@ -406,30 +459,37 @@
     }
 }
 
-/* Smaller screens */
+/* Small screens */
 @media (max-width: 480px) {
-    .leaderboard-row {
-        grid-template-columns: 35px minmax(70px, 1fr) 60px 70px;
-        column-gap: 8px;
-        font-size: 0.8rem;
-        padding: 6px;
+    .leaderboard-title {
+        font-size: 1.2rem;
+        margin: 10px 0;
     }
     
-    .leaderboard-table {
-        max-width: 92%;
+    .leaderboard-row {
+        grid-template-columns: 35px minmax(70px, 1fr) 60px 65px;
+        column-gap: 4px;
+        padding: 6px;
     }
     
     .leaderboard-cell {
         font-size: 0.8rem;
     }
     
-    #return-to-record-btn {
-        font-size: 20px;
+    .username-area {
+        width: 95%;
+        padding: 10px;
     }
     
     #submit-username {
-        width: 80% !important; /* Wider button for very small screens */
-        min-height: 44px; /* Better touch target */
+        width: 85%;
+        min-height: 44px;
+    }
+    
+    #return-to-record-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 22px;
     }
 }
 
@@ -437,8 +497,8 @@
 @media (max-width: 320px) {
     .leaderboard-row {
         grid-template-columns: 25px minmax(60px, 1fr) 55px 60px;
-        column-gap: 5px;
-        font-size: 0.7rem;
+        column-gap: 4px;
+        padding: 5px;
     }
     
     .leaderboard-cell {
@@ -446,17 +506,17 @@
     }
     
     .leaderboard-title {
-        font-size: 1.2rem !important;
+        font-size: 1.1rem;
     }
     
     .username-area {
-        width: 98% !important;
-        padding: 10px 5px !important;
+        width: 98%;
+        padding: 8px;
     }
     
     #submit-username {
-        width: 95% !important;
-        max-width: 95% !important;
-        font-size: 0.9rem !important;
+        width: 95%;
+        max-width: 95%;
+        font-size: 0.9rem;
     }
 }
