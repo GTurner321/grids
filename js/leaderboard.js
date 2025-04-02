@@ -1,4 +1,4 @@
-// leaderboard.js - Updated to use Supabase
+// leaderboard.js - Updated to use Supabase and improved UI styling
 import supabaseLeaderboard from '/js/supabase-leaderboard.js';
 
 class LeaderboardManager {
@@ -18,9 +18,19 @@ class LeaderboardManager {
         const leaderboardSection = document.createElement('section');
         leaderboardSection.className = 'leaderboard-section';
         
-        // Create username submission area
+        // Create username submission area with modal backdrop
+        const usernameAreaContainer = document.createElement('div');
+        usernameAreaContainer.id = 'username-area-container';
+        
         const usernameArea = document.createElement('div');
         usernameArea.className = 'username-area styled-box';
+        
+        // Create return button with proper styling
+        const returnButton = document.createElement('button');
+        returnButton.id = 'return-to-record-btn';
+        returnButton.className = 'metallic-button';
+        returnButton.innerHTML = '&times;';
+        returnButton.title = 'Close';
         
         const usernameForm = document.createElement('div');
         usernameForm.className = 'username-form';
@@ -40,6 +50,7 @@ class LeaderboardManager {
         
         const submitButton = document.createElement('button');
         submitButton.id = 'submit-username';
+        submitButton.className = 'metallic-button';
         submitButton.textContent = 'Submit';
         
         inputWrapper.appendChild(usernameInput);
@@ -58,8 +69,10 @@ class LeaderboardManager {
         welcomeMessage.id = 'welcome-message';
         welcomeMessage.className = 'welcome-message hidden';
         
+        usernameArea.appendChild(returnButton);
         usernameArea.appendChild(usernameForm);
         usernameArea.appendChild(welcomeMessage);
+        usernameAreaContainer.appendChild(usernameArea);
         
         // Create leaderboard title and loading indicator
         const leaderboardTitle = document.createElement('h2');
@@ -71,15 +84,22 @@ class LeaderboardManager {
         loadingIndicator.className = 'leaderboard-loading';
         loadingIndicator.textContent = 'Loading leaderboard...';
         
+        // Create leaderboard table container
+        const leaderboardTableContainer = document.createElement('div');
+        leaderboardTableContainer.id = 'leaderboard-table-container';
+        leaderboardTableContainer.className = 'styled-box';
+        
         const leaderboardTable = document.createElement('div');
         leaderboardTable.className = 'leaderboard-table';
         leaderboardTable.id = 'leaderboard-table';
         
+        leaderboardTableContainer.appendChild(leaderboardTable);
+        
         // Add all elements to the leaderboard section
-        leaderboardSection.appendChild(usernameArea);
+        leaderboardSection.appendChild(usernameAreaContainer);
         leaderboardSection.appendChild(leaderboardTitle);
         leaderboardSection.appendChild(loadingIndicator);
-        leaderboardSection.appendChild(leaderboardTable);
+        leaderboardSection.appendChild(leaderboardTableContainer);
         
         // Find the game-container and append the leaderboard section
         const gameContainer = document.querySelector('.game-container');
@@ -103,6 +123,22 @@ class LeaderboardManager {
             usernameInput.addEventListener('keyup', (event) => {
                 if (event.key === 'Enter') {
                     this.handleUsernameSubmission();
+                }
+            });
+        }
+        
+        // Add event listener for return button
+        const returnButton = document.getElementById('return-to-record-btn');
+        if (returnButton) {
+            returnButton.addEventListener('click', () => {
+                const usernameAreaContainer = document.getElementById('username-area-container');
+                if (usernameAreaContainer) {
+                    usernameAreaContainer.classList.remove('visible');
+                }
+                
+                const leaderboardTableContainer = document.getElementById('leaderboard-table-container');
+                if (leaderboardTableContainer) {
+                    leaderboardTableContainer.classList.remove('visible');
                 }
             });
         }
@@ -168,6 +204,12 @@ class LeaderboardManager {
                     usernameForm.classList.add('hidden');
                     welcomeMessage.classList.remove('hidden');
                     welcomeMessage.textContent = `Hello ${username} - your top 20 score records in the leaderboard below.`;
+                }
+                
+                // Hide the username area container
+                const usernameAreaContainer = document.getElementById('username-area-container');
+                if (usernameAreaContainer) {
+                    usernameAreaContainer.classList.remove('visible');
                 }
                 
                 // Get current score and update leaderboard
@@ -263,9 +305,9 @@ class LeaderboardManager {
             newStatusEl.className = `leaderboard-status ${type}`;
             newStatusEl.textContent = message;
             
-            const leaderboardTable = document.getElementById('leaderboard-table');
-            if (leaderboardTable && leaderboardTable.parentNode) {
-                leaderboardTable.parentNode.insertBefore(newStatusEl, leaderboardTable);
+            const leaderboardTableContainer = document.getElementById('leaderboard-table-container');
+            if (leaderboardTableContainer && leaderboardTableContainer.parentNode) {
+                leaderboardTableContainer.parentNode.insertBefore(newStatusEl, leaderboardTableContainer);
             }
         } else {
             statusEl.className = `leaderboard-status ${type}`;
@@ -424,6 +466,22 @@ class LeaderboardManager {
             emptyRow.className = 'leaderboard-row empty';
             emptyRow.textContent = 'No scores yet. Start playing to get on the leaderboard!';
             leaderboardTable.appendChild(emptyRow);
+        }
+    }
+    
+    // Show username input modal
+    showUsernameInput() {
+        const usernameAreaContainer = document.getElementById('username-area-container');
+        if (usernameAreaContainer) {
+            usernameAreaContainer.classList.add('visible');
+        }
+    }
+    
+    // Show leaderboard modal
+    showLeaderboard() {
+        const leaderboardTableContainer = document.getElementById('leaderboard-table-container');
+        if (leaderboardTableContainer) {
+            leaderboardTableContainer.classList.add('visible');
         }
     }
 }
