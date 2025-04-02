@@ -199,7 +199,10 @@
   }
   
   .level-arrow {
-    /* Width will be determined by aspect-ratio */
+    /* Force square shape by setting width equal to height */
+    height: 44px;
+    /* Remove width: auto to ensure aspect-ratio works properly */
+    aspect-ratio: 1/1;
   }
   
   .level-arrow svg {
@@ -226,7 +229,14 @@
   .level-btn-scrollable {
     font-size: 1rem;
   }
-  
+
+  .level-arrow {
+    /* Force square shape by setting width equal to height */
+    height: 40px;
+    /* Remove width: auto to ensure aspect-ratio works properly */
+    aspect-ratio: 1/1;
+  }
+   
   .level-arrow svg {
     width: 18px;
     height: 18px;
