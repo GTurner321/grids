@@ -99,6 +99,14 @@
   /* Ensure proper z-index */
   z-index: 1;
   
+  /* Ensure box shadow is applied consistently */
+  box-shadow: 0 6px 12px 2px rgba(0, 0, 0, 0.22),
+              0 2px 6px 1px var(--btn-metal-shadow, rgba(0, 0, 0, 0.2)),
+              1px 0 4px rgba(0, 0, 0, 0.12),
+              -1px 0 4px rgba(0, 0, 0, 0.12),
+              inset 0 1px 2px var(--btn-metal-inner-highlight, rgba(255, 255, 255, 0.8)),
+              inset 0 -1px 2px var(--btn-metal-inner-shadow, rgba(0, 0, 0, 0.1));
+  
   /* Adjust border radius - only round left/right corners based on position */
   border-radius: 0;
 }
@@ -139,12 +147,20 @@
 .level-arrow {
   aspect-ratio: 1/1; /* Make it a perfect square */
   height: 100%;
-  width: auto; /* Width will be determined by aspect-ratio */
+  flex: 0 0 auto; /* Prevent flex stretching */
+  width: 50px; /* Set explicit width to match height */
   padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  
+  /* Ensure box shadow is applied consistently */
+  box-shadow: 0 6px 12px 2px rgba(0, 0, 0, 0.22),
+              0 2px 6px 1px var(--btn-metal-shadow, rgba(0, 0, 0, 0.2)),
+              1px 0 4px rgba(0, 0, 0, 0.12),
+              -1px 0 4px rgba(0, 0, 0, 0.12),
+              inset 0 1px 2px var(--btn-metal-inner-highlight, rgba(255, 255, 255, 0.8)),
+              inset 0 -1px 2px var(--btn-metal-inner-shadow, rgba(0, 0, 0, 0.1));
   
   /* Square corners except for outer edges */
   border-radius: 0;
@@ -176,7 +192,7 @@
 }
 
 /* ==========================================================================
-   RESPONSIVE ADJUSTMENTS
+   RESPONSIVE ADJUSTMENTS - Fixed to maintain consistent proportions
    ========================================================================== */
 
 /* Mobile Optimizations */
@@ -188,21 +204,36 @@
   
   .level-button-group {
     height: 44px;
+    max-width: 260px; /* Match parent container */
   }
   
   .level-display-container {
-    max-width: 132px; /* Increased by 10% from 120px */
+    flex: 1;
+    max-width: 160px; /* Fixed middle section width */
   }
   
   .level-btn-scrollable {
     font-size: 1.1rem;
+    /* Maintain consistent shadow */
+    box-shadow: 0 4px 8px 2px rgba(0, 0, 0, 0.2),
+                0 2px 5px 1px var(--btn-metal-shadow, rgba(0, 0, 0, 0.2)),
+                1px 0 3px rgba(0, 0, 0, 0.1),
+                -1px 0 3px rgba(0, 0, 0, 0.1),
+                inset 0 1px 2px var(--btn-metal-inner-highlight, rgba(255, 255, 255, 0.8)),
+                inset 0 -1px 2px var(--btn-metal-inner-shadow, rgba(0, 0, 0, 0.1));
   }
   
   .level-arrow {
-    /* Force square shape by setting width equal to height */
     height: 44px;
-    /* Remove width: auto to ensure aspect-ratio works properly */
-    aspect-ratio: 1/1;
+    width: 44px; /* Explicit width = height for square */
+    flex: 0 0 44px; /* Fixed size, won't grow or shrink */
+    /* Maintain consistent shadow */
+    box-shadow: 0 4px 8px 2px rgba(0, 0, 0, 0.2),
+                0 2px 5px 1px var(--btn-metal-shadow, rgba(0, 0, 0, 0.2)),
+                1px 0 3px rgba(0, 0, 0, 0.1),
+                -1px 0 3px rgba(0, 0, 0, 0.1),
+                inset 0 1px 2px var(--btn-metal-inner-highlight, rgba(255, 255, 255, 0.8)),
+                inset 0 -1px 2px var(--btn-metal-inner-shadow, rgba(0, 0, 0, 0.1));
   }
   
   .level-arrow svg {
@@ -220,23 +251,38 @@
   
   .level-button-group {
     height: 40px;
+    max-width: 220px; /* Match parent container */
   }
   
   .level-display-container {
-    max-width: 110px; /* Increased by 10% from 100px */
+    flex: 1;
+    max-width: 140px; /* Fixed width to prevent squishing */
   }
   
   .level-btn-scrollable {
     font-size: 1rem;
+    /* Maintain consistent shadow */
+    box-shadow: 0 3px 6px 1px rgba(0, 0, 0, 0.18),
+                0 1px 4px 1px var(--btn-metal-shadow, rgba(0, 0, 0, 0.18)),
+                1px 0 2px rgba(0, 0, 0, 0.08),
+                -1px 0 2px rgba(0, 0, 0, 0.08),
+                inset 0 1px 1px var(--btn-metal-inner-highlight, rgba(255, 255, 255, 0.8)),
+                inset 0 -1px 1px var(--btn-metal-inner-shadow, rgba(0, 0, 0, 0.1));
   }
-
+  
   .level-arrow {
-    /* Force square shape by setting width equal to height */
-    height: 40px;
-    /* Remove width: auto to ensure aspect-ratio works properly */
-    aspect-ratio: 1/1;
+    height: 40px; 
+    width: 40px; /* Explicit width = height for square */
+    flex: 0 0 40px; /* Fixed size, won't grow or shrink */
+    /* Maintain consistent shadow */
+    box-shadow: 0 3px 6px 1px rgba(0, 0, 0, 0.18),
+                0 1px 4px 1px var(--btn-metal-shadow, rgba(0, 0, 0, 0.18)),
+                1px 0 2px rgba(0, 0, 0, 0.08),
+                -1px 0 2px rgba(0, 0, 0, 0.08),
+                inset 0 1px 1px var(--btn-metal-inner-highlight, rgba(255, 255, 255, 0.8)),
+                inset 0 -1px 1px var(--btn-metal-inner-shadow, rgba(0, 0, 0, 0.1));
   }
-   
+  
   .level-arrow svg {
     width: 18px;
     height: 18px;
@@ -246,7 +292,7 @@
 /* Touch device optimizations */
 .touch-device .level-arrow {
   min-height: 44px;
-  /* No min-width needed, will be set by aspect-ratio */
+  min-width: 44px; /* Match min-height for touch targets */
 }
 
 /* Animation for button click */
