@@ -20,7 +20,7 @@ class LeaderboardManager {
         
         // Create username submission area
         const usernameArea = document.createElement('div');
-        usernameArea.className = 'username-area';
+        usernameArea.className = 'username-area styled-box';
         
         const usernameForm = document.createElement('div');
         usernameForm.className = 'username-form';
