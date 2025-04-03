@@ -461,24 +461,9 @@
         inset 0 1px 2px var(--box-inner-highlight),
         inset 0 -1px 2px var(--box-inner-shadow);
     
-    /* Diagonal metallic gradient background using only the 3 lightest shades with wider sections */
-    background: repeating-linear-gradient(
-        120deg,
-        var(--btn-metal-lighter) 0px,
-        var(--btn-metal-lighter) 40px,
-        var(--btn-metal-light) 180px,
-        var(--btn-metal-mediumlight) 200px,
-        var(--btn-metal-lighter) 300px,
-        var(--btn-metal-mediumlight) 340px,
-        var(--btn-metal-light) 350px,
-        var(--btn-metal-lighter) 360px,
-        var(--btn-metal-light) 540px,
-        var(--btn-metal-lighter) 660px
-    );
-    
-    /* Additional gradient overlay for thin edges at top/bottom */
-    background-blend-mode: overlay;
-    box-decoration-break: clone;
+    /* Repeating SVG background pattern */
+    background-color: #f0f0f0;
+    background-image: url("data:image/svg+xml,%3Csvg width='32' height='64' viewBox='0 0 32 64' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 28h20V16h-4v8H4V4h28v28h-4V8H8v12h4v-8h12v20H0v-4zm12 8h20v4H16v24H0v-4h12V36zm16 12h-4v12h8v4H20V44h12v12h-4v-8zM0 36h8v20H0v-4h4V40H0v-4z' fill='%23e0e0e0' fill-opacity='1' fill-rule='evenodd'/%3E%3C/svg%3E");
     
     /* Text styling */
     font-family: 'Trebuchet MS', Arial, sans-serif;
