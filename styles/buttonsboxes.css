@@ -504,18 +504,6 @@
                     -1px 0 4px rgba(0, 0, 0, 0.12),
                     inset 0 1px 2px var(--box-inner-highlight),
                     inset 0 -1px 2px var(--box-inner-shadow);
-        /* Adjusted gradient for medium screens - slightly smaller sections */
-        background: repeating-linear-gradient(
-            120deg,
-            var(--btn-metal-lighter) 0px,
-            var(--btn-metal-lighter) 30px,
-            var(--btn-metal-light) 80px,
-            var(--btn-metal-mediumlight) 130px,
-            var(--btn-metal-lighter) 150px,
-            var(--btn-metal-lighter) 230px,
-            var(--btn-metal-light) 280px,
-            var(--btn-metal-lighter) 400px
-        );
     }
     
     /* Small screens */
@@ -530,18 +518,6 @@
                     0 1px 5px 1px var(--btn-metal-shadow),
                     inset 0 1px 1px var(--box-inner-highlight),
                     inset 0 -1px 1px var(--box-inner-shadow);
-        /* Adjusted gradient for small screens - even smaller sections */
-        background: repeating-linear-gradient(
-            120deg,
-            var(--btn-metal-lighter) 0px,
-            var(--btn-metal-lighter) 20px,
-            var(--btn-metal-light) 60px,
-            var(--btn-metal-mediumlight) 125px,
-            var(--btn-metal-lighter) 140px,
-            var(--btn-metal-lighter) 180px,
-            var(--btn-metal-light) 220px,
-            var(--btn-metal-mediumlight) 320px
-        );
     }
 }
 
