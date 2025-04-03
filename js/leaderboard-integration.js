@@ -624,9 +624,9 @@ addEventListeners() {
                 
                 // Hide the username area immediately
                 const usernameAreaContainer = document.getElementById('username-area-container');
-                if (usernameAreaContainer) {
-                    usernameAreaContainer.style.display = 'none';
-                }
+    if (usernameAreaContainer) {
+        usernameAreaContainer.classList.remove('visible');
+    }
                 
                 // Get current score and process it
                 const currentScore = this.getCurrentScore();
@@ -664,10 +664,10 @@ addEventListeners() {
 handleButtonsAfterSubmission() {
     // Hide record name button
     const recordScoreBtn = document.getElementById('record-score-btn');
-    if (recordScoreBtn) {
-        recordScoreBtn.style.display = 'none';
-        recordScoreBtn.classList.add('hidden'); // Add this class for CSS targeting
-    }
+if (recordScoreBtn) {
+    // Just use the hidden class for CSS targeting
+    recordScoreBtn.classList.add('hidden');
+}
     
     // Center the leaderboard button
     const leaderboardBtn = document.getElementById('leaderboard-btn');
@@ -1058,8 +1058,11 @@ renderLeaderboard() {
             gameContainer.classList.contains('game-active') ? 'game active' : 'game not active');
         
         // Just ensure the display property is set correctly
-        if (gameContainer.classList.contains('game-active')) {
-            bottomButtons.style.display = 'flex';
+    if (gameContainer.classList.contains('game-active')) {
+        bottomButtons.classList.add('visible');
+    } else {
+        bottomButtons.classList.remove('visible');
+    }
             
             // If username is set, apply the proper button layout
             if (this.isUsernameSet) {
