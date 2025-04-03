@@ -252,11 +252,11 @@ body {
 
 /* Rules text styling */
 .rules-box p {
-  margin: 10px 0;
   font-size: 0.85rem;
   text-transform: uppercase;
   line-height: 1.5;
   letter-spacing: 0.03em;
+  padding: 0 20px;
 }
 
 /* Image container styling */
@@ -278,6 +278,7 @@ body {
   /* styled-box-title provides most styling */
   color: var(--text-blue);
   font-size: 1.2rem;
+  padding: 10px 20px;
 }
 
 .rules-box-subtitle {
@@ -286,32 +287,30 @@ body {
   font-weight: normal;
   font-size: 1rem;
   text-align: center;
-  margin-top: 20px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--text-blue);
   text-shadow: 0px 1px 1px white;
+  padding: 10px 20px;
 }
 
 /* Rules section container */
 .rules-section {
   border-radius: 6px;
   padding: 5px;
-  margin: 5px 0;
 }
 
 /* Close button container */
 .close-button-container {
   text-align: center;
-  margin-top: 10px;
 }
 
 /* CLOSE BUTTON */
-
 /* Close button styling - apply metallic-button class in HTML */
 .rules-close-button {
   /* Apply specific overrides for the close button */
   padding: 10px 25px;
+  margin: 10px 0;
 }
 
 /* Game active state handling for rules box */
@@ -322,7 +321,6 @@ body {
 }
 
 /* RESPONSIVE ADJUSTMENTS */
-
 /* Tablet adjustments */
 @media (max-width: 1024px) {
   .rules-box {
@@ -345,7 +343,6 @@ body {
   
   .rules-box p {
     font-size: 0.9rem;
-    margin: 8px 0;
   }
   
   .rules-image-container {
