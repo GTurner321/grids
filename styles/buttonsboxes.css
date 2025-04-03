@@ -453,14 +453,15 @@
     margin: 15px auto;
     
     /* Enhanced shadow effects for 3D appearance - darker and more expansive on all sides, larger on bottom */
-    box-shadow: 0 8px 15px 3px rgba(0, 0, 0, 0.25),
-                0 2px 8px 2px var(--btn-metal-shadow),
-                2px 0 6px rgba(0, 0, 0, 0.15),
-                -2px 0 6px rgba(0, 0, 0, 0.15),
-                inset 0 1px 2px var(--box-inner-highlight),
-                inset 0 -1px 2px var(--box-inner-shadow);
+    box-shadow: 
+        0 8px 15px 3px rgba(0, 0, 0, 0.25),
+        0 2px 8px 2px var(--btn-metal-shadow),
+        2px 0 6px rgba(0, 0, 0, 0.15),
+        -2px 0 6px rgba(0, 0, 0, 0.15),
+        inset 0 1px 2px var(--box-inner-highlight),
+        inset 0 -1px 2px var(--box-inner-shadow);
     
-    /* NEW: Diagonal metallic gradient background using only the 3 lightest shades with wider sections */
+    /* Diagonal metallic gradient background using only the 3 lightest shades with wider sections */
     background: repeating-linear-gradient(
         120deg,
         var(--btn-metal-lighter) 0px,
@@ -468,11 +469,11 @@
         var(--btn-metal-light) 180px,
         var(--btn-metal-mediumlight) 200px,
         var(--btn-metal-lighter) 300px,
-       var(--btn-metal-mediumlight) 340px,
+        var(--btn-metal-mediumlight) 340px,
         var(--btn-metal-light) 350px,
         var(--btn-metal-lighter) 360px,
         var(--btn-metal-light) 540px,
-       var(--btn-metal-lighter) 660px,
+        var(--btn-metal-lighter) 660px
     );
     
     /* Additional gradient overlay for thin edges at top/bottom */
@@ -491,33 +492,38 @@
     
     /* Transitions for animations */
     transition: all 0.3s ease;
-    
-    /* RESPONSIVE ADJUSTMENTS INTEGRATED IN SECTION 3 */
-    /* Medium screens */
-    @media (max-width: 768px) {
+}
+
+/* Medium screens */
+@media (max-width: 768px) {
+    .styled-box {
         padding: 12px;
         width: 90%;
         /* Adjusted shadow for medium screens */
-        box-shadow: 0 6px 12px 2px rgba(0, 0, 0, 0.25),
-                    0 2px 6px 1px var(--btn-metal-shadow),
-                    1px 0 4px rgba(0, 0, 0, 0.12),
-                    -1px 0 4px rgba(0, 0, 0, 0.12),
-                    inset 0 1px 2px var(--box-inner-highlight),
-                    inset 0 -1px 2px var(--box-inner-shadow);
+        box-shadow: 
+            0 6px 12px 2px rgba(0, 0, 0, 0.25),
+            0 2px 6px 1px var(--btn-metal-shadow),
+            1px 0 4px rgba(0, 0, 0, 0.12),
+            -1px 0 4px rgba(0, 0, 0, 0.12),
+            inset 0 1px 2px var(--box-inner-highlight),
+            inset 0 -1px 2px var(--box-inner-shadow);
     }
-    
-    /* Small screens */
-    @media (max-width: 480px) {
+}
+
+/* Small screens */
+@media (max-width: 480px) {
+    .styled-box {
         padding: 10px;
         margin: 10px auto;
         border-width: 1px;
         border-top-width: 2px;
         border-bottom-width: 2px;
         /* Simplified shadow system for mobile */
-        box-shadow: 0 5px 10px 2px rgba(0, 0, 0, 0.22),
-                    0 1px 5px 1px var(--btn-metal-shadow),
-                    inset 0 1px 1px var(--box-inner-highlight),
-                    inset 0 -1px 1px var(--box-inner-shadow);
+        box-shadow: 
+            0 5px 10px 2px rgba(0, 0, 0, 0.22),
+            0 1px 5px 1px var(--btn-metal-shadow),
+            inset 0 1px 1px var(--box-inner-highlight),
+            inset 0 -1px 1px var(--box-inner-shadow);
     }
 }
 
@@ -532,31 +538,39 @@
     letter-spacing: 0.05em;
     color: var(--btn-text-color);
     /* Enhanced embossing with multiple layers of shadow */
-    text-shadow: 0px 1px 1px var(--btn-text-shadow-light), 
-                 0px -1px 1px var(--btn-text-shadow-dark),
-                 0px 2px 3px rgba(255, 255, 255, 0.3);
+    text-shadow: 
+        0px 1px 1px var(--btn-text-shadow-light), 
+        0px -1px 1px var(--btn-text-shadow-dark),
+        0px 2px 3px rgba(255, 255, 255, 0.3);
     padding-bottom: 8px; /* Reduced padding */
     border-bottom: none;
     position: relative;
-    
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
+}
+
+/* Medium screens title styling */
+@media (max-width: 768px) {
+    .styled-box-title {
         font-size: 1.2rem;
         margin-bottom: 8px;
         padding-bottom: 6px;
         /* Slightly reduced embossing for medium screens */
-        text-shadow: 0px 1px 1px var(--btn-text-shadow-light), 
-                     0px -1px 1px var(--btn-text-shadow-dark),
-                     0px 1px 2px rgba(255, 255, 255, 0.3);
+        text-shadow: 
+            0px 1px 1px var(--btn-text-shadow-light), 
+            0px -1px 1px var(--btn-text-shadow-dark),
+            0px 1px 2px rgba(255, 255, 255, 0.3);
     }
-    
-    @media (max-width: 480px) {
+}
+
+/* Small screens title styling */
+@media (max-width: 480px) {
+    .styled-box-title {
         font-size: 1.1rem;
         margin-bottom: 6px;
         padding-bottom: 5px;
         /* Simplified embossing for small screens */
-        text-shadow: 0px 1px 1px var(--btn-text-shadow-light), 
-                     0px -1px 1px var(--btn-text-shadow-dark);
+        text-shadow: 
+            0px 1px 1px var(--btn-text-shadow-light), 
+            0px -1px 1px var(--btn-text-shadow-dark);
     }
 }
 
@@ -568,16 +582,22 @@
     margin: 10px 0 8px 0; /* Reduced top/bottom margins */
     color: var(--btn-text-color);
     /* Enhanced embossing */
-    text-shadow: 0px 1px 1px var(--btn-text-shadow-light), 
-                 0px -1px 1px rgba(0, 0, 0, 0.25);
-                 
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
+    text-shadow: 
+        0px 1px 1px var(--btn-text-shadow-light), 
+        0px -1px 1px rgba(0, 0, 0, 0.25);
+}
+
+/* Medium screens subtitle styling */
+@media (max-width: 768px) {
+    .styled-box-subtitle {
         font-size: 1rem;
         margin: 8px 0 6px 0;
     }
-    
-    @media (max-width: 480px) {
+}
+
+/* Small screens subtitle styling */
+@media (max-width: 480px) {
+    .styled-box-subtitle {
         font-size: 0.9rem;
         margin: 6px 0 5px 0;
     }
@@ -591,12 +611,15 @@
     border: none;
     color: #444; /* Dark grey instead of black */
     /* Enhanced text embossing */
-   text-shadow: 0px 1.5px 1.5px rgba(255, 255, 255, 0.8),
-                0px -1px 1px rgba(0, 0, 0, 0.15);
+    text-shadow: 
+        0px 1.5px 1.5px rgba(255, 255, 255, 0.8),
+        0px -1px 1px rgba(0, 0, 0, 0.15);
     line-height: 1.5;
-    
-    /* Responsive adjustments */
-    @media (max-width: 480px) {
+}
+
+/* Small screens content styling */
+@media (max-width: 480px) {
+    .styled-box-content {
         font-size: 0.95rem;
         /* Simplified embossing for small screens */
         text-shadow: 0px 1px 0px rgba(255, 255, 255, 0.5);
@@ -610,13 +633,18 @@
     height: auto;
     margin: 10px auto;
     border-radius: 4px;
-    
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
+}
+
+/* Medium screens image styling */
+@media (max-width: 768px) {
+    .styled-box img {
         margin: 8px auto;
     }
-    
-    @media (max-width: 480px) {
+}
+
+/* Small screens image styling */
+@media (max-width: 480px) {
+    .styled-box img {
         margin: 6px auto;
     }
 }
@@ -626,14 +654,19 @@
     margin-top: 8px;
     padding-top: 10px;
     border-top: none;
-    
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
+}
+
+/* Medium screens image divider */
+@media (max-width: 768px) {
+    .styled-box img + * {
         margin-top: 6px;
         padding-top: 8px;
     }
-    
-    @media (max-width: 480px) {
+}
+
+/* Small screens image divider */
+@media (max-width: 480px) {
+    .styled-box img + * {
         margin-top: 5px;
         padding-top: 6px;
     }
@@ -644,14 +677,19 @@
     margin-bottom: 10px;
     padding-bottom: 8px;
     border-bottom: none;
-    
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
+}
+
+/* Medium screens image section */
+@media (max-width: 768px) {
+    .styled-box .image-section {
         margin-bottom: 8px;
         padding-bottom: 6px;
     }
-    
-    @media (max-width: 480px) {
+}
+
+/* Small screens image section */
+@media (max-width: 480px) {
+    .styled-box .image-section {
         margin-bottom: 6px;
         padding-bottom: 5px;
     }
@@ -663,14 +701,19 @@
     text-align: center;
     padding-top: 10px;
     border-top: none;
-    
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
+}
+
+/* Medium screens footer */
+@media (max-width: 768px) {
+    .styled-box-footer {
         margin-top: 16px;
         padding-top: 8px;
     }
-    
-    @media (max-width: 480px) {
+}
+
+/* Small screens footer */
+@media (max-width: 480px) {
+    .styled-box-footer {
         margin-top: 12px;
         padding-top: 6px;
     }
