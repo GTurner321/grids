@@ -465,12 +465,12 @@
         120deg,
         var(--btn-metal-lighter) 0px,
         var(--btn-metal-lighter) 40px,
-        var(--btn-metal-light) 100px,
-        var(--btn-metal-mediumlight) 160px,
+        var(--btn-metal-light) 180px,
+        var(--btn-metal-mediumlight) 200px,
         var(--btn-metal-lighter) 220px,
-        var(--btn-metal-lighter) 280px,
-        var(--btn-metal-light) 340px,
-        var(--btn-metal-mediumlight) 400px
+        var(--btn-metal-lighter) 380px,
+        var(--btn-metal-light) 460px,
+        var(--btn-metal-lighter) 540px
     );
     
     /* Additional gradient overlay for thin edges at top/bottom */
@@ -509,10 +509,10 @@
             var(--btn-metal-lighter) 30px,
             var(--btn-metal-light) 80px,
             var(--btn-metal-mediumlight) 130px,
-            var(--btn-metal-lighter) 180px,
+            var(--btn-metal-lighter) 150px,
             var(--btn-metal-lighter) 230px,
             var(--btn-metal-light) 280px,
-            var(--btn-metal-mediumlight) 330px
+            var(--btn-metal-lighter) 400px
         );
     }
     
@@ -534,11 +534,11 @@
             var(--btn-metal-lighter) 0px,
             var(--btn-metal-lighter) 20px,
             var(--btn-metal-light) 60px,
-            var(--btn-metal-mediumlight) 100px,
+            var(--btn-metal-mediumlight) 125px,
             var(--btn-metal-lighter) 140px,
             var(--btn-metal-lighter) 180px,
             var(--btn-metal-light) 220px,
-            var(--btn-metal-mediumlight) 260px
+            var(--btn-metal-mediumlight) 320px
         );
     }
 }
