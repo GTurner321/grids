@@ -1054,8 +1054,8 @@ isModalOpen() {
     return (usernameAreaContainer && usernameAreaContainer.classList.contains('visible')) || 
            (leaderboardTableContainer && leaderboardTableContainer.classList.contains('visible'));
 }
-
-    // Force check of button visibility
+    
+// Fixed checkButtonVisibility method
 checkButtonVisibility() {
     const gameContainer = document.querySelector('.game-container');
     const bottomButtons = document.getElementById('bottom-buttons');
@@ -1066,7 +1066,7 @@ checkButtonVisibility() {
         
         // Make sure the buttons are visible when game is active
         if (gameContainer.classList.contains('game-active')) {
-            // We removed this line, which might be causing the issue
+            // Restore this line - it's critical for button visibility
             bottomButtons.style.display = 'flex';
             
             // If username is set, apply the proper button layout
