@@ -38,12 +38,17 @@
     height: 100%;
     background-color: rgba(0, 0, 0, 0.75);
     z-index: 9000;
-    display: flex;
+    display: none; /* Hidden by default */
     flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 20px;
     box-sizing: border-box;
+}
+
+/* Visible state */
+.modal-backdrop.visible {
+    display: flex; /* Show when 'visible' class is applied */
 }
 
 /* ==========================================================================
