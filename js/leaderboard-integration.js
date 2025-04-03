@@ -115,7 +115,7 @@ createBottomButtons() {
     // Record Name Button
     const recordScoreButton = document.createElement('button');
     recordScoreButton.id = 'record-score-btn';
-    recordScoreButton.className = 'bottom-btn metallic-button'; // Added metallic-button class
+    recordScoreButton.className = 'bottom-btn metallic-button'; // Use classes from CSS
     recordScoreButton.innerHTML = `
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 20h9"></path>
@@ -127,7 +127,7 @@ createBottomButtons() {
     // Leaderboard Button
     const leaderboardButton = document.createElement('button');
     leaderboardButton.id = 'leaderboard-btn';
-    leaderboardButton.className = 'bottom-btn metallic-button'; // Added metallic-button class
+    leaderboardButton.className = 'bottom-btn metallic-button'; // Use classes from CSS
     leaderboardButton.innerHTML = `
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M6 9l6 6 6-6"></path>
@@ -142,281 +142,193 @@ createBottomButtons() {
 }
     
     // Create username submission area
-    createUsernameSubmissionArea() {
-        const gameContainer = document.querySelector('.game-container');
-        if (!gameContainer) return;
-        
-        // Create container
-        const usernameAreaContainer = document.createElement('div');
-        usernameAreaContainer.id = 'username-area-container';
-        usernameAreaContainer.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 9999;
-            background-color: rgba(0, 0, 0, 0.8);
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            box-sizing: border-box;
-        `;
-        
-        // Username submission area
-        const usernameArea = document.createElement('div');
-        usernameArea.className = 'username-area styled-box';
-        usernameArea.className = 'username-area';
-        usernameArea.style.cssText = `
-            width: 85%;
-            max-width: 340px;
-            background-color: #e6f2ff;
-            border: 2px solid #93c5fd;
-            border-radius: 6px;
-            padding: 15px;
-            margin: 0 auto;
-            position: relative;
-        `;
-        
-        const usernameForm = document.createElement('div');
-        usernameForm.className = 'username-form';
-        
-        const usernamePrompt = document.createElement('p');
-        usernamePrompt.textContent = 'RECORD YOUR SCORE - SUBMIT YOUR NAME:';
-        usernamePrompt.className = 'username-prompt';
-        
-        const inputWrapper = document.createElement('div');
-        inputWrapper.className = 'input-wrapper';
-        
-        const usernameInput = document.createElement('input');
-        usernameInput.type = 'text';
-        usernameInput.id = 'username-input';
-        usernameInput.maxLength = 12;
-        usernameInput.placeholder = 'Enter name (max 12 char)';
-        
-        const submitButton = document.createElement('button');
-        submitButton.id = 'submit-username';
-        submitButton.className = 'metallic-button'; // Add metallic-button class
-        submitButton.textContent = 'Submit';
-        
-        const returnButton = document.createElement('button');
-        returnButton.id = 'return-to-record-btn';
-        returnButton.innerHTML = '&#9650;'; // Upwards triangle
-        returnButton.style.cssText = `
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 50%;
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            z-index: 10000;
-            border: none;
-            color: #3b82f6;
-            font-size: 24px;
-            cursor: pointer;
-        `;
-        
-        const statusMessage = document.createElement('div');
-        statusMessage.id = 'username-status';
-        statusMessage.className = 'status-message';
-        
-        inputWrapper.appendChild(usernameInput);
-        inputWrapper.appendChild(submitButton);
-        
-        usernameForm.appendChild(usernamePrompt);
-        usernameForm.appendChild(inputWrapper);
-        usernameForm.appendChild(statusMessage);
-        
-        usernameArea.appendChild(usernameForm);
-        usernameArea.appendChild(returnButton);
-        
-        usernameAreaContainer.appendChild(usernameArea);
-        
-        gameContainer.appendChild(usernameAreaContainer);
-    }
+createUsernameSubmissionArea() {
+    const gameContainer = document.querySelector('.game-container');
+    if (!gameContainer) return;
+    
+    // Create container
+    const usernameAreaContainer = document.createElement('div');
+    usernameAreaContainer.id = 'username-area-container';
+    usernameAreaContainer.className = 'modal-backdrop'; // Use class from CSS
+    
+    // Username submission area
+    const usernameArea = document.createElement('div');
+    usernameArea.className = 'username-area styled-box'; // Add styled-box class
+    
+    const usernameForm = document.createElement('div');
+    usernameForm.className = 'username-form';
+    
+    const usernamePrompt = document.createElement('p');
+    usernamePrompt.textContent = 'RECORD YOUR SCORE - SUBMIT YOUR NAME:';
+    usernamePrompt.className = 'username-prompt';
+    
+    const inputWrapper = document.createElement('div');
+    inputWrapper.className = 'input-wrapper';
+    
+    const usernameInput = document.createElement('input');
+    usernameInput.type = 'text';
+    usernameInput.id = 'username-input';
+    usernameInput.maxLength = 12;
+    usernameInput.placeholder = 'Enter name (max 12 char)';
+    
+    const submitButton = document.createElement('button');
+    submitButton.id = 'submit-username';
+    submitButton.className = 'metallic-button'; // Use class from CSS
+    submitButton.textContent = 'Submit';
+    
+    const returnButton = document.createElement('button');
+    returnButton.id = 'return-to-record-btn';
+    returnButton.className = 'metallic-button return-button'; // Use classes from CSS
+    returnButton.innerHTML = '&#9650;'; // Upwards triangle
+    
+    const statusMessage = document.createElement('div');
+    statusMessage.id = 'username-status';
+    statusMessage.className = 'status-message';
+    
+    inputWrapper.appendChild(usernameInput);
+    inputWrapper.appendChild(submitButton);
+    
+    usernameForm.appendChild(usernamePrompt);
+    usernameForm.appendChild(inputWrapper);
+    usernameForm.appendChild(statusMessage);
+    
+    usernameArea.appendChild(usernameForm);
+    usernameArea.appendChild(returnButton);
+    
+    usernameAreaContainer.appendChild(usernameArea);
+    
+    gameContainer.appendChild(usernameAreaContainer);
+}
     
     // Create leaderboard table
-    createLeaderboardTable() {
-        const gameContainer = document.querySelector('.game-container');
-        if (!gameContainer) return;
-        
-        // Create leaderboard container
-        const leaderboardContainer = document.createElement('div');
-        leaderboardContainer.id = 'leaderboard-table-container';
-        leaderboardContainer.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 9999;
-            background-color: rgba(0, 0, 0, 0.8);
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            box-sizing: border-box;
-        `;
-        
-        // Create title
-        const leaderboardTitle = document.createElement('h2');
-        leaderboardTitle.textContent = 'LEADERBOARD';
-        leaderboardTitle.className = 'leaderboard-title';
-        leaderboardTitle.style.cssText = `
-            font-size: 1.4rem;
-            margin: 15px 0;
-            font-weight: bold;
-            font-family: 'Trebuchet MS', Arial, sans-serif;
-            color: white;
-        `;
-        
-        // Create the table div
-        const leaderboardTable = document.createElement('div');
-        leaderboardTable.className = 'leaderboard-table styled-box';
-        leaderboardTable.id = 'leaderboard-table';
-        leaderboardTable.style.cssText = `
-            width: 90%;
-            max-width: 350px;
-            background-color: #e6f2ff;
-            border: 2px solid #93c5fd;
-            border-radius: 6px;
-            overflow: hidden;
-            max-height: 70vh;
-            overflow-y: auto;
-            margin: 0 auto;
-            position: relative;
-        `;
-        
-        // Create close button
-        const closeButton = document.createElement('button');
-        closeButton.id = 'close-leaderboard-btn';
-        closeButton.className = 'metallic-button';
-        closeButton.textContent = 'CLOSE';
-        closeButton.style.cssText = `
-            margin-top: 15px;
-            padding: 8px 15px;
-            background-color: #3b82f6;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-family: 'Trebuchet MS', Arial, sans-serif;
-            font-weight: bold;
-            font-size: 1rem;
-            cursor: pointer;
-        `;
-        
-        leaderboardContainer.appendChild(leaderboardTitle);
-        leaderboardContainer.appendChild(leaderboardTable);
-        leaderboardContainer.appendChild(closeButton);
-        
-        gameContainer.appendChild(leaderboardContainer);
-    }
+createLeaderboardTable() {
+    const gameContainer = document.querySelector('.game-container');
+    if (!gameContainer) return;
+    
+    // Create leaderboard container
+    const leaderboardContainer = document.createElement('div');
+    leaderboardContainer.id = 'leaderboard-table-container';
+    leaderboardContainer.className = 'modal-backdrop'; // Use class from CSS
+    
+    // Create title
+    const leaderboardTitle = document.createElement('h2');
+    leaderboardTitle.textContent = 'LEADERBOARD';
+    leaderboardTitle.className = 'leaderboard-title';
+    
+    // Create the table div
+    const leaderboardTable = document.createElement('div');
+    leaderboardTable.className = 'leaderboard-table styled-box'; // Add styled-box class
+    leaderboardTable.id = 'leaderboard-table';
+    
+    // Create close button
+    const closeButton = document.createElement('button');
+    closeButton.id = 'close-leaderboard-btn';
+    closeButton.className = 'metallic-button'; // Use class from CSS
+    closeButton.textContent = 'CLOSE';
+    
+    leaderboardContainer.appendChild(leaderboardTitle);
+    leaderboardContainer.appendChild(leaderboardTable);
+    leaderboardContainer.appendChild(closeButton);
+    
+    gameContainer.appendChild(leaderboardContainer);
+}
     
     // Add all event listeners
-    addEventListeners() {
-        // Bottom buttons click handlers
-        const recordScoreBtn = document.getElementById('record-score-btn');
-        const leaderboardBtn = document.getElementById('leaderboard-btn');
-        const usernameAreaContainer = document.getElementById('username-area-container');
-        const leaderboardTableContainer = document.getElementById('leaderboard-table-container');
-        
-        if (recordScoreBtn) {
-            recordScoreBtn.addEventListener('click', () => {
-                if (!this.isUsernameSet && usernameAreaContainer) {
-                    usernameAreaContainer.style.display = 'flex';
-                    if (leaderboardTableContainer) {
-                        leaderboardTableContainer.style.display = 'none';
-                    }
-                }
-            });
-        }
-        
-        if (leaderboardBtn) {
-            leaderboardBtn.addEventListener('click', () => {
+// Add all event listeners
+addEventListeners() {
+    // Bottom buttons click handlers
+    const recordScoreBtn = document.getElementById('record-score-btn');
+    const leaderboardBtn = document.getElementById('leaderboard-btn');
+    const usernameAreaContainer = document.getElementById('username-area-container');
+    const leaderboardTableContainer = document.getElementById('leaderboard-table-container');
+    
+    if (recordScoreBtn) {
+        recordScoreBtn.addEventListener('click', () => {
+            if (!this.isUsernameSet && usernameAreaContainer) {
+                usernameAreaContainer.classList.add('visible');
                 if (leaderboardTableContainer) {
-                    const currentDisplay = leaderboardTableContainer.style.display;
-                    leaderboardTableContainer.style.display = currentDisplay === 'flex' ? 'none' : 'flex';
-                    
-                    if (leaderboardTableContainer.style.display === 'flex') {
-                        if (usernameAreaContainer) {
-                            usernameAreaContainer.style.display = 'none';
-                        }
-                        this.loadLeaderboard();
-                    }
+                    leaderboardTableContainer.classList.remove('visible');
                 }
-            });
-        }
-        
-        // Return buttons
-        const returnToRecordBtn = document.getElementById('return-to-record-btn');
-        if (returnToRecordBtn) {
-            returnToRecordBtn.addEventListener('click', () => {
-                if (usernameAreaContainer) {
-                    usernameAreaContainer.style.display = 'none';
-                }
-            });
-        }
-        
-        // Close leaderboard button
-        const closeLeaderboardBtn = document.getElementById('close-leaderboard-btn');
-        if (closeLeaderboardBtn) {
-            closeLeaderboardBtn.addEventListener('click', () => {
-                if (leaderboardTableContainer) {
-                    leaderboardTableContainer.style.display = 'none';
-                }
-            });
-        }
-        
-        // Username submission
-        const submitUsernameBtn = document.getElementById('submit-username');
-        if (submitUsernameBtn) {
-            submitUsernameBtn.addEventListener('click', () => {
-                this.handleUsernameSubmission();
-            });
-        }
-        
-        // Enter key in input field
-        const usernameInput = document.getElementById('username-input');
-        if (usernameInput) {
-            usernameInput.addEventListener('keyup', (event) => {
-                if (event.key === 'Enter') {
-                    this.handleUsernameSubmission();
-                }
-            });
-        }
-        
-        // Listen for score updates
-        window.addEventListener('scoreUpdated', (event) => {
-            const score = event.detail.score;
-            
-            // Highlight record button if score is high enough but username not set
-            if (!this.isUsernameSet && score >= this.scoreThreshold && recordScoreBtn) {
-                recordScoreBtn.classList.add('highlight');
             }
         });
-        
-        // Level button listeners to ensure bottom buttons visibility
-        document.querySelectorAll('.level-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                // Check button visibility after level selection
-                setTimeout(() => this.checkButtonVisibility(), 100);
-                setTimeout(() => this.checkButtonVisibility(), 500);
-                setTimeout(() => this.checkButtonVisibility(), 1000);
-            });
+    }
+    
+    if (leaderboardBtn) {
+        leaderboardBtn.addEventListener('click', () => {
+            if (leaderboardTableContainer) {
+                // Toggle visibility by checking if it has the 'visible' class
+                if (leaderboardTableContainer.classList.contains('visible')) {
+                    leaderboardTableContainer.classList.remove('visible');
+                } else {
+                    leaderboardTableContainer.classList.add('visible');
+                    
+                    if (usernameAreaContainer) {
+                        usernameAreaContainer.classList.remove('visible');
+                    }
+                    this.loadLeaderboard();
+                }
+            }
         });
     }
+    
+    // Return buttons
+    const returnToRecordBtn = document.getElementById('return-to-record-btn');
+    if (returnToRecordBtn) {
+        returnToRecordBtn.addEventListener('click', () => {
+            if (usernameAreaContainer) {
+                usernameAreaContainer.classList.remove('visible');
+            }
+        });
+    }
+    
+    // Close leaderboard button
+    const closeLeaderboardBtn = document.getElementById('close-leaderboard-btn');
+    if (closeLeaderboardBtn) {
+        closeLeaderboardBtn.addEventListener('click', () => {
+            if (leaderboardTableContainer) {
+                leaderboardTableContainer.classList.remove('visible');
+            }
+        });
+    }
+    
+    // Username submission
+    const submitUsernameBtn = document.getElementById('submit-username');
+    if (submitUsernameBtn) {
+        submitUsernameBtn.addEventListener('click', () => {
+            this.handleUsernameSubmission();
+        });
+    }
+    
+    // Enter key in input field
+    const usernameInput = document.getElementById('username-input');
+    if (usernameInput) {
+        usernameInput.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') {
+                this.handleUsernameSubmission();
+            }
+        });
+    }
+    
+    // Listen for score updates
+    window.addEventListener('scoreUpdated', (event) => {
+        const score = event.detail.score;
+        
+        // Highlight record button if score is high enough but username not set
+        if (!this.isUsernameSet && score >= this.scoreThreshold && recordScoreBtn) {
+            recordScoreBtn.classList.add('highlight');
+        }
+    });
+    
+    // Level button listeners to ensure bottom buttons visibility
+    document.querySelectorAll('.level-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Check button visibility after level selection
+            setTimeout(() => this.checkButtonVisibility(), 100);
+            setTimeout(() => this.checkButtonVisibility(), 500);
+            setTimeout(() => this.checkButtonVisibility(), 1000);
+        });
+    });
+}
     
     // Initialize Supabase
     async initSupabase() {
