@@ -1063,13 +1063,11 @@ checkButtonVisibility() {
     if (gameContainer && bottomButtons) {
         console.log('Checking buttons visibility:', 
             gameContainer.classList.contains('game-active') ? 'game active' : 'game not active');
-         
-        // Just ensure the display property is set correctly
-    if (gameContainer.classList.contains('game-active')) {
-        bottomButtons.classList.add('visible');
-    } else {
-        bottomButtons.classList.remove('visible');
-    }
+        
+        // Make sure the buttons are visible when game is active
+        if (gameContainer.classList.contains('game-active')) {
+            // We removed this line, which might be causing the issue
+            bottomButtons.style.display = 'flex';
             
             // If username is set, apply the proper button layout
             if (this.isUsernameSet) {
@@ -1077,7 +1075,6 @@ checkButtonVisibility() {
             }
         }
     }
-}
 }
 
 // Initialize the leaderboard manager when DOM content is loaded
