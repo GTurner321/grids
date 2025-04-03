@@ -302,17 +302,22 @@ class GameController {
         return cell && cell.classList.contains('start-cell');
     }
 
-    // Simplified handling of cell click - works for both touch and mouse
-    handleCellClick(cell) {
-        // Early exit if we don't have a valid cell or game is not active
-        if (!cell || !this.state.gameActive) return;
-        
-        // Debounce clicks to prevent accidental double clicks
-        const now = Date.now();
-        if (now - this.state.lastClickTime < 200) { // 200ms threshold
-            return;
-        }
-        this.state.lastClickTime = now;
+// Simplified handling of cell click - works for both touch and mouse
+handleCellClick(cell) {
+    // Early exit if a modal is open
+    if (window.leaderboardManager && window.leaderboardManager.isModalOpen()) {
+        return;
+    }
+    
+    // Early exit if we don't have a valid cell or game is not active
+    if (!cell || !this.state.gameActive) return;
+    
+    // Debounce clicks to prevent accidental double clicks
+    const now = Date.now();
+    if (now - this.state.lastClickTime < 200) { // 200ms threshold
+        return;
+    }
+    this.state.lastClickTime = now;
         
         const cellIndex = parseInt(cell.dataset.index);
         if (isNaN(cellIndex)) return;
