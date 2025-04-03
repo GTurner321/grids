@@ -1047,7 +1047,16 @@ renderLeaderboard() {
         leaderboardTable.appendChild(emptyRow);
     }
 }
+
+// Add this method before checkButtonVisibility()
+isModalOpen() {
+    const usernameAreaContainer = document.getElementById('username-area-container');
+    const leaderboardTableContainer = document.getElementById('leaderboard-table-container');
     
+    return (usernameAreaContainer && usernameAreaContainer.classList.contains('visible')) || 
+           (leaderboardTableContainer && leaderboardTableContainer.classList.contains('visible'));
+}
+
     // Force check of button visibility
     checkButtonVisibility() {
     const gameContainer = document.querySelector('.game-container');
