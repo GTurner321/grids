@@ -582,6 +582,8 @@ body {
   width: 100%;
   max-width: var(--grid-total-width); /* Match the grid width */
   margin: 0 auto;
+  gap: 10px; /* Consistent gap between buttons */
+  justify-content: space-between;
 }
 
 /* When game is active - Show buttons */
@@ -589,10 +591,29 @@ body {
   display: flex !important;
   visibility: visible !important;
   height: auto !important;
+  min-height: 44px !important; /* Minimum height to ensure visibility */
   overflow: visible !important;
-  justify-content: space-between;
-  gap: 10px;
+  opacity: 1 !important;
+  position: relative !important;
   margin: 15px auto !important;
+  z-index: 50 !important; /* Higher z-index to ensure visibility */
+}
+
+/* Reset any potential overrides */
+.bottom-buttons.hidden {
+  display: flex !important;
+  visibility: visible !important;
+  height: auto !important;
+  overflow: visible !important;
+  opacity: 1 !important;
+}
+
+/* Target the buttons container by ID to increase specificity */
+.game-container.game-active #bottom-buttons {
+  display: flex !important;
+  visibility: visible !important;
+  height: auto !important;
+  overflow: visible !important;
 }
 
 /* Bottom buttons specific styling - make them span full width */
@@ -603,7 +624,8 @@ body {
   font-size: 1rem;
   padding: 8px 15px;
   min-width: 0; /* Remove min-width to allow full flexibility */
-  width: calc(50% - 5px); /* Equal width with small gap */
+  /* Remove fixed width calculation to let flex handle it properly with the gap */
+  text-align: center; /* Ensure text is centered */
 }
 
 /* SVG icons in buttons */
@@ -612,6 +634,7 @@ body {
   width: 16px;
   height: 16px;
   margin-right: 6px;
+  vertical-align: middle; /* Ensure proper vertical alignment with text */
 }
 
 /* Single button mode (after username set) */
@@ -623,6 +646,15 @@ body {
   width: 100% !important;
   max-width: 300px !important; /* Limit width when it's the only button */
   margin: 0 auto !important;
+}
+
+/* Ensure hidden buttons don't take up space */
+#record-score-btn.hidden {
+  display: none !important;
+  width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  flex: 0 !important;
 }
 
 /* Button highlighting animation - build on top of metallic-button */
@@ -653,7 +685,6 @@ body {
   #leaderboard-btn {
     font-size: 0.9rem;
     padding: 8px 10px;
-    width: calc(50% - 4px); /* Equal width with smaller gap */
   }
   
   .bottom-buttons.single-button #leaderboard-btn {
