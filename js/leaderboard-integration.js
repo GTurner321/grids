@@ -662,19 +662,17 @@ addEventListeners() {
     }
     
 handleButtonsAfterSubmission() {
-    // Hide record name button
+    // Hide record name button using class
     const recordScoreBtn = document.getElementById('record-score-btn');
-if (recordScoreBtn) {
-    // Just use the hidden class for CSS targeting
-    recordScoreBtn.classList.add('hidden');
-}
+    if (recordScoreBtn) {
+        recordScoreBtn.classList.add('hidden');
+    }
     
     // Center the leaderboard button
     const leaderboardBtn = document.getElementById('leaderboard-btn');
     const bottomButtons = document.getElementById('bottom-buttons');
     if (leaderboardBtn && bottomButtons) {
         bottomButtons.classList.add('single-button');
-        leaderboardBtn.style.margin = '0 auto';
     }
 }
     
@@ -1058,14 +1056,14 @@ isModalOpen() {
 }
 
     // Force check of button visibility
-    checkButtonVisibility() {
+checkButtonVisibility() {
     const gameContainer = document.querySelector('.game-container');
     const bottomButtons = document.getElementById('bottom-buttons');
     
     if (gameContainer && bottomButtons) {
         console.log('Checking buttons visibility:', 
             gameContainer.classList.contains('game-active') ? 'game active' : 'game not active');
-        
+         
         // Just ensure the display property is set correctly
     if (gameContainer.classList.contains('game-active')) {
         bottomButtons.classList.add('visible');
