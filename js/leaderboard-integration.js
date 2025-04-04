@@ -1118,5 +1118,37 @@ window.addEventListener('gameStart', () => {
     }
 });
 
+// Add specific event listener for game start
+window.addEventListener('gameStart', () => {
+    if (window.leaderboardManager) {
+        // Run multiple checks with increasing delays to ensure buttons are visible
+        window.leaderboardManager.checkButtonVisibility();
+        setTimeout(() => window.leaderboardManager.checkButtonVisibility(), 100);
+        setTimeout(() => window.leaderboardManager.checkButtonVisibility(), 500);
+        setTimeout(() => window.leaderboardManager.checkButtonVisibility(), 1000);
+    }
+});
+
+// Also check button visibility when a level button is clicked
+document.addEventListener('DOMContentLoaded', () => {
+    // Add listeners to all level buttons
+    document.querySelectorAll('.level-btn, .level-btn-scrollable').forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Check buttons after level selection (with delays)
+            setTimeout(() => {
+                if (window.leaderboardManager) {
+                    window.leaderboardManager.checkButtonVisibility();
+                }
+            }, 200);
+            
+            setTimeout(() => {
+                if (window.leaderboardManager) {
+                    window.leaderboardManager.checkButtonVisibility();
+                }
+            }, 1000);
+        });
+    });
+});
+
 // Export for module usage
 export default LeaderboardManager;
