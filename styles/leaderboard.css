@@ -48,7 +48,8 @@
 
 /* Visible state */
 .modal-backdrop.visible {
-    display: flex; /* Show when 'visible' class is applied */
+  display: flex !important;
+  visibility: visible !important;
 }
 
 /* ==========================================================================
