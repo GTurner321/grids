@@ -15,8 +15,8 @@
    10. PATH BORDERS (Lines 864-867)
    11. ANIMATIONS & VISUAL FEEDBACK (Lines 869-894)
    12. MOBILE-SPECIFIC STYLES (Lines 896-967)
-   13. USERNAME MODAL STYLING (Lines 969-1146) - moved to leaderboard.css
-   14. LEADERBOARD STYLING (Lines 1148-1367) - moved to leaderboard.css
+   13. USERNAME MODAL STYLING (Lines 969-1146)
+   14. LEADERBOARD STYLING (Lines 1148-1367)
    15. RETURN BUTTONS (Lines 1369-1404)
    16. SCORE BAR (Lines 1406-1472)
    17. UTILITY CLASSES & ANIMATIONS (Lines 1474-1499)
@@ -252,11 +252,11 @@ body {
 
 /* Rules text styling */
 .rules-box p {
+  margin: 10px 0;
   font-size: 0.85rem;
   text-transform: uppercase;
   line-height: 1.5;
   letter-spacing: 0.03em;
-  padding: 0 20px;
 }
 
 /* Image container styling */
@@ -278,7 +278,6 @@ body {
   /* styled-box-title provides most styling */
   color: var(--text-blue);
   font-size: 1.2rem;
-  padding: 10px 20px;
 }
 
 .rules-box-subtitle {
@@ -287,30 +286,32 @@ body {
   font-weight: normal;
   font-size: 1rem;
   text-align: center;
+  margin-top: 20px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--text-blue);
   text-shadow: 0px 1px 1px white;
-  padding: 10px 20px;
 }
 
 /* Rules section container */
 .rules-section {
   border-radius: 6px;
   padding: 5px;
+  margin: 5px 0;
 }
 
 /* Close button container */
 .close-button-container {
   text-align: center;
+  margin-top: 10px;
 }
 
 /* CLOSE BUTTON */
+
 /* Close button styling - apply metallic-button class in HTML */
 .rules-close-button {
   /* Apply specific overrides for the close button */
   padding: 10px 25px;
-  margin: 10px 0;
 }
 
 /* Game active state handling for rules box */
@@ -321,6 +322,7 @@ body {
 }
 
 /* RESPONSIVE ADJUSTMENTS */
+
 /* Tablet adjustments */
 @media (max-width: 1024px) {
   .rules-box {
@@ -343,6 +345,7 @@ body {
   
   .rules-box p {
     font-size: 0.9rem;
+    margin: 8px 0;
   }
   
   .rules-image-container {
@@ -570,41 +573,26 @@ body {
 
 /* Bottom buttons - container */
 .bottom-buttons {
-  /* Default state - flex display with opacity 0 for smooth transitions */
-  display: flex;
-  opacity: 0;
+  display: none; /* Hidden by default */
   visibility: hidden;
-  height: 44px; /* Set fixed height to prevent layout shifts */
+  height: 0;
   overflow: hidden;
   position: relative;
   z-index: 10;
   width: 100%;
   max-width: var(--grid-total-width); /* Match the grid width */
   margin: 0 auto;
-  gap: 10px; /* Consistent gap between buttons */
-  justify-content: space-between;
-  transition: opacity 0.3s ease, visibility 0.3s ease; /* Smooth transitions */
 }
 
 /* When game is active - Show buttons */
-.game-container.game-active .bottom-buttons,
-.game-container.game-active #bottom-buttons {
-  opacity: 1 !important;
-  visibility: visible !important;
-  height: 44px !important; /* Fixed height for consistency */
-  overflow: visible !important;
-  position: relative !important;
-  margin: 15px auto !important;
-  z-index: 50 !important; /* Higher z-index to ensure visibility */
-}
-
-/* Reset any potential overrides - keep visible regardless of other classes */
-.bottom-buttons.hidden {
-  opacity: 1 !important;
-  visibility: visible !important;
+.game-container.game-active .bottom-buttons {
   display: flex !important;
-  height: 44px !important;
+  visibility: visible !important;
+  height: auto !important;
   overflow: visible !important;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 15px auto !important;
 }
 
 /* Bottom buttons specific styling - make them span full width */
@@ -615,9 +603,7 @@ body {
   font-size: 1rem;
   padding: 8px 15px;
   min-width: 0; /* Remove min-width to allow full flexibility */
-  text-align: center; /* Ensure text is centered */
-  border-radius: 4px; /* Ensure consistent border radius */
-  transition: all 0.3s ease; /* Smooth transitions for all properties */
+  width: calc(50% - 5px); /* Equal width with small gap */
 }
 
 /* SVG icons in buttons */
@@ -626,7 +612,6 @@ body {
   width: 16px;
   height: 16px;
   margin-right: 6px;
-  vertical-align: middle; /* Ensure proper vertical alignment with text */
 }
 
 /* Single button mode (after username set) */
@@ -640,15 +625,6 @@ body {
   margin: 0 auto !important;
 }
 
-/* Ensure hidden buttons don't take up space */
-#record-score-btn.hidden {
-  display: none !important;
-  width: 0 !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  flex: 0 !important;
-}
-
 /* Button highlighting animation - build on top of metallic-button */
 @keyframes highlight-pulse {
   0%, 100% { 
@@ -656,22 +632,14 @@ body {
   }
   50% { 
     transform: scale(1.05);
-    box-shadow: 0 4px 10px var(--btn-metal-shadow, rgba(0, 0, 0, 0.2)),
-                inset 0 1px 3px var(--btn-metal-inner-highlight, rgba(255, 255, 255, 0.8)),
-                inset 0 -1px 2px var(--btn-metal-inner-shadow, rgba(0, 0, 0, 0.1));
+    box-shadow: 0 4px 10px var(--btn-metal-shadow),
+                inset 0 1px 3px var(--btn-metal-inner-highlight),
+                inset 0 -1px 2px var(--btn-metal-inner-shadow);
   }
 }
 
 .bottom-btn.highlight {
   animation: highlight-pulse 1s infinite;
-}
-
-/* Force visible state for debugging */
-.debug .bottom-buttons {
-  border: 2px solid red !important;
-  opacity: 1 !important;
-  visibility: visible !important;
-  display: flex !important;
 }
 
 /* Mobile adjustments */
@@ -685,6 +653,7 @@ body {
   #leaderboard-btn {
     font-size: 0.9rem;
     padding: 8px 10px;
+    width: calc(50% - 4px); /* Equal width with smaller gap */
   }
   
   .bottom-buttons.single-button #leaderboard-btn {
@@ -825,9 +794,200 @@ body {
 }
 
 /* ==========================================================================
-   13. USERNAME MODAL STYLING - now in leaderboard.css
+   13. USERNAME MODAL STYLING
    ========================================================================== */
 
+/* Modal Container */
+#username-area-container {
+  display: none;
+}
+
+#username-area-container.visible {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Username Area - use styled-box as a base */
+.username-area {
+  /* The styled-box class will handle the main box styling */
+  width: 85%;
+  max-width: 340px;
+  margin: 0 auto;
+  position: relative;
+  padding: 15px;
+}
+
+/* Username Form */
+.username-form {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 100%;
+  align-items: center;
+  text-align: center;
+}
+
+/* Username Prompt Text */
+.username-prompt {
+  font-family: 'Black Ops One', 'Trebuchet MS', Arial, sans-serif;
+  font-weight: normal;
+  font-size: 1rem;
+  margin-bottom: 12px;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--text-blue);
+  text-shadow: 0px 1px 1px white;
+}
+
+/* Input Wrapper */
+.input-wrapper {
+  display: flex;
+  gap: 8px;
+  max-width: 300px;
+  width: 100%;
+  justify-content: center;
+}
+
+/* Username Input Field */
+#username-input {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid var(--btn-metal-border);
+  border-radius: 4px;
+  max-width: 200px;
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  font-size: 0.9rem;
+  background-color: var(--btn-metal-lighter);
+}
+
+#username-input:focus {
+  outline: 1px solid var(--btn-metal-border-top);
+  box-shadow: 0 0 3px var(--btn-metal-inner-highlight);
+}
+
+/* Submit button will use metallic-button class */
+#submit-username {
+  padding: 8px 12px;
+  font-size: 0.9rem;
+}
+
+/* Status messages */
+.status-message {
+  font-size: 0.8rem;
+  padding: 2px 0;
+  min-height: 0.5rem;
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+}
+
+.status-message.error {
+  color: var(--danger-color);
+}
+
+.status-message.checking {
+  color: var(--primary-color);
+}
+
+.status-message.success {
+  color: var(--success-color);
+}
+
+/* Return button */
+#return-to-record-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: var(--btn-metal-lighter);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--btn-metal-border);
+  color: var(--text-blue);
+  font-size: 24px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#return-to-record-btn:hover {
+  background-color: var(--btn-metal-light);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+}
+
+#return-to-record-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .username-prompt {
+    font-size: 1.1rem !important;
+  }
+  
+  .input-wrapper {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  #username-input {
+    width: 90% !important;
+    padding: 12px;
+    font-size: 1.1rem !important;
+    text-align: center;
+    max-width: 90% !important;
+  }
+  
+  #submit-username {
+    width: 50% !important;
+    padding: 10px;
+    font-size: 1.1rem !important;
+  }
+  
+  /* Rocket icon after Submit */
+  #submit-username::after {
+    content: " 🚀";
+    margin-left: 5px;
+    font-size: 1.2rem;
+  }
+  
+  /* Return Button Mobile Positioning */
+  #return-to-record-btn {
+    position: absolute !important;
+    bottom: 10px !important;
+    right: 10px !important;
+    top: auto !important;
+  }
+}
+
+/* Even smaller screens */
+@media (max-width: 375px) {
+  #username-input {
+    font-size: 1rem !important;
+  }
+  
+  #submit-username {
+    width: 80% !important;
+    font-size: 1rem !important;
+  }
+}
 
 /* ==========================================================================
    14. LEADERBOARD STYLING - MOVED TO LEADERBOARD.CSS
@@ -1227,15 +1387,8 @@ approach throughout this consolidated stylesheet.
 }
 
 .game-container.game-active .bottom-buttons {
-  display: flex !important;
-  visibility: visible !important;
-  height: auto !important;
-  min-height: 44px !important;
-  overflow: visible !important;
-  opacity: 1 !important;
-  position: relative !important;
-  margin: 15px auto !important;
-  z-index: 50 !important;
+  margin-top: 5px !important; /* Explicitly set top margin */
+  margin-bottom: 15px !important; /* Bottom margin */
 }
 
 /* Responsive adjustments */
