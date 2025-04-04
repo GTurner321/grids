@@ -1054,7 +1054,6 @@ isModalOpen() {
 }
     
 // In leaderboard-integration.js, modify the checkButtonVisibility method:
-// Modified checkButtonVisibility method for LeaderboardManager
 checkButtonVisibility() {
     const gameContainer = document.querySelector('.game-container');
     const bottomButtons = document.getElementById('bottom-buttons');
@@ -1065,7 +1064,7 @@ checkButtonVisibility() {
         
         // Make sure the buttons are ALWAYS visible when game is active
         if (gameContainer.classList.contains('game-active')) {
-            // IMPORTANT: Force display style to flex and other critical properties directly
+            // IMPORTANT: Set both the style directly AND add classes
             bottomButtons.style.display = 'flex';
             bottomButtons.style.visibility = 'visible';
             bottomButtons.style.height = 'auto';
@@ -1074,7 +1073,7 @@ checkButtonVisibility() {
             bottomButtons.style.zIndex = '50';
             bottomButtons.style.margin = '15px auto';
             
-            // Remove hidden class if present
+            // Also add classes for CSS targeting
             bottomButtons.classList.remove('hidden');
             
             // If username is set, apply the proper button layout
