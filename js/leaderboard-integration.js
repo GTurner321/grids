@@ -242,34 +242,32 @@ addEventListeners() {
     const usernameAreaContainer = document.getElementById('username-area-container');
     const leaderboardTableContainer = document.getElementById('leaderboard-table-container');
     
-    if (recordScoreBtn) {
-        recordScoreBtn.addEventListener('click', () => {
-            if (!this.isUsernameSet && usernameAreaContainer) {
-                usernameAreaContainer.classList.add('visible');
-                if (leaderboardTableContainer) {
-                    leaderboardTableContainer.classList.remove('visible');
-                }
-            }
-        });
-    }
-    
-    if (leaderboardBtn) {
-        leaderboardBtn.addEventListener('click', () => {
+if (recordScoreBtn) {
+    recordScoreBtn.addEventListener('click', () => {
+        if (!this.isUsernameSet && usernameAreaContainer) {
+            usernameAreaContainer.classList.add('visible');
             if (leaderboardTableContainer) {
-                // Toggle visibility by checking if it has the 'visible' class
-                if (leaderboardTableContainer.classList.contains('visible')) {
-                    leaderboardTableContainer.classList.remove('visible');
-                } else {
-                    leaderboardTableContainer.classList.add('visible');
-                    
-                    if (usernameAreaContainer) {
-                        usernameAreaContainer.classList.remove('visible');
-                    }
-                    this.loadLeaderboard();
-                }
+                leaderboardTableContainer.classList.remove('visible');
             }
-        });
-    }
+        }
+    });
+}
+    
+if (leaderboardBtn) {
+    leaderboardBtn.addEventListener('click', () => {
+        if (leaderboardTableContainer) {
+            // Toggle visibility using classList
+            leaderboardTableContainer.classList.toggle('visible');
+            
+            if (leaderboardTableContainer.classList.contains('visible')) {
+                if (usernameAreaContainer) {
+                    usernameAreaContainer.classList.remove('visible');
+                }
+                this.loadLeaderboard();
+            }
+        }
+    });
+}
     
     // Return buttons
     const returnToRecordBtn = document.getElementById('return-to-record-btn');
