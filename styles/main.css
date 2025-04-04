@@ -570,9 +570,11 @@ body {
 
 /* Bottom buttons - container */
 .bottom-buttons {
-  display: none; /* Hidden by default */
+  /* Default state - flex display with opacity 0 for smooth transitions */
+  display: flex;
+  opacity: 0;
   visibility: hidden;
-  height: 0;
+  height: 44px; /* Set fixed height to prevent layout shifts */
   overflow: hidden;
   position: relative;
   z-index: 10;
@@ -581,35 +583,27 @@ body {
   margin: 0 auto;
   gap: 10px; /* Consistent gap between buttons */
   justify-content: space-between;
+  transition: opacity 0.3s ease, visibility 0.3s ease; /* Smooth transitions */
 }
 
 /* When game is active - Show buttons */
-.game-container.game-active .bottom-buttons {
-  display: flex !important;
-  visibility: visible !important;
-  height: auto !important;
-  min-height: 44px !important; /* Minimum height to ensure visibility */
-  overflow: visible !important;
+.game-container.game-active .bottom-buttons,
+.game-container.game-active #bottom-buttons {
   opacity: 1 !important;
+  visibility: visible !important;
+  height: 44px !important; /* Fixed height for consistency */
+  overflow: visible !important;
   position: relative !important;
   margin: 15px auto !important;
   z-index: 50 !important; /* Higher z-index to ensure visibility */
 }
 
-/* Reset any potential overrides */
+/* Reset any potential overrides - keep visible regardless of other classes */
 .bottom-buttons.hidden {
-  display: flex !important;
-  visibility: visible !important;
-  height: auto !important;
-  overflow: visible !important;
   opacity: 1 !important;
-}
-
-/* Target the buttons container by ID to increase specificity */
-.game-container.game-active #bottom-buttons {
-  display: flex !important;
   visibility: visible !important;
-  height: auto !important;
+  display: flex !important;
+  height: 44px !important;
   overflow: visible !important;
 }
 
@@ -621,8 +615,9 @@ body {
   font-size: 1rem;
   padding: 8px 15px;
   min-width: 0; /* Remove min-width to allow full flexibility */
-  /* Remove fixed width calculation to let flex handle it properly with the gap */
   text-align: center; /* Ensure text is centered */
+  border-radius: 4px; /* Ensure consistent border radius */
+  transition: all 0.3s ease; /* Smooth transitions for all properties */
 }
 
 /* SVG icons in buttons */
@@ -661,14 +656,22 @@ body {
   }
   50% { 
     transform: scale(1.05);
-    box-shadow: 0 4px 10px var(--btn-metal-shadow),
-                inset 0 1px 3px var(--btn-metal-inner-highlight),
-                inset 0 -1px 2px var(--btn-metal-inner-shadow);
+    box-shadow: 0 4px 10px var(--btn-metal-shadow, rgba(0, 0, 0, 0.2)),
+                inset 0 1px 3px var(--btn-metal-inner-highlight, rgba(255, 255, 255, 0.8)),
+                inset 0 -1px 2px var(--btn-metal-inner-shadow, rgba(0, 0, 0, 0.1));
   }
 }
 
 .bottom-btn.highlight {
   animation: highlight-pulse 1s infinite;
+}
+
+/* Force visible state for debugging */
+.debug .bottom-buttons {
+  border: 2px solid red !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: flex !important;
 }
 
 /* Mobile adjustments */
