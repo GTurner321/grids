@@ -1118,17 +1118,6 @@ window.addEventListener('gameStart', () => {
     }
 });
 
-// Add specific event listener for game start
-window.addEventListener('gameStart', () => {
-    if (window.leaderboardManager) {
-        // Run multiple checks with increasing delays to ensure buttons are visible
-        window.leaderboardManager.checkButtonVisibility();
-        setTimeout(() => window.leaderboardManager.checkButtonVisibility(), 100);
-        setTimeout(() => window.leaderboardManager.checkButtonVisibility(), 500);
-        setTimeout(() => window.leaderboardManager.checkButtonVisibility(), 1000);
-    }
-});
-
 // Also check button visibility when a level button is clicked
 document.addEventListener('DOMContentLoaded', () => {
     // Add listeners to all level buttons
