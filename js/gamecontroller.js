@@ -34,6 +34,18 @@ class GameController {
         
         document.querySelector('.game-container')?.classList.remove('game-active');
 
+const gameStartEvent = new CustomEvent('gameStart', {
+    detail: { level: level }
+});
+window.dispatchEvent(gameStartEvent);
+console.log('Dispatched gameStart event for level', level);
+
+// Also refresh bottom buttons visibility if leaderboardManager exists
+if (window.leaderboardManager && typeof window.leaderboardManager.checkButtonVisibility === 'function') {
+    setTimeout(() => window.leaderboardManager.checkButtonVisibility(), 50);
+    setTimeout(() => window.leaderboardManager.checkButtonVisibility(), 300);
+}
+        
         // Only initialize event listeners if DOM is fully loaded
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => {
