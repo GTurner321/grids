@@ -1227,8 +1227,15 @@ approach throughout this consolidated stylesheet.
 }
 
 .game-container.game-active .bottom-buttons {
-  margin-top: 5px !important; /* Explicitly set top margin */
-  margin-bottom: 15px !important; /* Bottom margin */
+  display: flex !important;
+  visibility: visible !important;
+  height: auto !important;
+  min-height: 44px !important;
+  overflow: visible !important;
+  opacity: 1 !important;
+  position: relative !important;
+  margin: 15px auto !important;
+  z-index: 50 !important;
 }
 
 /* Responsive adjustments */
