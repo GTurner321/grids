@@ -125,7 +125,38 @@
         </svg>
         LEADERBOARD
     </button>
-</div>      
+</div>
+
+<!-- ADD THE MODAL CONTAINERS HERE, BETWEEN THE BOTTOM BUTTONS AND THE CLOSING MAIN TAG -->
+<!-- Username Modal Container -->
+<div id="username-area-container" class="modal-backdrop">
+    <div class="username-area styled-box">
+        <div class="username-form">
+            <p class="username-prompt">RECORD YOUR SCORE - SUBMIT YOUR NAME:</p>
+            
+            <div class="input-wrapper">
+                <input type="text" id="username-input" maxlength="12" placeholder="Enter name (max 12 char)">
+                <button id="submit-username" class="metallic-button">Submit</button>
+            </div>
+            
+            <div id="username-status" class="status-message"></div>
+        </div>
+        
+        <button id="return-to-record-btn" class="metallic-button return-button">×</button>
+    </div>
+</div>
+
+<!-- Leaderboard Modal Container -->
+<div id="leaderboard-table-container" class="modal-backdrop">
+    <h2 class="leaderboard-title">LEADERBOARD</h2>
+    
+    <div class="leaderboard-table styled-box" id="leaderboard-table">
+        <!-- Leaderboard content will be populated by JavaScript -->
+    </div>
+    
+    <button id="close-leaderboard-btn" class="metallic-button">CLOSE</button>
+</div>
+
         </main>
     </div>
     
