@@ -135,6 +135,19 @@ class GameController {
         
         // Mark the game container as active
         document.querySelector('.game-container')?.classList.add('game-active');
+
+// Dispatch gameStart event
+const gameStartEvent = new CustomEvent('gameStart', {
+    detail: { level: level }
+});
+window.dispatchEvent(gameStartEvent);
+console.log('Dispatched gameStart event for level', level);
+
+// Also refresh bottom buttons visibility if leaderboardManager exists
+if (window.leaderboardManager && typeof window.leaderboardManager.checkButtonVisibility === 'function') {
+    setTimeout(() => window.leaderboardManager.checkButtonVisibility(), 50);
+    setTimeout(() => window.leaderboardManager.checkButtonVisibility(), 300);
+}
         
         // Initialize scoring for the level
         scoreManager.startLevel(level);
