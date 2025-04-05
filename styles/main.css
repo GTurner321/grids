@@ -252,9 +252,9 @@ body {
 
 /* Rules text styling */
 .rules-box p {
-  font-size: 0.85rem;
+  font-size: 1rem;
   text-transform: uppercase;
-  line-height: 1.5;
+  line-height: 1.2;
   letter-spacing: 0.03em;
   padding: 0 20px;
 }
@@ -310,7 +310,7 @@ body {
 .rules-close-button {
   /* Apply specific overrides for the close button */
   padding: 10px 25px;
-  margin: 10px 0;
+  margin: 0px 0;
 }
 
 /* Game active state handling for rules box */
@@ -337,8 +337,8 @@ body {
   .rules-box {
     width: 95%; /* 95% width for small screens as requested */
     max-width: none;
-    margin: 10px auto;
-    padding: 12px;
+    margin: 0px auto;
+    padding: 10px;
   }
   
   .rules-box p {
@@ -358,7 +358,7 @@ body {
   }
   
   .rules-box-subtitle {
-    font-size: 0.9rem;
+    font-size: 1rem;
   }
 }
 
