@@ -150,6 +150,9 @@ createUsernameSubmissionArea() {
     const usernameAreaContainer = document.createElement('div');
     usernameAreaContainer.id = 'username-area-container';
     usernameAreaContainer.className = 'modal-backdrop'; // Use class from CSS
+    // Explicitly set initial hidden state with inline styles
+    usernameAreaContainer.style.display = 'none';
+    usernameAreaContainer.style.visibility = 'hidden';
     
     // Username submission area
     const usernameArea = document.createElement('div');
@@ -200,7 +203,7 @@ createUsernameSubmissionArea() {
     gameContainer.appendChild(usernameAreaContainer);
 }
     
-    // Create leaderboard table
+// Create leaderboard table
 createLeaderboardTable() {
     const gameContainer = document.querySelector('.game-container');
     if (!gameContainer) return;
@@ -209,6 +212,9 @@ createLeaderboardTable() {
     const leaderboardContainer = document.createElement('div');
     leaderboardContainer.id = 'leaderboard-table-container';
     leaderboardContainer.className = 'modal-backdrop'; // Use class from CSS
+    // Explicitly set initial hidden state with inline styles
+    leaderboardContainer.style.display = 'none';
+    leaderboardContainer.style.visibility = 'hidden';
     
     // Create title
     const leaderboardTitle = document.createElement('h2');
