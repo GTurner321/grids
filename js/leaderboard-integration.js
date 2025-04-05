@@ -558,17 +558,17 @@ if (leaderboardBtn) {
                 // Show success message
                 this.showUpdateStatus('Score added to leaderboard!', 'success');
                 
-                // If leaderboard is not visible, show it now
-                const leaderboardTableContainer = document.getElementById('leaderboard-table-container');
-                if (leaderboardTableContainer && leaderboardTableContainer.style.display !== 'flex') {
-                    leaderboardTableContainer.style.display = 'flex';
-                    
-                    // Hide username area if it's open
-                    const usernameAreaContainer = document.getElementById('username-area-container');
-                    if (usernameAreaContainer) {
-                        usernameAreaContainer.style.display = 'none';
-                    }
-                }
+               // If leaderboard is not visible, show it now
+const leaderboardTableContainer = document.getElementById('leaderboard-table-container');
+if (leaderboardTableContainer && !leaderboardTableContainer.classList.contains('visible')) {
+    leaderboardTableContainer.classList.add('visible');
+    
+    // Hide username area if it's open
+    const usernameAreaContainer = document.getElementById('username-area-container');
+    if (usernameAreaContainer) {
+        usernameAreaContainer.classList.remove('visible');
+    }
+}
                 
                 // Hide status after 2 seconds
                 setTimeout(() => {
@@ -625,7 +625,7 @@ if (leaderboardBtn) {
     if (usernameAreaContainer) {
         usernameAreaContainer.classList.remove('visible');
     }
-                
+               
                 // Get current score and process it
                 const currentScore = this.getCurrentScore();
                 if (currentScore > 0) {
