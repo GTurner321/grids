@@ -39,11 +39,14 @@
     background-color: rgba(0, 0, 0, 0.75);
     z-index: 9000;
     display: none; /* Hidden by default */
+    visibility: hidden; /* Hidden by default - double protection */
+    opacity: 0; /* Start with opacity 0 */
     flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 20px;
     box-sizing: border-box;
+    transition: opacity 0.3s ease; /* Smooth transition for opacity */
 }
 
 /* This is the key rule that makes modals visible */
@@ -51,6 +54,32 @@
     display: flex !important;
     visibility: visible !important;
     opacity: 1 !important;
+}
+
+/* Ensure both modals are initially hidden in HTML */
+#username-area-container,
+#leaderboard-table-container {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+}
+
+/* Only show when visible class is applied */
+#username-area-container.visible,
+#leaderboard-table-container.visible {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Optional: Add a nice fade-in animation for modals */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-backdrop.visible {
+    animation: fadeIn 0.3s ease-in-out forwards;
 }
 
 /* ==========================================================================
