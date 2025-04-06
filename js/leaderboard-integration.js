@@ -150,7 +150,7 @@ createUsernameSubmissionArea() {
     const usernameAreaContainer = document.createElement('div');
     usernameAreaContainer.id = 'username-area-container';
     usernameAreaContainer.className = 'modal-backdrop'; // Use class from CSS
-    // Explicitly set initial hidden state with inline styles
+    // Explicitly set initial hidden state with both display and visibility properties
     usernameAreaContainer.style.display = 'none';
     usernameAreaContainer.style.visibility = 'hidden';
     
@@ -212,7 +212,7 @@ createLeaderboardTable() {
     const leaderboardContainer = document.createElement('div');
     leaderboardContainer.id = 'leaderboard-table-container';
     leaderboardContainer.className = 'modal-backdrop'; // Use class from CSS
-    // Explicitly set initial hidden state with inline styles
+    // Explicitly set initial hidden state with both display and visibility properties
     leaderboardContainer.style.display = 'none';
     leaderboardContainer.style.visibility = 'hidden';
     
@@ -239,7 +239,6 @@ createLeaderboardTable() {
     gameContainer.appendChild(leaderboardContainer);
 }
     
-    // Add all event listeners
 // Add all event listeners
 addEventListeners() {
     // Bottom buttons click handlers
@@ -248,32 +247,52 @@ addEventListeners() {
     const usernameAreaContainer = document.getElementById('username-area-container');
     const leaderboardTableContainer = document.getElementById('leaderboard-table-container');
     
-if (recordScoreBtn) {
-    recordScoreBtn.addEventListener('click', () => {
-        if (!this.isUsernameSet && usernameAreaContainer) {
-            usernameAreaContainer.classList.add('visible');
-            if (leaderboardTableContainer) {
-                leaderboardTableContainer.classList.remove('visible');
-            }
-        }
-    });
-}
-    
-if (leaderboardBtn) {
-    leaderboardBtn.addEventListener('click', () => {
-        if (leaderboardTableContainer) {
-            // Toggle visibility using classList
-            leaderboardTableContainer.classList.toggle('visible');
-            
-            if (leaderboardTableContainer.classList.contains('visible')) {
-                if (usernameAreaContainer) {
-                    usernameAreaContainer.classList.remove('visible');
+    if (recordScoreBtn) {
+        recordScoreBtn.addEventListener('click', () => {
+            if (!this.isUsernameSet && usernameAreaContainer) {
+                // Show username area with both class and explicit style properties
+                usernameAreaContainer.classList.add('visible');
+                usernameAreaContainer.style.display = 'flex';
+                usernameAreaContainer.style.visibility = 'visible';
+                
+                // Hide leaderboard if shown
+                if (leaderboardTableContainer) {
+                    leaderboardTableContainer.classList.remove('visible');
+                    leaderboardTableContainer.style.display = 'none';
+                    leaderboardTableContainer.style.visibility = 'hidden';
                 }
-                this.loadLeaderboard();
             }
-        }
-    });
-}
+        });
+    }
+    
+    if (leaderboardBtn) {
+        leaderboardBtn.addEventListener('click', () => {
+            if (leaderboardTableContainer) {
+                // Toggle visibility properly
+                if (leaderboardTableContainer.classList.contains('visible')) {
+                    // Hide leaderboard
+                    leaderboardTableContainer.classList.remove('visible');
+                    leaderboardTableContainer.style.display = 'none';
+                    leaderboardTableContainer.style.visibility = 'hidden';
+                } else {
+                    // Show leaderboard
+                    leaderboardTableContainer.classList.add('visible');
+                    leaderboardTableContainer.style.display = 'flex';
+                    leaderboardTableContainer.style.visibility = 'visible';
+                    
+                    // Hide username area if shown
+                    if (usernameAreaContainer) {
+                        usernameAreaContainer.classList.remove('visible');
+                        usernameAreaContainer.style.display = 'none';
+                        usernameAreaContainer.style.visibility = 'hidden';
+                    }
+                    
+                    // Load leaderboard data
+                    this.loadLeaderboard();
+                }
+            }
+        });
+    }
     
     // Return buttons
     const returnToRecordBtn = document.getElementById('return-to-record-btn');
@@ -281,6 +300,8 @@ if (leaderboardBtn) {
         returnToRecordBtn.addEventListener('click', () => {
             if (usernameAreaContainer) {
                 usernameAreaContainer.classList.remove('visible');
+                usernameAreaContainer.style.display = 'none';
+                usernameAreaContainer.style.visibility = 'hidden';
             }
         });
     }
@@ -291,6 +312,8 @@ if (leaderboardBtn) {
         closeLeaderboardBtn.addEventListener('click', () => {
             if (leaderboardTableContainer) {
                 leaderboardTableContainer.classList.remove('visible');
+                leaderboardTableContainer.style.display = 'none';
+                leaderboardTableContainer.style.visibility = 'hidden';
             }
         });
     }
@@ -332,7 +355,7 @@ if (leaderboardBtn) {
             setTimeout(() => this.checkButtonVisibility(), 1000);
         });
     });
-}
+}    
     
     // Initialize Supabase
     async initSupabase() {
