@@ -591,14 +591,17 @@ addEventListeners() {
 const leaderboardTableContainer = document.getElementById('leaderboard-table-container');
 if (leaderboardTableContainer && !leaderboardTableContainer.classList.contains('visible')) {
     leaderboardTableContainer.classList.add('visible');
+    leaderboardTableContainer.style.display = 'flex';
+    leaderboardTableContainer.style.visibility = 'visible';
     
     // Hide username area if it's open
-    const usernameAreaContainer = document.getElementById('username-area-container');
-    if (usernameAreaContainer) {
-        usernameAreaContainer.classList.remove('visible');
-    }
+const usernameAreaContainer = document.getElementById('username-area-container');
+if (usernameAreaContainer) {
+    usernameAreaContainer.classList.remove('visible');
+    usernameAreaContainer.style.display = 'none';
+    usernameAreaContainer.style.visibility = 'hidden';
 }
-                
+}
                 // Hide status after 2 seconds
                 setTimeout(() => {
                     this.hideUpdateStatus();
