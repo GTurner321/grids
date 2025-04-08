@@ -322,19 +322,26 @@ class LeaderboardManager {
         document.body.appendChild(leaderboardContainer);
     }
     
-    // Add all event listeners
     addEventListeners() {
-        // Bottom buttons click handlers
-        const recordScoreBtn = document.getElementById('record-score-btn');
-        const leaderboardBtn = document.getElementById('leaderboard-btn');
+    console.log('Adding event listeners to buttons and modals');
+    
+    // Force remove any existing listeners (crude but effective approach)
+    const recordScoreBtn = document.getElementById('record-score-btn');
+    const leaderboardBtn = document.getElementById('leaderboard-btn');
+    const returnToRecordBtn = document.getElementById('return-to-record-btn');
+    const closeLeaderboardBtn = document.getElementById('close-leaderboard-btn');
+    
+    if (recordScoreBtn) {
+        const newRecordBtn = recordScoreBtn.cloneNode(true);
+        recordScoreBtn.parentNode.replaceChild(newRecordBtn, recordScoreBtn);
         
-        if (recordScoreBtn) {
-            recordScoreBtn.addEventListener('click', () => {
-                if (!this.isUsernameSet) {
-                    this.showUsernameModal();
-                }
-            });
-        }
+        newRecordBtn.addEventListener('click', () => {
+            console.log('RECORD BUTTON CLICKED');
+            if (!this.isUsernameSet) {
+                this.showUsernameModal();
+            }
+        });
+    }
         
         if (leaderboardBtn) {
             leaderboardBtn.addEventListener('click', () => {
