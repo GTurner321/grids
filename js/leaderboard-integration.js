@@ -325,102 +325,131 @@ class LeaderboardManager {
     addEventListeners() {
     console.log('Adding event listeners to buttons and modals');
     
-    // Force remove any existing listeners (crude but effective approach)
+    // Get references to all buttons
     const recordScoreBtn = document.getElementById('record-score-btn');
     const leaderboardBtn = document.getElementById('leaderboard-btn');
     const returnToRecordBtn = document.getElementById('return-to-record-btn');
     const closeLeaderboardBtn = document.getElementById('close-leaderboard-btn');
+    const submitUsernameBtn = document.getElementById('submit-username');
+    const usernameInput = document.getElementById('username-input');
     
+    // Handle Record Name button
     if (recordScoreBtn) {
         const newRecordBtn = recordScoreBtn.cloneNode(true);
-        recordScoreBtn.parentNode.replaceChild(newRecordBtn, recordScoreBtn);
-        
-        newRecordBtn.addEventListener('click', () => {
-            console.log('RECORD BUTTON CLICKED');
-            if (!this.isUsernameSet) {
-                this.showUsernameModal();
-            }
-        });
+        if (recordScoreBtn.parentNode) {
+            recordScoreBtn.parentNode.replaceChild(newRecordBtn, recordScoreBtn);
+            
+            newRecordBtn.addEventListener('click', () => {
+                console.log('RECORD BUTTON CLICKED');
+                if (!this.isUsernameSet) {
+                    this.showUsernameModal();
+                }
+            });
+        }
     }
-        
-        if (leaderboardBtn) {
-            leaderboardBtn.addEventListener('click', () => {
+    
+    // Handle Leaderboard button
+    if (leaderboardBtn) {
+        const newLeaderboardBtn = leaderboardBtn.cloneNode(true);
+        if (leaderboardBtn.parentNode) {
+            leaderboardBtn.parentNode.replaceChild(newLeaderboardBtn, leaderboardBtn);
+            
+            newLeaderboardBtn.addEventListener('click', () => {
+                console.log('LEADERBOARD BUTTON CLICKED');
                 this.toggleLeaderboardModal();
             });
         }
-        
-        // Return/close buttons
-        const returnToRecordBtn = document.getElementById('return-to-record-btn');
-        if (returnToRecordBtn) {
-            returnToRecordBtn.addEventListener('click', () => {
+    }
+    
+    // Handle Return button (close username modal)
+    if (returnToRecordBtn) {
+        const newReturnBtn = returnToRecordBtn.cloneNode(true);
+        if (returnToRecordBtn.parentNode) {
+            returnToRecordBtn.parentNode.replaceChild(newReturnBtn, returnToRecordBtn);
+            
+            newReturnBtn.addEventListener('click', () => {
+                console.log('RETURN BUTTON CLICKED');
                 this.hideUsernameModal();
             });
         }
-        
-        const closeLeaderboardBtn = document.getElementById('close-leaderboard-btn');
-        if (closeLeaderboardBtn) {
-            closeLeaderboardBtn.addEventListener('click', () => {
+    }
+    
+    // Handle Close Leaderboard button
+    if (closeLeaderboardBtn) {
+        const newCloseBtn = closeLeaderboardBtn.cloneNode(true);
+        if (closeLeaderboardBtn.parentNode) {
+            closeLeaderboardBtn.parentNode.replaceChild(newCloseBtn, closeLeaderboardBtn);
+            
+            newCloseBtn.addEventListener('click', () => {
+                console.log('CLOSE LEADERBOARD BUTTON CLICKED');
                 this.hideLeaderboardModal();
             });
         }
-        
-        // Username submission
-        const submitUsernameBtn = document.getElementById('submit-username');
-        if (submitUsernameBtn) {
-            submitUsernameBtn.addEventListener('click', () => {
+    }
+    
+    // Handle Submit Username button
+    if (submitUsernameBtn) {
+        const newSubmitBtn = submitUsernameBtn.cloneNode(true);
+        if (submitUsernameBtn.parentNode) {
+            submitUsernameBtn.parentNode.replaceChild(newSubmitBtn, submitUsernameBtn);
+            
+            newSubmitBtn.addEventListener('click', () => {
+                console.log('SUBMIT USERNAME BUTTON CLICKED');
                 this.handleUsernameSubmission();
             });
         }
-        
-        // Enter key in input field
-        const usernameInput = document.getElementById('username-input');
-        if (usernameInput) {
-            usernameInput.addEventListener('keyup', (event) => {
-                if (event.key === 'Enter') {
-                    this.handleUsernameSubmission();
-                }
-            });
-        }
-        
-        // Listen for score updates
-        window.addEventListener('scoreUpdated', (event) => {
-            const score = event.detail.score;
-            
-            // Highlight record button if score is high enough but username not set
-            if (!this.isUsernameSet && score >= this.scoreThreshold && recordScoreBtn) {
-                recordScoreBtn.classList.add('highlight');
+    }
+    
+    // Handle Enter key in username input
+    if (usernameInput) {
+        // Can't clone input with its value, so use a direct approach
+        usernameInput.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') {
+                console.log('ENTER KEY PRESSED IN USERNAME INPUT');
+                this.handleUsernameSubmission();
             }
         });
-        
-        // Modal backdrop click handlers (to close modals when clicking outside)
-        const usernameAreaContainer = document.getElementById('username-area-container');
-        if (usernameAreaContainer) {
-            usernameAreaContainer.addEventListener('click', (e) => {
-                // Only close if clicking directly on the backdrop (not its children)
-                if (e.target === usernameAreaContainer) {
-                    this.hideUsernameModal();
-                }
-            });
-        }
-        
-        const leaderboardTableContainer = document.getElementById('leaderboard-table-container');
-        if (leaderboardTableContainer) {
-            leaderboardTableContainer.addEventListener('click', (e) => {
-                // Only close if clicking directly on the backdrop (not its children)
-                if (e.target === leaderboardTableContainer) {
-                    this.hideLeaderboardModal();
-                }
-            });
-        }
-        
-        // Escape key handler to close modals
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
+    }
+    
+    // Modal backdrop click handlers (to close modals when clicking outside)
+    const usernameAreaContainer = document.getElementById('username-area-container');
+    if (usernameAreaContainer) {
+        usernameAreaContainer.addEventListener('click', (e) => {
+            // Only close if clicking directly on the backdrop (not its children)
+            if (e.target === usernameAreaContainer) {
                 this.hideUsernameModal();
+            }
+        });
+    }
+    
+    const leaderboardTableContainer = document.getElementById('leaderboard-table-container');
+    if (leaderboardTableContainer) {
+        leaderboardTableContainer.addEventListener('click', (e) => {
+            // Only close if clicking directly on the backdrop (not its children)
+            if (e.target === leaderboardTableContainer) {
                 this.hideLeaderboardModal();
             }
         });
     }
+    
+    // Escape key handler to close modals
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            this.hideUsernameModal();
+            this.hideLeaderboardModal();
+        }
+    });
+    
+    // Listen for score updates
+    window.addEventListener('scoreUpdated', (event) => {
+        const score = event.detail.score;
+        
+        // Highlight record button if score is high enough but username not set
+        if (!this.isUsernameSet && score >= this.scoreThreshold && recordScoreBtn) {
+            recordScoreBtn.classList.add('highlight');
+        }
+    });
+}
     
     // Modal visibility handlers
     showUsernameModal() {
