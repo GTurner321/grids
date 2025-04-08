@@ -421,6 +421,11 @@ body {
    6. LEVEL SELECTOR - WITH INTEGRATED LEVEL SCROLLER - now in levelselector.css
    ========================================================================== */
 
+/* ==========================================================================
+   7. GAME MESSAGES
+   ========================================================================== */
+
+
 /* Game Messages Container */
 #game-messages-container {
     width: 100%;
