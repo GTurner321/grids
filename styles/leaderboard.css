@@ -56,7 +56,7 @@
     opacity: 1 !important;
 }
 
-/* Ensure both modals are initially hidden in HTML */
+/* Ensure both modals are initially hidden */
 #username-area-container,
 #leaderboard-table-container {
     display: none !important;
@@ -72,7 +72,7 @@
     opacity: 1 !important;
 }
 
-/* Optional: Add a nice fade-in animation for modals */
+/* Add a nice fade-in animation for modals */
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -80,6 +80,45 @@
 
 .modal-backdrop.visible {
     animation: fadeIn 0.3s ease-in-out forwards;
+}
+
+/* Status message for updates */
+.leaderboard-status {
+    text-align: center;
+    padding: 8px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    font-family: 'Trebuchet MS', Arial, sans-serif;
+}
+
+.leaderboard-status.info {
+    background-color: var(--btn-metal-light);
+    color: #3b82f6; /* Blue */
+}
+
+.leaderboard-status.success {
+    background-color: var(--btn-metal-light);
+    color: #10b981; /* Green */
+}
+
+.leaderboard-status.error {
+    background-color: var(--btn-metal-light);
+    color: #ef4444; /* Red */
+}
+
+/* Loading indicator */
+.leaderboard-loading {
+    text-align: center;
+    padding: 10px;
+    font-family: 'Trebuchet MS', Arial, sans-serif;
+    font-size: 0.9rem;
+    color: var(--btn-text-color);
+}
+
+.leaderboard-loading.error {
+    color: #ef4444; /* Red */
 }
 
 /* ==========================================================================
@@ -242,6 +281,72 @@
     border-bottom-width: 1px;
 }
 
+/* Responsive adjustments for username area */
+@media (max-width: 768px) {
+    /* Return Button Mobile Positioning */
+    #return-to-record-btn {
+        top: auto;
+        bottom: 10px;
+        right: 10px;
+        width: 44px;
+        height: 44px;
+        font-size: 26px;
+    }
+    
+    /* Input field adjustments */
+    #username-input {
+        width: 90%;
+        padding: 12px;
+        font-size: 1.1rem;
+        text-align: center;
+        max-width: 90%;
+    }
+    
+    /* Submit button adjustments */
+    #submit-username {
+        padding: 10px 15px;
+        font-size: 1rem;
+    }
+    
+    /* Rocket icon after Submit on mobile */
+    #submit-username::after {
+        content: " 🚀";
+        margin-left: 5px;
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .username-area {
+        width: 95%;
+        padding: 10px;
+    }
+    
+    #submit-username {
+        width: 85%;
+        min-height: 44px;
+    }
+    
+    #return-to-record-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 22px;
+    }
+}
+
+@media (max-width: 320px) {
+    .username-area {
+        width: 98%;
+        padding: 8px;
+    }
+    
+    #submit-username {
+        width: 95%;
+        max-width: 95%;
+        font-size: 0.9rem;
+    }
+}
+
 /* ==========================================================================
    3. LEADERBOARD TABLE & HEADER
    ========================================================================== */
@@ -257,45 +362,6 @@
     text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.5);
     text-transform: uppercase;
     letter-spacing: 0.05em;
-}
-
-/* Status message for updates */
-.leaderboard-status {
-    text-align: center;
-    padding: 8px;
-    border-radius: 4px;
-    margin-bottom: 10px;
-    font-size: 0.9rem;
-    font-weight: bold;
-    font-family: 'Trebuchet MS', Arial, sans-serif;
-}
-
-.leaderboard-status.info {
-    background-color: var(--btn-metal-light);
-    color: #3b82f6; /* Blue */
-}
-
-.leaderboard-status.success {
-    background-color: var(--btn-metal-light);
-    color: #10b981; /* Green */
-}
-
-.leaderboard-status.error {
-    background-color: var(--btn-metal-light);
-    color: #ef4444; /* Red */
-}
-
-/* Loading indicator */
-.leaderboard-loading {
-    text-align: center;
-    padding: 10px;
-    font-family: 'Trebuchet MS', Arial, sans-serif;
-    font-size: 0.9rem;
-    color: var(--btn-text-color);
-}
-
-.leaderboard-loading.error {
-    color: #ef4444; /* Red */
 }
 
 /* Leaderboard container - use styled-box */
@@ -315,6 +381,7 @@
 /* Leaderboard table */
 .leaderboard-table {
     width: 100%;
+    max-width: 480px;
     max-height: 400px;
     overflow-y: auto;
     background-color: var(--btn-metal-light);
@@ -449,11 +516,7 @@
     background: var(--btn-metal-darker);
 }
 
-/* ==========================================================================
-   4. RESPONSIVE DESIGN
-   ========================================================================== */
-
-/* Medium screens */
+/* Responsive adjustments for leaderboard */
 @media (max-width: 768px) {
     /* Leaderboard table adjustments */
     .leaderboard-row {
@@ -461,41 +524,8 @@
         column-gap: 8px;
         padding: 8px;
     }
-    
-    /* Return Button Mobile Positioning */
-    #return-to-record-btn {
-        top: auto;
-        bottom: 10px;
-        right: 10px;
-        width: 44px;
-        height: 44px;
-        font-size: 26px;
-    }
-    
-    /* Input field adjustments */
-    #username-input {
-        width: 90%;
-        padding: 12px;
-        font-size: 1.1rem;
-        text-align: center;
-        max-width: 90%;
-    }
-    
-    /* Submit button adjustments */
-    #submit-username {
-        padding: 10px 15px;
-        font-size: 1rem;
-    }
-    
-    /* Rocket icon after Submit on mobile */
-    #submit-username::after {
-        content: " 🚀";
-        margin-left: 5px;
-        font-size: 1.2rem;
-    }
 }
 
-/* Small screens */
 @media (max-width: 480px) {
     .leaderboard-title {
         font-size: 1.2rem;
@@ -511,25 +541,8 @@
     .leaderboard-cell {
         font-size: 0.8rem;
     }
-    
-    .username-area {
-        width: 95%;
-        padding: 10px;
-    }
-    
-    #submit-username {
-        width: 85%;
-        min-height: 44px;
-    }
-    
-    #return-to-record-btn {
-        width: 40px;
-        height: 40px;
-        font-size: 22px;
-    }
 }
 
-/* Extra small screens */
 @media (max-width: 320px) {
     .leaderboard-row {
         grid-template-columns: 25px minmax(60px, 1fr) 55px 60px;
@@ -543,16 +556,5 @@
     
     .leaderboard-title {
         font-size: 1.1rem;
-    }
-    
-    .username-area {
-        width: 98%;
-        padding: 8px;
-    }
-    
-    #submit-username {
-        width: 95%;
-        max-width: 95%;
-        font-size: 0.9rem;
     }
 }
