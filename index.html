@@ -54,118 +54,73 @@
         <!-- Main Game Area -->
         <main class="game-board">
             <!-- Score Row (Will appear above the grid) -->
-<div class="score-row">
-  <!-- Left side: Shows username or round score -->
-  <div class="score-left">
-    <div id="score-bonus"></div>
-  </div>
-  
-  <!-- Right side: Shows total score -->
-  <div class="score-right">
-    <div id="score-total">TOTAL: 0</div>
-  </div>
-  
-  <!-- Level segments container - will be populated by JavaScript -->
-  <div class="level-segment-container">
-    <!-- Segments will be added dynamically via JS -->
-    <!-- Example segment structure:
-    <div class="level-segment"></div>
-    <div class="level-segment unlocked"></div>
-    <div class="level-segment completed"></div>
-    -->
-  </div>
-</div>
+            <div class="score-row">
+              <!-- Left side: Shows username or round score -->
+              <div class="score-left">
+                <div id="score-bonus"></div>
+              </div>
+              
+              <!-- Right side: Shows total score -->
+              <div class="score-right">
+                <div id="score-total">TOTAL: 0</div>
+              </div>
+              
+              <!-- Level segments container - will be populated by JavaScript -->
+              <div class="level-segment-container">
+                <!-- Segments will be added dynamically via JS -->
+                <!-- Example segment structure:
+                <div class="level-segment"></div>
+                <div class="level-segment unlocked"></div>
+                <div class="level-segment completed"></div>
+                -->
+              </div>
+            </div>
             
             <!-- Grid Container -->
             <div id="grid-container"></div>
             
             <!-- Game Controls -->
             <div class="game-controls">
-    <button id="check-solution" class="metallic-button">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="20 6 9 17 4 12"></polyline>
-        </svg>
-        Check
-    </button>
-    <button id="remove-spare" class="metallic-button">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
-        Spares
-    </button>
-    <button id="reset-path" class="metallic-button">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
-            <path d="M3 3v5h5"></path>
-        </svg>
-        Reset
-    </button>
-</div>
+                <button id="check-solution" class="metallic-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Check
+                </button>
+                <button id="remove-spare" class="metallic-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                    Spares
+                </button>
+                <button id="reset-path" class="metallic-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                        <path d="M3 3v5h5"></path>
+                    </svg>
+                    Reset
+                </button>
+            </div>
             
             <!-- Game Messages -->
             <div id="game-messages-container">
-    <div id="game-messages" class="styled-box">
-        <!-- Messages will be inserted here dynamically -->
-    </div>
-</div>
-<!-- Bottom Buttons -->
-<div class="bottom-buttons" id="bottom-buttons">
-    <button id="record-score-btn" class="bottom-btn metallic-button">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 20h9"></path>
-            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-        </svg>
-        RECORD NAME
-    </button>
-    
-    <button id="leaderboard-btn" class="bottom-btn metallic-button">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M6 9l6 6 6-6"></path>
-        </svg>
-        LEADERBOARD
-    </button>
-</div>
-
-<!-- Username Modal Container - Add inline styles for initial hiding -->
-<div id="username-area-container" class="modal-backdrop" style="display: none; visibility: hidden;">
-    <div class="username-area styled-box">
-        <div class="username-form">
-            <p class="username-prompt">RECORD YOUR SCORE - SUBMIT YOUR NAME:</p>
-            
-            <div class="input-wrapper">
-                <input type="text" id="username-input" maxlength="12" placeholder="Enter name (max 12 char)">
-                <button id="submit-username" class="metallic-button">Submit</button>
+                <div id="game-messages" class="styled-box">
+                    <!-- Messages will be inserted here dynamically -->
+                </div>
             </div>
-            
-            <div id="username-status" class="status-message"></div>
-        </div>
-        
-        <button id="return-to-record-btn" class="metallic-button return-button">×</button>
-    </div>
-</div>
-
-<!-- Leaderboard Modal Container - Add inline styles for initial hiding -->
-<div id="leaderboard-table-container" class="modal-backdrop" style="display: none; visibility: hidden;">
-    <h2 class="leaderboard-title">LEADERBOARD</h2>
-    
-    <div class="leaderboard-table styled-box" id="leaderboard-table">
-        <!-- Leaderboard content will be populated by JavaScript -->
-    </div>
-    
-    <button id="close-leaderboard-btn" class="metallic-button">CLOSE</button>
-</div>
-            
+            <!-- The bottom buttons will be added dynamically by leaderboard-integration.js -->
+            <!-- The modals will be added dynamically by leaderboard-integration.js -->
         </main>
     </div>
     
     <!-- Game Scripts -->
-<script type="module" src="js/rules.js"></script>
-<script type="module" src="js/leveltracker.js"></script>
-<script type="module" src="js/scoremanager.js"></script>
-<script type="module" src="js/gamecontroller.js"></script>  <!-- Load this BEFORE levelscroller.js -->
-<script type="module" src="js/levelscroller.js"></script>
-<script type="module" src="js/leaderboard-integration.js"></script>
+    <script type="module" src="js/rules.js"></script>
+    <script type="module" src="js/leveltracker.js"></script>
+    <script type="module" src="js/scoremanager.js"></script>
+    <script type="module" src="js/gamecontroller.js"></script>  <!-- Load this BEFORE levelscroller.js -->
+    <script type="module" src="js/levelscroller.js"></script>
+    <script type="module" src="js/leaderboard-integration.js"></script>
 
     <!-- Non-module scripts that enhance the UI -->
     <script src="js/button-effects.js"></script>
