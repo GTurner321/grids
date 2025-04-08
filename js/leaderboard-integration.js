@@ -1230,13 +1230,25 @@ class LeaderboardManager {
     }
     
     // Check if any modals are open
-    isModalOpen() {
-        const usernameAreaContainer = document.getElementById('username-area-container');
-        const leaderboardTableContainer = document.getElementById('leaderboard-table-container');
-        
-        return (usernameAreaContainer && usernameAreaContainer.classList.contains('visible')) || 
-               (leaderboardTableContainer && leaderboardTableContainer.classList.contains('visible'));
-    }
+isModalOpen() {
+    const usernameAreaContainer = document.getElementById('username-area-container');
+    const leaderboardTableContainer = document.getElementById('leaderboard-table-container');
+    
+    const usernameModalVisible = usernameAreaContainer && 
+                               usernameAreaContainer.classList.contains('visible') && 
+                               usernameAreaContainer.style.display !== 'none';
+    
+    const leaderboardModalVisible = leaderboardTableContainer && 
+                                  leaderboardTableContainer.classList.contains('visible') && 
+                                  leaderboardTableContainer.style.display !== 'none';
+    
+    const isAnyModalOpen = usernameModalVisible || leaderboardModalVisible;
+    console.log('Modal open check:', isAnyModalOpen, 
+                'Username modal:', usernameModalVisible, 
+                'Leaderboard modal:', leaderboardModalVisible);
+    
+    return isAnyModalOpen;
+}
     
     // Check button visibility
     checkButtonVisibility() {
