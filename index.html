@@ -36,82 +36,84 @@
 <body>
     <noscript>You need to enable JavaScript to run this game.</noscript>
     
-    <!-- Game Title - Moved outside and before everything else -->
-    <header class="game-header">
-        <h1>PATH PUZZLE</h1>
-    </header>
-    
-    <!-- Rules Container -->
-    <div id="rules-container"></div>
-    
-    <div class="game-container">
-        <!-- Level Selection -->
-        <section class="level-selector-container">
-            <p class="level-selector-title"><span class="flashing-arrow">↓</span> CHOOSE YOUR LEVEL <span class="flashing-arrow">↓</span></p>
-            <!-- The .level-buttons container will be populated by levelscroller.js -->
-            <div class="level-buttons"></div>
-        </section>
-        <!-- Main Game Area -->
-        <main class="game-board">
-            <!-- Score Row (Will appear above the grid) -->
-            <div class="score-row">
-              <!-- Left side: Shows username or round score -->
-              <div class="score-left">
-                <div id="score-bonus"></div>
-              </div>
-              
-              <!-- Right side: Shows total score -->
-              <div class="score-right">
-                <div id="score-total">TOTAL: 0</div>
-              </div>
-              
-              <!-- Level segments container - will be populated by JavaScript -->
-              <div class="level-segment-container">
-                <!-- Segments will be added dynamically via JS -->
-                <!-- Example segment structure:
-                <div class="level-segment"></div>
-                <div class="level-segment unlocked"></div>
-                <div class="level-segment completed"></div>
-                -->
-              </div>
-            </div>
-            
-            <!-- Grid Container -->
-            <div id="grid-container"></div>
-            
-            <!-- Game Controls -->
-            <div class="game-controls">
-                <button id="check-solution" class="metallic-button">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                    Check
-                </button>
-                <button id="remove-spare" class="metallic-button">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                    Spares
-                </button>
-                <button id="reset-path" class="metallic-button">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
-                        <path d="M3 3v5h5"></path>
-                    </svg>
-                    Reset
-                </button>
-            </div>
-            
-            <!-- Game Messages -->
-            <div id="game-messages-container">
-                <div id="game-messages" class="styled-box">
-                    <!-- Messages will be inserted here dynamically -->
+    <div class="centered-wrapper">
+        <!-- Game Title - Now inside the wrapper -->
+        <header class="game-header">
+            <h1>PATH PUZZLE</h1>
+        </header>
+        
+        <!-- Rules Container -->
+        <div id="rules-container"></div>
+        
+        <div class="game-container">
+            <!-- Level Selection -->
+            <section class="level-selector-container">
+                <p class="level-selector-title"><span class="flashing-arrow">↓</span> CHOOSE YOUR LEVEL <span class="flashing-arrow">↓</span></p>
+                <!-- The .level-buttons container will be populated by levelscroller.js -->
+                <div class="level-buttons"></div>
+            </section>
+            <!-- Main Game Area -->
+            <main class="game-board">
+                <!-- Score Row (Will appear above the grid) -->
+                <div class="score-row">
+                  <!-- Left side: Shows username or round score -->
+                  <div class="score-left">
+                    <div id="score-bonus"></div>
+                  </div>
+                  
+                  <!-- Right side: Shows total score -->
+                  <div class="score-right">
+                    <div id="score-total">TOTAL: 0</div>
+                  </div>
+                  
+                  <!-- Level segments container - will be populated by JavaScript -->
+                  <div class="level-segment-container">
+                    <!-- Segments will be added dynamically via JS -->
+                    <!-- Example segment structure:
+                    <div class="level-segment"></div>
+                    <div class="level-segment unlocked"></div>
+                    <div class="level-segment completed"></div>
+                    -->
+                  </div>
                 </div>
-            </div>
-            <!-- The bottom buttons will be added dynamically by leaderboard-integration.js -->
-            <!-- The modals will be added dynamically by leaderboard-integration.js -->
-        </main>
+                
+                <!-- Grid Container -->
+                <div id="grid-container"></div>
+                
+                <!-- Game Controls -->
+                <div class="game-controls">
+                    <button id="check-solution" class="metallic-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Check
+                    </button>
+                    <button id="remove-spare" class="metallic-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                        Spares
+                    </button>
+                    <button id="reset-path" class="metallic-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                            <path d="M3 3v5h5"></path>
+                        </svg>
+                        Reset
+                    </button>
+                </div>
+                
+                <!-- Game Messages -->
+                <div id="game-messages-container">
+                    <div id="game-messages" class="styled-box">
+                        <!-- Messages will be inserted here dynamically -->
+                    </div>
+                </div>
+                <!-- The bottom buttons will be added dynamically by leaderboard-integration.js -->
+                <!-- The modals will be added dynamically by leaderboard-integration.js -->
+            </main>
+        </div>
     </div>
     
     <!-- Game Scripts -->
