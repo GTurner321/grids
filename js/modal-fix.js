@@ -325,9 +325,11 @@ function ensureModalCssIsApplied() {
         /* Username prompt centered - ADDED */
         body > #username-area-container .username-area .username-prompt {
         text-align: center !important;
-        width: auto !important; /* Let the content determine width */
-        margin: 0 40px 15px 40px !important; /* top, right, bottom, left */
+        width: 50% !important; /* Text takes up the middle 50% */
+        margin: 0 auto 15px auto !important; /* Center it horizontally with auto left/right margins */
         font-size: 1.1rem !important;
+        /* You can also add padding if you want internal spacing */
+        padding: 0 !important;
         }
         
         /* Fix for input wrapper to allow vertical layout - ADDED */
