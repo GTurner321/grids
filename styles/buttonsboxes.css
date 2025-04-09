@@ -34,10 +34,11 @@
     
     /* Animation durations */
     --transition-speed: 0.3s;
+    --pulse-speed: 0.2s;
 }
 
 /* ==========================================================================
-   2. METALLIC BUTTON STYLING - UNIVERSAL
+   2. METALLIC BUTTON STYLING - UNIVERSAL - REWRITTEN
    ========================================================================== */
 
 .metallic-button {
@@ -83,13 +84,8 @@
     border-top: 1px solid var(--btn-metal-border-top);
     border-bottom: 3px solid var(--btn-metal-border-bottom);
     
-    /* Shadow effects */
-   box-shadow: 0 6px 12px 2px rgba(0, 0, 0, 0.22),
-   0 2px 6px 1px var(--btn-metal-shadow),
-   1px 0 4px rgba(0, 0, 0, 0.12),
-   -1px 0 4px rgba(0, 0, 0, 0.12),
-   inset 0 1px 2px var(--btn-metal-inner-highlight),
-   inset 0 -1px 2px var(--btn-metal-inner-shadow);
+    /* No default shadow - added on hover only */
+    box-shadow: none;
                 
     /* Smooth transitions */
     transition: transform var(--transition-speed) ease,
@@ -121,14 +117,9 @@
             var(--btn-metal-light) 140px
         );
         
-        /* Lift up slightly with enhanced shadow */
-        transform: translateY(-2px);
-        box-shadow: 0 8px 15px 3px rgba(0, 0, 0, 0.25),
-                    0 2px 8px 2px var(--btn-metal-shadow),
-                    2px 0 6px rgba(0, 0, 0, 0.15),
-                    -2px 0 6px rgba(0, 0, 0, 0.15),
-                    inset 0 1px 3px var(--btn-metal-inner-highlight),
-                    inset 0 -1px 2px var(--btn-metal-inner-shadow);
+        /* Lift up slightly with very subtle shadow */
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
     }
 }
 
@@ -150,10 +141,8 @@
     transform: translateY(1px);
     border-bottom-width: 1px;
     
-    /* Reduced shadow when pressed */
-    box-shadow: 0 3px 5px 1px rgba(0, 0, 0, 0.2),
-                0 1px 3px var(--btn-metal-shadow),
-                inset 0 1px 2px var(--btn-metal-inner-shadow);
+    /* No shadow when pressed */
+    box-shadow: none;
                 
     /* Adjusted text shadow for pressed effect */
     text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.5),
@@ -166,19 +155,26 @@
     cursor: not-allowed;
     transform: none !important;
     border-bottom-width: 3px !important;
+    box-shadow: none !important;
 }
 
-/* Animation for button clicks */
+/* Animation for button clicks - SIMPLIFIED */
 @keyframes button-pulse {
     0% { transform: scale(1); }
-    50% { transform: scale(1.02); }
-    100% { transform: scale(1); }
-}
-
-/* More complete animation that ensures styles are reset */
-@keyframes button-pulse-and-reset {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.02); }
+    50% { 
+        transform: scale(1.02);
+        background: repeating-linear-gradient(
+            120deg,
+            var(--btn-metal-lighter) 0px,
+            var(--btn-metal-light) 15px,
+            var(--btn-metal-lighter) 35px,
+            var(--btn-metal-mediumlight) 60px,
+            var(--btn-metal-light) 85px,
+            var(--btn-metal-mediumlight) 100px,
+            var(--btn-metal-lighter) 125px,
+            var(--btn-metal-light) 140px
+        );
+    }
     100% { 
         transform: scale(1);
         background: repeating-linear-gradient(
@@ -195,30 +191,10 @@
     }
 }
 
-/* Clicked state - ensuring it resets properly */
+/* Clicked state - consistent animation */
 .metallic-button.clicked {
-    animation: button-pulse 0.2s ease-in-out;
-    
-    /* Reset to default state after click (overriding any stuck hover states) */
-    background: repeating-linear-gradient(
-        120deg,
-        var(--btn-metal-light) 0px,
-        var(--btn-metal-medium) 10px,
-        var(--btn-metal-light) 30px,
-        var(--btn-metal-mediumlight) 55px,
-        var(--btn-metal-medium) 80px,
-        var(--btn-metal-mediumlight) 95px,
-        var(--btn-metal-light) 120px,
-        var(--btn-metal-medium) 135px
-    ) !important;
-    
-    transform: none !important;
-    box-shadow: 0 6px 12px 2px rgba(0, 0, 0, 0.22),
-                0 2px 6px 1px var(--btn-metal-shadow),
-                1px 0 4px rgba(0, 0, 0, 0.12),
-                -1px 0 4px rgba(0, 0, 0, 0.12),
-                inset 0 1px 2px var(--btn-metal-inner-highlight),
-                inset 0 -1px 2px var(--btn-metal-inner-shadow) !important;
+    animation: button-pulse var(--pulse-speed) ease-in-out forwards;
+    box-shadow: none !important;
 }
 
 /* Button with icons */
@@ -245,44 +221,19 @@
 }
 
 /* TOUCH DEVICE SPECIFIC STYLES */
-/* Ensure touch devices don't keep the :hover state */
-.touch-device .metallic-button:hover:not(:active):not(.clicked) {
-    /* Reset to default state when not actually being pressed */
-    background: repeating-linear-gradient(
-        120deg,
-        var(--btn-metal-light) 0px,
-        var(--btn-metal-medium) 10px,
-        var(--btn-metal-light) 30px,
-        var(--btn-metal-mediumlight) 55px,
-        var(--btn-metal-medium) 80px,
-        var(--btn-metal-mediumlight) 95px,
-        var(--btn-metal-light) 120px,
-        var(--btn-metal-medium) 135px
-    ) !important;
-    
-    transform: none !important;
-    box-shadow: 0 2px 5px var(--btn-metal-shadow),
-                inset 0 1px 2px var(--btn-metal-inner-highlight),
-                inset 0 -1px 2px var(--btn-metal-inner-shadow) !important;
-    border-bottom-width: 3px !important;
-}
-
-/* Special case for level buttons */
-.level-btn-scrollable.clicked {
-    animation: button-pulse 0.2s ease-in-out forwards;
-}
-
-/* Touch optimizations with reduced animation duration */
+/* Apply consistent styles for touch devices */
 .touch-device .metallic-button {
+    box-shadow: none !important;
     transition: transform 0.15s ease,
-                box-shadow 0.15s ease,
                 background 0.15s ease,
                 border-bottom-width 0.15s ease;
 }
 
-/* This helps prevent iOS from maintaining hover state */
+/* Fix for iOS touch */
 @media (hover: none) {
     .metallic-button:hover:not(:active):not(.clicked) {
+        transform: none !important;
+        box-shadow: none !important;
         background: repeating-linear-gradient(
             120deg,
             var(--btn-metal-light) 0px,
@@ -294,10 +245,6 @@
             var(--btn-metal-light) 120px,
             var(--btn-metal-medium) 135px
         ) !important;
-        transform: none !important;
-        box-shadow: 0 2px 5px var(--btn-metal-shadow),
-                inset 0 1px 2px var(--btn-metal-inner-highlight),
-                inset 0 -1px 2px var(--btn-metal-inner-shadow) !important;
     }
 }
 
@@ -323,9 +270,12 @@
         
         /* Improved text readability */
         letter-spacing: 0.04em;
+        
+        /* No default shadow */
+        box-shadow: none;
     }
     
-    /* Hover state on medium screens - adjusted lighter gradient */
+    /* Hover state on medium screens - only non-touch devices */
     @media (hover: hover) and (pointer: fine) {
         .metallic-button:hover:not(:disabled):not(.clicked) {
             background: repeating-linear-gradient(
@@ -339,6 +289,8 @@
                 var(--btn-metal-lighter) 115px,
                 var(--btn-metal-light) 130px
             );
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
         }
     }
     
@@ -354,21 +306,13 @@
             var(--btn-metal-medium) 115px,
             var(--btn-metal-dark) 130px
         );
+        box-shadow: none;
     }
     
-    /* Reset state for touch devices at medium screen size */
-    .touch-device .metallic-button:hover:not(:active):not(.clicked) {
-        background: repeating-linear-gradient(
-            120deg,
-            var(--btn-metal-light) 0px,
-            var(--btn-metal-medium) 8px,
-            var(--btn-metal-light) 25px,
-            var(--btn-metal-mediumlight) 45px,
-            var(--btn-metal-medium) 70px,
-            var(--btn-metal-mediumlight) 85px,
-            var(--btn-metal-light) 110px,
-            var(--btn-metal-medium) 125px
-        ) !important;
+    /* Consistent button clicked animation with cleaner finish */
+    .metallic-button.clicked {
+        animation: button-pulse var(--pulse-speed) ease-in-out forwards;
+        box-shadow: none !important;
     }
 }
 
@@ -388,10 +332,8 @@
             var(--btn-metal-medium) 115px
         );
         
-        /* Adjusted shadows for smaller screens */
-        box-shadow: 0 2px 4px var(--btn-metal-shadow),
-                    inset 0 1px 1px var(--btn-metal-inner-highlight),
-                    inset 0 -1px 1px var(--btn-metal-inner-shadow);
+        /* No default shadow */
+        box-shadow: none;
     }
     
     /* Hover state on small screens */
@@ -399,10 +341,8 @@
         .metallic-button:hover:not(:disabled):not(.clicked) {
             /* Smaller transform to prevent UI issues on small screens */
             transform: translateY(-1px);
-            box-shadow: 0 3px 6px var(--btn-metal-shadow),
-                        inset 0 1px 2px var(--btn-metal-inner-highlight),
-                        inset 0 -1px 1px var(--btn-metal-inner-shadow);
-                        
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+            
             background: repeating-linear-gradient(
                 120deg,
                 var(--btn-metal-lighter) 0px,
@@ -415,21 +355,6 @@
                 var(--btn-metal-light) 120px
             );
         }
-    }
-    
-    /* Reset state for touch devices at small screen size */
-    .touch-device .metallic-button:hover:not(:active):not(.clicked) {
-        background: repeating-linear-gradient(
-            120deg,
-            var(--btn-metal-light) 0px,
-            var(--btn-metal-medium) 6px,
-            var(--btn-metal-light) 20px,
-            var(--btn-metal-mediumlight) 35px,
-            var(--btn-metal-medium) 60px,
-            var(--btn-metal-mediumlight) 75px,
-            var(--btn-metal-light) 100px,
-            var(--btn-metal-medium) 115px
-        ) !important;
     }
 }
 
@@ -595,7 +520,7 @@
     padding: 0;
     border: none;
     color: #444; /* Dark grey instead of black */
-    /* Enhanced text embossing */
+   /* Enhanced text embossing */
     text-shadow: 
         0px 1.5px 1.5px rgba(255, 255, 255, 0.8),
         0px -1px 1px rgba(0, 0, 0, 0.15);
@@ -755,5 +680,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize button effects
     setupButtonClickEffects();
-});
-
+});*/
