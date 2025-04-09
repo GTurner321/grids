@@ -61,7 +61,7 @@
 
 body {
   margin: 0;
-  padding: var(--screen-padding);
+  padding: 0; /* Remove variable padding for consistency */
   font-family: system-ui, -apple-system, sans-serif;
   background-color: #b0d8b6;
   background-image: url("data:image/svg+xml,%3Csvg width='32' height='64' viewBox='0 0 32 64' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 28h20V16h-4v8H4V4h28v28h-4V8H8v12h4v-8h12v20H0v-4zm12 8h20v4H16v24H0v-4h12V36zm16 12h-4v12h8v4H20V44h12v12h-4v-8zM0 36h8v20H0v-4h4V40H0v-4z' fill='%238fc096' fill-opacity='0.73' fill-rule='evenodd'/%3E%3C/svg%3E");
@@ -72,7 +72,7 @@ body {
   overflow-x: hidden;
 }
 
-/* Mobile specific body background */
+/* Mobile specific body background - keep same background but no padding */
 @media (max-width: 768px) {
   body {
     padding: 0;
@@ -81,19 +81,37 @@ body {
   }
 }
 
+/* Centered wrapper for all content */
+.centered-wrapper {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* Ensure everything inside the wrapper is also properly centered */
+.centered-wrapper > * {
+  margin-left: auto;
+  margin-right: auto;
+}
+
 /* ==========================================================================
    3. GAME CONTAINER
    ========================================================================== */
 
 .game-container {
-  max-width: 100%;
+  max-width: 640px; /* Set fixed maximum width */
   width: 100%;
   margin: 0 auto;
-  padding: 10px;
+  padding: 0; /* Remove padding for consistency */
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
+  box-sizing: border-box;
 }
 
 /* Constrain specific elements to 640px */
@@ -111,10 +129,21 @@ body {
 /* Mobile specific adjustments */
 @media (max-width: 768px) {
   .game-container {
-    padding: 0;
+    width: 95%; /* Set to 95% width on mobile for consistent layout */
     margin: 0 auto;
-    max-width: 100%;
+    max-width: 640px;
     box-sizing: border-box;
+  }
+  
+  /* Fix the edge-to-edge spacing for mobile */
+  .centered-wrapper > * {
+    width: 95%;
+  }
+  
+  #grid-container {
+    justify-self: center;
+    margin-left: auto !important;
+    margin-right: auto !important;
   }
 }
 
@@ -122,7 +151,7 @@ body {
 .score-row,
 .game-controls,
 #game-messages,
-#game-messages-container {  /* Add this line */
+#game-messages-container {
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s ease, visibility 0.3s ease;
@@ -141,7 +170,7 @@ body {
 .game-container.game-active .score-row,
 .game-container.game-active .game-controls,
 .game-container.game-active #game-messages,
-.game-container.game-active #game-messages-container {  /* Add this line */
+.game-container.game-active #game-messages-container {
   opacity: 1;
   visibility: visible;
   height: auto;
@@ -157,26 +186,28 @@ body {
 
 /* Ensure grid is visible when game is active */
 .game-container.game-active #grid-container {
-    visibility: visible !important;
-    display: grid !important;
-    height: auto !important;
-    background-color: #94a3b8 !important;
-    border: 1px solid #94a3b8 !important;
-    width: auto !important; /* This prevents the grid from becoming massive */
-    max-width: var(--grid-total-width) !important; /* Use the CSS variable for consistent sizing */
-    
-    /* Critical grid layout properties */
-    grid-template-columns: repeat(10, 1fr) !important; /* Default to 10 columns */
-    gap: var(--grid-cell-gap) !important;
+  visibility: visible !important;
+  display: grid !important;
+  height: auto !important;
+  background-color: #94a3b8 !important;
+  border: 1px solid #94a3b8 !important;
+  width: auto !important; /* This prevents the grid from becoming massive */
+  max-width: var(--grid-total-width) !important; /* Use the CSS variable for consistent sizing */
+  margin-left: auto !important;
+  margin-right: auto !important;
+  
+  /* Critical grid layout properties */
+  grid-template-columns: repeat(10, 1fr) !important; /* Default to 10 columns */
+  gap: var(--grid-cell-gap) !important;
 }
 
 /* Grid size specific overrides */
 .game-container.game-active #grid-container.grid-size-6 {
-    grid-template-columns: repeat(6, 1fr) !important;
+  grid-template-columns: repeat(6, 1fr) !important;
 }
 
 .game-container.game-active #grid-container.grid-size-10 {
-    grid-template-columns: repeat(10, 1fr) !important;
+  grid-template-columns: repeat(10, 1fr) !important;
 }
 
 /* Specific margin restoration */
@@ -200,6 +231,14 @@ body {
    4. GAME HEADER & TITLE
    ========================================================================== */
 
+.game-header {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 0;
+  text-align: center;
+}
+
 .game-header h1 {
   font-family: 'Black Ops One', cursive;
   font-size: 3rem;
@@ -214,6 +253,10 @@ body {
 
 /* Mobile adjustments */
 @media (max-width: 768px) {
+  .game-header {
+    width: 95%; /* Match container width on mobile */
+  }
+  
   .game-header h1 {
     font-size: 3.2rem; /* LARGER TITLE ON MOBILE */
     margin: 10px 0 0.5rem 0;
