@@ -9,12 +9,10 @@
   margin: 5px auto 10px;
   text-align: center;
   width: 100%;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-  border-bottom: none !important;
-  box-shadow: none !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Level selector title - centered */
@@ -23,9 +21,9 @@
   margin-bottom: 8px;
   font-family: 'Trebuchet MS', sans-serif;
   font-weight: bold;
-  text-align: center !important;
+  text-align: center;
   text-shadow: 0px 1px 2px rgba(255, 255, 255, 0.8);
-  width: 100% !important;
+  width: 100%;
 }
 
 /* Flashing arrows animation */
@@ -47,14 +45,14 @@
    ========================================================================== */
 
 .level-scroller-container {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  height: 60px !important;
-  margin: 15px auto !important;
-  width: 100% !important;
-  max-width: 320px !important;
-  position: relative !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60px;
+  margin: 15px auto;
+  width: 100%;
+  max-width: 320px;
+  position: relative;
 }
 
 /* ==========================================================================
@@ -63,51 +61,54 @@
 
 /* Level button container */
 .level-display-container {
-  position: relative !important;
-  flex: 1 !important;
-  height: 100% !important;
-  max-width: 168px !important;
-  overflow: hidden !important;
+  position: relative;
+  flex: 1;
+  height: 100%;
+  max-width: 168px;
+  overflow: hidden;
 }
 
 /* Base level button styles */
 .level-btn-scrollable {
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  font-size: 1.2rem !important;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
   
   /* Hide by default */
-  opacity: 0 !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
-  transition: opacity 0.3s ease, visibility 0.3s ease !important;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  
+  /* Remove box-shadow - will use metallic-button class styles instead */
+  box-shadow: none;
   
   /* Ensure proper z-index */
-  z-index: 1 !important;
+  z-index: 1;
   
   /* Border radius - only round left/right corners based on position */
-  border-radius: 0 !important;
+  border-radius: 0;
 }
 
 /* VISIBLE STATE - Make button visible */
 .level-btn-scrollable.visible {
-  opacity: 1 !important;
-  visibility: visible !important;
-  pointer-events: auto !important;
-  z-index: 10 !important;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  z-index: 10;
 }
 
 /* Make locked levels semi-transparent with lock icon */
 .level-btn-scrollable.locked {
-  opacity: 0.7 !important; /* Keep button semi-transparent */
-  pointer-events: auto !important;
-  position: relative !important;
+  opacity: 0.7; /* Keep button semi-transparent */
+  pointer-events: auto;
+  position: relative;
 }
 
 /* Add lock icon for locked levels */
@@ -126,48 +127,47 @@
    ARROW BUTTONS - Squared and attached to the level button
    ========================================================================== */
 
-/* Base arrow button - ensure it inherits metallic-button styles */
+/* Base arrow button */
 .level-arrow {
-  aspect-ratio: 1/1 !important; /* Make it a perfect square */
-  height: 100% !important;
-  width: auto !important; /* Width will be determined by aspect ratio */
-  flex: 0 0 auto !important; /* Prevent flex stretching */
-  padding: 0 !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
+  aspect-ratio: 1/1; /* Make it a perfect square */
+  height: 100%;
+  flex: 0 0 auto; /* Prevent flex stretching */
+  width: 60px; /* Set width to match height */
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   
-  /* Reset any conflicting styles */
-  min-width: unset !important;
-  min-height: unset !important;
+  /* Remove box-shadow - will inherit from metallic-button class */
+  box-shadow: none;
   
   /* Square corners except for outer edges */
-  border-radius: 0 !important;
+  border-radius: 0;
 }
 
 /* Up/left arrow - round left corners only */
 .level-arrow.up-arrow {
-  border-top-left-radius: 4px !important;
-  border-bottom-left-radius: 4px !important;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
 }
 
 /* Down/right arrow - round right corners only */
 .level-arrow.down-arrow {
-  border-top-right-radius: 4px !important;
-  border-bottom-right-radius: 4px !important;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
 }
 
 /* Arrow SVG styling */
 .level-arrow svg {
-  width: 24px !important;
-  height: 24px !important;
+  width: 24px;
+  height: 24px;
   filter: drop-shadow(0px 1px 1px rgba(255, 255, 255, 0.7))
-         drop-shadow(0px -1px 1px rgba(0, 0, 0, 0.4)) !important;
-  fill: #444 !important;
-  stroke: #444 !important;
-  stroke-width: 1px !important;
-  margin: 0 auto !important; /* Center horizontally */
-  display: block !important; /* Needed for margin auto to work */
+         drop-shadow(0px -1px 1px rgba(0, 0, 0, 0.4));
+  fill: #444;
+  stroke: #444;
+  stroke-width: 1px;
+  margin: 0 auto; /* Center horizontally */
+  display: block; /* Needed for margin auto to work */
 }
 
 /* ==========================================================================
@@ -177,74 +177,77 @@
 /* Mobile Optimizations */
 @media (max-width: 768px) {
   .level-scroller-container {
-    height: 50px !important;
-    max-width: 260px !important;
+    height: 44px;
+    max-width: 260px;
+  }
+  
+  .level-button-group {
+    height: 44px;
+    max-width: 260px; /* Match parent container */
   }
   
   .level-display-container {
-    flex: 1 !important;
-    max-width: 150px !important; /* Slightly reduced for even proportion */
-    height: 44px !important; /* Fixed height to match arrow buttons */
+    flex: 1;
+    max-width: 150px; /* Fixed middle section width */
+    height: 44px;
   }
   
   .level-btn-scrollable {
-    font-size: 1.1rem !important;
-    height: 44px !important; /* Match container height */
+    font-size: 1.1rem;
+    height: 100%; /* Take full height of container */
   }
   
-  /* Make arrow buttons perfect squares based on the height */
   .level-arrow {
-    height: 44px !important;
-    width: 44px !important; /* Explicit width = height for square */
-    aspect-ratio: 1/1 !important;
-    flex: 0 0 44px !important; /* Fixed size, won't grow or shrink */
+    height: 44px;
+    width: 44px; /* Match height for square */
+    flex: 0 0 44px; /* Fixed size, won't grow or shrink */
   }
   
   .level-arrow svg {
-    width: 20px !important;
-    height: 20px !important;
+    width: 20px;
+    height: 20px;
   }
 }
 
 /* Even smaller screens */
 @media (max-width: 375px) {
   .level-scroller-container {
-    height: 40px !important;
-    max-width: 220px !important;
+    height: 40px;
+    max-width: 220px;
   }
   
   .level-display-container {
-    flex: 1 !important;
-    max-width: 140px !important; /* Fixed width to prevent squishing */
-    height: 40px !important; /* Match container height */
+    flex: 1;
+    max-width: 140px; /* Fixed width to prevent squishing */
+    height: 40px;
   }
   
   .level-btn-scrollable {
-    font-size: 1rem !important;
-    height: 40px !important; /* Match container height */
+    font-size: 1rem;
+    height: 100%; /* Take full height of container */
   }
   
   .level-arrow {
-    height: 40px !important; 
-    width: 40px !important; /* Explicit width = height for square */
-    flex: 0 0 40px !important; /* Fixed size, won't grow or shrink */
+    height: 40px; 
+    width: 40px; /* Match height for square */
+    flex: 0 0 40px; /* Fixed size, won't grow or shrink */
   }
   
   .level-arrow svg {
-    width: 18px !important;
-    height: 18px !important;
+    width: 18px;
+    height: 18px;
   }
 }
 
 /* Touch device optimizations */
 .touch-device .level-arrow {
-  min-height: 44px !important;
-  min-width: 44px !important; /* Match min-height for touch targets */
+  min-height: 44px;
+  min-width: 44px; /* Match min-height for touch targets */
 }
 
 /* Clean up animation classes to prevent overriding metallic-button */
 .level-btn-scrollable.clicked,
 .level-arrow.clicked {
-  /* Use the standard metallic-button.clicked animation */
-  animation: button-pulse var(--pulse-speed, 0.2s) ease-in-out forwards !important;
+  /* No custom animation here - will use metallic-button.clicked */
+  animation: button-pulse var(--pulse-speed, 0.2s) ease-in-out;
 }
