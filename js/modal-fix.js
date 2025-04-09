@@ -314,12 +314,48 @@ function ensureModalCssIsApplied() {
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
         }
         
-        /* Username area specific sizing */
+        /* Username area specific sizing - UPDATED */
         body > #username-area-container .username-area {
             width: 92% !important;
-            max-width: 340px !important;
-            padding: 15px !important;
+            max-width: 380px !important; /* Increased from 340px */
+            padding: 20px !important; /* Increased padding */
             margin: 0 auto !important;
+        }
+        
+        /* Username prompt centered - ADDED */
+        body > #username-area-container .username-area .username-prompt {
+            text-align: center !important;
+            width: 100% !important;
+            margin-bottom: 15px !important;
+            font-size: 1.1rem !important;
+        }
+        
+        /* Fix for input wrapper to allow vertical layout - ADDED */
+        body > #username-area-container .username-area .input-wrapper {
+            display: flex !important;
+            flex-direction: column !important;
+            width: 100% !important;
+            align-items: center !important;
+        }
+        
+        /* Input field improvements - ADDED */
+        body > #username-area-container .username-area #username-input {
+            width: 90% !important;
+            margin: 0 auto 15px auto !important;
+            display: block !important;
+            font-size: 1.1rem !important;
+            padding: 10px !important;
+            text-align: center !important;
+            box-sizing: border-box !important;
+        }
+        
+        /* Submit button positioning - ADDED */
+        body > #username-area-container .username-area #submit-username {
+            display: block !important;
+            margin: 10px auto !important;
+            width: 140px !important;
+            font-size: 1.1rem !important;
+            padding: 10px !important;
         }
         
         /* Leaderboard specific sizing */
@@ -394,11 +430,11 @@ function ensureModalCssIsApplied() {
             z-index: 10001 !important;
         }
         
-        /* Override styles for close button */
+        /* Override styles for close button - UPDATED */
         body #return-to-record-btn {
             position: absolute !important;
-            top: 10px !important;
-            right: 10px !important;
+            top: 5px !important;
+            right: 5px !important;
             z-index: 10001 !important;
         }
         
@@ -406,7 +442,7 @@ function ensureModalCssIsApplied() {
             /* Mobile adjustments */
             body > #username-area-container .username-area {
                 width: 95% !important;
-                padding: 10px !important;
+                padding: 15px !important; /* Updated from 10px */
             }
             
             body > #leaderboard-table-container .leaderboard-table {
@@ -424,18 +460,30 @@ function ensureModalCssIsApplied() {
                 font-size: 0.8rem !important;
             }
             
-            /* Move return button to bottom right on mobile */
+            /* Input field adjustments for mobile - ADDED */
+            body > #username-area-container .username-area #username-input {
+                width: 95% !important;
+                font-size: 1rem !important;
+            }
+            
+            /* Submit button adjustments for mobile - ADDED */
+            body > #username-area-container .username-area #submit-username {
+                width: 95% !important;
+                max-width: 200px !important;
+            }
+            
+            /* Mobile adjustments for the close button - UPDATED */
             body #return-to-record-btn {
-                top: auto !important;
-                bottom: 10px !important;
-                right: 10px !important;
+                position: absolute !important;
+                top: 5px !important;
+                right: 5px !important;
             }
         }
     `;
     
     document.head.appendChild(style);
     console.log('Critical modal CSS applied');
-}
+}    
     
     // Additional function to manually fix and open modals if needed
     window.fixAndOpenUsernameModal = function() {
