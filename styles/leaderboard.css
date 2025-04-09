@@ -395,13 +395,15 @@ body > #leaderboard-table-container #close-leaderboard-btn {
 }
 
 /* Row styling with alternating backgrounds */
+body #leaderboard-table .leaderboard-row,
+body .leaderboard-table .leaderboard-row,
 .leaderboard-row {
-    display: grid;
-    grid-template-columns: 40px minmax(80px, 1fr) 70px 80px;
-    column-gap: 10px;
-    padding: 8px;
-    align-items: center;
-    border-bottom: 1px solid var(--btn-metal-medium);
+    display: grid !important;
+    grid-template-columns: 40px minmax(80px, 1fr) 70px 80px !important;
+    column-gap: 10px !important;
+    padding: 8px !important;
+    align-items: center !important;
+    border-bottom: 1px solid var(--btn-metal-medium) !important;
 }
 
 .leaderboard-row:last-child {
