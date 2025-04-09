@@ -1,7 +1,6 @@
 /**
  * button-effects.js - Improved button click effects
  * Adds consistent click animations and touch device optimizations
- * Ensures level scroller buttons work properly in all screen sizes
  */
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -9,23 +8,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Function to handle button clicks and reset hover states
     function setupButtonClickEffects() {
-        // Optional: Create audio element for tock sound
-        // Uncomment if sound effects are desired
-        /*
-        const tockSound = new Audio();
-        tockSound.src = 'data:audio/mp3;base64,...'; // Add base64 audio here
-        tockSound.load();
-        */
-
         // Add click handler to all metallic buttons
         document.querySelectorAll('.metallic-button').forEach(button => {
             button.addEventListener('click', (e) => {
-                // Optional: Play sound effect
-                /*
-                tockSound.currentTime = 0;
-                tockSound.play().catch(e => console.log('Audio play failed:', e));
-                */
-                
                 // Add haptic feedback if supported
                 if (navigator.vibrate) {
                     navigator.vibrate(20); // 20ms vibration
@@ -61,31 +46,6 @@ document.addEventListener('DOMContentLoaded', function() {
     function initializeLevelScrollerButtons() {
         console.log("Initializing level scroller buttons...");
         
-        // Monitor for when level buttons are added to DOM
-        const levelButtonsObserver = new MutationObserver(function(mutations) {
-            mutations.forEach(function(mutation) {
-                if (mutation.addedNodes && mutation.addedNodes.length > 0) {
-                    // If new nodes were added to the DOM
-                    setupLevelScrollerButtons();
-                }
-            });
-        });
-        
-        // Start observing the level buttons container
-        const levelButtonsContainer = document.querySelector('.level-buttons');
-        if (levelButtonsContainer) {
-            levelButtonsObserver.observe(levelButtonsContainer, { childList: true, subtree: true });
-        }
-        
-        // Initial setup
-        setupLevelScrollerButtons();
-        
-        // Retry after a delay to catch any buttons added after initial DOM load
-        setTimeout(setupLevelScrollerButtons, 500);
-        setTimeout(setupLevelScrollerButtons, 1000);
-    }
-    
-    function setupLevelScrollerButtons() {
         // Set up arrow buttons
         const arrowButtons = document.querySelectorAll('.level-arrow');
         if (arrowButtons.length > 0) {
@@ -97,16 +57,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     button.classList.add('metallic-button');
                 }
                 
-                // Clear any inline styles that might be interfering
+                // Clear any box-shadow to ensure consistency
+                button.style.boxShadow = 'none';
+                
+                // Remove any CSS properties that might be causing problems
                 if (window.innerWidth <= 768) {
                     // Mobile: Ensure square dimensions
-                    button.style.height = '44px';
-                    button.style.width = '44px';
-                    button.style.padding = '0';
-                    button.style.boxShadow = 'none';
-                } else {
-                    // Reset desktop styles
-                    button.style.boxShadow = 'none';
+                    button.style.width = button.style.height;
+                    button.style.aspectRatio = '1/1';
                 }
             });
         }
@@ -122,14 +80,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     button.classList.add('metallic-button');
                 }
                 
-                // Clear any inline styles that might be interfering
-                if (window.innerWidth <= 768) {
-                    // Mobile: Ensure slightly less height
-                    button.style.boxShadow = 'none';
-                } else {
-                    // Reset desktop styles
-                    button.style.boxShadow = 'none';
-                }
+                // Clear any box-shadow to ensure consistency
+                button.style.boxShadow = 'none';
             });
         }
     }
@@ -176,7 +128,7 @@ document.addEventListener('DOMContentLoaded', function() {
         centerLevelSelector();
         
         // Re-setup level buttons for proper dimensions
-        setTimeout(setupLevelScrollerButtons, 300);
+        setTimeout(initializeLevelScrollerButtons, 300);
     });
 });
 
@@ -203,11 +155,9 @@ function centerLevelSelector() {
         
         // Adjust container based on screen size
         if (window.innerWidth <= 768) {
-            // Mobile dimensions
-            levelScrollerContainer.style.height = '44px';
-            
-            // Set arrow buttons to 44px square
-            document.querySelectorAll('.level-arrow').forEach(btn => {
+            // Mobile dimensions - make arrow buttons square
+            const arrowButtons = document.querySelectorAll('.level-arrow');
+            arrowButtons.forEach(btn => {
                 btn.style.height = '44px';
                 btn.style.width = '44px';
                 btn.style.flex = '0 0 44px';
@@ -217,6 +167,7 @@ function centerLevelSelector() {
             const levelDisplayContainer = levelScrollerContainer.querySelector('.level-display-container');
             if (levelDisplayContainer) {
                 levelDisplayContainer.style.height = '44px';
+                levelDisplayContainer.style.maxWidth = '150px';
             }
         }
     }
