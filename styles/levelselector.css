@@ -1,6 +1,6 @@
 /* ==========================================================================
-   LEVEL SCROLLER - SIMPLIFIED & FIXED
-   Removes screws, makes buttons narrower, and ensures proper alignment
+   LEVEL SCROLLER - REDESIGNED & FIXED
+   Consistent styling, proper alignment, and fixed button behavior
    ========================================================================== */
 
 /* Level selector container - centered */
@@ -8,6 +8,11 @@
   padding: 10px 0px;
   margin: 5px auto 10px;
   text-align: center;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Level selector title - centered */
@@ -36,7 +41,7 @@
 }
 
 /* ==========================================================================
-   LEVEL SCROLLER CONTAINER - Improved alignment
+   LEVEL SCROLLER CONTAINER - Improved alignment and centering
    ========================================================================== */
 
 .level-scroller-container {
@@ -72,7 +77,7 @@
   position: relative;
   flex: 1;
   height: 100%;
-  max-width: 168px; /* Increased by 10% from 153px */
+  max-width: 168px;
   overflow: hidden;
 }
 
@@ -94,20 +99,13 @@
   pointer-events: none;
   transition: opacity 0.3s ease, visibility 0.3s ease;
   
-  /* Remove screws - no ::before, ::after */
+  /* Remove box-shadow - will use metallic-button class styles instead */
+  box-shadow: none;
   
   /* Ensure proper z-index */
   z-index: 1;
   
-  /* Ensure box shadow is applied consistently */
-  box-shadow: 0 6px 12px 2px rgba(0, 0, 0, 0.22),
-              0 2px 6px 1px var(--btn-metal-shadow, rgba(0, 0, 0, 0.2)),
-              1px 0 4px rgba(0, 0, 0, 0.12),
-              -1px 0 4px rgba(0, 0, 0, 0.12),
-              inset 0 1px 2px var(--btn-metal-inner-highlight, rgba(255, 255, 255, 0.8)),
-              inset 0 -1px 2px var(--btn-metal-inner-shadow, rgba(0, 0, 0, 0.1));
-  
-  /* Adjust border radius - only round left/right corners based on position */
+  /* Border radius - only round left/right corners based on position */
   border-radius: 0;
 }
 
@@ -138,7 +136,6 @@
   filter: brightness(1.4); /* Boost brightness to counteract transparency */
 }
 
-
 /* ==========================================================================
    ARROW BUTTONS - Squared and attached to the level button
    ========================================================================== */
@@ -154,13 +151,8 @@
   align-items: center;
   justify-content: center;
   
-  /* Ensure box shadow is applied consistently */
-  box-shadow: 0 6px 12px 2px rgba(0, 0, 0, 0.22),
-              0 2px 6px 1px var(--btn-metal-shadow, rgba(0, 0, 0, 0.2)),
-              1px 0 4px rgba(0, 0, 0, 0.12),
-              -1px 0 4px rgba(0, 0, 0, 0.12),
-              inset 0 1px 2px var(--btn-metal-inner-highlight, rgba(255, 255, 255, 0.8)),
-              inset 0 -1px 2px var(--btn-metal-inner-shadow, rgba(0, 0, 0, 0.1));
+  /* Remove explicit box-shadow, will use metallic-button class */
+  box-shadow: none;
   
   /* Square corners except for outer edges */
   border-radius: 0;
@@ -214,26 +206,12 @@
   
   .level-btn-scrollable {
     font-size: 1.1rem;
-    /* Maintain consistent shadow */
-    box-shadow: 0 4px 8px 2px rgba(0, 0, 0, 0.2),
-                0 2px 5px 1px var(--btn-metal-shadow, rgba(0, 0, 0, 0.2)),
-                1px 0 3px rgba(0, 0, 0, 0.1),
-                -1px 0 3px rgba(0, 0, 0, 0.1),
-                inset 0 1px 2px var(--btn-metal-inner-highlight, rgba(255, 255, 255, 0.8)),
-                inset 0 -1px 2px var(--btn-metal-inner-shadow, rgba(0, 0, 0, 0.1));
   }
   
   .level-arrow {
     height: 44px;
     width: 44px; /* Explicit width = height for square */
     flex: 0 0 44px; /* Fixed size, won't grow or shrink */
-    /* Maintain consistent shadow */
-    box-shadow: 0 4px 8px 2px rgba(0, 0, 0, 0.2),
-                0 2px 5px 1px var(--btn-metal-shadow, rgba(0, 0, 0, 0.2)),
-                1px 0 3px rgba(0, 0, 0, 0.1),
-                -1px 0 3px rgba(0, 0, 0, 0.1),
-                inset 0 1px 2px var(--btn-metal-inner-highlight, rgba(255, 255, 255, 0.8)),
-                inset 0 -1px 2px var(--btn-metal-inner-shadow, rgba(0, 0, 0, 0.1));
   }
   
   .level-arrow svg {
@@ -261,26 +239,12 @@
   
   .level-btn-scrollable {
     font-size: 1rem;
-    /* Maintain consistent shadow */
-    box-shadow: 0 3px 6px 1px rgba(0, 0, 0, 0.18),
-                0 1px 4px 1px var(--btn-metal-shadow, rgba(0, 0, 0, 0.18)),
-                1px 0 2px rgba(0, 0, 0, 0.08),
-                -1px 0 2px rgba(0, 0, 0, 0.08),
-                inset 0 1px 1px var(--btn-metal-inner-highlight, rgba(255, 255, 255, 0.8)),
-                inset 0 -1px 1px var(--btn-metal-inner-shadow, rgba(0, 0, 0, 0.1));
   }
   
   .level-arrow {
     height: 40px; 
     width: 40px; /* Explicit width = height for square */
     flex: 0 0 40px; /* Fixed size, won't grow or shrink */
-    /* Maintain consistent shadow */
-    box-shadow: 0 3px 6px 1px rgba(0, 0, 0, 0.18),
-                0 1px 4px 1px var(--btn-metal-shadow, rgba(0, 0, 0, 0.18)),
-                1px 0 2px rgba(0, 0, 0, 0.08),
-                -1px 0 2px rgba(0, 0, 0, 0.08),
-                inset 0 1px 1px var(--btn-metal-inner-highlight, rgba(255, 255, 255, 0.8)),
-                inset 0 -1px 1px var(--btn-metal-inner-shadow, rgba(0, 0, 0, 0.1));
   }
   
   .level-arrow svg {
@@ -295,32 +259,8 @@
   min-width: 44px; /* Match min-height for touch targets */
 }
 
-/* Animation for button click */
-@keyframes button-pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.02); }
-  100% { transform: scale(1); }
-}
-
-/* Use the animation but ensure it returns to normal state */
+/* Clean up animation classes to prevent overriding metallic-button */
 .level-btn-scrollable.clicked,
 .level-arrow.clicked {
-  animation: button-pulse 0.2s ease-in-out;
-  /* Reset any hover styles after the animation */
-  background: repeating-linear-gradient(
-    120deg,
-    var(--btn-metal-light, #f0f0f0) 0px,
-    var(--btn-metal-medium, #d0d0d0) 10px,
-    var(--btn-metal-light, #f0f0f0) 30px,
-    var(--btn-metal-mediumlight, #e0e0e0) 55px,
-    var(--btn-metal-medium, #d0d0d0) 80px,
-    var(--btn-metal-mediumlight, #e0e0e0) 95px,
-    var(--btn-metal-light, #f0f0f0) 120px,
-    var(--btn-metal-medium, #d0d0d0) 135px
-  ) !important;
-  transform: none !important;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2),
-              inset 0 1px 2px rgba(255, 255, 255, 0.8),
-              inset 0 -1px 2px rgba(0, 0, 0, 0.1) !important;
-  border-bottom-width: 3px !important;
+  /* No custom animation here - will use metallic-button.clicked */
 }
