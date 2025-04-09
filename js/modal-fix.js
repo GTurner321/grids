@@ -274,107 +274,168 @@
     }
     
     // Ensure modal CSS is applied correctly
-    function ensureModalCssIsApplied() {
-        // Add a style element with critical modal CSS
-        const style = document.createElement('style');
-        style.textContent = `
-            /* Critical modal styles with high specificity */
-            body > #username-area-container.visible,
-            body > #leaderboard-table-container.visible {
-                display: flex !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-                z-index: 10000 !important;
-                position: fixed !important;
-                top: 0 !important;
-                left: 0 !important;
-                right: 0 !important;
-                bottom: 0 !important;
-                width: 100% !important;
-                height: 100% !important;
-                background-color: rgba(0, 0, 0, 0.75) !important;
-                animation: modalFadeInFixed 0.3s ease-in-out forwards !important;
-            }
-            
-            @keyframes modalFadeInFixed {
-                from { opacity: 0; }
-                to { opacity: 1; }
-            }
-            
-            /* Inner content styles */
-            body > #username-area-container .username-area,
-            body > #leaderboard-table-container .leaderboard-table {
-                display: block !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-                z-index: 10001 !important;
-                position: relative !important;
-                background-color: white !important;
-                border-radius: 8px !important;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
-            }
-            
-            /* Username area specific sizing */
-            body > #username-area-container .username-area {
-                width: 92% !important;
-                max-width: 340px !important;
-                padding: 15px !important;
-                margin: 0 auto !important;
-            }
-            
-            /* Leaderboard specific sizing */
-            body > #leaderboard-table-container .leaderboard-table {
-                width: 100% !important;
-                max-width: 480px !important;
-                max-height: 400px !important;
-                overflow-y: auto !important;
-                padding: 0 !important;
-                margin: 0 !important;
-            }
-            
-            /* Ensure titles and buttons in modals are visible */
-            body > #leaderboard-table-container .leaderboard-title {
-                color: white !important;
-                margin-bottom: 15px !important;
-                z-index: 10001 !important;
-            }
-            
-            body > #leaderboard-table-container #close-leaderboard-btn {
-                margin-top: 15px !important;
-                z-index: 10001 !important;
-            }
-            
-            /* Override styles for close button */
-            body #return-to-record-btn {
-                position: absolute !important;
-                top: 10px !important;
-                right: 10px !important;
-                z-index: 10001 !important;
-            }
-            
-            @media (max-width: 768px) {
-                /* Mobile adjustments */
-                body > #username-area-container .username-area {
-                    width: 95% !important;
-                    padding: 10px !important;
-                }
-                
-                body > #leaderboard-table-container .leaderboard-table {
-                    width: 95% !important;
-                }
-                
-                /* Move return button to bottom right on mobile */
-                body #return-to-record-btn {
-                    top: auto !important;
-                    bottom: 10px !important;
-                    right: 10px !important;
-                }
-            }
-        `;
+function ensureModalCssIsApplied() {
+    // Add a style element with critical modal CSS
+    const style = document.createElement('style');
+    style.textContent = `
+        /* Critical modal styles with high specificity */
+        body > #username-area-container.visible,
+        body > #leaderboard-table-container.visible {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            z-index: 10000 !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            background-color: rgba(0, 0, 0, 0.75) !important;
+            animation: modalFadeInFixed 0.3s ease-in-out forwards !important;
+        }
         
-        document.head.appendChild(style);
-        console.log('Critical modal CSS applied');
-    }
+        @keyframes modalFadeInFixed {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Inner content styles */
+        body > #username-area-container .username-area,
+        body > #leaderboard-table-container .leaderboard-table {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            z-index: 10001 !important;
+            position: relative !important;
+            background-color: white !important;
+            border-radius: 8px !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+        }
+        
+        /* Username area specific sizing */
+        body > #username-area-container .username-area {
+            width: 92% !important;
+            max-width: 340px !important;
+            padding: 15px !important;
+            margin: 0 auto !important;
+        }
+        
+        /* Leaderboard specific sizing */
+        body > #leaderboard-table-container .leaderboard-table {
+            width: 100% !important;
+            max-width: 480px !important;
+            max-height: 400px !important;
+            overflow-y: auto !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        
+        /* Critical leaderboard table layout fixes */
+        body > #leaderboard-table-container .leaderboard-table .leaderboard-row {
+            display: grid !important;
+            grid-template-columns: 40px minmax(80px, 1fr) 70px 80px !important;
+            column-gap: 10px !important;
+            padding: 8px !important;
+            align-items: center !important;
+            border-bottom: 1px solid #d0d0d0 !important;
+        }
+        
+        /* Header row styling with higher specificity */
+        body > #leaderboard-table-container .leaderboard-table .leaderboard-row.header {
+            background-color: #d0d0d0 !important;
+            font-weight: bold !important;
+            font-size: 0.8rem !important;
+            position: sticky !important;
+            top: 0 !important;
+            z-index: 10 !important;
+            border-radius: 3px 3px 0 0 !important;
+            padding: 10px 8px !important;
+        }
+        
+        /* Cell styling with higher specificity */
+        body > #leaderboard-table-container .leaderboard-table .leaderboard-cell {
+            font-size: 0.85rem !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            white-space: nowrap !important;
+        }
+        
+        /* Specific cell alignment */
+        body > #leaderboard-table-container .leaderboard-table .leaderboard-cell.rank {
+            text-align: center !important;
+        }
+        
+        body > #leaderboard-table-container .leaderboard-table .leaderboard-cell.name {
+            text-align: left !important;
+            padding-left: 5px !important;
+        }
+        
+        body > #leaderboard-table-container .leaderboard-table .leaderboard-cell.score {
+            text-align: right !important;
+            padding-right: 10px !important;
+        }
+        
+        body > #leaderboard-table-container .leaderboard-table .leaderboard-cell.date {
+            text-align: right !important;
+            padding-right: 5px !important;
+        }
+        
+        /* Ensure titles and buttons in modals are visible */
+        body > #leaderboard-table-container .leaderboard-title {
+            color: white !important;
+            margin-bottom: 15px !important;
+            z-index: 10001 !important;
+        }
+        
+        body > #leaderboard-table-container #close-leaderboard-btn {
+            margin-top: 15px !important;
+            z-index: 10001 !important;
+        }
+        
+        /* Override styles for close button */
+        body #return-to-record-btn {
+            position: absolute !important;
+            top: 10px !important;
+            right: 10px !important;
+            z-index: 10001 !important;
+        }
+        
+        @media (max-width: 768px) {
+            /* Mobile adjustments */
+            body > #username-area-container .username-area {
+                width: 95% !important;
+                padding: 10px !important;
+            }
+            
+            body > #leaderboard-table-container .leaderboard-table {
+                width: 95% !important;
+            }
+            
+            /* Mobile adjustments for leaderboard grid */
+            body > #leaderboard-table-container .leaderboard-table .leaderboard-row {
+                grid-template-columns: 35px minmax(70px, 1fr) 65px 70px !important;
+                column-gap: 5px !important;
+                padding: 6px !important;
+            }
+            
+            body > #leaderboard-table-container .leaderboard-table .leaderboard-cell {
+                font-size: 0.8rem !important;
+            }
+            
+            /* Move return button to bottom right on mobile */
+            body #return-to-record-btn {
+                top: auto !important;
+                bottom: 10px !important;
+                right: 10px !important;
+            }
+        }
+    `;
+    
+    document.head.appendChild(style);
+    console.log('Critical modal CSS applied');
+}
     
     // Additional function to manually fix and open modals if needed
     window.fixAndOpenUsernameModal = function() {
