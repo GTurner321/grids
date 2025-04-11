@@ -1150,35 +1150,36 @@ body {
 
 /* Locked segments - depressed appearance */
 .level-segment:not(.unlocked):not(.completed) {
-  /* Depressed look with inset shadows */
-  box-shadow: 
-    inset 0 2px 4px rgba(0, 0, 0, 0.25),
-    inset 0 1px 2px rgba(0, 0, 0, 0.2) !important;
-  /* Changed to darker lilac gradient */
-  background: linear-gradient(
-    to bottom,
-    var(--lilac-medium, #b7aec5) 0%,
-    var(--lilac-dark, #8b79a7) 100%
-  ) !important;
-  border-top: 1px solid var(--lilac-medium, #b7aec5) !important;
-  border-bottom: 1px solid var(--lilac-dark, #8b79a7) !important;
-}
-
-/* Unlocked segments - raised appearance but same height */
-.level-segment.unlocked {
-  /* Changed to light lilac gradient */
+  /* Use a gradient from light to medium instead of medium to dark */
   background: linear-gradient(
     to bottom,
     var(--lilac-light, #dfdbe5) 0%,
     var(--lilac-medium, #b7aec5) 100%
   ) !important;
-  /* Different shadow for raised appearance but no transform */
+  /* Rest of styling */
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.25),
+    inset 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+  border-top: 1px solid var(--lilac-light, #dfdbe5) !important;
+  border-bottom: 1px solid var(--lilac-medium, #b7aec5) !important;
+}
+
+/* Unlocked segments - raised appearance but same height */
+.level-segment.unlocked {
+  /* Make the gradient lighter by using --lilac-light for both start and end,
+     with maybe a touch of white at the start */
+  background: linear-gradient(
+    to bottom,
+    #f8f5ff 0%, /* Even lighter than --lilac-light */
+    var(--lilac-light, #dfdbe5) 100%
+  ) !important;
+  /* Rest of styling */
   box-shadow: 
     inset 0 -2px 4px rgba(0, 0, 0, 0.15),
     inset 0 1px 2px var(--btn-metal-inner-highlight, rgba(255, 255, 255, 0.9)) !important;
-  border-top: 1px solid var(--lilac-light, #dfdbe5) !important;
-  border-bottom: 1px solid var(--lilac-medium, #b7aec5) !important;
-  z-index: 1 !important; /* Ensure unlocked appears above locked */
+  border-top: 1px solid #ffffff !important; /* White top border */
+  border-bottom: 1px solid var(--lilac-light, #dfdbe5) !important;
+  z-index: 1 !important;
 }
 
 /* Completed segments - lighter green styling at same height */
