@@ -697,7 +697,7 @@ body {
 /* Apply metallic button base style from buttonsboxes.css */
 .game-controls button {
   /* Add metallic-button class via JavaScript or directly in HTML */
-  font-size: 0.9rem;
+  font-size: 1rem;
   padding: 8px 12px;
   height: 40px;
   flex: 1; /* Equal widths for all buttons */
@@ -743,7 +743,7 @@ body {
   }
   
   .game-controls button {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     padding: 6px 8px;
   }
   
@@ -821,16 +821,17 @@ body {
 }
 
 /* Bottom buttons specific styling - make them span full width */
+/* Bottom buttons specific styling - make them span full width */
 #record-score-btn, 
 #leaderboard-btn {
   flex: 1; /* Equal width for both buttons */
   height: 44px;
-  font-size: 1.1rem; /* Increased from 1rem (one size larger) */
+  font-size: 1rem; /* Reverted to original size */
   padding: 8px 15px;
-  min-width: 0; /* Remove min-width to allow full flexibility */
-  text-align: center; /* Ensure text is centered */
-  border-radius: 4px; /* Ensure consistent border radius */
-  transition: all 0.3s ease; /* Smooth transitions for all properties */
+  min-width: 0;
+  text-align: center;
+  border-radius: 4px;
+  transition: all 0.3s ease;
 }
 
 /* SVG icons in buttons */
@@ -896,7 +897,7 @@ body {
   
   #record-score-btn, 
   #leaderboard-btn {
-    font-size: 1.2rem; /* Increased by two sizes from original 0.9rem */
+    font-size: 0.9rem; /* Increased by two sizes from original 0.9rem */
     padding: 8px 10px;
   }
   
@@ -910,7 +911,7 @@ body {
 @media (max-width: 375px) {
   #record-score-btn, 
   #leaderboard-btn {
-    font-size: 1.1rem; /* Still increased compared to original size */
+    font-size: 0.8rem; /* Still increased compared to original size */
     padding: 6px 8px;
   }
   
