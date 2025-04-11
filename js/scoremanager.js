@@ -25,15 +25,15 @@ startLevel(level) {
     // Updated level point values
     const levelPoints = {
         1: 100,
-        2: 250,
-        3: 400,
-        4: 2000,
-        5: 2500,
-        6: 3000,
-        7: 3500,
-        8: 4000,
-        9: 4500,
-        10: 5000
+        2: 200,
+        3: 300,
+        4: 1000,
+        5: 1300,
+        6: 1600,
+        7: 1900,
+        8: 2200,
+        9: 2500,
+        10: 3000
     };
     this.maxPoints = levelPoints[level] || 2000;
         this.checkCount = 0;
