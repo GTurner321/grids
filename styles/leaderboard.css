@@ -228,76 +228,36 @@ body > #username-area-container .username-area {
     color: var(--btn-text-color);
 }
 
-/* Return button - now uses metallic styling */
+/* Return button - simplified styling */
 #return-to-record-btn {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
+    top: 5px;
+    right: 5px;
+    width: auto;
+    height: auto;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
+    font-size: 22px;
     cursor: pointer;
     z-index: 10001;
-    
-    /* Apply metallic button styles */
-    background: repeating-linear-gradient(
-        120deg,
-        var(--btn-metal-light) 0px,
-        var(--btn-metal-medium) 10px,
-        var(--btn-metal-light) 30px,
-        var(--btn-metal-mediumlight) 55px
-    );
-    border: 1px solid var(--btn-metal-border);
-    border-top: 1px solid var(--btn-metal-border-top);
-    border-bottom: 2px solid var(--btn-metal-border-bottom);
-    
-    color: var(--btn-text-color);
-    text-shadow: 0px 1px 1px var(--btn-text-shadow-light),
-                 0px -1px 1px var(--btn-text-shadow-dark);
-    
-    box-shadow: 0 2px 5px var(--btn-metal-shadow),
-                inset 0 1px 1px var(--btn-metal-inner-highlight),
-                inset 0 -1px 1px var(--btn-metal-inner-shadow);
-    transition: all 0.2s ease;
+    background: none;
+    border: none;
+    color: #333;
+    padding: 6px;
+    transition: color 0.2s ease;
 }
 
 #return-to-record-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25),
-                inset 0 1px 2px var(--btn-metal-inner-highlight),
-                inset 0 -1px 1px var(--btn-metal-inner-shadow);
-    background: repeating-linear-gradient(
-        120deg,
-        var(--btn-metal-lighter) 0px,
-        var(--btn-metal-light) 15px,
-        var(--btn-metal-lighter) 35px,
-        var(--btn-metal-mediumlight) 60px
-    );
+    color: #0066cc;
 }
 
 #return-to-record-btn:active {
-    transform: translateY(1px);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2),
-                inset 0 1px 1px var(--btn-metal-inner-shadow);
-    border-bottom-width: 1px;
+    color: #004c99;
 }
 
 /* Responsive adjustments for username area */
 @media (max-width: 768px) {
-    /* Return Button Mobile Positioning */
-    #return-to-record-btn {
-        top: auto;
-        bottom: 10px;
-        right: 10px;
-        width: 44px;
-        height: 44px;
-        font-size: 26px;
-    }
-    
     /* Input field adjustments */
     #username-input {
         width: 90%;
@@ -311,6 +271,7 @@ body > #username-area-container .username-area {
     #submit-username {
         padding: 10px 15px;
         font-size: 1rem;
+        min-width: 100px;
     }
     
     /* Rocket icon after Submit on mobile */
@@ -324,25 +285,19 @@ body > #username-area-container .username-area {
 @media (max-width: 480px) {
     body > #username-area-container .username-area {
         width: 95%;
-        padding: 10px;
+        padding: 15px 10px;
     }
     
     #submit-username {
         width: 85%;
         min-height: 44px;
     }
-    
-    #return-to-record-btn {
-        width: 40px;
-        height: 40px;
-        font-size: 22px;
-    }
 }
 
 @media (max-width: 320px) {
     body > #username-area-container .username-area {
         width: 98%;
-        padding: 8px;
+        padding: 12px 8px;
     }
     
     #submit-username {
