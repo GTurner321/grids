@@ -1,10 +1,10 @@
-// sequencegenerator.js - Updated version with improved fraction handling and level adjustments
+// sequencegenerator.js - Fixed version with improved fraction handling and unified logic
 
 const LEVEL_CONFIG = {
     1: { maxNum: 20, allowFractions: false, maxDenominator: 0, gridSize: 6 },
     2: { maxNum: 20, allowFractions: false, maxDenominator: 0, gridSize: 6 },
     3: { maxNum: 50, allowFractions: false, maxDenominator: 0, gridSize: 6, preferDivision: true },
-    4: { maxNum: 30, allowFractions: false, maxDenominator: 0, gridSize: 10 },  // Original level 1
+    4: { maxNum: 30, allowFractions: false, maxDenominator: 0, gridSize: 10 },
     5: { 
         maxNum: 99, 
         allowFractions: true, 
@@ -26,7 +26,7 @@ const LEVEL_CONFIG = {
         disallowFractionDivision: true,
         multiplicationThreshold: 10,
         multiplicationPreferenceRate: 0.5,
-        strictIntegerResults: true // Added to ensure integer results
+        strictIntegerResults: true
     },
     7: { 
         maxNum: 30, 
@@ -39,7 +39,7 @@ const LEVEL_CONFIG = {
         multiplicationPreferenceRate: 0.5,
         preferNonUnitFractions: true,
         nonUnitFractionRate: 0.75,
-        strictIntegerResults: true // Added to ensure integer results
+        strictIntegerResults: true
     },
     8: { 
         maxNum: 30, 
@@ -48,7 +48,7 @@ const LEVEL_CONFIG = {
         gridSize: 10,
         preferFractionOperations: true,
         fractionOperationRate: 0.5,
-        strictIntegerResults: true // Added to ensure integer results
+        strictIntegerResults: true
     },
     9: { 
         maxNum: 99, 
@@ -56,8 +56,8 @@ const LEVEL_CONFIG = {
         maxDenominator: 12, 
         gridSize: 10,
         preferFractionOperations: true, // Added as requested
-        fractionOperationRate: 0.5, // Same as level 8
-        strictIntegerResults: true // Added to ensure integer results
+        fractionOperationRate: 0.5,
+        strictIntegerResults: true
     },
     10: { 
         maxNum: 99, 
@@ -68,11 +68,11 @@ const LEVEL_CONFIG = {
         preferFractionOperations: true,
         fractionOperationRate: 0.75, // Increased to 75% as requested
         preferNonUnitFractions: true,
-        nonUnitFractionRate: 0.9, // High preference for non-unit fractions
+        nonUnitFractionRate: 0.9,
         preferLargeNumbers: true,
         largeNumberThreshold: 30,
-        strictIntegerResults: true, // Added to ensure integer results
-        maxFractionAttemptsBeforeFallback: 10 // Limit attempts before trying addition/subtraction
+        strictIntegerResults: true,
+        maxFractionAttemptsBeforeFallback: 10
     }
 };
 
@@ -103,12 +103,10 @@ class Fraction {
     }
 }
 
-// Modified fraction generation with safety checks
 function generateFraction(maxDenominator = 12, unitFractionOnly = false, preferNonUnit = false) {
-    // Make sure denominator is at least 2
     maxDenominator = Math.max(2, maxDenominator);
     
-    // Case 1: Generate unit fraction (simplest case)
+    // Case 1: Generate unit fraction
     if (unitFractionOnly) {
         const denominator = Math.floor(Math.random() * (maxDenominator - 1)) + 2;
         return {
@@ -119,16 +117,12 @@ function generateFraction(maxDenominator = 12, unitFractionOnly = false, preferN
         };
     }
     
-    // Case 2: Generate non-unit fraction if preferred and probability check passes
+    // Case 2: Generate non-unit fraction if preferred
     const useNonUnitFraction = preferNonUnit && Math.random() < (preferNonUnit === true ? 0.75 : preferNonUnit);
     
     if (useNonUnitFraction) {
-        // Choose denominator first
         const denominator = Math.floor(Math.random() * (maxDenominator - 1)) + 2;
-        
-        // Safety check - ensure denominator is valid
         if (denominator < 2) {
-            // Fallback to unit fraction if invalid
             return {
                 numerator: 1,
                 denominator: 2,
@@ -137,13 +131,11 @@ function generateFraction(maxDenominator = 12, unitFractionOnly = false, preferN
             };
         }
         
-        // Choose a numerator that is not 1 (to make it non-unit), but less than denominator
         let numeratorOptions = [];
         for (let i = 2; i < denominator; i++) {
             numeratorOptions.push(i);
         }
         
-        // If no valid options, fall back to unit fraction
         if (numeratorOptions.length === 0) {
             return {
                 numerator: 1,
@@ -153,10 +145,7 @@ function generateFraction(maxDenominator = 12, unitFractionOnly = false, preferN
             };
         }
         
-        // Pick a random numerator
         const numerator = numeratorOptions[Math.floor(Math.random() * numeratorOptions.length)];
-        
-        // Simplify the fraction
         const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
         const divisor = gcd(numerator, denominator);
         
@@ -172,7 +161,6 @@ function generateFraction(maxDenominator = 12, unitFractionOnly = false, preferN
     const denominator = Math.floor(Math.random() * (maxDenominator - 1)) + 2;
     const numerator = Math.floor(Math.random() * (denominator - 1)) + 1;
     
-    // Simplify the fraction
     const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
     const divisor = gcd(numerator, denominator);
     
@@ -184,17 +172,12 @@ function generateFraction(maxDenominator = 12, unitFractionOnly = false, preferN
     };
 }
 
-// Generate a specific fraction that will give an integer result when operated on num1
 function generateFractionWithIntegerResult(num1, operator, maxDenominator, unitFractionOnly, preferNonUnit) {
-    // Ensure num1 is a number
     const n1 = num1 instanceof Object ? num1.toDecimal() : num1;
     
-    // Case 1: Multiplication - find a fraction that gives an integer when multiplied by n1
+    // For multiplication - find fractions that give integer results
     if (operator === 'x') {
-        // Approach: Find the factors of n1, then construct fractions that, when multiplied by n1, give integers
         let possibleDenominators = [];
-        
-        // Add reasonable denominators
         for (let denom = 2; denom <= maxDenominator; denom++) {
             possibleDenominators.push(denom);
         }
@@ -205,7 +188,6 @@ function generateFractionWithIntegerResult(num1, operator, maxDenominator, unitF
         for (const denominator of possibleDenominators) {
             // For unit fractions, numerator is always 1
             if (unitFractionOnly) {
-                // Check if n1 / denominator is an integer
                 if (Number.isInteger(n1 / denominator) && n1 / denominator > 0) {
                     return {
                         numerator: 1,
@@ -214,13 +196,10 @@ function generateFractionWithIntegerResult(num1, operator, maxDenominator, unitF
                         toDecimal() { return 1 / this.denominator; }
                     };
                 }
-            } 
-            // For non-unit fractions
-            else {
-                // Consider all possible numerators for this denominator
+            } else {
+                // For non-unit fractions
                 let numeratorOptions = [];
                 for (let num = 1; num < denominator; num++) {
-                    // Check if n1 * (num/denominator) gives an integer result
                     if (Number.isInteger(n1 * num / denominator) && n1 * num / denominator > 0) {
                         numeratorOptions.push(num);
                     }
@@ -233,7 +212,6 @@ function generateFractionWithIntegerResult(num1, operator, maxDenominator, unitF
                 
                 if (numeratorOptions.length > 0) {
                     const numerator = numeratorOptions[Math.floor(Math.random() * numeratorOptions.length)];
-                    // Simplify the fraction
                     const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
                     const divisor = gcd(numerator, denominator);
                     
@@ -248,11 +226,8 @@ function generateFractionWithIntegerResult(num1, operator, maxDenominator, unitF
         }
     }
     
-    // Case 2: Division - find a fraction that gives an integer when num1 is divided by it
+    // For division
     if (operator === '/') {
-        // For division to yield an integer: n1 ÷ (num/denom) = integer
-        // This means: n1 * denom / num = integer
-        
         let possibleDenominators = [];
         for (let denom = 2; denom <= maxDenominator; denom++) {
             possibleDenominators.push(denom);
@@ -261,9 +236,7 @@ function generateFractionWithIntegerResult(num1, operator, maxDenominator, unitF
         possibleDenominators = shuffleArray(possibleDenominators);
         
         for (const denominator of possibleDenominators) {
-            // For unit fractions, numerator is always 1
             if (unitFractionOnly) {
-                // Check if n1 * denominator is an integer
                 if (Number.isInteger(n1 * denominator) && n1 * denominator > 0) {
                     return {
                         numerator: 1,
@@ -272,26 +245,20 @@ function generateFractionWithIntegerResult(num1, operator, maxDenominator, unitF
                         toDecimal() { return 1 / this.denominator; }
                     };
                 }
-            }
-            // For non-unit fractions
-            else {
+            } else {
                 let numeratorOptions = [];
                 for (let num = 1; num < denominator; num++) {
-                    // n1 / (num/denom) = n1 * denom / num
-                    // This must be an integer
                     if (Number.isInteger(n1 * denominator / num) && n1 * denominator / num > 0) {
                         numeratorOptions.push(num);
                     }
                 }
                 
-                // Filter for non-unit fractions if preferred
                 if (preferNonUnit && numeratorOptions.length > 1) {
                     numeratorOptions = numeratorOptions.filter(num => num > 1);
                 }
                 
                 if (numeratorOptions.length > 0) {
                     const numerator = numeratorOptions[Math.floor(Math.random() * numeratorOptions.length)];
-                    // Simplify the fraction
                     const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
                     const divisor = gcd(numerator, denominator);
                     
@@ -306,16 +273,17 @@ function generateFractionWithIntegerResult(num1, operator, maxDenominator, unitF
         }
     }
     
-    // If we couldn't find a suitable fraction, return null
+    // If we couldn't find a suitable fraction
     return null;
 }
 
 function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
+    const newArray = [...array];
+    for (let i = newArray.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
+        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
     }
-    return array;
+    return newArray;
 }
 
 function isValidNumber(num, config) {
@@ -357,7 +325,6 @@ function getFactorsOf(number) {
     return factors.sort((a, b) => a - b);
 }
 
-// Improved calculation with strict integer checking
 function calculateResult(num1, operator, num2, config) {
     const n1 = num1 instanceof Object ? num1.toDecimal() : num1;
     const n2 = num2 instanceof Object ? num2.toDecimal() : num2;
@@ -376,15 +343,16 @@ function calculateResult(num1, operator, num2, config) {
     
     if (result <= 0 || result > config.maxNum || isNaN(result)) return null;
     
-    // For strict integer results (when working with fractions)
-    if (config.strictIntegerResults && !Number.isInteger(result)) {
+    // For strict integer results when using fractions
+    if (config.strictIntegerResults && 
+        (num1 instanceof Object || num2 instanceof Object) && 
+        !Number.isInteger(result)) {
         return null;
     }
     
     if (Number.isInteger(result)) return result;
     if (!config.allowFractions) return null;
     
-    // Return as a fraction if needed
     for (let denominator = 2; denominator <= config.maxDenominator; denominator++) {
         const numerator = Math.round(result * denominator);
         if (numerator <= 11 && numerator > 0 && 
@@ -397,48 +365,38 @@ function calculateResult(num1, operator, num2, config) {
     return null;
 }
 
-// Unified logic for operator and operand selection with improved fraction handling
 function selectOperatorAndNum2(num1, level, config, fractionAttempts = 0) {
-    // Make sure we have the correct config
     config = LEVEL_CONFIG[level] || config;
     const n1 = num1 instanceof Object ? num1.toDecimal() : num1;
     let operator, num2;
     
-    // Check if we need to fall back to addition/subtraction after multiple fraction attempts
+    // Check if we need to fall back
     const useFallback = level === 10 && 
         fractionAttempts >= (config.maxFractionAttemptsBeforeFallback || 10);
     
     if (useFallback) {
-        // Force addition or subtraction as a fallback
         operator = Math.random() < 0.5 ? '+' : '-';
         
-        // For level 10, prefer large numbers for addition/subtraction
         if (config.preferLargeNumbers && config.largeNumberThreshold) {
-            // For addition: choose a number that won't exceed maxNum
             if (operator === '+') {
                 const upperLimit = Math.min(config.maxNum - n1, config.maxNum);
                 const lowerLimit = Math.min(config.largeNumberThreshold, upperLimit);
                 
                 if (upperLimit > lowerLimit) {
-                    // Generate a number between the threshold and upper limit
                     num2 = Math.floor(Math.random() * (upperLimit - lowerLimit)) + lowerLimit;
                     return { operator, num2 };
                 }
-            }
-            // For subtraction: ensure we don't go below 1
-            else if (operator === '-') {
+            } else if (operator === '-') {
                 const upperLimit = Math.min(n1 - 1, config.maxNum);
                 const lowerLimit = Math.min(config.largeNumberThreshold, upperLimit);
                 
                 if (upperLimit >= lowerLimit) {
-                    // Generate a number between the threshold and upper limit
                     num2 = Math.floor(Math.random() * (upperLimit - lowerLimit + 1)) + lowerLimit;
                     return { operator, num2 };
                 }
             }
         }
         
-        // If we couldn't use large numbers, just use regular addition/subtraction
         if (operator === '+') {
             const maxAdd = Math.min(config.maxNum - n1, 15);
             num2 = Math.floor(Math.random() * maxAdd) + 1;
@@ -450,9 +408,7 @@ function selectOperatorAndNum2(num1, level, config, fractionAttempts = 0) {
         return { operator, num2 };
     }
     
-    // ===== SPECIAL CASE HANDLING FOR SPECIFIC LEVELS =====
-    
-    // LEVEL 10: Force fraction operations with high preference for non-unit fractions
+    // LEVEL 10: Force fraction operations 
     if (level === 10 && n1 >= 2 && n1 <= 99 && config.forceFractionOps && Math.random() < 0.8) {
         if (Math.random() < 0.5) {
             // Multiplication by fraction
@@ -482,7 +438,6 @@ function selectOperatorAndNum2(num1, level, config, fractionAttempts = 0) {
                 return { operator: 'x', num2: fractionNum2 };
             }
         } else {
-            // Only use division if not disallowed for this level
             if (!config.disallowFractionDivision) {
                 const fractionNum2 = generateFractionWithIntegerResult(
                     n1, '/', config.maxDenominator, false, level === 9 ? 0.6 : false
@@ -494,15 +449,13 @@ function selectOperatorAndNum2(num1, level, config, fractionAttempts = 0) {
         }
     }
     
-    // LEVEL 5: Division for large non-prime numbers but never division by fractions
+    // LEVEL 5: Division for large non-prime numbers
     if (level === 5 && n1 >= config.divisionThreshold && !isPrime(n1) && Math.random() < config.divisionPreferenceRate) {
         const factors = getFactorsOf(n1);
         
         if (factors.length > 0) {
-            // Choose a random factor
             const factor = factors[Math.floor(Math.random() * factors.length)];
             
-            // Division or multiplication by 1/2
             if (factor === 2 && Math.random() < 0.5 && !config.disallowFractionDivision) {
                 return {
                     operator: 'x',
@@ -524,7 +477,7 @@ function selectOperatorAndNum2(num1, level, config, fractionAttempts = 0) {
         }
     }
     
-    // LEVEL 7: Multiply by non-unit fractions (unified path)
+    // LEVEL 7: Multiply by non-unit fractions
     if (level === 7 && n1 >= config.multiplicationThreshold && Math.random() < config.multiplicationPreferenceRate) {
         const fractionNum2 = generateFractionWithIntegerResult(
             n1, 'x', config.maxDenominator, false, config.preferNonUnitFractions ? config.nonUnitFractionRate : false
@@ -534,9 +487,7 @@ function selectOperatorAndNum2(num1, level, config, fractionAttempts = 0) {
         }
     }
     
-    // ===== GENERAL CASE HANDLING FOR ALL LEVELS =====
-    
-    // For large numbers, try to make them smaller with subtraction or division
+    // For large numbers, try to make them smaller
     if (n1 > 16) {
         if (Math.random() < 0.8) {
             if (Math.random() < 0.4) {
@@ -564,11 +515,10 @@ function selectOperatorAndNum2(num1, level, config, fractionAttempts = 0) {
         }
     }
     
-    // ===== DEFAULT OPERATOR SELECTION =====
-    
+    // Default operator selection
     const operatorBias = Math.random();
     
-    // Special operator selection for level 5 which now disallows fraction division
+    // Special operator selection for level 5
     if (level === 5 && config.disallowFractionDivision) {
         if (operatorBias < 0.4) operator = 'x';
         else if (operatorBias < 0.7) operator = '+';
@@ -580,7 +530,7 @@ function selectOperatorAndNum2(num1, level, config, fractionAttempts = 0) {
         else if (operatorBias < 0.66) operator = '+';
         else operator = '-';
     }
-    // For other levels, use normal distribution of operators
+    // For other levels, use normal distribution
     else {
         if (operatorBias < 0.35) operator = 'x';
         else if (operatorBias < 0.6) operator = '/';
@@ -588,9 +538,7 @@ function selectOperatorAndNum2(num1, level, config, fractionAttempts = 0) {
         else operator = '-';
     }
     
-    // ===== DEFAULT NUM2 GENERATION =====
-    
-    // For level 5 - occasionally allow 1/2 as a fraction
+    // For level 5 - occasionally allow 1/2
     if (level === 5 && config.allowFractions && operator === 'x' && Math.random() < 0.1) {
         return {
             operator: 'x',
@@ -598,11 +546,10 @@ function selectOperatorAndNum2(num1, level, config, fractionAttempts = 0) {
         };
     }
     
-    // For levels with fractions, ensure we generate fractions that yield integer results
+    // For levels with fractions, ensure integer results
     if (config.strictIntegerResults && config.allowFractions && 
        (operator === 'x' || operator === '/')) {
         
-        // Level-specific fraction generation with integer result guarantees
         if (level === 6 && config.unitFractionsOnly && operator === 'x' && Math.random() < 0.6) {
             const fractionNum2 = generateFractionWithIntegerResult(n1, operator, config.maxDenominator, true, false);
             if (fractionNum2) {
@@ -633,7 +580,7 @@ function selectOperatorAndNum2(num1, level, config, fractionAttempts = 0) {
         }
     }
     
-    // Standard num2 generation for other cases
+    // Standard num2 generation
     do {
         if (typeof num1 === 'number') {
             num2 = Math.random() < 0.7 ? 
@@ -645,7 +592,7 @@ function selectOperatorAndNum2(num1, level, config, fractionAttempts = 0) {
         }
     } while (num2 === 1);
     
-    // Post-processing: For levels with disallowed fraction division
+    // Post-processing for levels with disallowed fraction division
     if ((level === 5 || level === 6 || level === 7) && operator === '/' && num2 instanceof Object && config.disallowFractionDivision) {
         operator = 'x';
     }
@@ -653,7 +600,7 @@ function selectOperatorAndNum2(num1, level, config, fractionAttempts = 0) {
     return { operator, num2 };
 }
 
-// Modified to include improved fraction handling and fallback mechanism
+// Modified with improved fallback mechanism
 function generateNextSum(startNum, level, fractionAttempts = 0) {
     const config = LEVEL_CONFIG[level];
     if (!config) throw new Error(`Invalid level: ${level}`);
@@ -729,4 +676,224 @@ function generateFallbackOperation(num, level, config) {
         result: n * 2,
         fractionAttempts: 0 // Reset counter
     };
+}
+
+export function formatNumber(num) {
+    if (num instanceof Object) return num.toString();
+    return num.toString();
+}
+
+export function generateSequence(level) {
+    const config = LEVEL_CONFIG[level];
+    if (!config) throw new Error(`Invalid level: ${level}`);
+
+    // Minimum sequence length needed for the game
+    const MIN_SEQUENCE_LENGTH = 12;
+    
+    // For complex levels (7-10), use multiple attempts if needed
+    const maxTotalAttempts = (level >= 7) ? 3 : 1;
+    let totalAttempts = 0;
+    
+    while (totalAttempts < maxTotalAttempts) {
+        let sequence = [];
+        totalAttempts++;
+        
+        // Start with a smaller number for easier first calculations
+        let currentNum = Math.floor(Math.random() * 16) + 1;
+        
+        // For level 5-10, occasionally start with a larger number
+        if (level >= 5 && Math.random() < 0.3) {
+            currentNum = Math.floor(Math.random() * 30) + 10;
+        }
+        
+        // Add tracking for fraction operations to implement fallback
+        let consecutiveFractionAttempts = 0;
+
+        // Try to build sequence
+        for (let i = 0; i < 100; i++) {
+            // Pass the current count of fraction attempts for levels with fractions
+            const sum = generateNextSum(currentNum, level, config.allowFractions ? consecutiveFractionAttempts : 0);
+            
+            // For fraction levels, track consecutive fraction attempts
+            if (config.allowFractions) {
+                // If the operation has a fraction, increment the counter
+                if (sum.num2 instanceof Object || sum.operator === 'x' || sum.operator === '/') {
+                    consecutiveFractionAttempts++;
+                } else {
+                    // Reset counter if we used addition or subtraction
+                    consecutiveFractionAttempts = 0;
+                }
+                
+                // Force fallback after too many consecutive fraction attempts
+                // Different levels have different thresholds for fallback
+                const fallbackThreshold = level === 10 ? 
+                    (config.maxFractionAttemptsBeforeFallback || 10) :
+                    (level >= 8 ? 8 : 5);
+                
+                if (consecutiveFractionAttempts > fallbackThreshold) {
+                    // Force a fallback to addition or subtraction
+                    const fallbackSum = generateFallbackOperation(currentNum, level, config);
+                    sequence.push({
+                        ...fallbackSum,
+                        display: `${formatNumber(fallbackSum.num1)} ${fallbackSum.operator} ${formatNumber(fallbackSum.num2)} = ${formatNumber(fallbackSum.result)}`
+                    });
+                    
+                    currentNum = fallbackSum.result;
+                    consecutiveFractionAttempts = 0; // Reset counter
+                    continue;
+                }
+            }
+            
+            sequence.push({
+                ...sum,
+                display: `${formatNumber(sum.num1)} ${sum.operator} ${formatNumber(sum.num2)} = ${formatNumber(sum.result)}`
+            });
+            
+            currentNum = sum.result;
+            
+            // If we have enough operations, we're done
+            if (sequence.length >= MIN_SEQUENCE_LENGTH) {
+                return sequence;
+            }
+        }
+        
+        // If we didn't get enough operations, try again
+    }
+    
+    // If we still failed after multiple attempts, create a simple sequence
+    console.warn(`Failed to generate sufficient sequence for level ${level} after ${maxTotalAttempts} attempts. Creating simple sequence.`);
+    
+    return createSimpleSequence(level);
+}
+
+// Last-resort function to create a simple sequence
+function createSimpleSequence(level) {
+    const config = LEVEL_CONFIG[level];
+    let sequence = [];
+    
+    // Start with small number
+    let currentNum = Math.floor(Math.random() * 10) + 1;
+    
+    // For fraction levels, include some fraction operations even in simple sequence
+    const includeFractions = config.allowFractions && level >= 5;
+    
+    // Create at least 15 operations to ensure enough for the game
+    for (let i = 0; i < 15; i++) {
+        // For fraction levels, occasionally include a fraction operation
+        // but ensure it gives an integer result
+        if (includeFractions && i > 2 && i % 3 === 0 && Math.random() < 0.6) {
+            // Try to create a fraction operation that produces an integer
+            if (Math.random() < 0.7) {
+                // Multiplication by unit fraction that gives integer result
+                // Find divisors of currentNum to guarantee integer result
+                const factors = getFactorsOf(currentNum);
+                if (factors.length > 0) {
+                    const factor = factors[Math.floor(Math.random() * factors.length)];
+                    const denominator = factor;
+                    const numerator = 1; // Unit fraction
+                    
+                    const fractionNum2 = {
+                        numerator, 
+                        denominator,
+                        toString() { return `${this.numerator}/${this.denominator}`; },
+                        toDecimal() { return this.numerator / this.denominator; }
+                    };
+                    
+                    const result = currentNum * (numerator / denominator);
+                    
+                    sequence.push({
+                        num1: currentNum,
+                        operator: 'x',
+                        num2: fractionNum2,
+                        result: result,
+                        display: `${currentNum} × ${fractionNum2.toString()} = ${result}`
+                    });
+                    
+                    currentNum = result;
+                    continue;
+                }
+            } 
+            // If multiplication didn't work, try a different operation
+        }
+        
+        // Standard operations (addition, subtraction, simple multiplication/division)
+        if (i % 2 === 0 && currentNum < config.maxNum - 5) {
+            // Addition
+            const addend = Math.floor(Math.random() * 5) + 1;
+            const result = currentNum + addend;
+            
+            sequence.push({
+                num1: currentNum,
+                operator: '+',
+                num2: addend,
+                result: result,
+                display: `${currentNum} + ${addend} = ${result}`
+            });
+            
+            currentNum = result;
+        } else {
+            // Subtraction (ensure we don't go below 1)
+            const maxSubtract = Math.min(currentNum - 1, 5);
+            if (maxSubtract < 1) {
+                // If we can't subtract, multiply instead
+                const multResult = currentNum * 2;
+                if (multResult <= config.maxNum) {
+                    sequence.push({
+                        num1: currentNum,
+                        operator: 'x',
+                        num2: 2,
+                        result: multResult,
+                        display: `${currentNum} × 2 = ${multResult}`
+                    });
+                    currentNum = multResult;
+                } else {
+                    // Division as last resort if multiplication would exceed max
+                    const divResult = Math.floor(currentNum / 2); // Ensure integer result
+                    sequence.push({
+                        num1: currentNum,
+                        operator: '/',
+                        num2: 2,
+                        result: divResult,
+                        display: `${currentNum} ÷ 2 = ${divResult}`
+                    });
+                    currentNum = divResult;
+                }
+            } else {
+                // Normal subtraction case
+                const subtrahend = Math.floor(Math.random() * maxSubtract) + 1;
+                const result = currentNum - subtrahend;
+                
+                sequence.push({
+                    num1: currentNum,
+                    operator: '-',
+                    num2: subtrahend,
+                    result: result,
+                    display: `${currentNum} - ${subtrahend} = ${result}`
+                });
+                
+                currentNum = result;
+            }
+        }
+    }
+    
+    return sequence;
+}
+
+export function sequenceToEntries(sequence) {
+    const entries = [];
+    
+    sequence.forEach((sum, index) => {
+        if (index === 0) {
+            entries.push({ type: 'number', value: sum.num1 });
+        }
+        entries.push({ type: 'operator', value: sum.operator });
+        entries.push({ type: 'number', value: sum.num2 });
+        entries.push({ type: 'number', value: sum.result });
+    });
+
+    return entries;
+}
+
+export function getLevelConfig(level) {
+    return LEVEL_CONFIG[level];
 }
