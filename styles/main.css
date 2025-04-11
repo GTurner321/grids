@@ -657,9 +657,9 @@ body {
         padding: 8px 10px;
         line-height: 1.3 !important; /* Improved line spacing */
         /* Changed font for mobile to Trebuchet MS in ALL CAPS */
-        font-family: 'Trebuchet MS', Arial, sans-serif !important;
-        font-style: italic !important;
-        text-transform: uppercase !important;
+        font-family: 'EB Garamond', 'Garamond', Georgia, serif !important;
+        font-style: normal !important;
+        text-transform: none !important;
         font-weight: bold !important;
         letter-spacing: 0.05em !important;
     }
