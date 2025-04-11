@@ -317,22 +317,23 @@ function ensureModalCssIsApplied() {
         /* Username area specific sizing - UPDATED */
         body > #username-area-container .username-area {
             width: 92% !important;
-            max-width: 380px !important; /* Increased from 340px */
-            padding: 20px !important; /* Increased padding */
+            max-width: 380px !important;
+            padding: 20px 15px !important; /* Reduced horizontal padding */
             margin: 0 auto !important;
         }
         
-        /* Username prompt centered - ADDED */
+        /* Username prompt centered - UPDATED with dark blue & embossed effect */
         body > #username-area-container .username-area .username-prompt {
-        text-align: center !important;
-        width: 50% !important; /* Text takes up the middle 50% */
-        margin: 0 auto 15px auto !important; /* Center it horizontally with auto left/right margins */
-        font-size: 1.1rem !important;
-        /* You can also add padding if you want internal spacing */
-        padding: 0 !important;
+            text-align: center !important;
+            width: 80% !important; /* Increased width, reduced margins */
+            margin: 0 auto 15px auto !important;
+            font-size: 1.1rem !important;
+            color: #003366 !important; /* Dark blue color */
+            text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.8) !important; /* Embossed effect */
+            padding: 0 !important;
         }
         
-        /* Fix for input wrapper to allow vertical layout - ADDED */
+        /* Fix for input wrapper to allow vertical layout */
         body > #username-area-container .username-area .input-wrapper {
             display: flex !important;
             flex-direction: column !important;
@@ -340,7 +341,7 @@ function ensureModalCssIsApplied() {
             align-items: center !important;
         }
         
-        /* Input field improvements - ADDED */
+        /* Input field improvements */
         body > #username-area-container .username-area #username-input {
             width: 90% !important;
             margin: 0 auto 15px auto !important;
@@ -351,13 +352,32 @@ function ensureModalCssIsApplied() {
             box-sizing: border-box !important;
         }
         
-        /* Submit button positioning - ADDED */
+        /* Submit button positioning */
         body > #username-area-container .username-area #submit-username {
             display: block !important;
             margin: 10px auto !important;
             width: 140px !important;
             font-size: 1.1rem !important;
             padding: 10px !important;
+        }
+        
+        /* Improved close button ('x') styling - UPDATED */
+        body #return-to-record-btn {
+            position: absolute !important;
+            top: 10px !important;
+            right: 10px !important;
+            z-index: 10001 !important;
+            background: none !important;
+            border: none !important;
+            box-shadow: none !important;
+            font-size: 18px !important;
+            font-weight: bold !important;
+            color: #555 !important;
+            cursor: pointer !important;
+            padding: 5px !important;
+            width: auto !important;
+            height: auto !important;
+            border-radius: 0 !important;
         }
         
         /* Leaderboard specific sizing */
@@ -432,19 +452,11 @@ function ensureModalCssIsApplied() {
             z-index: 10001 !important;
         }
         
-        /* Override styles for close button - UPDATED */
-        body #return-to-record-btn {
-            position: absolute !important;
-            top: 5px !important;
-            right: 5px !important;
-            z-index: 10001 !important;
-        }
-        
         @media (max-width: 768px) {
             /* Mobile adjustments */
             body > #username-area-container .username-area {
                 width: 95% !important;
-                padding: 15px !important; /* Updated from 10px */
+                padding: 15px !important;
             }
             
             body > #leaderboard-table-container .leaderboard-table {
@@ -462,23 +474,22 @@ function ensureModalCssIsApplied() {
                 font-size: 0.8rem !important;
             }
             
-            /* Input field adjustments for mobile - ADDED */
+            /* Input field adjustments for mobile */
             body > #username-area-container .username-area #username-input {
                 width: 95% !important;
                 font-size: 1rem !important;
             }
             
-            /* Submit button adjustments for mobile - ADDED */
+            /* Submit button adjustments for mobile */
             body > #username-area-container .username-area #submit-username {
                 width: 95% !important;
                 max-width: 200px !important;
             }
             
-            /* Mobile adjustments for the close button - UPDATED */
+            /* Mobile adjustments for the close button */
             body #return-to-record-btn {
-                position: absolute !important;
-                top: 5px !important;
-                right: 5px !important;
+                top: 8px !important;
+                right: 8px !important;
             }
         }
     `;
