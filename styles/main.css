@@ -743,7 +743,7 @@ body {
   }
   
   .game-controls button {
-    font-size: 0.9rem;
+    font-size: 1rem !important;
     padding: 6px 8px;
   }
   
@@ -762,7 +762,7 @@ body {
 
 @media (max-width: 480px) {
   .game-controls button {
-    font-size: 0.8rem;
+    font-size: 0.9rem !important;
     padding: 6px 4px;
   }
   
