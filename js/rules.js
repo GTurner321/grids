@@ -130,7 +130,7 @@ function showRulesBox() {
 
 /**
  * Sets up title visibility control
- * Hides the game title when level buttons are clicked
+ * Hides the game title and level selector title when level buttons are clicked
  */
 function setupTitleVisibility() {
     console.log('Setting up title visibility control');
@@ -150,7 +150,9 @@ function setupTitleVisibility() {
         // Only proceed with hiding title if level is unlocked
         if (!isUnlocked) return;
         
-        console.log('Level button clicked, hiding title');
+        console.log('Level button clicked, hiding titles');
+        
+        // Hide game header (title)
         const gameHeader = document.querySelector('.game-header');
         if (gameHeader) {
             // Add a fade out animation to the header
@@ -162,6 +164,21 @@ function setupTitleVisibility() {
                 gameHeader.style.display = 'none';
                 gameHeader.style.margin = '0';
                 gameHeader.style.height = '0';
+            }, 500);
+        }
+        
+        // Hide level selector title
+        const levelSelectorTitle = document.querySelector('.level-selector-title');
+        if (levelSelectorTitle) {
+            // Add a fade out animation to the level selector title
+            levelSelectorTitle.style.transition = 'opacity 0.5s ease-out, margin 0.5s ease-out, height 0.5s ease-out';
+            levelSelectorTitle.style.opacity = '0';
+            
+            // After fade out, hide the element completely
+            setTimeout(() => {
+                levelSelectorTitle.style.display = 'none';
+                levelSelectorTitle.style.margin = '0';
+                levelSelectorTitle.style.height = '0';
             }, 500);
         }
         
