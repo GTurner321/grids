@@ -3,25 +3,24 @@
    ===========================================================================
 
    0. DOCUMENT OVERVIEW
-   1. CSS VARIABLES & ROOT SETTINGS (Lines 15-40)
-   2. BASE STYLES (Lines 42-74)
-   3. GAME CONTAINER (Lines 76-134)
-   4. GAME HEADER & TITLE (Lines 136-178)
-   5. RULES BOX (Lines 180-336)
-   6. LEVEL SELECTOR (Lines 338-500) - now in levelselector.css
-   7. GAME MESSAGES (Lines 502-560)
-   8. GAME CONTROLS (Lines 562-724)
-   9. BOTTOM BUTTONS (Lines 726-862)
-   10. PATH BORDERS (Lines 864-867)
-   11. ANIMATIONS & VISUAL FEEDBACK (Lines 869-894)
-   12. MOBILE-SPECIFIC STYLES (Lines 896-967)
-   13. USERNAME MODAL STYLING (Lines 969-1146) - moved to leaderboard.css
-   14. LEADERBOARD STYLING (Lines 1148-1367) - moved to leaderboard.css
-   15. RETURN BUTTONS (Lines 1369-1404)
-   16. SCORE BAR (Lines 1406-1472)
-   17. UTILITY CLASSES & ANIMATIONS (Lines 1474-1499)
-   18. MEDIA QUERY CONSISTENCY CHECK (Lines 1501-1511)
-   19. ADDITIONAL CLEAN-UP (Lines 1513-1533)
+   1. CSS VARIABLES & ROOT SETTINGS
+   2. BASE STYLES
+   3. GAME CONTAINER
+   4. GAME HEADER & TITLE
+   5. RULES BOX
+   6. LEVEL SELECTOR - now in levelselector.css
+   7. GAME MESSAGES
+   8. GAME CONTROLS
+   9. BOTTOM BUTTONS
+   10. PATH BORDERS
+   11. ANIMATIONS & VISUAL FEEDBACK
+   12. MOBILE-SPECIFIC STYLES
+   13. USERNAME MODAL STYLING - moved to leaderboard.css
+   14. LEADERBOARD STYLING - moved to leaderboard.css
+   15. RETURN BUTTONS
+   16. SCORE BAR
+   17. UTILITY CLASSES & ANIMATIONS
+   18. MEDIA QUERY CONSISTENCY CHECK
 */
 
 /* ==========================================================================
@@ -43,10 +42,10 @@
   --text-blue: #1e40af;          /* Dark blue for text */
   --yellow: #f0e68c;             /* Soft yellow for solved path */
   --form-bg-color: #e6f2ff;      /* Light blue background */
-    --lilac-light: #dfdbe5;  /* Light lilac */
-    --lilac-medium: #b7aec5; /* Medium lilac */
-    --lilac-dark: #8b79a7;   /* Dark lilac */
-    --lilac-border: #8b79a7; /* Dark lilac for border */
+  --lilac-light: #dfdbe5;        /* Light lilac */
+  --lilac-medium: #b7aec5;       /* Medium lilac */
+  --lilac-dark: #8b79a7;         /* Dark lilac */
+  --lilac-border: #8b79a7;       /* Dark lilac for border */
    
   /* Sizing variables */
   --app-height: 100%;
@@ -217,6 +216,7 @@ body {
 
 .game-container.game-active .game-controls {
   margin-top: 8px !important;
+  margin-bottom: 5px !important; /* Reduced bottom margin */
 }
 
 .game-container.game-active #game-messages {
@@ -224,7 +224,17 @@ body {
 }
 
 .game-container.game-active #game-messages-container {
-  margin: 15px auto !important;
+  margin: 5px auto !important; /* Reduced from 15px to 5px */
+}
+
+/* Remove border/line styles from containers */
+.game-container:not(.game-active) #grid-container {
+  border: none;
+  padding: 0;
+  background-color: transparent;
+  visibility: hidden;
+  height: 0;
+  overflow: hidden;
 }
 
 /* ==========================================================================
@@ -237,6 +247,10 @@ body {
   margin: 0 auto;
   padding: 0;
   text-align: center;
+  border-bottom: none !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+  background-color: transparent !important;
 }
 
 .game-header h1 {
@@ -461,20 +475,108 @@ body {
 }
 
 /* ==========================================================================
-   6. LEVEL SELECTOR - WITH INTEGRATED LEVEL SCROLLER - now in levelselector.css
+   6. LEVEL SELECTOR - WITH INTEGRATED LEVEL SCROLLER (now in levelselector.css)
    ========================================================================== */
+
+/* Level selector container - reduced vertical spacing */
+.level-selector-container {
+  padding: 5px 0px; /* Reduced from 10px 0px */
+  margin: 3px auto 5px; /* Reduced from 5px auto 10px */
+  text-align: center;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-bottom: none !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Level selector title - centered */
+.level-selector-title {
+  color: #00008B;
+  margin-bottom: 8px;
+  font-family: 'Trebuchet MS', sans-serif;
+  font-weight: bold;
+  text-align: center;
+  text-shadow: 0px 1px 2px rgba(255, 255, 255, 0.8);
+  width: 100%;
+}
+
+/* Flashing arrows animation */
+@keyframes arrow-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.flashing-arrow {
+  animation: arrow-blink 1s infinite;
+  display: inline-block;
+  font-size: 1.2em;
+  vertical-align: middle;
+  margin: 0 5px;
+}
+
+/* Level scroller container - reduced margins */
+.level-scroller-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60px;
+  margin: 10px auto; /* Reduced from 15px auto */
+  width: 100%;
+  max-width: 320px;
+  position: relative;
+}
+
+/* Level buttons container */
+.level-buttons {
+  border-bottom: none !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Mobile optimizations for level selector - reduced height and spacing */
+@media (max-width: 768px) {
+  .level-selector-container {
+    padding: 3px 0px; /* Further reduced padding */
+    margin: 2px auto 3px; /* Further reduced margins */
+  }
+  
+  .level-scroller-container {
+    height: 44px;
+    margin: 5px auto; /* Further reduced margin */
+    max-width: 260px;
+  }
+  
+  .level-button-group {
+    height: 44px;
+    max-width: 260px;
+  }
+}
+
+/* Even smaller screens - further spacing reductions */
+@media (max-width: 375px) {
+  .level-scroller-container {
+    height: 40px;
+    margin: 3px auto; /* Further reduced */
+    max-width: 220px;
+  }
+}
 
 /* ==========================================================================
    7. GAME MESSAGES
    ========================================================================== */
-
 
 /* Game Messages Container */
 #game-messages-container {
     width: 100%;
     display: flex;
     justify-content: center;
-    margin: 15px auto;
+    margin: 5px auto; /* Reduced from 15px to 5px */
     /* Ensure it matches the grid container width */
     max-width: var(--grid-total-width, var(--grid-width, 480px));
 }
@@ -487,8 +589,8 @@ body {
     width: 100%;
     /* Use grid-total-width as first choice, then fall back to grid-width, then to 480px */
     max-width: var(--grid-total-width, var(--grid-width, 480px));
-    min-height: 60px; /* Height for two lines of text */
-    padding: 10px 15px;
+    min-height: 80px !important; /* Increased from 60px to 80px */
+    padding: 12px 15px;
     margin: 0;
     
     /* Flexbox for vertical centering - important difference from standard styled-box */
@@ -509,7 +611,6 @@ body {
     height: auto;
     
     /* Ensure the box is always visible, even when empty */
-    min-height: 60px !important;
     visibility: visible !important;
     opacity: 1 !important;
     display: flex !important;
@@ -543,7 +644,7 @@ body {
     font-weight: bold;
 }
 
-/* Responsive adjustments */
+/* Responsive adjustments - updated for Trebuchet MS capitals */
 @media (max-width: 768px) {
     #game-messages-container {
         width: 95%; /* Set to 95% of game-container on small screens */
@@ -551,26 +652,34 @@ body {
     
     #game-messages.styled-box {
         width: 100%;
-        font-size: 1.2rem; /* Two sizes larger than original 0.9rem */
-        min-height: 72px; /* 20% higher than original 60px */
+        font-size: 1.4rem !important; /* Increased text size for better readability */
+        min-height: 96px !important; /* 20% higher than the new 80px desktop height */
         padding: 10px 12px;
+        line-height: 1.3 !important; /* Improved line spacing */
+        /* Changed font for mobile to Trebuchet MS in ALL CAPS */
+        font-family: 'Trebuchet MS', Arial, sans-serif !important;
+        font-style: normal !important;
+        text-transform: uppercase !important;
+        font-weight: bold !important;
+        letter-spacing: 0.05em !important;
     }
 }
 
 @media (max-width: 480px) {
     #game-messages.styled-box {
-        font-size: 1.1rem; /* Still larger, but slightly adjusted for very small screens */
-        min-height: 70px;
+        font-size: 1.3rem !important; /* Still larger than desktop, but adjusted for very small screens */
+        min-height: 90px !important; /* Still taller, but slightly adjusted for very small screens */
         padding: 8px 10px;
     }
 }
 
 /* ==========================================================================
-   8. GAME CONTROLS - UPDATED WITH FULL-WIDTH LAYOUT
+   8. GAME CONTROLS
    ========================================================================== */
 
 .game-controls {
   margin-top: 12px;
+  margin-bottom: 5px !important; /* Reduced bottom margin */
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -579,6 +688,10 @@ body {
   max-width: var(--grid-total-width); /* Match the grid width */
   margin-left: auto;
   margin-right: auto;
+  border-bottom: none !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+  background-color: transparent !important;
 }
 
 /* Apply metallic button base style from buttonsboxes.css */
@@ -626,7 +739,7 @@ body {
   .game-controls {
     width: 95%; /* Match the 95% width of game grid on mobile */
     gap: 5px;
-    margin: 12px auto !important;
+    margin: 12px auto 5px !important; /* Adjusted bottom margin */
   }
   
   .game-controls button {
@@ -661,7 +774,7 @@ body {
 }
 
 /* ==========================================================================
-   9. BOTTOM BUTTONS (RECORD NAME & LEADERBOARD) - UPDATED WITH FULL-WIDTH LAYOUT
+   9. BOTTOM BUTTONS (RECORD NAME & LEADERBOARD)
    ========================================================================== */
 
 /* Bottom buttons - container */
@@ -676,10 +789,14 @@ body {
   z-index: 10;
   width: 100%;
   max-width: var(--grid-total-width); /* Match the grid width */
-  margin: 0 auto;
+  margin: 5px auto !important; /* Reduced top margin */
   gap: 10px; /* Consistent gap between buttons */
   justify-content: space-between;
   transition: opacity 0.3s ease, visibility 0.3s ease; /* Smooth transitions */
+  border-bottom: none !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+  background-color: transparent !important;
 }
 
 /* When game is active - Show buttons */
@@ -708,7 +825,7 @@ body {
 #leaderboard-btn {
   flex: 1; /* Equal width for both buttons */
   height: 44px;
-  font-size: 1rem;
+  font-size: 1.1rem; /* Increased from 1rem (one size larger) */
   padding: 8px 15px;
   min-width: 0; /* Remove min-width to allow full flexibility */
   text-align: center; /* Ensure text is centered */
@@ -779,7 +896,7 @@ body {
   
   #record-score-btn, 
   #leaderboard-btn {
-    font-size: 0.9rem;
+    font-size: 1.2rem; /* Increased by two sizes from original 0.9rem */
     padding: 8px 10px;
   }
   
@@ -793,7 +910,7 @@ body {
 @media (max-width: 375px) {
   #record-score-btn, 
   #leaderboard-btn {
-    font-size: 0.8rem;
+    font-size: 1.1rem; /* Still increased compared to original size */
     padding: 6px 8px;
   }
   
@@ -924,6 +1041,7 @@ body {
    13. USERNAME MODAL STYLING - now in leaderboard.css
    ========================================================================== */
 
+/* Username modal styles are now in leaderboard.css */
 
 /* ==========================================================================
    14. LEADERBOARD STYLING - MOVED TO LEADERBOARD.CSS
@@ -1036,45 +1154,46 @@ body {
   box-shadow: 
     inset 0 2px 4px rgba(0, 0, 0, 0.25),
     inset 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+  /* Changed to darker lilac gradient */
   background: linear-gradient(
     to bottom,
-    var(--btn-metal-medium, #c0c0c0) 0%,
-    var(--btn-metal-dark, #a8a8a8) 100%
+    var(--lilac-medium, #b7aec5) 0%,
+    var(--lilac-dark, #8b79a7) 100%
   ) !important;
-  border-top: 1px solid var(--btn-metal-medium, #c0c0c0) !important;
-  border-bottom: 1px solid var(--btn-metal-dark, #888888) !important;
+  border-top: 1px solid var(--lilac-medium, #b7aec5) !important;
+  border-bottom: 1px solid var(--lilac-dark, #8b79a7) !important;
 }
 
 /* Unlocked segments - raised appearance but same height */
 .level-segment.unlocked {
-  /* Lighter gradient for raised appearance */
+  /* Changed to light lilac gradient */
   background: linear-gradient(
     to bottom,
-    var(--btn-metal-lighter, #f8f8f8) 0%,
-    var(--btn-metal-light, #e8e8e8) 100%
+    var(--lilac-light, #dfdbe5) 0%,
+    var(--lilac-medium, #b7aec5) 100%
   ) !important;
   /* Different shadow for raised appearance but no transform */
   box-shadow: 
     inset 0 -2px 4px rgba(0, 0, 0, 0.15),
     inset 0 1px 2px var(--btn-metal-inner-highlight, rgba(255, 255, 255, 0.9)) !important;
-  border-top: 1px solid var(--btn-metal-lighter, #ffffff) !important;
-  border-bottom: 1px solid var(--btn-metal-medium, #c0c0c0) !important;
+  border-top: 1px solid var(--lilac-light, #dfdbe5) !important;
+  border-bottom: 1px solid var(--lilac-medium, #b7aec5) !important;
   z-index: 1 !important; /* Ensure unlocked appears above locked */
 }
 
-/* Completed segments - green styling at same height */
+/* Completed segments - lighter green styling at same height */
 .level-segment.completed {
-  /* Green gradient */
+  /* Lighter green gradient */
   background: linear-gradient(
     to bottom,
-    #9cd59f 0%, /* Lighter dull green */
-    #5a9a5d 100% /* Darker dull green */
+    #b8e6ba 0%, /* Lighter green */
+    #78c37a 100% /* Medium green */
   ) !important;
   box-shadow: 
     inset 0 -2px 4px rgba(0, 0, 0, 0.15),
     inset 0 1px 2px rgba(255, 255, 255, 0.7) !important;
-  border-top: 1px solid #aae6ad !important;
-  border-bottom: 1px solid #498c4c !important;
+  border-top: 1px solid #c9eecb !important; /* Lighter green border */
+  border-bottom: 1px solid #66b168 !important; /* Medium green border */
 }
 
 /* Current level indicator - blue glow */
@@ -1150,15 +1269,15 @@ body {
   0% { 
     background: linear-gradient(
       to bottom,
-      #9cd59f 0%,
-      #5a9a5d 100%
+      #b8e6ba 0%, /* Updated to lighter green */
+      #78c37a 100%
     ) !important;
   }
   100% { 
     background: linear-gradient(
       to bottom,
-      #5a9a5d 0%,
-      #498c4c 100%
+      #78c37a 0%,
+      #66b168 100%
     ) !important;
   }
 }
@@ -1225,142 +1344,3 @@ of all the breakpoints used in this CSS to ensure consistency:
 All media queries have been structured to maintain a consistent 
 approach throughout this consolidated stylesheet.
 */
-
-/* ==========================================================================
-   19. REMOVE GRAY LINE UNDER LEVEL SELECTOR
-   ========================================================================== */
-
-/* Remove all border/line styles from these containers */
-.level-selector-container, 
-.level-buttons,
-.game-header,
-#grid-container,
-.game-container > *:not(.game-board) {
-  border-bottom: none !important;
-  box-shadow: none !important;
-  border-color: transparent !important;
-  background-color: transparent !important;
-}
-
-.game-container:not(.game-active) #grid-container {
-    border: none;
-    padding: 0;
-    background-color: transparent;
-    visibility: hidden;
-    height: 0;
-    overflow: hidden;
-}
-
-/* ==========================================================================
-   SPACING ADJUSTMENTS AND MESSAGE BOX HEIGHT - these are lazy addtions, but should be added to original sections in game buttons, bottom buttons and game messages and 
-   ========================================================================== */
-
-/* Reduce gap underneath game buttons */
-.game-controls {
-  margin-top: 12px;
-  margin-bottom: 5px !important; /* Reduced bottom margin */
-}
-
-/* Adjust game messages container spacing */
-#game-messages-container {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  margin: 5px auto !important; /* Reduced top/bottom margin from 15px to 5px */
-  max-width: var(--grid-total-width, var(--grid-width, 480px));
-}
-
-/* Make in-game messages box taller and adjust spacing */
-#game-messages.styled-box {
-  width: 100%;
-  max-width: var(--grid-total-width, var(--grid-width, 480px));
-  min-height: 80px !important; /* Increased from 60px to 80px */
-  padding: 12px 15px;
-  margin: 0;
-  
-  /* Flexbox for vertical centering */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  
-  /* Text styling overrides */
-  font-family: 'Lucida Handwriting', 'Brush Script MT', cursive;
-  font-style: italic;
-  font-size: 1rem;
-  color: var(--text-blue, #1e40af);
-  text-align: center;
-  text-shadow: none;
-  
-  /* Auto-height for longer messages */
-  height: auto;
-  
-  /* Ensure the box is always visible, even when empty */
-  visibility: visible !important;
-  opacity: 1 !important;
-  display: flex !important;
-}
-
-/* Ensure empty box remains visible with min content */
-#game-messages.styled-box:empty::before {
-  content: " ";
-  display: block;
-  min-height: 1em;
-}
-
-/* Reduce gap above bottom buttons */
-.bottom-buttons {
-  margin-top: 5px !important; /* Reduced top margin */
-}
-
-/* Game container specific overrides */
-.game-container.game-active .game-controls {
-  margin-bottom: 5px !important; /* Explicitly set bottom margin */
-}
-
-.game-container.game-active #game-messages-container {
-  margin: 5px auto !important; /* Explicitly set top/bottom margin */
-}
-
-.game-container.game-active .bottom-buttons {
-  display: flex !important;
-  visibility: visible !important;
-  height: auto !important;
-  min-height: 44px !important;
-  overflow: visible !important;
-  opacity: 1 !important;
-  position: relative !important;
-  margin: 15px auto !important;
-  z-index: 50 !important;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  #game-messages-container {
-    width: 95%; /* Consistent with other mobile elements */
-  }
-  
-  #game-messages.styled-box {
-    width: 100%;
-    font-size: 1.4rem !important; /* Increased text size for better readability */
-    min-height: 96px !important; /* 20% higher than the new 80px desktop height */
-    padding: 10px 12px;
-    line-height: 1.3 !important; /* Improved line spacing */
-  }
-  
-  .game-controls {
-    margin-bottom: 5px !important;
-  }
-  
-  .bottom-buttons {
-    margin-top: 5px !important;
-  }
-}
-
-@media (max-width: 480px) {
-  #game-messages.styled-box {
-    font-size: 1.3rem !important; /* Still larger than desktop, but adjusted for very small screens */
-    min-height: 90px !important; /* Still taller, but slightly adjusted for very small screens */
-    padding: 8px 10px;
-  }
-}
