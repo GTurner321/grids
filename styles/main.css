@@ -542,13 +542,13 @@ body {
 /* Mobile optimizations for level selector - reduced height and spacing */
 @media (max-width: 768px) {
   .level-selector-container {
-    padding: 3px 0px; /* Further reduced padding */
+    padding: 1px 0px; /* Further reduced padding */
     margin: 2px auto 3px; /* Further reduced margins */
   }
   
   .level-scroller-container {
     height: 44px;
-    margin: 5px auto; /* Further reduced margin */
+    margin: 2px auto; /* Further reduced margin */
     max-width: 260px;
   }
   
@@ -562,7 +562,7 @@ body {
 @media (max-width: 375px) {
   .level-scroller-container {
     height: 40px;
-    margin: 3px auto; /* Further reduced */
+    margin: 1px auto; /* Further reduced */
     max-width: 220px;
   }
 }
