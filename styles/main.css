@@ -1151,34 +1151,33 @@ body {
 
 /* Locked segments - depressed appearance */
 .level-segment:not(.unlocked):not(.completed) {
-  /* Use a gradient from light to medium instead of medium to dark */
+  /* Depressed look with lighter inset shadows */
+  box-shadow: 
+    inset 0 1px 3px rgba(0, 0, 0, 0.15), /* Reduced from 0.25 to 0.15 */
+    inset 0 1px 1px rgba(0, 0, 0, 0.1) !important; /* Reduced from 0.2 to 0.1 */
+  /* Lighter gradient using lilac-light to lilac-medium */
   background: linear-gradient(
     to bottom,
-    var(--lilac-light, #dfdbe5) 0%,
+    #d0c9dc 0%, /* Lighter color between lilac-light and lilac-medium */
     var(--lilac-medium, #b7aec5) 100%
   ) !important;
-  /* Rest of styling */
-  box-shadow: 
-    inset 0 2px 4px rgba(0, 0, 0, 0.25),
-    inset 0 1px 2px rgba(0, 0, 0, 0.2) !important;
-  border-top: 1px solid var(--lilac-light, #dfdbe5) !important;
+  border-top: 1px solid #d8d2e0 !important; /* Slightly lighter top border */
   border-bottom: 1px solid var(--lilac-medium, #b7aec5) !important;
 }
 
 /* Unlocked segments - raised appearance but same height */
 .level-segment.unlocked {
-  /* Make the gradient lighter by using --lilac-light for both start and end,
-     with maybe a touch of white at the start */
+  /* Lightest gradient */
   background: linear-gradient(
     to bottom,
     #f8f5ff 0%, /* Even lighter than --lilac-light */
     var(--lilac-light, #dfdbe5) 100%
   ) !important;
-  /* Rest of styling */
+  /* Lighter shadow */
   box-shadow: 
-    inset 0 -2px 4px rgba(0, 0, 0, 0.15),
-    inset 0 1px 2px var(--btn-metal-inner-highlight, rgba(255, 255, 255, 0.9)) !important;
-  border-top: 1px solid #ffffff !important; /* White top border */
+    inset 0 -1px 3px rgba(0, 0, 0, 0.1), /* Reduced from 0.15 to 0.1 */
+    inset 0 1px 1px var(--btn-metal-inner-highlight, rgba(255, 255, 255, 0.8)) !important; /* Reduced from 2px to 1px */
+  border-top: 1px solid #ffffff !important;
   border-bottom: 1px solid var(--lilac-light, #dfdbe5) !important;
   z-index: 1 !important;
 }
