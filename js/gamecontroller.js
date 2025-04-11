@@ -332,11 +332,13 @@ handleCellClick(cell) {
     }
     this.state.lastClickTime = now;
         
-        const cellIndex = parseInt(cell.dataset.index);
-        if (isNaN(cellIndex)) return;
+    const cellIndex = parseInt(cell.dataset.index);
+    if (isNaN(cellIndex)) return;
 
-        // Special handling for start cell when path is empty
-        if (this.isStartCell(cell) && this.state.userPath.length === 0) {
+    // Special handling for start cell when path is empty
+    if (this.state.userPath.length === 0) {
+        // FIXED: Only allow starting from the green start cell
+        if (this.isStartCell(cell)) {
             console.log('Start cell selected for new path');
             this.state.userPath = [cellIndex];
             this.updatePathHighlight();
@@ -348,57 +350,65 @@ handleCellClick(cell) {
             }, 200);
             
             this.showMessage('Path started! Continue by selecting connected cells.');
-            return;
-        }
-
-        // Handle deselection of last cell
-        const lastCellIndex = this.state.userPath[this.state.userPath.length - 1];
-        if (cellIndex === lastCellIndex) {
-            this.state.userPath.pop();
-            this.updatePathHighlight();
-            return;
-        }
-        
-        // Don't allow selection of cells already in path (except last cell for deselection)
-        if (this.state.userPath.includes(cellIndex)) {
-            return;
-        }
-
-        // Check if cell is adjacent to last selected cell
-        if (!this.isValidMove(cellIndex)) {
+        } else {
+            // Show error message when trying to start from non-start cell
+            this.showMessage('You must start from the green square!', 'error');
             cell.classList.add('invalid-move');
             setTimeout(() => {
                 cell.classList.remove('invalid-move');
             }, 300);
-            return;
         }
-
-        // Add the new cell to the path
-        this.state.userPath.push(cellIndex);
-
-        // Add a visual pulse effect
-        cell.classList.add('just-selected');
-        setTimeout(() => {
-            cell.classList.remove('just-selected');
-        }, 200);
-
-        this.updatePathHighlight();
-
-        // Explicitly update reset button state
-        const resetButton = document.getElementById('reset-path');
-        if (resetButton && this.state.userPath.length > 0) {
-            resetButton.disabled = false;
-        }
-
-        // Enable check solution button
-        document.getElementById('check-solution').disabled = false;
-
-        // If end cell is selected, automatically check the solution
-        if (this.isEndCell(cell)) {
-            this.checkSolution();
-        }
+        return;
     }
 
+    // Handle deselection of last cell
+    const lastCellIndex = this.state.userPath[this.state.userPath.length - 1];
+    if (cellIndex === lastCellIndex) {
+        this.state.userPath.pop();
+        this.updatePathHighlight();
+        return;
+    }
+    
+    // Don't allow selection of cells already in path (except last cell for deselection)
+    if (this.state.userPath.includes(cellIndex)) {
+        return;
+    }
+
+    // Check if cell is adjacent to last selected cell
+    if (!this.isValidMove(cellIndex)) {
+        cell.classList.add('invalid-move');
+        setTimeout(() => {
+            cell.classList.remove('invalid-move');
+        }, 300);
+        return;
+    }
+
+    // Add the new cell to the path
+    this.state.userPath.push(cellIndex);
+
+    // Add a visual pulse effect
+    cell.classList.add('just-selected');
+    setTimeout(() => {
+        cell.classList.remove('just-selected');
+    }, 200);
+
+    this.updatePathHighlight();
+
+    // Explicitly update reset button state
+    const resetButton = document.getElementById('reset-path');
+    if (resetButton && this.state.userPath.length > 0) {
+        resetButton.disabled = false;
+    }
+
+    // Enable check solution button
+    document.getElementById('check-solution').disabled = false;
+
+    // If end cell is selected, automatically check the solution
+    if (this.isEndCell(cell)) {
+        this.checkSolution();
+    }
+}
+    
     isValidMove(newCellIndex) {
         if (this.state.userPath.length === 0) return true; // Any cell is valid as first cell
         
