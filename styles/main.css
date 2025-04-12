@@ -489,7 +489,7 @@ body {
     width: 100%;
     display: flex;
     justify-content: center;
-    margin: 5px auto; /* Reduced from 15px to 5px */
+    margin: 5px auto 1px; /* Reduced from 15px to 5px */
     /* Ensure it matches the grid container width */
     max-width: var(--grid-total-width, var(--grid-width, 480px));
 }
@@ -1066,7 +1066,7 @@ body {
 .level-segment:not(.unlocked):not(.completed) {
   /* Depressed look with lighter inset shadows */
   box-shadow: 
-    inset 0 1px 3px rgba(0, 0, 0, 0.15), /* Reduced from 0.25 to 0.15 */
+    inset 0 1px 3px rgba(0, 0, 0, 0.1), /* Reduced from 0.25 to 0.15 */
     inset 0 1px 1px rgba(0, 0, 0, 0.1) !important; /* Reduced from 0.2 to 0.1 */
   /* Lighter gradient using lilac-light to lilac-medium */
   background: linear-gradient(
