@@ -1,4 +1,4 @@
-// sequencegenerator.js - Fixed version with improved fraction handling and unified logic
+// sequencegenerator.js - Enhanced version with improved fraction handling and quality checks
 
 const LEVEL_CONFIG = {
     1: { maxNum: 20, allowFractions: false, maxDenominator: 0, gridSize: 6 },
@@ -14,7 +14,8 @@ const LEVEL_CONFIG = {
         preferDivision: true, 
         divisionThreshold: 20, 
         divisionPreferenceRate: 0.75,
-        disallowFractionDivision: true // Added as requested
+        disallowFractionDivision: true,
+        minFractions: 1 // Minimum number of fractions required
     },
     6: { 
         maxNum: 30, 
@@ -26,7 +27,8 @@ const LEVEL_CONFIG = {
         disallowFractionDivision: true,
         multiplicationThreshold: 10,
         multiplicationPreferenceRate: 0.5,
-        strictIntegerResults: true
+        strictIntegerResults: true,
+        minFractions: 2 // Minimum number of fractions required
     },
     7: { 
         maxNum: 30, 
@@ -39,7 +41,8 @@ const LEVEL_CONFIG = {
         multiplicationPreferenceRate: 0.5,
         preferNonUnitFractions: true,
         nonUnitFractionRate: 0.75,
-        strictIntegerResults: true
+        strictIntegerResults: true,
+        minFractions: 3 // Minimum number of fractions required
     },
     8: { 
         maxNum: 30, 
@@ -48,16 +51,18 @@ const LEVEL_CONFIG = {
         gridSize: 10,
         preferFractionOperations: true,
         fractionOperationRate: 0.5,
-        strictIntegerResults: true
+        strictIntegerResults: true,
+        minFractions: 3 // Minimum number of fractions required
     },
     9: { 
         maxNum: 99, 
         allowFractions: true, 
         maxDenominator: 12, 
         gridSize: 10,
-        preferFractionOperations: true, // Added as requested
+        preferFractionOperations: true,
         fractionOperationRate: 0.5,
-        strictIntegerResults: true
+        strictIntegerResults: true,
+        minFractions: 4 // Minimum number of fractions required
     },
     10: { 
         maxNum: 99, 
@@ -66,13 +71,14 @@ const LEVEL_CONFIG = {
         gridSize: 10, 
         forceFractionOps: true,
         preferFractionOperations: true,
-        fractionOperationRate: 0.75, // Increased to 75% as requested
+        fractionOperationRate: 0.75,
         preferNonUnitFractions: true,
         nonUnitFractionRate: 0.9,
         preferLargeNumbers: true,
         largeNumberThreshold: 30,
         strictIntegerResults: true,
-        maxFractionAttemptsBeforeFallback: 10
+        maxFractionAttemptsBeforeFallback: 10,
+        minFractions: 5 // Minimum number of fractions required
     }
 };
 
@@ -189,6 +195,11 @@ function generateFractionWithIntegerResult(num1, operator, maxDenominator, unitF
             // For unit fractions, numerator is always 1
             if (unitFractionOnly) {
                 if (Number.isInteger(n1 / denominator) && n1 / denominator > 0) {
+                    // Skip if the result would be 1
+                    if (n1 / denominator === 1 && Math.random() < 0.8) {
+                        continue;
+                    }
+                    
                     return {
                         numerator: 1,
                         denominator: denominator,
@@ -201,6 +212,11 @@ function generateFractionWithIntegerResult(num1, operator, maxDenominator, unitF
                 let numeratorOptions = [];
                 for (let num = 1; num < denominator; num++) {
                     if (Number.isInteger(n1 * num / denominator) && n1 * num / denominator > 0) {
+                        // Skip if the result would be 1
+                        if (n1 * num / denominator === 1 && Math.random() < 0.8) {
+                            continue;
+                        }
+                        
                         numeratorOptions.push(num);
                     }
                 }
@@ -238,6 +254,11 @@ function generateFractionWithIntegerResult(num1, operator, maxDenominator, unitF
         for (const denominator of possibleDenominators) {
             if (unitFractionOnly) {
                 if (Number.isInteger(n1 * denominator) && n1 * denominator > 0) {
+                    // Skip if the result would be 1
+                    if (n1 * denominator === 1 && Math.random() < 0.8) {
+                        continue;
+                    }
+                    
                     return {
                         numerator: 1,
                         denominator: denominator,
@@ -249,6 +270,11 @@ function generateFractionWithIntegerResult(num1, operator, maxDenominator, unitF
                 let numeratorOptions = [];
                 for (let num = 1; num < denominator; num++) {
                     if (Number.isInteger(n1 * denominator / num) && n1 * denominator / num > 0) {
+                        // Skip if the result would be 1
+                        if (n1 * denominator / num === 1 && Math.random() < 0.8) {
+                            continue;
+                        }
+                        
                         numeratorOptions.push(num);
                     }
                 }
@@ -365,10 +391,18 @@ function calculateResult(num1, operator, num2, config) {
     return null;
 }
 
-function selectOperatorAndNum2(num1, level, config, fractionAttempts = 0) {
+function selectOperatorAndNum2(num1, level, config, fractionAttempts = 0, countOnes = 0) {
     config = LEVEL_CONFIG[level] || config;
     const n1 = num1 instanceof Object ? num1.toDecimal() : num1;
     let operator, num2;
+    
+    // Reduce likelihood of division for prime numbers to avoid result = 1
+    const isPrimeNumber = isPrime(n1);
+    if (isPrimeNumber && countOnes >= 1 && Math.random() < 0.8) {
+        // Avoid division for prime numbers if we already have too many ones
+        const availableOps = ['+', '-', 'x'];
+        operator = availableOps[Math.floor(Math.random() * availableOps.length)];
+    }
     
     // Check if we need to fall back
     const useFallback = level === 10 && 
@@ -450,25 +484,30 @@ function selectOperatorAndNum2(num1, level, config, fractionAttempts = 0) {
     }
     
     // LEVEL 5: Division for large non-prime numbers
-    if (level === 5 && n1 >= config.divisionThreshold && !isPrime(n1) && Math.random() < config.divisionPreferenceRate) {
+    if (level === 5 && n1 >= config.divisionThreshold && !isPrimeNumber && Math.random() < config.divisionPreferenceRate) {
         const factors = getFactorsOf(n1);
         
         if (factors.length > 0) {
             const factor = factors[Math.floor(Math.random() * factors.length)];
             
-            if (factor === 2 && Math.random() < 0.5 && !config.disallowFractionDivision) {
-                return {
-                    operator: 'x',
-                    num2: { numerator: 1, denominator: 2, toString() { return "1/2"; }, toDecimal() { return 0.5; } }
-                };
+            // Skip if the result would be 1 and we already have too many ones
+            if (n1 / factor === 1 && countOnes >= 1 && Math.random() < 0.8) {
+                // Don't use this division, try something else
             } else {
-                return { operator: '/', num2: factor };
+                if (factor === 2 && Math.random() < 0.5 && !config.disallowFractionDivision) {
+                    return {
+                        operator: 'x',
+                        num2: { numerator: 1, denominator: 2, toString() { return "1/2"; }, toDecimal() { return 0.5; } }
+                    };
+                } else {
+                    return { operator: '/', num2: factor };
+                }
             }
         }
     }
     
     // LEVEL 6: Multiply by unit fractions
-    if (level === 6 && n1 >= config.multiplicationThreshold && !isPrime(n1) && Math.random() < config.multiplicationPreferenceRate) {
+    if (level === 6 && n1 >= config.multiplicationThreshold && !isPrimeNumber && Math.random() < config.multiplicationPreferenceRate) {
         const fractionNum2 = generateFractionWithIntegerResult(
             n1, 'x', config.maxDenominator, true, false
         );
@@ -492,12 +531,26 @@ function selectOperatorAndNum2(num1, level, config, fractionAttempts = 0) {
         if (Math.random() < 0.8) {
             if (Math.random() < 0.4) {
                 const targetResult = Math.floor(Math.random() * 16) + 1;
-                const num2Value = Math.floor(n1 - targetResult);
-                if (num2Value > 1 && num2Value <= config.maxNum) {
-                    return { operator: '-', num2: num2Value };
+                // Reduce likelihood of generating a result of 1
+                if (targetResult === 1 && countOnes >= 1 && Math.random() < 0.8) {
+                    const adjustedTarget = Math.floor(Math.random() * 15) + 2;
+                    const num2Value = Math.floor(n1 - adjustedTarget);
+                    if (num2Value > 1 && num2Value <= config.maxNum) {
+                        return { operator: '-', num2: num2Value };
+                    }
+                } else {
+                    const num2Value = Math.floor(n1 - targetResult);
+                    if (num2Value > 1 && num2Value <= config.maxNum) {
+                        return { operator: '-', num2: num2Value };
+                    }
                 }
             } else {
                 for (let divisor = 2; divisor <= Math.min(10, config.maxNum); divisor++) {
+                    // Skip division if the result would be 1 and we already have too many ones
+                    if (n1 / divisor === 1 && countOnes >= 1 && Math.random() < 0.8) {
+                        continue;
+                    }
+                    
                     if (n1 / divisor < 17 && n1 % divisor === 0) {
                         return { operator: '/', num2: divisor };
                     }
@@ -509,6 +562,11 @@ function selectOperatorAndNum2(num1, level, config, fractionAttempts = 0) {
     // For level 3, prefer division for large numbers
     if (level === 3 && n1 > 30 && Math.random() < 0.6) {
         for (let divisor = 2; divisor <= Math.min(10, config.maxNum); divisor++) {
+            // Skip division if the result would be 1 and we already have too many ones
+            if (n1 / divisor === 1 && countOnes >= 1 && Math.random() < 0.8) {
+                continue;
+            }
+            
             if (n1 % divisor === 0) {
                 return { operator: '/', num2: divisor };
             }
@@ -530,12 +588,20 @@ function selectOperatorAndNum2(num1, level, config, fractionAttempts = 0) {
         else if (operatorBias < 0.66) operator = '+';
         else operator = '-';
     }
-    // For other levels, use normal distribution
+    // For other levels, use normal distribution (but reduce division if we have too many ones)
     else {
-        if (operatorBias < 0.35) operator = 'x';
-        else if (operatorBias < 0.6) operator = '/';
-        else if (operatorBias < 0.8) operator = '+';
-        else operator = '-';
+        if (countOnes >= 1 && isPrimeNumber) {
+            // Reduce possibility of divisions for prime numbers to avoid result = 1
+            if (operatorBias < 0.35) operator = 'x';
+            else if (operatorBias < 0.45) operator = '/'; // Reduced from 0.6 to 0.45
+            else if (operatorBias < 0.75) operator = '+';
+            else operator = '-';
+        } else {
+            if (operatorBias < 0.35) operator = 'x';
+            else if (operatorBias < 0.6) operator = '/';
+            else if (operatorBias < 0.8) operator = '+';
+            else operator = '-';
+        }
     }
     
     // For level 5 - occasionally allow 1/2
@@ -597,11 +663,29 @@ function selectOperatorAndNum2(num1, level, config, fractionAttempts = 0) {
         operator = 'x';
     }
     
+    // For division operations, check if the result would be 1 and we already have too many ones
+    if (operator === '/' && countOnes >= 1) {
+        const expectedResult = n1 / (num2 instanceof Object ? num2.toDecimal() : num2);
+        if (Math.abs(expectedResult - 1) < 0.0001 && Math.random() < 0.8) {
+            // Change the operator to avoid too many 1s
+            const alternateOps = ['+', '-', 'x'];
+            operator = alternateOps[Math.floor(Math.random() * alternateOps.length)];
+            // Generate a new num2 for the alternate operation
+            if (operator === '+') {
+                num2 = Math.floor(Math.random() * Math.min(10, config.maxNum - n1)) + 1;
+            } else if (operator === '-') {
+                num2 = Math.floor(Math.random() * Math.min(10, n1 - 1)) + 1;
+            } else { // 'x'
+                num2 = Math.floor(Math.random() * 4) + 2; // Small numbers for multiplication
+            }
+        }
+    }
+    
     return { operator, num2 };
 }
 
 // Modified with improved fallback mechanism
-function generateNextSum(startNum, level, fractionAttempts = 0) {
+function generateNextSum(startNum, level, fractionAttempts = 0, countOnes = 0) {
     const config = LEVEL_CONFIG[level];
     if (!config) throw new Error(`Invalid level: ${level}`);
 
@@ -611,8 +695,8 @@ function generateNextSum(startNum, level, fractionAttempts = 0) {
     
     // Main generation loop with improved fraction handling
     while (attempts < maxAttempts) {
-        // Pass the level along with the config and fraction attempts counter
-        const { operator, num2 } = selectOperatorAndNum2(startNum, level, config, fractionAttempts);
+        // Pass the level, config, fraction attempts counter, and ones counter
+        const { operator, num2 } = selectOperatorAndNum2(startNum, level, config, fractionAttempts, countOnes);
         
         // Skip if both are fractions - this is often a problem source
         if (startNum instanceof Object && num2 instanceof Object) {
@@ -624,63 +708,141 @@ function generateNextSum(startNum, level, fractionAttempts = 0) {
         const result = calculateResult(startNum, operator, num2, config);
         
         if (result !== null && isValidNumber(result, config)) {
+            // Check if result is 1 and we already have too many ones
+            if (result === 1 && countOnes >= 2 && Math.random() < 0.9) {
+                attempts++;
+                continue; // Skip this result and try again
+            }
+            
+            // Determine if the count of ones should be increased
+            const newCountOnes = result === 1 ? countOnes + 1 : countOnes;
+            
             return {
                 num1: startNum,
                 operator,
                 num2,
                 result,
-                fractionAttempts: 0 // Reset counter on successful operation
+                fractionAttempts: 0, // Reset fraction counter on successful operation
+                countOnes: newCountOnes // Track the number of ones
             };
         }
         attempts++;
     }
     
     // Fallback to simple operations if we've exceeded attempts
-    return generateFallbackOperation(startNum, level, config);
+    return generateFallbackOperation(startNum, level, config, countOnes);
 }
 
 // Enhanced fallback function that creates a guaranteed valid operation
-function generateFallbackOperation(num, level, config) {
+function generateFallbackOperation(num, level, config, countOnes = 0) {
     const n = num instanceof Object ? num.toDecimal() : num;
     
     // Try addition first if we have room
     if (n < config.maxNum - 2) {
         // Add a small number
         const addend = Math.min(Math.floor(Math.random() * 5) + 1, config.maxNum - n);
+        const result = n + addend;
+        
+        // Avoid result = 1 if we already have too many ones
+        if (result === 1 && countOnes >= 2) {
+            const adjustedAddend = Math.min(Math.floor(Math.random() * 5) + 2, config.maxNum - n);
+            return {
+                num1: num,
+                operator: '+',
+                num2: adjustedAddend,
+                result: n + adjustedAddend,
+                fractionAttempts: 0,
+                countOnes: countOnes // No change in count of ones
+            };
+        }
+        
         return {
             num1: num,
             operator: '+',
             num2: addend,
             result: n + addend,
-            fractionAttempts: 0 // Reset counter 
+            fractionAttempts: 0,
+            countOnes: result === 1 ? countOnes + 1 : countOnes
         };
     }
     
     // If number is close to max, subtract
     const subtrahend = Math.min(Math.floor(Math.random() * 5) + 1, n - 1);
     if (subtrahend > 0) {
+        const result = n - subtrahend;
+        
+        // Avoid result = 1 if we already have too many ones
+        if (result === 1 && countOnes >= 2) {
+            const adjustedSubtrahend = Math.min(Math.floor(Math.random() * 5) + 2, n - 2);
+            if (adjustedSubtrahend > 0) {
+                return {
+                    num1: num,
+                    operator: '-',
+                    num2: adjustedSubtrahend,
+                    result: n - adjustedSubtrahend,
+                    fractionAttempts: 0,
+                    countOnes: countOnes // No change in count of ones
+                };
+            }
+        }
+        
         return {
             num1: num,
             operator: '-',
             num2: subtrahend,
-            result: n - subtrahend,
-            fractionAttempts: 0 // Reset counter
+            result: result,
+            fractionAttempts: 0,
+            countOnes: result === 1 ? countOnes + 1 : countOnes
         };
     }
     
     // In the unlikely case n is 1, use multiplication
+    // Avoid generating another 1 if we already have too many
+    const multiplier = (countOnes >= 2) ? 3 : 2;
     return {
         num1: num,
         operator: 'x',
-        num2: 2,
-        result: n * 2,
-        fractionAttempts: 0 // Reset counter
+        num2: multiplier,
+        result: n * multiplier,
+        fractionAttempts: 0,
+        countOnes: countOnes // No change in count of ones for multiplication
     };
 }
 
 export function formatNumber(num) {
     if (num instanceof Object) return num.toString();
     return num.toString();
+}
+
+// Function to count fractions in a sequence
+function countFractionsInSequence(sequence, limit = 12) {
+    let fractionCount = 0;
+    // Take only the first 'limit' sums
+    const limitedSequence = sequence.slice(0, limit);
+    
+    for (const sum of limitedSequence) {
+        // Check if num2 is a fraction
+        if (sum.num2 instanceof Object && typeof sum.num2.numerator === 'number') {
+            fractionCount++;
+        }
+    }
+    
+    return fractionCount;
+}
+
+// Function to count '1' values in results
+function countOnesInResults(sequence, limit = 12) {
+    let onesCount = 0;
+    // Take only the first 'limit' sums
+    const limitedSequence = sequence.slice(0, limit);
+    
+    for (const sum of limitedSequence) {
+        if (sum.result === 1) {
+            onesCount++;
+        }
+    }
+    
+    return onesCount;
 }
 
 export function generateSequence(level) {
@@ -691,7 +853,7 @@ export function generateSequence(level) {
     const MIN_SEQUENCE_LENGTH = 12;
     
     // For complex levels (7-10), use multiple attempts if needed
-    const maxTotalAttempts = (level >= 7) ? 3 : 1;
+    const maxTotalAttempts = (level >= 7) ? 5 : 3; // Increased attempts to meet fraction requirements
     let totalAttempts = 0;
     
     while (totalAttempts < maxTotalAttempts) {
@@ -708,11 +870,22 @@ export function generateSequence(level) {
         
         // Add tracking for fraction operations to implement fallback
         let consecutiveFractionAttempts = 0;
-
+        // Track the count of results that equal 1
+        let countOnes = 0;
+        
         // Try to build sequence
         for (let i = 0; i < 100; i++) {
-            // Pass the current count of fraction attempts for levels with fractions
-            const sum = generateNextSum(currentNum, level, config.allowFractions ? consecutiveFractionAttempts : 0);
+            // Pass the current count of fraction attempts and ones for levels with fractions
+            const sum = generateNextSum(currentNum, level, 
+                config.allowFractions ? consecutiveFractionAttempts : 0,
+                countOnes);
+            
+            // Update count of ones if necessary
+            if (sum.countOnes !== undefined) {
+                countOnes = sum.countOnes;
+            } else if (sum.result === 1) {
+                countOnes++;
+            }
             
             // For fraction levels, track consecutive fraction attempts
             if (config.allowFractions) {
@@ -732,7 +905,15 @@ export function generateSequence(level) {
                 
                 if (consecutiveFractionAttempts > fallbackThreshold) {
                     // Force a fallback to addition or subtraction
-                    const fallbackSum = generateFallbackOperation(currentNum, level, config);
+                    const fallbackSum = generateFallbackOperation(currentNum, level, config, countOnes);
+                    
+                    // Update count of ones if necessary
+                    if (fallbackSum.countOnes !== undefined) {
+                        countOnes = fallbackSum.countOnes;
+                    } else if (fallbackSum.result === 1) {
+                        countOnes++;
+                    }
+                    
                     sequence.push({
                         ...fallbackSum,
                         display: `${formatNumber(fallbackSum.num1)} ${fallbackSum.operator} ${formatNumber(fallbackSum.num2)} = ${formatNumber(fallbackSum.result)}`
@@ -753,11 +934,30 @@ export function generateSequence(level) {
             
             // If we have enough operations, we're done
             if (sequence.length >= MIN_SEQUENCE_LENGTH) {
+                // Check if we have met the minimum fraction requirements
+                if (config.allowFractions && config.minFractions) {
+                    const fractionCount = countFractionsInSequence(sequence);
+                    
+                    // If minimum fractions not met, try again with a new sequence
+                    if (fractionCount < config.minFractions) {
+                        console.log(`Level ${level}: Not enough fractions (${fractionCount}/${config.minFractions}). Trying again...`);
+                        break; // Start a new sequence
+                    }
+                }
+                
+                // Check if we have too many ones in the results
+                const onesCount = countOnesInResults(sequence);
+                if (onesCount > 2) {
+                    console.log(`Level ${level}: Too many 1's in results (${onesCount}/2). Trying again...`);
+                    break; // Start a new sequence
+                }
+                
+                // If we passed both checks, return the sequence
                 return sequence;
             }
         }
         
-        // If we didn't get enough operations, try again
+        // If we didn't get enough operations or failed a check, continue to next attempt
     }
     
     // If we still failed after multiple attempts, create a simple sequence
@@ -776,12 +976,14 @@ function createSimpleSequence(level) {
     
     // For fraction levels, include some fraction operations even in simple sequence
     const includeFractions = config.allowFractions && level >= 5;
+    let fractionCount = 0;
+    let onesCount = 0;
     
     // Create at least 15 operations to ensure enough for the game
     for (let i = 0; i < 15; i++) {
-        // For fraction levels, occasionally include a fraction operation
-        // but ensure it gives an integer result
-        if (includeFractions && i > 2 && i % 3 === 0 && Math.random() < 0.6) {
+        // For fraction levels, prioritize fraction operations if we need more for minimum requirement
+        if (includeFractions && fractionCount < (config.minFractions || 0) && 
+            i > 2 && Math.random() < 0.8) {
             // Try to create a fraction operation that produces an integer
             if (Math.random() < 0.7) {
                 // Multiplication by unit fraction that gives integer result
@@ -801,6 +1003,11 @@ function createSimpleSequence(level) {
                     
                     const result = currentNum * (numerator / denominator);
                     
+                    // Skip if result is 1 and we already have too many ones
+                    if (result === 1 && onesCount >= 2) {
+                        continue;
+                    }
+                    
                     sequence.push({
                         num1: currentNum,
                         operator: 'x',
@@ -810,6 +1017,12 @@ function createSimpleSequence(level) {
                     });
                     
                     currentNum = result;
+                    fractionCount++;
+                    
+                    if (result === 1) {
+                        onesCount++;
+                    }
+                    
                     continue;
                 }
             } 
@@ -822,6 +1035,11 @@ function createSimpleSequence(level) {
             const addend = Math.floor(Math.random() * 5) + 1;
             const result = currentNum + addend;
             
+            // Skip if result is 1 and we already have too many ones
+            if (result === 1 && onesCount >= 2) {
+                continue;
+            }
+            
             sequence.push({
                 num1: currentNum,
                 operator: '+',
@@ -831,6 +1049,10 @@ function createSimpleSequence(level) {
             });
             
             currentNum = result;
+            
+            if (result === 1) {
+                onesCount++;
+            }
         } else {
             // Subtraction (ensure we don't go below 1)
             const maxSubtract = Math.min(currentNum - 1, 5);
@@ -848,20 +1070,55 @@ function createSimpleSequence(level) {
                     currentNum = multResult;
                 } else {
                     // Division as last resort if multiplication would exceed max
-                    const divResult = Math.floor(currentNum / 2); // Ensure integer result
-                    sequence.push({
-                        num1: currentNum,
-                        operator: '/',
-                        num2: 2,
-                        result: divResult,
-                        display: `${currentNum} ÷ 2 = ${divResult}`
-                    });
-                    currentNum = divResult;
+                    // Avoid division if it would result in 1 and we already have too many ones
+                    if (currentNum / 2 === 1 && onesCount >= 2) {
+                        // Use multiplication by 3 instead
+                        const altResult = currentNum * 3;
+                        if (altResult <= config.maxNum) {
+                            sequence.push({
+                                num1: currentNum,
+                                operator: 'x',
+                                num2: 3,
+                                result: altResult,
+                                display: `${currentNum} × 3 = ${altResult}`
+                            });
+                            currentNum = altResult;
+                        } else {
+                            // Subtraction as very last resort
+                            sequence.push({
+                                num1: currentNum,
+                                operator: '-',
+                                num2: 1,
+                                result: currentNum - 1,
+                                display: `${currentNum} - 1 = ${currentNum - 1}`
+                            });
+                            currentNum = currentNum - 1;
+                        }
+                    } else {
+                        const divResult = Math.floor(currentNum / 2); // Ensure integer result
+                        sequence.push({
+                            num1: currentNum,
+                            operator: '/',
+                            num2: 2,
+                            result: divResult,
+                            display: `${currentNum} ÷ 2 = ${divResult}`
+                        });
+                        currentNum = divResult;
+                        
+                        if (divResult === 1) {
+                            onesCount++;
+                        }
+                    }
                 }
             } else {
                 // Normal subtraction case
                 const subtrahend = Math.floor(Math.random() * maxSubtract) + 1;
                 const result = currentNum - subtrahend;
+                
+                // Skip if result is 1 and we already have too many ones
+                if (result === 1 && onesCount >= 2) {
+                    continue;
+                }
                 
                 sequence.push({
                     num1: currentNum,
@@ -872,6 +1129,60 @@ function createSimpleSequence(level) {
                 });
                 
                 currentNum = result;
+                
+                if (result === 1) {
+                    onesCount++;
+                }
+            }
+        }
+    }
+    
+    // After creating the sequence, if we're still short on fractions, try to add some
+    if (includeFractions && fractionCount < (config.minFractions || 0)) {
+        // Look for operations where we can replace with fractions
+        for (let i = 0; i < sequence.length && fractionCount < config.minFractions; i++) {
+            const sum = sequence[i];
+            
+            // Skip if this sum already has a fraction
+            if (sum.num2 instanceof Object) continue;
+            
+            // Skip if sum.num1 is 1 (not many options for fractions)
+            if (sum.num1 === 1) continue;
+            
+            // Try to replace with a fraction operation
+            const factors = getFactorsOf(sum.num1);
+            if (factors.length > 0) {
+                const factor = factors[Math.floor(Math.random() * factors.length)];
+                const denominator = factor;
+                const numerator = 1; // Unit fraction
+                
+                const fractionNum2 = {
+                    numerator, 
+                    denominator,
+                    toString() { return `${this.numerator}/${this.denominator}`; },
+                    toDecimal() { return this.numerator / this.denominator; }
+                };
+                
+                const result = sum.num1 * (numerator / denominator);
+                
+                // Only replace if result is not 1 or we don't have too many ones
+                if (result !== 1 || onesCount < 2) {
+                    sequence[i] = {
+                        num1: sum.num1,
+                        operator: 'x',
+                        num2: fractionNum2,
+                        result: result,
+                        display: `${sum.num1} × ${fractionNum2.toString()} = ${result}`
+                    };
+                    
+                    fractionCount++;
+                    
+                    // Update the next operation's num1
+                    if (i + 1 < sequence.length) {
+                        sequence[i + 1].num1 = result;
+                        sequence[i + 1].display = `${formatNumber(result)} ${sequence[i + 1].operator} ${formatNumber(sequence[i + 1].num2)} = ${formatNumber(sequence[i + 1].result)}`;
+                    }
+                }
             }
         }
     }
