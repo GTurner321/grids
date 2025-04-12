@@ -6,7 +6,7 @@
 /* Level selector container - centered */
 .level-selector-container {
   padding: 0px 0px; /* UPDATED: Reduced from 10px 0px */
-  margin: 0px auto 2px; /* UPDATED: Reduced from 5px auto 10px */
+  margin: 8px auto 6px; /* UPDATED: Reduced from 5px auto 10px */
   text-align: center;
   width: 100%;
   display: flex;
@@ -191,7 +191,7 @@
 @media (max-width: 768px) {
   .level-selector-container {
     padding: 0px 0px; /* UPDATED: Further reduced padding */
-    margin: 0px auto 1px; /* UPDATED: Further reduced margins */
+    margin: 4px auto 2px; /* UPDATED: Further reduced margins */
   }
   
   .level-scroller-container {
