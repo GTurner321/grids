@@ -816,10 +816,9 @@ class LeaderboardManager {
                     this.processScore(currentScore);
                 }
                 
-                // Show welcome message in the game messages area using gameController
-                if (window.gameController && window.gameController.showMessage) {
-                    window.gameController.showMessage(`Welcome ${username}! Score at least 5000 to make the leaderboard.`, 'info', 8000);
-                }
+if (window.gameController && window.gameController.showMessage) {
+    window.gameController.showMessage(`Welcome ${username}! Score at least 5000 to make the leaderboard.`, 'info', 8000);
+}
                 
                 // Display username in score area
                 const scoreLeftElement = document.getElementById('score-bonus');
