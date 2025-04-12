@@ -303,7 +303,7 @@ body {
 /* Inner content container */
 .rules-box .rules-content {
   /* Tighten spacing and remove individual line containers */
-  margin: 5px 0;
+  margin: 4px 0;
   padding: 0;
   background-color: transparent !important;
   box-shadow: none !important;
@@ -313,7 +313,7 @@ body {
 .rules-box p {
   font-size: 1rem;
   text-transform: uppercase;
-  line-height: 1.1;
+  line-height: 1.2;
   letter-spacing: 0.03em;
   
   /* Significantly reduced embossed effect */
@@ -325,8 +325,8 @@ body {
   background-color: transparent !important;
   box-shadow: none !important;
   border-radius: 0 !important;
-  padding: 2px 15px;
-  margin: 3px 0;
+  padding: 2px 12px;
+  margin: 2px 0;
 }
 
 /* Updated to be fully transparent */
@@ -334,8 +334,8 @@ body {
   background-color: transparent;
   border-radius: 0;
   box-shadow: none;
-  padding: 10px 5px;
-  margin: 5px 0;
+  padding: 7px 3px;
+  margin: 4px 0;
 }
 
 /* Image container styling */
@@ -357,15 +357,15 @@ body {
   /* styled-box-title provides most styling */
   color: var(--text-blue);
   font-size: 1.2rem;
-  padding: 10px 20px;
-  margin-bottom: 5px; /* Reduced spacing */
+  padding: 8px 15px;
+  margin-bottom: 3px; /* Reduced spacing */
 }
 
 .rules-box-subtitle {
   /* Similar to styled-box-title but smaller */
   font-family: 'Black Ops One', 'Trebuchet MS', Arial, sans-serif;
   font-weight: normal;
-  font-size: 1rem;
+  font-size: 1.1rem;
   text-align: center;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -375,30 +375,30 @@ body {
   text-shadow: 
     1px 1px 2px rgba(255, 255, 255, 0.9),
     -1px -1px 1px rgba(0, 0, 0, 0.2);
-  padding: 8px 15px; /* Reduced from 10px 20px */
+  padding: 6px 12px; /* Reduced from 10px 20px */
   margin: 5px 0; /* Add to control spacing */
 }
 
 /* Rules section container - MODIFIED to remove box effect */
 .rules-section {
   border-radius: 0; /* Remove border radius */
-  padding: 8px; /* Keep padding for spacing */
+  padding: 6px; /* Keep padding for spacing */
   background: transparent; /* Remove the background gradient */
   box-shadow: none; /* Remove the box shadow */
-  margin-bottom: 12px; /* Keep bottom margin */
+  margin-bottom: 8px; /* Keep bottom margin */
 }
 
 /* Close button container */
 .close-button-container {
   text-align: center;
-  margin-top: 8px; /* Add to control spacing */
+  margin-top: 6px; /* Add to control spacing */
 }
 
 /* CLOSE BUTTON */
 /* Close button styling - apply metallic-button class in HTML */
 .rules-close-button {
   /* Apply specific overrides for the close button */
-  padding: 10px 25px;
+  padding: 8px 15px;
   margin: 0;
 }
 
@@ -427,12 +427,12 @@ body {
     width: 95%; /* 95% width for small screens as requested */
     max-width: none;
     margin: 0 auto;
-    padding: 8px; /* Reduced from 10px */
+    padding: 6px; /* Reduced from 10px */
   }
   
   .rules-box p {
     font-size: 0.9rem;
-    padding: 2px 10px; /* Reduced from 6px 15px */
+    padding: 2px 8px; /* Reduced from 6px 15px */
     margin: 2px 0; /* Reduced from standard */
     
     /* Even more subtle embossed effect for mobile */
@@ -442,7 +442,7 @@ body {
   }
   
   .rules-box .rules-text-block {
-    padding: 8px 3px; /* Adjusted for mobile */
+    padding: 6px 2px; /* Adjusted for mobile */
   }
   
   .rules-image-container {
@@ -450,22 +450,22 @@ body {
   }
   
   .rules-close-button {
-    padding: 8px 20px;
+    padding: 6px 15px;
   }
   
   .rules-box-title {
     font-size: 1.1rem;
-    padding: 8px 15px; /* Reduced */
+    padding: 6px 12px; /* Reduced */
   }
   
   .rules-box-subtitle {
     font-size: 0.95rem; /* Slightly reduced */
-    padding: 6px 12px; /* Reduced */
+    padding: 5px 10px; /* Reduced */
   }
   
   .rules-section {
     padding: 6px; /* Reduced from 8px */
-    margin-bottom: 10px; /* Reduced */
+    margin-bottom: 8px; /* Reduced */
   }
 }
 
