@@ -828,84 +828,88 @@ class GameController {
     }
 
     // Modified handlePuzzleSolved method for GameController
-    handlePuzzleSolved() {
-        console.log("PUZZLE SOLVED! Congratulations message and score updates coming next...");
-        
-        // Immediately disable all game control buttons when puzzle is solved
-        const checkButton = document.getElementById('check-solution');
-        const removeButton = document.getElementById('remove-spare');
-        const resetButton = document.getElementById('reset-path');
-        
-        if (checkButton) checkButton.disabled = true;
-        if (removeButton) removeButton.disabled = true;
-        if (resetButton) resetButton.disabled = true;
-        
-        // Important: First update level tracker's completed levels
-        if (window.levelTracker) {
-            console.log(`Marking level ${this.state.currentLevel} as completed in level tracker`);
-            window.levelTracker.markLevelCompleted(this.state.currentLevel);
-        }
-        
-        // Notify message controller about level completion
-        if (window.messageController) {
-            window.messageController.onLevelCompleted(this.state.currentLevel);
-        } else {
-            // Legacy unlock message based on completed level
-            let successMessage = 'Congratulations! Puzzle solved!';
-            
-            // If level unlocker exists, handle level completion
-            if (window.levelUnlocker) {
-                successMessage = window.levelUnlocker.handleLevelCompletion(this.state.currentLevel);
-            }
-            
-            // Display success message
-            this.showMessage(successMessage, 'success');
-        }
-        
-        // Directly update level scroller to reflect newly unlocked levels
-        if (window.levelScroller) {
-            window.levelScroller.updateVisibleLevel();
-        }
-        
-        // Update score
-        scoreManager.completePuzzle();
-        
-        // Mark cells in the path as solved
-        this.state.userPath.forEach((index, position) => {
-            const cell = document.querySelector(`[data-index="${index}"]`);
-            if (!cell) return;
-            
-            // Don't change the start and end cell colors
-            if (position === 0) {
-                // Start cell - keep it green/dark green
-                cell.classList.add('start-cell-selected');
-            } else if (position === this.state.userPath.length - 1) {
-                // End cell - keep it red/dark red
-                cell.classList.add('end-cell-selected');
-            } else {
-                // Middle cells - add solved path class for yellow
-                cell.classList.add('user-solved-path');
-                
-                // Remove 'selected' class to ensure the yellow color shows
-                cell.classList.remove('selected');
-            }
-        });
-        
-        // Ensure ALL borders are fully drawn on the completed path
-        const config = getLevelConfig(this.state.currentLevel);
-        const gridSize = config.gridSize || 10;
-        
-        // Use drawCompleteBorders instead of addPathBorders to ensure all appropriate borders are shown
-        drawCompleteBorders(this.state.userPath, 
-                 (index) => document.querySelector(`[data-index="${index}"]`), 
-                 gridSize);
-        
-        // Disable game to prevent further interaction with this puzzle
-        this.state.gameActive = false;
-        
-        // Update UI to reflect completion
-        this.updateUI();
+handlePuzzleSolved() {
+    console.log("PUZZLE SOLVED! Congratulations message and score updates coming next...");
+    
+    // Immediately disable all game control buttons when puzzle is solved
+    const checkButton = document.getElementById('check-solution');
+    const removeButton = document.getElementById('remove-spare');
+    const resetButton = document.getElementById('reset-path');
+    
+    if (checkButton) checkButton.disabled = true;
+    if (removeButton) removeButton.disabled = true;
+    if (resetButton) resetButton.disabled = true;
+    
+    // Important: First update level tracker's completed levels
+    if (window.levelTracker) {
+        console.log(`Marking level ${this.state.currentLevel} as completed in level tracker`);
+        window.levelTracker.markLevelCompleted(this.state.currentLevel);
     }
+    
+    // CRITICAL FIX: Always call levelUnlocker.handleLevelCompletion for compatibility
+    // This ensures the level scroller UI gets properly updated
+    let successMessage = 'Congratulations! Puzzle solved!';
+    if (window.levelUnlocker) {
+        successMessage = window.levelUnlocker.handleLevelCompletion(this.state.currentLevel);
+    }
+    
+    // Notify message controller about level completion
+    if (window.messageController) {
+        window.messageController.onLevelCompleted(this.state.currentLevel);
+    } else {
+        // Legacy fallback message display
+        this.showMessage(successMessage, 'success');
+    }
+    
+    // Directly update level scroller to reflect newly unlocked levels
+    if (window.levelScroller) {
+        window.levelScroller.updateVisibleLevel();
+        
+        // IMPORTANT: Force the level scroller layout to be fixed
+        setTimeout(() => {
+            window.levelScroller.fixScrollerLayout();
+        }, 100);
+    }
+    
+    // Update score
+    scoreManager.completePuzzle();
+    
+    // Mark cells in the path as solved
+    this.state.userPath.forEach((index, position) => {
+        const cell = document.querySelector(`[data-index="${index}"]`);
+        if (!cell) return;
+        
+        // Don't change the start and end cell colors
+        if (position === 0) {
+            // Start cell - keep it green/dark green
+            cell.classList.add('start-cell-selected');
+        } else if (position === this.state.userPath.length - 1) {
+            // End cell - keep it red/dark red
+            cell.classList.add('end-cell-selected');
+        } else {
+            // Middle cells - add solved path class for yellow
+            cell.classList.add('user-solved-path');
+            
+            // Remove 'selected' class to ensure the yellow color shows
+            cell.classList.remove('selected');
+        }
+    });
+    
+        // Ensure ALL borders are fully drawn on the completed path
+    const config = getLevelConfig(this.state.currentLevel);
+    const gridSize = config.gridSize || 10;
+    
+    // Use drawCompleteBorders instead of addPathBorders to ensure all appropriate borders are shown
+    drawCompleteBorders(this.state.userPath, 
+                (index) => document.querySelector(`[data-index="${index}"]`), 
+                gridSize);
+    
+    // Disable game to prevent further interaction with this puzzle
+    this.state.gameActive = false;
+    
+    // Update UI to reflect completion
+    this.updateUI();
+}
     
     getLevelConfig(level) {
         // Re-export the function from sequencegenerator.js
