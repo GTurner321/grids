@@ -5,20 +5,25 @@
 
 /* Level selector container - centered */
 .level-selector-container {
-  padding: 5px 0px;
-  margin: 2px auto 4px;
+  padding: 0px 0px; /* UPDATED: Reduced from 10px 0px */
+  margin: 0px auto 2px; /* UPDATED: Reduced from 5px auto 10px */
   text-align: center;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  /* ADDED: Important styles from main.css */
+  border-bottom: none !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+  background-color: transparent !important;
 }
 
 /* Level selector title - centered */
 .level-selector-title {
   color: #00008B;
-  margin-bottom: 4px;
+  margin-bottom: 2px; /* UPDATED: Reduced from 8px */
   font-family: 'Trebuchet MS', sans-serif;
   font-weight: bold;
   text-align: center;
@@ -40,6 +45,14 @@
   margin: 0 5px;
 }
 
+/* ADDED: Level buttons container - copied from main.css */
+.level-buttons {
+  border-bottom: none !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+  background-color: transparent !important;
+}
+
 /* ==========================================================================
    LEVEL SCROLLER CONTAINER - Improved alignment and centering
    ========================================================================== */
@@ -49,7 +62,7 @@
   align-items: center;
   justify-content: center;
   height: 60px;
-  margin: 5px auto;
+  margin: 3px auto; /* UPDATED: Reduced from 15px auto */
   width: 100%;
   max-width: 320px;
   position: relative;
@@ -176,8 +189,14 @@
 
 /* Mobile Optimizations */
 @media (max-width: 768px) {
+  .level-selector-container {
+    padding: 0px 0px; /* UPDATED: Further reduced padding */
+    margin: 0px auto 1px; /* UPDATED: Further reduced margins */
+  }
+  
   .level-scroller-container {
     height: 44px;
+    margin: 0px auto; /* UPDATED: Further reduced margin */
     max-width: 260px;
   }
   
@@ -213,6 +232,7 @@
 @media (max-width: 375px) {
   .level-scroller-container {
     height: 40px;
+    margin: 0px auto; /* UPDATED: Further reduced */
     max-width: 220px;
   }
   
