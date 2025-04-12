@@ -411,65 +411,70 @@ class LevelScroller {
         });
     }
     
-    handleLevelSelection(level) {
-        // Use the LevelTracker to check if the level is unlocked
-        const isUnlocked = window.levelTracker && window.levelTracker.isLevelUnlocked(level);
-        
-        if (!isUnlocked) {
-            // Show message that level is locked
+handleLevelSelection(level) {
+    // Use the LevelTracker to check if the level is unlocked
+    const isUnlocked = window.levelTracker && window.levelTracker.isLevelUnlocked(level);
+    
+    if (!isUnlocked) {
+        // Show message that level is locked using messageController
+        if (window.messageController) {
+            window.messageController.showMessage(`Level ${level} is locked. Complete earlier levels to unlock it.`, 'error', 3000);
+        } else {
+            // Fallback for backward compatibility
             if (window.gameController && window.gameController.showMessage) {
                 window.gameController.showMessage(`Level ${level} is locked. Complete earlier levels to unlock it.`, 'error', 3000);
             } else {
                 console.log(`Level ${level} is locked. Complete earlier levels to unlock it.`);
             }
-            return; // Early return - don't proceed to activating game elements
         }
-        
-        // Critical fix: Handle game controller access with retries
-        const startSelectedLevel = () => {
-            if (window.gameController && typeof window.gameController.startLevel === 'function') {
-                // Activate the game
-                const gameContainer = document.querySelector('.game-container');
-                if (gameContainer) {
-                    gameContainer.classList.add('game-active');
-                }
-                
-                // Make grid container visible
-                const gridContainer = document.getElementById('grid-container');
-                if (gridContainer) {
-                    gridContainer.style.visibility = 'visible';
-                    gridContainer.style.height = 'auto';
-                    gridContainer.style.backgroundColor = '#94a3b8';
-                }
-                
-                // Start the level
-                window.gameController.startLevel(level);
-                
-                // Update appearance
-                this.updateVisibleLevel();
-                return true;
-            }
-            return false;
-        };
-        
-        // Try immediately first
-        if (startSelectedLevel()) return;
-        
-        // If not available, try a few more times with short delays
-        let attempts = 0;
-        const retryInterval = setInterval(() => {
-            attempts++;
-            console.log(`Attempt ${attempts} to find game controller...`);
-            
-            if (startSelectedLevel() || attempts >= 10) { // Max 10 attempts
-                clearInterval(retryInterval);
-                if (attempts >= 10) {
-                    console.error('Game controller not available after multiple attempts');
-                    alert('Error starting level. Please refresh the page and try again.');
-                }
-            }
-        }, 200);
+        return; // Early return - don't proceed to activating game elements
     }
+    
+    // Critical fix: Handle game controller access with retries
+    const startSelectedLevel = () => {
+        if (window.gameController && typeof window.gameController.startLevel === 'function') {
+            // Activate the game
+            const gameContainer = document.querySelector('.game-container');
+            if (gameContainer) {
+                gameContainer.classList.add('game-active');
+            }
+            
+            // Make grid container visible
+            const gridContainer = document.getElementById('grid-container');
+            if (gridContainer) {
+                gridContainer.style.visibility = 'visible';
+                gridContainer.style.height = 'auto';
+                gridContainer.style.backgroundColor = '#94a3b8';
+            }
+            
+            // Start the level
+            window.gameController.startLevel(level);
+            
+            // Update appearance
+            this.updateVisibleLevel();
+            return true;
+        }
+        return false;
+    };
+    
+    // Try immediately first
+    if (startSelectedLevel()) return;
+    
+    // If not available, try a few more times with short delays
+    let attempts = 0;
+    const retryInterval = setInterval(() => {
+        attempts++;
+        console.log(`Attempt ${attempts} to find game controller...`);
+        
+        if (startSelectedLevel() || attempts >= 10) { // Max 10 attempts
+            clearInterval(retryInterval);
+            if (attempts >= 10) {
+                console.error('Game controller not available after multiple attempts');
+                alert('Error starting level. Please refresh the page and try again.');
+            }
+        }
+    }, 200);
+}
     
     // Set the current level from external sources (like game controller)
     setCurrentLevel(level) {
@@ -480,41 +485,15 @@ class LevelScroller {
     }
     
     // Handle level completion - updates UI and returns appropriate message
-    handleLevelCompletion(level) {
-        level = Number(level);
-        
-        // Update UI to reflect newly completed level
-        this.updateVisibleLevel();
-        
-        // Level tiers
-        const tier1 = [1, 2, 3];
-        const tier2 = [4, 5, 6];
-        
-        // Check if this completion unlocks new tiers
-        if (tier1.includes(level)) {
-            // Schedule follow-up message after 5 seconds
-            setTimeout(() => {
-                if (window.gameController && window.gameController.showMessage) {
-                    window.gameController.showMessage('Scroll through and select a new level from 1 to 6 to continue.', 'info', 5000);
-                }
-            }, 5000);
-            
-            // Return the combined message including the "complete all levels" encouragement
-            return 'Congratulations! Puzzle solved! You have unlocked levels 4 to 6. Complete all levels to turn the score bar green.';
-        } 
-        else if (tier2.includes(level)) {
-            // Schedule follow-up message after 5 seconds
-            setTimeout(() => {
-                if (window.gameController && window.gameController.showMessage) {
-                    window.gameController.showMessage('Scroll through and select a new level from 1 to 10 to continue.', 'info', 5000);
-                }
-            }, 5000);
-            
-            return 'Congratulations! Puzzle solved! You have unlocked levels 7 to 10.';
-        }
-        
-        return 'Congratulations! Puzzle solved!';
-    }
+handleLevelCompletion(level) {
+    level = Number(level);
+    
+    // Update UI to reflect newly completed level
+    this.updateVisibleLevel();
+    
+    // Let messageController handle the congratulation messages
+    // We'll just return a basic message for backward compatibility
+    return 'Congratulations! Puzzle solved!';
 }
 
 // Create the levelUnlocker reference for backward compatibility
