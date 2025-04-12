@@ -62,6 +62,81 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         }
+        
+        // NEW: Fix arrow button functionality
+        fixArrowButtons();
+    }
+    
+    // NEW: Function to fix arrow buttons by adding direct click handlers
+    function fixArrowButtons() {
+        console.log('Fixing arrow button functionality...');
+        
+        // Get the arrow buttons
+        const upArrow = document.querySelector('.up-arrow');
+        const downArrow = document.querySelector('.down-arrow');
+        
+        if (!upArrow || !downArrow) {
+            console.log('Arrow buttons not found yet, will retry later');
+            setTimeout(fixArrowButtons, 500);
+            return;
+        }
+        
+        console.log('Found arrow buttons, adding direct handlers');
+        
+        // Add direct onclick handlers that bypass the event system
+        upArrow.onclick = function() {
+            console.log('Up arrow clicked (direct handler)');
+            if (window.levelScroller) {
+                const currentLevel = window.levelScroller.currentLevel;
+                const maxLevels = window.levelScroller.maxLevels || 10;
+                const newLevel = currentLevel === 1 ? maxLevels : currentLevel - 1;
+                
+                console.log(`Changing current level from ${currentLevel} to ${newLevel}`);
+                window.levelScroller.currentLevel = newLevel;
+                window.levelScroller.updateVisibleLevel();
+                
+                // Add visual feedback
+                this.classList.add('clicked');
+                setTimeout(() => {
+                    this.classList.remove('clicked');
+                }, 200);
+            } else {
+                console.error('levelScroller not found!');
+            }
+        };
+        
+        downArrow.onclick = function() {
+            console.log('Down arrow clicked (direct handler)');
+            if (window.levelScroller) {
+                const currentLevel = window.levelScroller.currentLevel;
+                const maxLevels = window.levelScroller.maxLevels || 10;
+                const newLevel = currentLevel === maxLevels ? 1 : currentLevel + 1;
+                
+                console.log(`Changing current level from ${currentLevel} to ${newLevel}`);
+                window.levelScroller.currentLevel = newLevel;
+                window.levelScroller.updateVisibleLevel();
+                
+                // Add visual feedback
+                this.classList.add('clicked');
+                setTimeout(() => {
+                    this.classList.remove('clicked');
+                }, 200);
+            } else {
+                console.error('levelScroller not found!');
+            }
+        };
+        
+        // Explicitly mark them as enabled
+        upArrow.removeAttribute('disabled');
+        downArrow.removeAttribute('disabled');
+        
+        upArrow.style.opacity = '1';
+        downArrow.style.opacity = '1';
+        
+        upArrow.style.pointerEvents = 'auto';
+        downArrow.style.pointerEvents = 'auto';
+        
+        console.log('Direct arrow button handlers added successfully');
     }
     
     // Function to create emergency fallback UI if all else fails
@@ -74,7 +149,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Create basic level selector
         levelButtons.innerHTML = `
         <div class="level-scroller-container" style="display:flex !important; height:60px; visibility:visible; opacity:1;">
-            <button class="level-arrow up-arrow metallic-button" aria-label="Previous level" style="display:flex !important; visibility:visible; opacity:1;">
+            <button class="level-arrow up-arrow metallic-button" aria-label="Previous level" style="display:flex !important; visibility:visible; opacity:1; pointer-events:auto;">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="18 15 12 9 6 15"></polyline>
                 </svg>
@@ -86,7 +161,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </button>
             </div>
             
-            <button class="level-arrow down-arrow metallic-button" aria-label="Next level" style="display:flex !important; visibility:visible; opacity:1;">
+            <button class="level-arrow down-arrow metallic-button" aria-label="Next level" style="display:flex !important; visibility:visible; opacity:1; pointer-events:auto;">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="6 9 12 15 18 9"></polyline>
                 </svg>
@@ -102,27 +177,40 @@ document.addEventListener('DOMContentLoaded', function() {
         let currentLevel = 1;
         
         if (upArrow && levelBtn) {
-            upArrow.addEventListener('click', () => {
+            // UPDATED: Use direct onclick handler instead of addEventListener
+            upArrow.onclick = function() {
                 currentLevel = currentLevel === 1 ? 10 : currentLevel - 1;
                 levelBtn.setAttribute('data-level', currentLevel);
                 levelBtn.textContent = `LEVEL ${currentLevel}`;
-            });
+                // Add visual feedback
+                this.classList.add('clicked');
+                setTimeout(() => {
+                    this.classList.remove('clicked');
+                }, 200);
+            };
         }
         
         if (downArrow && levelBtn) {
-            downArrow.addEventListener('click', () => {
+            // UPDATED: Use direct onclick handler instead of addEventListener
+            downArrow.onclick = function() {
                 currentLevel = currentLevel === 10 ? 1 : currentLevel + 1;
                 levelBtn.setAttribute('data-level', currentLevel);
                 levelBtn.textContent = `LEVEL ${currentLevel}`;
-            });
+                // Add visual feedback
+                this.classList.add('clicked');
+                setTimeout(() => {
+                    this.classList.remove('clicked');
+                }, 200);
+            };
         }
         
         if (levelBtn) {
-            levelBtn.addEventListener('click', () => {
+            // UPDATED: Use direct onclick handler instead of addEventListener
+            levelBtn.onclick = function() {
                 if (window.gameController && typeof window.gameController.startLevel === 'function') {
                     window.gameController.startLevel(currentLevel);
                 }
-            });
+            };
         }
     }
     
@@ -150,11 +238,18 @@ document.addEventListener('DOMContentLoaded', function() {
         ensureLevelScrollerInitialized();
         ensureMessageControllerInitialized();
         
+        // NEW: Explicitly run arrow button fix on each retry
+        if (retryCount > 1) {
+            fixArrowButtons();
+        }
+        
         // Retry a few times to make sure components initialize
         if (retryCount < 5) {
             setTimeout(checkComponents, 500 * retryCount);
         } else {
             console.log('Final component check complete');
+            // NEW: Run one final arrow button fix
+            setTimeout(fixArrowButtons, 1000);
         }
     }
     
@@ -181,6 +276,27 @@ window.addEventListener('load', function() {
         window.levelScroller.initializeUI();
         window.levelScroller.fixScrollerLayout();
     }
+    
+    // NEW: Run one final arrow button fix after window load
+    setTimeout(function() {
+        // Get the arrow buttons
+        const upArrow = document.querySelector('.up-arrow');
+        const downArrow = document.querySelector('.down-arrow');
+        
+        if (upArrow && downArrow) {
+            console.log('Window loaded - ensuring arrow buttons are functional');
+            
+            // Explicitly mark them as enabled
+            upArrow.removeAttribute('disabled');
+            downArrow.removeAttribute('disabled');
+            
+            upArrow.style.opacity = '1';
+            downArrow.style.opacity = '1';
+            
+            upArrow.style.pointerEvents = 'auto';
+            downArrow.style.pointerEvents = 'auto';
+        }
+    }, 1000);
 });
 
 // Export an empty object for module compatibility
