@@ -41,37 +41,70 @@ class LevelScroller {
         });
     }
     
-    init() {
-        this.initializeUI();
-        this.attachEventListeners();
-        
-        // Apply additional layout fixes after a short delay
-        setTimeout(() => {
-            this.fixScrollerLayout();
-        }, 500);
+init() {
+    console.log('LevelScroller initializing...');
+    
+    // Check if we need to retry initialization because the DOM isn't ready
+    const levelButtonsContainer = document.querySelector('.level-buttons');
+    if (!levelButtonsContainer) {
+        console.warn('Level buttons container not found, will retry in 100ms');
+        setTimeout(() => this.init(), 100);
+        return;
     }
     
-    initializeUI() {
-        // Get the level buttons container
-        const levelButtonsContainer = document.querySelector('.level-buttons');
-        if (!levelButtonsContainer) {
-            console.error('Could not find level buttons container');
-            return;
-        }
+    // Try initializing UI 
+    this.initializeUI();
+    
+    // Attach event listeners
+    this.attachEventListeners();
+    
+    // Apply additional layout fixes
+    setTimeout(() => {
+        this.fixScrollerLayout();
+    }, 200);
+    
+    // Double check that everything is properly visible after a delay
+    setTimeout(() => {
+        this.ensureVisibility();
+    }, 500);
+    
+    console.log('LevelScroller initialization complete');
+}
+    
+initializeUI() {
+    console.log('Initializing level scroller UI...');
+    
+    // Get the level buttons container
+    const levelButtonsContainer = document.querySelector('.level-buttons');
+    if (!levelButtonsContainer) {
+        console.error('Could not find level buttons container');
+        return;
+    }
+    
+    // Check if already initialized
+    if (levelButtonsContainer.querySelector('.level-scroller-container')) {
+        console.log('Level scroller UI already initialized');
         
-        // Clear existing buttons
-        levelButtonsContainer.innerHTML = '';
-        
-        // Add new scroller UI
-        levelButtonsContainer.innerHTML = `
-    <div class="level-scroller-container">
+        // Ensure current level is properly displayed
+        this.updateVisibleLevel();
+        return;
+    }
+    
+    console.log('Creating new level scroller UI...');
+    
+    // Clear existing buttons
+    levelButtonsContainer.innerHTML = '';
+    
+    // Add new scroller UI
+    levelButtonsContainer.innerHTML = `
+    <div class="level-scroller-container" style="display:flex !important; visibility:visible !important; opacity:1 !important; height:60px;">
         <button class="level-arrow up-arrow metallic-button" aria-label="Previous level">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="18 15 12 9 6 15"></polyline>
             </svg>
         </button>
         
-        <div class="level-display-container">
+        <div class="level-display-container" style="display:flex !important; visibility:visible !important; opacity:1 !important;">
             ${this.createLevelButtons()}
         </div>
         
@@ -81,11 +114,42 @@ class LevelScroller {
             </svg>
         </button>
     </div>
-        `;
+    `;
+    
+    // Update the visible level (initially level 1)
+    this.updateVisibleLevel();
+    
+    // Add additional styling to ensure visibility
+    const style = document.createElement('style');
+    style.textContent = `
+        .level-selector-container {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
         
-        // Update the visible level (initially level 1)
-        this.updateVisibleLevel();
-    }
+        .level-buttons {
+            display: block !important; 
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        .level-scroller-container {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        .level-display-container {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+    `;
+    document.head.appendChild(style);
+    
+    console.log('Level scroller UI created successfully');
+}
     
     createLevelButtons() {
         let buttonsHtml = '';
@@ -194,7 +258,45 @@ class LevelScroller {
         
         console.log("Level scroller layout fixed");
     }
+
+ensureVisibility() {
+    console.log('Ensuring level scroller visibility...');
     
+    // Ensure containers are visible
+    const levelSelectorContainer = document.querySelector('.level-selector-container');
+    if (levelSelectorContainer) {
+        levelSelectorContainer.style.display = 'block';
+        levelSelectorContainer.style.visibility = 'visible';
+        levelSelectorContainer.style.height = 'auto';
+        levelSelectorContainer.style.opacity = '1';
+    }
+    
+    const levelButtons = document.querySelector('.level-buttons');
+    if (levelButtons) {
+        levelButtons.style.display = 'block';
+        levelButtons.style.visibility = 'visible';
+        levelButtons.style.minHeight = '60px';
+        levelButtons.style.opacity = '1';
+    }
+    
+    const scrollerContainer = document.querySelector('.level-scroller-container');
+    if (scrollerContainer) {
+        scrollerContainer.style.display = 'flex';
+        scrollerContainer.style.visibility = 'visible';
+        scrollerContainer.style.opacity = '1';
+    } else {
+        // If no scroller container found, try re-initializing the UI
+        console.warn('No scroller container found, trying to re-initialize UI');
+        this.initializeUI();
+    }
+    
+    // Ensure the current level button is visible
+    this.updateVisibleLevel();
+    
+    // Fix the layout
+    this.fixScrollerLayout();
+}
+ 
     // This replaces the existing attachEventListeners method in the LevelScroller class
     attachEventListeners() {
         // Up arrow (decrements level, loops from 1 to 10)
