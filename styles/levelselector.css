@@ -6,7 +6,7 @@
 /* Level selector container - centered */
 .level-selector-container {
   padding: 0px 0px; /* UPDATED: Reduced from 10px 0px */
-  margin: 12px auto 10px; /* UPDATED: Reduced from 5px auto 10px */
+  margin: 16px auto 10px; /* UPDATED: Reduced from 5px auto 10px */
   text-align: center;
   width: 100%;
   display: flex;
@@ -191,12 +191,11 @@
 @media (max-width: 768px) {
   .level-selector-container {
     padding: 0px 0px; /* UPDATED: Further reduced padding */
-    margin: 12px auto 0px; /* UPDATED: Further reduced margins */
+    margin: 16px auto 0px; /* UPDATED: Further reduced margins */
   }
   
   .level-scroller-container {
     height: 44px;
-    margin: 0px auto; /* UPDATED: Further reduced margin */
     max-width: 260px;
   }
   
@@ -232,7 +231,7 @@
 @media (max-width: 375px) {
   .level-scroller-container {
     height: 40px;
-    margin: 4px auto 2px; /* UPDATED: Further reduced */
+    margin: 6px auto 2px; /* UPDATED: Further reduced */
     max-width: 220px;
   }
   
