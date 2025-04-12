@@ -32,6 +32,36 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">    
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap" rel="stylesheet">
+    
+    <!-- Inline style to ensure level selector visibility -->
+    <style>
+    /* Ensure the level selector is visible */
+    .level-selector-container {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        margin: 10px 0;
+    }
+    
+    .level-buttons {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        min-height: 60px;
+    }
+    
+    /* Default level scroller styling (will be replaced when JS loads) */
+    .level-scroller-container {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        justify-content: center;
+        align-items: center;
+        height: 60px;
+        max-width: 100%;
+        margin: 0 auto;
+    }
+    </style>
 </head>
 <body>
     <noscript>You need to enable JavaScript to run this game.</noscript>
@@ -50,7 +80,28 @@
             <section class="level-selector-container">
                 <p class="level-selector-title"><span class="flashing-arrow">↓</span> CHOOSE YOUR LEVEL <span class="flashing-arrow">↓</span></p>
                 <!-- The .level-buttons container will be populated by levelscroller.js -->
-                <div class="level-buttons"></div>
+                <div class="level-buttons">
+                    <!-- Fallback content in case JS fails -->
+                    <div class="level-scroller-container">
+                        <button class="level-arrow up-arrow metallic-button" aria-label="Previous level" disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="18 15 12 9 6 15"></polyline>
+                            </svg>
+                        </button>
+                        
+                        <div class="level-display-container">
+                            <button class="level-btn level-btn-scrollable visible metallic-button" data-level="1">
+                                LEVEL 1
+                            </button>
+                        </div>
+                        
+                        <button class="level-arrow down-arrow metallic-button" aria-label="Next level" disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
             </section>
             <!-- Main Game Area -->
             <main class="game-board">
@@ -69,11 +120,6 @@
                   <!-- Level segments container - will be populated by JavaScript -->
                   <div class="level-segment-container">
                     <!-- Segments will be added dynamically via JS -->
-                    <!-- Example segment structure:
-                    <div class="level-segment"></div>
-                    <div class="level-segment unlocked"></div>
-                    <div class="level-segment completed"></div>
-                    -->
                   </div>
                 </div>
                 
@@ -120,8 +166,37 @@
     <script type="module" src="js/rules.js"></script>
     <script type="module" src="js/leveltracker.js"></script>
     <script type="module" src="js/scoremanager.js"></script>
+    <script type="module">
+        // Ensure level scroller is properly initialized
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM fully loaded, checking for level scroller...');
+            
+            // Make sure level selector container is visible
+            const levelSelectorContainer = document.querySelector('.level-selector-container');
+            if (levelSelectorContainer) {
+                levelSelectorContainer.style.display = 'block';
+                levelSelectorContainer.style.visibility = 'visible';
+                levelSelectorContainer.style.opacity = '1';
+            }
+            
+            // Force initialize level scroller if not already present
+            setTimeout(() => {
+                if (!window.levelScroller) {
+                    console.log('Level scroller not found, importing module...');
+                    import('./js/levelscroller.js').then(module => {
+                        if (!window.levelScroller) {
+                            console.log('Creating new level scroller instance');
+                            window.levelScroller = new module.LevelScroller();
+                        }
+                    }).catch(error => {
+                        console.error('Error loading level scroller:', error);
+                    });
+                }
+            }, 100);
+        });
+    </script>
     <script type="module" src="js/messages.js"></script>
-    <script type="module" src="js/gamecontroller.js"></script>  <!-- Load this BEFORE levelscroller.js -->
+    <script type="module" src="js/gamecontroller.js"></script>
     <script type="module" src="js/levelscroller.js"></script>
     <script type="module" src="js/leaderboard-integration.js"></script>
     <script type="module" src="js/modal-fix.js"></script>
