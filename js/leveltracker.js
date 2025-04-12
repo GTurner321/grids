@@ -270,27 +270,34 @@ markLevelCompleted(level) {
     
     // Update visual segments
     this.updateScoreBarSegments();
-    this.syncWithLevelScroller(); // Add this line here
+    this.syncWithLevelScroller();
     
     // After 5 seconds, clear the celebration animation
     setTimeout(() => {
-        // existing code...
+        this.justCompletedLevel = null;
+        this.updateScoreBarSegments();
     }, 5000);
-        
-        // Ensure level scroller updates to reflect newly unlocked levels
-        if (window.levelScroller) {
-            window.levelScroller.updateVisibleLevel();
-        }
-        
-        // Dispatch levelCompleted event
-        document.dispatchEvent(new CustomEvent('levelCompleted', {
-            detail: {
-                level: level,
-                completedLevels: Array.from(this.completedLevels),
-                unlockedLevels: Array.from(this.unlockedLevels)
-            }
-        }));
+    
+    // Check if all levels are now complete
+    if (this.completedLevels.size === 10 && !this.hasCompletedAllLevels) {
+        this.handleAllLevelsComplete();
+        this.hasCompletedAllLevels = true;
     }
+    
+    // Ensure level scroller updates to reflect newly unlocked levels
+    if (window.levelScroller) {
+        window.levelScroller.updateVisibleLevel();
+    }
+    
+    // Dispatch levelCompleted event
+    document.dispatchEvent(new CustomEvent('levelCompleted', {
+        detail: {
+            level: level,
+            completedLevels: Array.from(this.completedLevels),
+            unlockedLevels: Array.from(this.unlockedLevels)
+        }
+    }));
+}
     
 unlockLevel(level) {
     if (level >= 1 && level <= 10 && !this.unlockedLevels.has(level)) {
@@ -323,16 +330,23 @@ unlockLevel(level) {
         }
     }
     
-    handleAllLevelsComplete() {
-        console.log('All levels complete!');
-        
-        // Show a congratulatory message
-        setTimeout(() => {
-            if (window.gameController) {
-                window.gameController.showMessage('Congratulations! You have completed all levels!', 'success', 8000);
-            }
-        }, 3000);
+handleAllLevelsComplete() {
+    console.log('All levels complete!');
+    
+    // Show a congratulatory message
+    if (window.gameController) {
+        // First check if this message has already been shown
+        if (!window.gameController.state.shownUnlockMessages.allLevels) {
+            window.gameController.showMessage('Congratulations! You have completed all levels!', 'success');
+            window.gameController.state.shownUnlockMessages.allLevels = true;
+            
+            // Schedule follow-up message after 10 seconds
+            setTimeout(() => {
+                window.gameController.showMessage('You completed the highest level! Select a level of your choice for a better score.', 'info');
+            }, 10000);
+        }
     }
+}
     
     updateLevelUnlocker() {
         // Check if level scroller exists
