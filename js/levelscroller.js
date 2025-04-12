@@ -298,178 +298,184 @@ ensureVisibility() {
 }
  
     // This replaces the existing attachEventListeners method in the LevelScroller class
-    attachEventListeners() {
-        // Up arrow (decrements level, loops from 1 to 10)
-        const upArrow = document.querySelector('.up-arrow');
-        if (upArrow) {
-            upArrow.addEventListener('click', (e) => {
-                // Add clicked class for animation
-                e.currentTarget.classList.add('clicked');
-                
-                // Remove clicked class after animation completes
-                setTimeout(() => {
-                    e.currentTarget.classList.remove('clicked');
-                    // Force repaint to clear any lingering hover/active states
-                    void e.currentTarget.offsetWidth;
-                }, 200);
-                
-                this.currentLevel = this.currentLevel === 1 ? this.maxLevels : this.currentLevel - 1;
-                this.updateVisibleLevel();
-            });
-            
-            // Handle touchend event explicitly to clear states on touch devices
-            upArrow.addEventListener('touchend', (e) => {
-                // Wait slightly to ensure click event completes
-                setTimeout(() => {
-                    e.currentTarget.classList.remove('clicked');
-                    // Force repaint to clear any lingering states
-                    void e.currentTarget.offsetWidth;
-                }, 300);
-            });
-        }
-        
-        // Down arrow (increments level, loops from 10 to 1)
-        const downArrow = document.querySelector('.down-arrow');
-        if (downArrow) {
-            downArrow.addEventListener('click', (e) => {
-                // Add clicked class for animation
-                e.currentTarget.classList.add('clicked');
-                
-                // Remove clicked class after animation completes
-                setTimeout(() => {
-                    e.currentTarget.classList.remove('clicked');
-                    // Force repaint to clear any lingering hover/active states
-                    void e.currentTarget.offsetWidth;
-                }, 200);
-                
-                this.currentLevel = this.currentLevel === this.maxLevels ? 1 : this.currentLevel + 1;
-                this.updateVisibleLevel();
-            });
-            
-            // Handle touchend event explicitly to clear states on touch devices
-            downArrow.addEventListener('touchend', (e) => {
-                // Wait slightly to ensure click event completes
-                setTimeout(() => {
-                    e.currentTarget.classList.remove('clicked');
-                    // Force repaint to clear any lingering states
-                    void e.currentTarget.offsetWidth;
-                }, 300);
-            });
-        }
-        
-        // Level buttons - use event delegation for better performance
-        const levelDisplayContainer = document.querySelector('.level-display-container');
-        if (levelDisplayContainer) {
-            levelDisplayContainer.addEventListener('click', (event) => {
-                const levelBtn = event.target.closest('.level-btn');
-                if (levelBtn) {
-                    // Add clicked class for animation
-                    levelBtn.classList.add('clicked');
-                    
-                    // Remove clicked class after animation completes
-                    setTimeout(() => {
-                        levelBtn.classList.remove('clicked');
-                        // Force repaint
-                        void levelBtn.offsetWidth;
-                    }, 200);
-                    
-                    const level = parseInt(levelBtn.dataset.level);
-                    // Only process if this is the visible button
-                    if (level === this.currentLevel) {
-                        this.handleLevelSelection(level);
-                    }
-                }
-            });
-            
-            // Handle touchend for level buttons with event delegation
-            levelDisplayContainer.addEventListener('touchend', (event) => {
-                const levelBtn = event.target.closest('.level-btn');
-                if (levelBtn) {
-                    // Wait slightly to ensure click event completes
-                    setTimeout(() => {
-                        levelBtn.classList.remove('clicked');
-                        // Force repaint
-                        void levelBtn.offsetWidth;
-                    }, 300);
-                }
-            });
-        }
-        
-        // Add specific handler for touch devices to detect and handle touch interactions
-        if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
-            // Add a class to body to identify touch devices for styling
-            document.body.classList.add('touch-device');
-            
-            // Add event listener to clear all button states when touching elsewhere
-            document.addEventListener('touchstart', (e) => {
-                // Only proceed if we're not touching a button
-                if (!e.target.closest('.metallic-button')) {
-                    // Clear any stuck button states
-                    document.querySelectorAll('.metallic-button').forEach(button => {
-                        button.classList.remove('clicked');
-                        // Force repaint
-                        void button.offsetWidth;
-                    });
-                }
-            });
-        }
+attachEventListeners() {
+    console.log('Attaching level scroller event listeners');
+    
+    // First, ensure buttons are not disabled
+    const upArrow = document.querySelector('.up-arrow');
+    const downArrow = document.querySelector('.down-arrow');
+    
+    if (upArrow) {
+        upArrow.removeAttribute('disabled');
+        console.log('Up arrow found and enabled');
+    } else {
+        console.error('Up arrow not found!');
     }
     
-    updateVisibleLevel() {
-        const buttons = document.querySelectorAll('.level-btn-scrollable');
-        if (!buttons || buttons.length === 0) return;
+    if (downArrow) {
+        downArrow.removeAttribute('disabled');
+        console.log('Down arrow found and enabled');
+    } else {
+        console.error('Down arrow not found!');
+    }
+    
+    // Up arrow (decrements level, loops from 1 to 10)
+    if (upArrow) {
+        // Remove any existing click listeners first (important!)
+        const newUpArrow = upArrow.cloneNode(true);
+        upArrow.parentNode.replaceChild(newUpArrow, upArrow);
         
-        // First, hide all buttons and reset their classes
-        buttons.forEach(btn => {
-            btn.classList.remove('active', 'visible', 'locked');
+        // Add new click listener
+        newUpArrow.addEventListener('click', (e) => {
+            console.log('Up arrow clicked');
+            
+            // Add clicked class for animation
+            e.currentTarget.classList.add('clicked');
+            
+            // Remove clicked class after animation completes
+            setTimeout(() => {
+                e.currentTarget.classList.remove('clicked');
+                // Force repaint to clear any lingering hover/active states
+                void e.currentTarget.offsetWidth;
+            }, 200);
+            
+            // Update the level
+            this.currentLevel = this.currentLevel === 1 ? this.maxLevels : this.currentLevel - 1;
+            console.log(`Changed current level to ${this.currentLevel}`);
+            
+            // Update the UI
+            this.updateVisibleLevel();
         });
+    }
+    
+    // Down arrow (increments level, loops from 10 to 1)
+    if (downArrow) {
+        // Remove any existing click listeners first (important!)
+        const newDownArrow = downArrow.cloneNode(true);
+        downArrow.parentNode.replaceChild(newDownArrow, downArrow);
         
-        // Show only the current level button
-        const currentButton = document.querySelector(`.level-btn-scrollable[data-level="${this.currentLevel}"]`);
-        if (currentButton) {
-            // Make the current button visible
-            currentButton.classList.add('visible');
+        // Add new click listener
+        newDownArrow.addEventListener('click', (e) => {
+            console.log('Down arrow clicked');
             
-            // Check if this level is unlocked
-            const level = this.currentLevel;
-            let isUnlocked = false;
+            // Add clicked class for animation
+            e.currentTarget.classList.add('clicked');
             
-            // Levels 1-3 are always unlocked
-            if (level >= 1 && level <= 3) {
-                isUnlocked = true;
-            }
-            // Levels 4-6 are unlocked if any level from 1-3 is completed IN THIS SESSION
-            else if (level >= 4 && level <= 6) {
-                isUnlocked = window.levelTracker && 
-                    [1, 2, 3].some(lvl => window.levelTracker.completedLevels.has(lvl));
-            }
-            // Levels 7-10 are unlocked if any level from 4-6 is completed IN THIS SESSION
-            else if (level >= 7 && level <= 10) {
-                isUnlocked = window.levelTracker && 
-                    [4, 5, 6].some(lvl => window.levelTracker.completedLevels.has(lvl));
-            }
+            // Remove clicked class after animation completes
+            setTimeout(() => {
+                e.currentTarget.classList.remove('clicked');
+                // Force repaint to clear any lingering hover/active states
+                void e.currentTarget.offsetWidth;
+            }, 200);
             
-            // Add locked class if needed
-            if (!isUnlocked) {
-                currentButton.classList.add('locked');
-                console.log(`Level ${level} is locked`);
-            } else {
-                console.log(`Level ${level} is unlocked`);
-            }
+            // Update the level
+            this.currentLevel = this.currentLevel === this.maxLevels ? 1 : this.currentLevel + 1;
+            console.log(`Changed current level to ${this.currentLevel}`);
             
-            // If this level is the active level in the game, add active class
-            if (window.gameController && window.gameController.state && 
-                window.gameController.state.currentLevel === this.currentLevel) {
-                currentButton.classList.add('active');
+            // Update the UI
+            this.updateVisibleLevel();
+        });
+    }
+    
+    // Level buttons - use event delegation for better performance
+    const levelDisplayContainer = document.querySelector('.level-display-container');
+    if (levelDisplayContainer) {
+        // Remove any existing click listeners
+        const newLevelDisplayContainer = levelDisplayContainer.cloneNode(true);
+        levelDisplayContainer.parentNode.replaceChild(newLevelDisplayContainer, levelDisplayContainer);
+        
+        // Add click listener
+        newLevelDisplayContainer.addEventListener('click', (event) => {
+            const levelBtn = event.target.closest('.level-btn');
+            if (levelBtn) {
+                // Add clicked class for animation
+                levelBtn.classList.add('clicked');
+                
+                // Remove clicked class after animation completes
+                setTimeout(() => {
+                    levelBtn.classList.remove('clicked');
+                    // Force repaint
+                    void levelBtn.offsetWidth;
+                }, 200);
+                
+                const level = parseInt(levelBtn.dataset.level);
+                // Only process if this is the visible button
+                if (level === this.currentLevel) {
+                    this.handleLevelSelection(level);
+                }
             }
+        });
+    }
+    
+    console.log('Level scroller event listeners attached');
+}
+    
+updateVisibleLevel() {
+    console.log(`Updating visible level to ${this.currentLevel}`);
+    
+    const buttons = document.querySelectorAll('.level-btn-scrollable');
+    if (!buttons || buttons.length === 0) {
+        console.error('No level buttons found!');
+        return;
+    }
+    
+    // First, hide all buttons and reset their classes
+    buttons.forEach(btn => {
+        btn.classList.remove('active', 'visible', 'locked');
+        btn.style.display = 'none'; // Explicitly hide
+    });
+    
+    // Show only the current level button
+    const currentButton = document.querySelector(`.level-btn-scrollable[data-level="${this.currentLevel}"]`);
+    if (currentButton) {
+        // Make the current button visible
+        currentButton.classList.add('visible');
+        currentButton.style.display = 'block'; // Explicitly show
+        
+        // Update button text to ensure it's correct
+        currentButton.textContent = `LEVEL ${this.currentLevel}`;
+        
+        console.log(`Made level ${this.currentLevel} button visible`);
+        
+        // Check if this level is unlocked
+        const level = this.currentLevel;
+        let isUnlocked = false;
+        
+        // Levels 1-3 are always unlocked
+        if (level >= 1 && level <= 3) {
+            isUnlocked = true;
+        }
+        // Levels 4-6 are unlocked if any level from 1-3 is completed
+        else if (level >= 4 && level <= 6) {
+            isUnlocked = window.levelTracker && 
+                [1, 2, 3].some(lvl => window.levelTracker.completedLevels.has(lvl));
+        }
+        // Levels 7-10 are unlocked if any level from 4-6 is completed
+        else if (level >= 7 && level <= 10) {
+            isUnlocked = window.levelTracker && 
+                [4, 5, 6].some(lvl => window.levelTracker.completedLevels.has(lvl));
         }
         
-        // Update score bar segments 
-        this.updateScoreBarSegments();
+        // Add locked class if needed
+        if (!isUnlocked) {
+            currentButton.classList.add('locked');
+            console.log(`Level ${level} is locked`);
+        } else {
+            console.log(`Level ${level} is unlocked`);
+        }
         
-        // Ensure proper layout
-        this.fixScrollerLayout();
+        // If this level is the active level in the game, add active class
+        if (window.gameController && window.gameController.state && 
+            window.gameController.state.currentLevel === this.currentLevel) {
+            currentButton.classList.add('active');
+        }
+    } else {
+        console.error(`Button for level ${this.currentLevel} not found!`);
     }
+    
+    // Update score bar segments
+    this.updateScoreBarSegments();
+}
     
     updateScoreBarSegments() {
         const segments = document.querySelectorAll('.level-segment');
