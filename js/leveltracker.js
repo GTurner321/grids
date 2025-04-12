@@ -270,27 +270,31 @@ markLevelCompleted(level) {
     
     // Update visual segments
     this.updateScoreBarSegments();
-    this.syncWithLevelScroller(); // Add this line here
+    this.syncWithLevelScroller(); 
     
     // After 5 seconds, clear the celebration animation
     setTimeout(() => {
-        // existing code...
+        this.justCompletedLevel = null;
+        this.updateScoreBarSegments();
     }, 5000);
         
-        // Ensure level scroller updates to reflect newly unlocked levels
-        if (window.levelScroller) {
-            window.levelScroller.updateVisibleLevel();
-        }
-        
-        // Dispatch levelCompleted event
-        document.dispatchEvent(new CustomEvent('levelCompleted', {
-            detail: {
-                level: level,
-                completedLevels: Array.from(this.completedLevels),
-                unlockedLevels: Array.from(this.unlockedLevels)
-            }
-        }));
+    // Ensure level scroller updates to reflect newly unlocked levels
+    if (window.levelScroller) {
+        window.levelScroller.updateVisibleLevel();
     }
+    
+    // Note: We don't need to notify messageController here as this will be
+    // handled by gameController.handlePuzzleSolved which calls this method
+    
+    // Dispatch levelCompleted event
+    document.dispatchEvent(new CustomEvent('levelCompleted', {
+        detail: {
+            level: level,
+            completedLevels: Array.from(this.completedLevels),
+            unlockedLevels: Array.from(this.unlockedLevels)
+        }
+    }));
+}
     
 unlockLevel(level) {
     if (level >= 1 && level <= 10 && !this.unlockedLevels.has(level)) {
@@ -323,16 +327,23 @@ unlockLevel(level) {
         }
     }
     
-    handleAllLevelsComplete() {
-        console.log('All levels complete!');
-        
-        // Show a congratulatory message
-        setTimeout(() => {
-            if (window.gameController) {
-                window.gameController.showMessage('Congratulations! You have completed all levels!', 'success', 8000);
-            }
-        }, 3000);
+handleAllLevelsComplete() {
+    console.log('All levels complete!');
+    
+    // Use messageController to show congratulatory message instead of directly calling gameController
+    if (window.messageController) {
+        // messageController will handle this in its onLevelCompleted method
+        // We don't need to do anything here, but we'll keep the method for backward compatibility
+        return;
     }
+    
+    // Legacy fallback
+    setTimeout(() => {
+        if (window.gameController) {
+            window.gameController.showMessage('Congratulations! You have completed all levels!', 'success', 8000);
+        }
+    }, 3000);
+}
     
     updateLevelUnlocker() {
         // Check if level scroller exists
